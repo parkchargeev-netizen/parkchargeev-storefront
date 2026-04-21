@@ -1,4 +1,5 @@
 import {
+  type AnyPgColumn,
   boolean,
   index,
   integer,
@@ -73,7 +74,7 @@ export const categories = pgTable(
     name: varchar("name", { length: 120 }).notNull(),
     slug: varchar("slug", { length: 140 }).notNull(),
     description: text("description"),
-    parentId: uuid("parent_id").references(() => categories.id),
+    parentId: uuid("parent_id").references((): AnyPgColumn => categories.id),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull()
@@ -376,4 +377,3 @@ export const blogPosts = pgTable(
     slugIndex: uniqueIndex("blog_posts_slug_idx").on(table.slug)
   })
 );
-
