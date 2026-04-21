@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+
+<html class="light" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sepetim - ParkChargeEV</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#d2d9f4",
+                        "on-primary": "#ffffff",
+                        "surface-container-low": "#f2f3ff",
+                        "secondary-container": "#6bff8f",
+                        "on-surface": "#131b2e",
+                        "surface-container": "#eaedff",
+                        "on-tertiary-container": "#ffebe5",
+                        "secondary": "#006e2f",
+                        "on-primary-fixed": "#001551",
+                        "on-surface-variant": "#434656",
+                        "tertiary": "#992f00",
+                        "surface-container-highest": "#dae2fd",
+                        "primary-container": "#1e5bff",
+                        "on-tertiary-fixed-variant": "#832700",
+                        "primary-fixed": "#dce1ff",
+                        "error-container": "#ffdad6",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff",
+                        "tertiary-container": "#c33e00",
+                        "on-secondary-fixed": "#002109",
+                        "surface": "#faf8ff",
+                        "outline": "#737688",
+                        "inverse-on-surface": "#eef0ff",
+                        "on-secondary": "#ffffff",
+                        "surface-tint": "#004cec",
+                        "background": "#faf8ff",
+                        "outline-variant": "#c3c5d9",
+                        "inverse-primary": "#b7c4ff",
+                        "on-secondary-fixed-variant": "#005321",
+                        "primary": "#0044d3",
+                        "on-primary-container": "#ecedff",
+                        "surface-bright": "#faf8ff",
+                        "on-tertiary": "#ffffff",
+                        "inverse-surface": "#283044",
+                        "surface-variant": "#dae2fd",
+                        "on-primary-fixed-variant": "#0039b5",
+                        "on-background": "#131b2e",
+                        "on-secondary-container": "#007432",
+                        "tertiary-fixed-dim": "#ffb59c",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#ffdbd0",
+                        "on-error-container": "#93000a",
+                        "primary-fixed-dim": "#b7c4ff",
+                        "on-tertiary-fixed": "#390c00",
+                        "surface-container-high": "#e2e7ff",
+                        "secondary-fixed": "#6bff8f",
+                        "secondary-fixed-dim": "#4ae176"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {},
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md dark:bg-slate-900/80 shadow-sm dark:shadow-none">
+<div class="flex justify-between items-center px-8 h-20 w-full max-w-screen-2xl mx-auto">
+<!-- Brand -->
+<div class="text-2xl font-black tracking-tighter text-[#1E5BFF]">
+                ParkChargeEV
+            </div>
+<!-- Links (Hidden on md, visible on lg) -->
+<div class="hidden md:flex space-x-8 font-['Inter'] antialiased text-sm font-medium tracking-tight">
+<a class="text-slate-600 dark:text-slate-400 hover:text-[#1E5BFF] transition-colors" href="#">Ana Sayfa</a>
+<a class="text-[#1E5BFF] font-bold border-b-2 border-[#1E5BFF] pb-1" href="#">Mağaza</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-[#1E5BFF] transition-colors" href="#">Harita</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-[#1E5BFF] transition-colors" href="#">Hizmetler</a>
+</div>
+<!-- Actions -->
+<div class="flex items-center space-x-4">
+<button class="text-slate-600 dark:text-slate-400 hover:text-[#1E5BFF] transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined" data-icon="login">login</span>
+<span class="font-['Inter'] antialiased text-sm font-medium tracking-tight">Giriş Yap</span>
+</button>
+<button class="text-[#1E5BFF] font-bold border-b-2 border-[#1E5BFF] pb-1 flex items-center gap-2">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+<span class="font-['Inter'] antialiased text-sm font-medium tracking-tight">Sepetim</span>
+</button>
+</div>
+</div>
+</nav>
+<!-- Main Content -->
+<main class="flex-grow pt-28 pb-12 px-4 md:px-8 max-w-screen-2xl mx-auto w-full">
+<div class="mb-8">
+<h1 class="text-4xl md:text-5xl font-black tracking-tighter text-on-surface mb-2">Alışveriş Sepeti</h1>
+<p class="text-on-surface-variant text-lg">Sürdürülebilir enerji yolculuğunuz için seçtiğiniz ürünler.</p>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Cart Items List -->
+<div class="lg:col-span-2 space-y-6">
+<!-- Item 1 -->
+<div class="bg-surface-container-lowest rounded-xl p-6 flex flex-col sm:flex-row items-start sm:items-center gap-6 relative shadow-sm border border-outline-variant/20 hover:bg-surface-container-low transition-colors">
+<img alt="Ev Tipi Şarj İstasyonu" class="w-full sm:w-32 h-32 object-cover rounded-lg" data-alt="Sleek, modern wall-mounted EV charger on a clean white wall with a soft green indicator light, professional studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB84rBQ0qE6sNPmCvt9bupG0VM8M4hpedysadqDPHK-YD-xQSoUoPXVfUdpFZJJSw92bzfXWEfLugQQfMbhjI5V6LdqCGp-Ug9oBPj5L9p7FIGpiqTmIrukWA1S4s7ptfW0Zk7jeeDs0wrNUJWCMvsKvF5Mk3syLWSErsBxZTn6xOCMAbplxsP9vNRYXaxpVJpdKVWFGzcM_C4ODQfJ6VzBDVF6doqYY4zrZnN8zKlRbng3W4YFkaAer3r7ASWaV8p1U8Q2-hfttmzm"/>
+<div class="flex-grow">
+<h3 class="text-xl font-bold text-on-surface mb-1">ParkCharge Home Pro</h3>
+<p class="text-on-surface-variant text-sm mb-4">22kW AC Şarj İstasyonu, Wi-Fi Bağlantılı</p>
+<div class="flex items-center justify-between mt-auto">
+<div class="flex items-center bg-surface-variant rounded-full px-2 py-1">
+<button class="text-on-surface hover:text-primary p-1 rounded-full hover:bg-surface-dim transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="remove">remove</span>
+</button>
+<span class="mx-3 font-medium text-sm w-4 text-center">1</span>
+<button class="text-on-surface hover:text-primary p-1 rounded-full hover:bg-surface-dim transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+</button>
+</div>
+<div class="text-lg font-bold text-on-surface">14.500 ₺</div>
+</div>
+</div>
+<button class="absolute top-4 right-4 text-outline hover:text-error transition-colors" title="Sepetten Çıkar">
+<span class="material-symbols-outlined" data-icon="delete">delete</span>
+</button>
+</div>
+<!-- Item 2 -->
+<div class="bg-surface-container-lowest rounded-xl p-6 flex flex-col sm:flex-row items-start sm:items-center gap-6 relative shadow-sm border border-outline-variant/20 hover:bg-surface-container-low transition-colors">
+<img alt="Type 2 Şarj Kablosu" class="w-full sm:w-32 h-32 object-cover rounded-lg" data-alt="High quality, thick black EV charging cable coiled neatly on a bright modern surface, sharp focus" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCuiP-hO3eOVzvM9J2NSAeTg7-VM7EcON0PfXAQYUmuaCIKekXJSvTThKxiLqrSHDaOqguw21yRO7OrQKcyJViWyBWHd7Ch8uTcUxLDJP3R65JhJ1F5d7JdVb8whZpzPHBENi8PrfTEYaERzCgT0MhRlQaQTBg4-2E8MBc_5M-FLdsGmdqYOi1XoRtqa7nJL34sGOlgaaBfnGraZGW0-dCiHBUwvdBW2BfE-TbRAhDrQ-xx-fC9aYaDAh4d4vQB6AMaC46kvf4gjDNu"/>
+<div class="flex-grow">
+<h3 class="text-xl font-bold text-on-surface mb-1">Premium Type 2 Kablo</h3>
+<p class="text-on-surface-variant text-sm mb-4">5 Metre, 32A, 3 Fazlı Spiral Kablo</p>
+<div class="flex items-center justify-between mt-auto">
+<div class="flex items-center bg-surface-variant rounded-full px-2 py-1">
+<button class="text-on-surface hover:text-primary p-1 rounded-full hover:bg-surface-dim transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="remove">remove</span>
+</button>
+<span class="mx-3 font-medium text-sm w-4 text-center">2</span>
+<button class="text-on-surface hover:text-primary p-1 rounded-full hover:bg-surface-dim transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+</button>
+</div>
+<div class="text-lg font-bold text-on-surface">6.400 ₺</div>
+</div>
+</div>
+<button class="absolute top-4 right-4 text-outline hover:text-error transition-colors" title="Sepetten Çıkar">
+<span class="material-symbols-outlined" data-icon="delete">delete</span>
+</button>
+</div>
+</div>
+<!-- Order Summary -->
+<div class="lg:col-span-1">
+<div class="bg-surface-container-low rounded-xl p-6 sticky top-28 border border-outline-variant/20">
+<h2 class="text-2xl font-bold text-on-surface mb-6">Sipariş Özeti</h2>
+<div class="space-y-4 mb-6">
+<div class="flex justify-between items-center text-on-surface-variant">
+<span>Ara Toplam</span>
+<span>20.900 ₺</span>
+</div>
+<div class="flex justify-between items-center text-on-surface-variant">
+<span>Kargo</span>
+<span class="text-secondary font-medium">Ücretsiz</span>
+</div>
+<div class="flex justify-between items-center text-on-surface-variant">
+<span>KDV (%20)</span>
+<span>4.180 ₺</span>
+</div>
+</div>
+<div class="border-t border-outline-variant/30 pt-4 mb-8">
+<div class="flex justify-between items-center">
+<span class="text-lg font-bold text-on-surface">Genel Toplam</span>
+<span class="text-2xl font-black text-primary">25.080 ₺</span>
+</div>
+</div>
+<button class="w-full bg-gradient-to-r from-primary to-secondary text-on-primary font-bold py-4 rounded-lg flex items-center justify-center gap-2 hover:opacity-90 transition-opacity active:scale-[0.98]">
+<span>Ödeme Adımına Geç</span>
+<span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<div class="mt-4 flex items-center justify-center gap-2 text-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-base" data-icon="lock">lock</span>
+<span>Güvenli Ödeme Altyapısı</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800">
+<div class="w-full py-12 px-8 flex flex-col md:flex-row justify-between items-center gap-6 max-w-screen-2xl mx-auto">
+<div class="font-bold text-slate-900 dark:text-white">
+                © 2024 ParkChargeEV. Sürdürülebilir Gelecek.
+            </div>
+<div class="flex flex-wrap justify-center gap-6 font-['Inter'] text-xs uppercase tracking-widest text-slate-500 dark:text-slate-500">
+<a class="hover:text-slate-900 dark:hover:text-white underline-offset-4 transition-all hover:underline opacity-100 hover:opacity-80" href="#">Kurumsal</a>
+<a class="hover:text-slate-900 dark:hover:text-white underline-offset-4 transition-all hover:underline opacity-100 hover:opacity-80" href="#">Sürdürülebilirlik</a>
+<a class="hover:text-slate-900 dark:hover:text-white underline-offset-4 transition-all hover:underline opacity-100 hover:opacity-80" href="#">Destek</a>
+<a class="hover:text-slate-900 dark:hover:text-white underline-offset-4 transition-all hover:underline opacity-100 hover:opacity-80" href="#">Kariyer</a>
+</div>
+</div>
+</footer>
+</body></html>

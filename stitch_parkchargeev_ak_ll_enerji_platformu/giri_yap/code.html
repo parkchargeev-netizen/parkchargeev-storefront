@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+
+<html lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ParkChargeEV - Giriş Yap</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#d2d9f4",
+                        "on-primary": "#ffffff",
+                        "surface-container-low": "#f2f3ff",
+                        "secondary-container": "#6bff8f",
+                        "on-surface": "#131b2e",
+                        "surface-container": "#eaedff",
+                        "on-tertiary-container": "#ffebe5",
+                        "secondary": "#006e2f",
+                        "on-primary-fixed": "#001551",
+                        "on-surface-variant": "#434656",
+                        "tertiary": "#992f00",
+                        "surface-container-highest": "#dae2fd",
+                        "primary-container": "#1e5bff",
+                        "on-tertiary-fixed-variant": "#832700",
+                        "primary-fixed": "#dce1ff",
+                        "error-container": "#ffdad6",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff",
+                        "tertiary-container": "#c33e00",
+                        "on-secondary-fixed": "#002109",
+                        "surface": "#faf8ff",
+                        "outline": "#737688",
+                        "inverse-on-surface": "#eef0ff",
+                        "on-secondary": "#ffffff",
+                        "surface-tint": "#004cec",
+                        "background": "#faf8ff",
+                        "outline-variant": "#c3c5d9",
+                        "inverse-primary": "#b7c4ff",
+                        "on-secondary-fixed-variant": "#005321",
+                        "primary": "#0044d3",
+                        "on-primary-container": "#ecedff",
+                        "surface-bright": "#faf8ff",
+                        "on-tertiary": "#ffffff",
+                        "inverse-surface": "#283044",
+                        "surface-variant": "#dae2fd",
+                        "on-primary-fixed-variant": "#0039b5",
+                        "on-background": "#131b2e",
+                        "on-secondary-container": "#007432",
+                        "tertiary-fixed-dim": "#ffb59c",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#ffdbd0",
+                        "on-error-container": "#93000a",
+                        "primary-fixed-dim": "#b7c4ff",
+                        "on-tertiary-fixed": "#390c00",
+                        "surface-container-high": "#e2e7ff",
+                        "secondary-fixed": "#6bff8f",
+                        "secondary-fixed-dim": "#4ae176"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background font-body text-on-surface antialiased min-h-screen relative overflow-hidden">
+<!-- Background Image with Blur Overlay -->
+<div class="absolute inset-0 z-0">
+<img alt="Electric vehicle charging station" class="w-full h-full object-cover" data-alt="sleek modern electric vehicle charging station at dusk with soft glowing led lights and a high-end electric car plugged in, moody atmospheric lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfxOqNiPW1Boe-T0Kkz4nbGLlQAVqp0NBQrWj2NJtty7agLRcDXBm-egKDcpgJ7F254L9Vd9geA-vAioWYAh6iopKXYiZoYzwd_KE7qK0s0bMtJfUKduGn4n0nDT8ImqyFTsV197qtYG7omuH49JJEOBnjB3d_eKcsovsESY1I8GyVnCYpGS35Zyw5fpihssjwt5hJaxhYRG4jRa-T91lu3uuXQ-u70esxn05RCDNq5kLm1aEB4GscYNG_C7Em-Iygh6SUGP0DER_W"/>
+<!-- Tonal layer for readability and glassmorphism foundation -->
+<div class="absolute inset-0 bg-surface/50 backdrop-blur-md"></div>
+</div>
+<!-- Main Content Container -->
+<div class="relative z-10 flex flex-col items-center justify-center min-h-screen p-6 md:p-12">
+<!-- Login Card (Glassmorphism & Tonal Elevation) -->
+<div class="w-full max-w-[420px] bg-surface/90 backdrop-blur-2xl rounded-2xl p-8 md:p-10 shadow-[0_20px_60px_-15px_rgba(0,68,211,0.15)] ring-1 ring-outline-variant/20">
+<!-- Brand & Header -->
+<div class="text-center mb-10">
+<div class="text-primary font-black text-2xl tracking-tighter mb-3 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[28px] text-secondary" style="font-variation-settings: 'FILL' 1;">ev_station</span>
+                    ParkChargeEV
+                </div>
+<h1 class="font-headline text-2xl md:text-3xl font-bold text-on-surface tracking-tight">Tekrar Hoş Geldiniz</h1>
+<p class="font-body text-on-surface-variant mt-2 text-sm">Sürdürülebilir enerji ağınıza bağlanın.</p>
+</div>
+<!-- Login Form -->
+<form action="#" class="space-y-6" method="POST">
+<!-- Email Input -->
+<div class="space-y-2">
+<label class="block font-label text-xs font-semibold uppercase tracking-widest text-on-surface" for="email">E-posta Adresi</label>
+<div class="relative">
+<span class="absolute inset-y-0 left-0 flex items-center pl-4 text-outline pointer-events-none">
+<span class="material-symbols-outlined text-[20px]">mail</span>
+</span>
+<input class="w-full pl-11 pr-4 py-3.5 bg-surface-variant/80 border-none rounded-xl text-on-surface placeholder:text-outline/70 focus:ring-2 focus:ring-primary focus:bg-surface transition-all duration-300" id="email" name="email" placeholder="ornek@sirket.com" type="email"/>
+</div>
+</div>
+<!-- Password Input -->
+<div class="space-y-2">
+<label class="block font-label text-xs font-semibold uppercase tracking-widest text-on-surface" for="password">Şifre</label>
+<div class="relative">
+<span class="absolute inset-y-0 left-0 flex items-center pl-4 text-outline pointer-events-none">
+<span class="material-symbols-outlined text-[20px]">lock</span>
+</span>
+<input class="w-full pl-11 pr-4 py-3.5 bg-surface-variant/80 border-none rounded-xl text-on-surface placeholder:text-outline/70 focus:ring-2 focus:ring-primary focus:bg-surface transition-all duration-300" id="password" name="password" placeholder="••••••••" type="password"/>
+</div>
+</div>
+<!-- Options Row -->
+<div class="flex items-center justify-between pt-2">
+<label class="flex items-center gap-3 cursor-pointer group">
+<div class="relative flex items-center justify-center w-5 h-5 rounded border border-outline bg-surface-container-lowest group-hover:border-primary transition-colors">
+<input class="peer absolute w-full h-full opacity-0 cursor-pointer" type="checkbox"/>
+<span class="material-symbols-outlined text-[16px] text-primary opacity-0 peer-checked:opacity-100 transition-opacity" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<span class="font-body text-sm text-on-surface-variant group-hover:text-on-surface transition-colors">Beni Hatırla</span>
+</label>
+<a class="font-body text-sm font-medium text-primary hover:text-secondary transition-colors underline-offset-4 hover:underline" href="#">Şifremi Unuttum</a>
+</div>
+<!-- Primary CTA Button -->
+<div class="pt-4">
+<button class="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-primary to-secondary text-on-primary font-headline font-semibold text-base hover:opacity-95 active:scale-[0.98] transition-all duration-200 shadow-[0_8px_24px_-8px_rgba(0,110,47,0.4)] flex justify-center items-center gap-2 group" type="submit">
+                        Giriş Yap
+                        <span class="material-symbols-outlined text-[20px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+</form>
+<!-- Divider -->
+<div class="my-8 flex items-center gap-4">
+<div class="h-[1px] flex-1 bg-gradient-to-r from-transparent via-outline-variant/50 to-outline-variant/50"></div>
+<span class="font-label text-xs font-semibold uppercase tracking-widest text-outline">veya</span>
+<div class="h-[1px] flex-1 bg-gradient-to-l from-transparent via-outline-variant/50 to-outline-variant/50"></div>
+</div>
+<!-- Corporate/Social Logins -->
+<div class="space-y-3">
+<button class="w-full flex items-center justify-center gap-3 py-3.5 rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-colors text-on-surface font-headline font-medium text-sm">
+<span class="material-symbols-outlined text-[20px] text-primary">business</span>
+                    Kurumsal SSO ile Giriş
+                </button>
+<div class="grid grid-cols-2 gap-3">
+<button class="flex items-center justify-center gap-2 py-3 rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-colors text-on-surface font-headline font-medium text-sm">
+<img alt="Google" class="w-5 h-5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuATOi33RaulxnCQQ3HrEVtVtpQ-XHc9BhBP_hyXg-nqbz1zn3RWAQAxpgv_k01OjAlNR6NuW_DmYmdY5gLrc0urrg9pnrsGwbb5JEIPA2L2ZPt6biFxQQB-7Eukkv2D-FVWVopjJ19p5Rqx_pNUCMUwz9j36Eq6Ty6Q8Obf47JRjHw7DX8h4SPclDNHwBs6GplmfCy-hlLsSMbjk6hDe0-VcAgKqF7KkieaSM8qYf3nNNoslH9eG2JwCNJu_sBrg_2pPZK2mIGrkEZ4"/>
+                        Google
+                    </button>
+<button class="flex items-center justify-center gap-2 py-3 rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-colors text-on-surface font-headline font-medium text-sm">
+<img alt="Apple" class="w-5 h-5 opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUAutZegoXwfmht2LzhB5R4W5hpdGqrMDzw0ejC6vnRvrAqH3oLb7YLPgR6pJ0iZX1fCLbIeLjFxEJ7GypYhkkjVIiGUF6yiW0cpJG8uhUwJ2afzkxCXxefsmjSY5hliJn535vcnPkpMXBSnOVMPUx0Gao4qYFoLmfz1ufrrUJ13-Kdv64bLHOIggQqPrrYBhiPJi0TK0-wCwRr_EIkKPC7e9CVlDPbbhpoIpeGMnGncXQ5htXoMbYxtDuBJ22vtAXM4a6xLNL7T9H"/>
+                        Apple
+                    </button>
+</div>
+</div>
+<!-- Sign Up Prompt -->
+<div class="mt-8 text-center">
+<p class="font-body text-sm text-on-surface-variant">
+                    Hesabınız yok mu? 
+                    <a class="text-primary font-semibold hover:text-secondary transition-colors ml-1" href="#">Kayıt Olun</a>
+</p>
+</div>
+</div>
+<!-- Footer Links (Minimal, isolated for transactional page) -->
+<div class="mt-8 flex gap-6 font-label text-xs uppercase tracking-widest text-on-surface-variant/80 hover:text-on-surface-variant transition-colors">
+<a class="hover:text-on-surface transition-colors" href="#">Gizlilik Politikası</a>
+<a class="hover:text-on-surface transition-colors" href="#">Kullanım Şartları</a>
+<a class="hover:text-on-surface transition-colors" href="#">Destek</a>
+</div>
+</div>
+</body></html>

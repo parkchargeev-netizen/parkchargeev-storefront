@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+
+<html class="light" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kullanıcı Paneli - Luminous Eco-Tech</title>
+<!-- Google Fonts: Inter & Material Symbols -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration (Design System Tokens) -->
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-dim": "#d2d9f4",
+                      "on-primary": "#ffffff",
+                      "surface-container-low": "#f2f3ff",
+                      "secondary-container": "#6bff8f",
+                      "on-surface": "#131b2e",
+                      "surface-container": "#eaedff",
+                      "on-tertiary-container": "#ffebe5",
+                      "secondary": "#006e2f",
+                      "on-primary-fixed": "#001551",
+                      "on-surface-variant": "#434656",
+                      "tertiary": "#992f00",
+                      "surface-container-highest": "#dae2fd",
+                      "primary-container": "#1e5bff",
+                      "on-tertiary-fixed-variant": "#832700",
+                      "primary-fixed": "#dce1ff",
+                      "error-container": "#ffdad6",
+                      "surface-container-lowest": "#ffffff",
+                      "on-error": "#ffffff",
+                      "tertiary-container": "#c33e00",
+                      "on-secondary-fixed": "#002109",
+                      "surface": "#faf8ff",
+                      "outline": "#737688",
+                      "inverse-on-surface": "#eef0ff",
+                      "on-secondary": "#ffffff",
+                      "surface-tint": "#004cec",
+                      "background": "#faf8ff",
+                      "outline-variant": "#c3c5d9",
+                      "inverse-primary": "#b7c4ff",
+                      "on-secondary-fixed-variant": "#005321",
+                      "primary": "#0044d3",
+                      "on-primary-container": "#ecedff",
+                      "surface-bright": "#faf8ff",
+                      "on-tertiary": "#ffffff",
+                      "inverse-surface": "#283044",
+                      "surface-variant": "#dae2fd",
+                      "on-primary-fixed-variant": "#0039b5",
+                      "on-background": "#131b2e",
+                      "on-secondary-container": "#007432",
+                      "tertiary-fixed-dim": "#ffb59c",
+                      "error": "#ba1a1a",
+                      "tertiary-fixed": "#ffdbd0",
+                      "on-error-container": "#93000a",
+                      "primary-fixed-dim": "#b7c4ff",
+                      "on-tertiary-fixed": "#390c00",
+                      "surface-container-high": "#e2e7ff",
+                      "secondary-fixed": "#6bff8f",
+                      "secondary-fixed-dim": "#4ae176"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {},
+              "fontFamily": {
+                      "headline": ["Inter"],
+                      "body": ["Inter"],
+                      "label": ["Inter"]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface font-body antialiased flex h-screen overflow-hidden selection:bg-primary selection:text-on-primary">
+<!-- SideNavBar Component -->
+<!-- Applying JSON styling keys strictly as commanded -->
+<aside class="bg-slate-50 dark:bg-slate-950 font-['Inter'] text-sm fixed left-0 top-0 flex flex-col p-6 space-y-4 h-screen w-64 border-r-0 z-40">
+<!-- Header -->
+<div class="flex items-center gap-4 mb-8 px-2">
+<img alt="Kullanıcı Profili" class="w-12 h-12 rounded-full object-cover" data-alt="portrait of a young professional smiling softly in soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_sd7DdDxOk3EY_hrnSqTSF6i2WDGObMcw7FsWt6_YSixS9tLTd9ut7CdFSPZFQBZIFWT0MMJLJKecEZ-PkID_TlIDslLvDKeCnmggGqPE-puvKVnJ7zDokdGy0ALCm6HZX-Cr5vDd7FUL5s1cLaFFWHFCePkni-P5uZ7C0wfomZ42Zr_2Redg2JMXegDhJFXh39bD-flEAZzFrIxK6x2kstVbo8BlD5rQr5SgYzc_xCEVy11u_6oxbLAQGPkqkm7vYCBIfAUqk4Hf"/>
+<div>
+<h2 class="font-bold text-slate-900 dark:text-white tracking-tight">Kullanıcı Paneli</h2>
+<p class="text-xs text-slate-500 dark:text-slate-400">Hoş Geldiniz</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex-1 space-y-2">
+<!-- Tab 0: Panel (Active) -->
+<a class="flex items-center gap-3 bg-blue-50 dark:bg-blue-900/20 text-[#1E5BFF] font-bold rounded-lg px-4 py-3 active:opacity-80 transition-transform" href="#">
+<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span>Panel</span>
+</a>
+<!-- Tab 1: Şarjlarım (Inactive) -->
+<a class="flex items-center gap-3 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 rounded-lg px-4 py-3 hover:translate-x-1 transition-transform cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined">ev_station</span>
+<span>Şarjlarım</span>
+</a>
+<!-- Tab 2: Ödemeler (Inactive) -->
+<a class="flex items-center gap-3 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 rounded-lg px-4 py-3 hover:translate-x-1 transition-transform cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span>Ödemeler</span>
+</a>
+<!-- Tab 3: Cihazlarım (Inactive) -->
+<a class="flex items-center gap-3 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 rounded-lg px-4 py-3 hover:translate-x-1 transition-transform cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined">settings_input_component</span>
+<span>Cihazlarım</span>
+</a>
+<!-- Tab 4: Ayarlar (Inactive) -->
+<a class="flex items-center gap-3 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 rounded-lg px-4 py-3 hover:translate-x-1 transition-transform cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Ayarlar</span>
+</a>
+</nav>
+<!-- CTA Button -->
+<div class="pt-4 border-t border-transparent relative">
+<!-- Using surface-separation logic from JSON: bg-slate-200/50 -->
+<div class="absolute top-0 left-0 w-full h-[1px] bg-slate-200/50 dark:bg-slate-800/50"></div>
+<button class="w-full py-3 px-4 rounded-lg bg-[#1E5BFF] text-white font-semibold hover:bg-blue-700 transition-colors shadow-sm flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]">add</span>
+                Yeni İstasyon Ekle
+            </button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 ml-64 h-full overflow-y-auto bg-surface pb-12 relative">
+<!-- Decorative Ambient Background Element -->
+<div class="absolute top-[-10%] right-[-5%] w-[40vw] h-[40vw] rounded-full bg-primary/5 blur-[100px] pointer-events-none"></div>
+<div class="px-10 py-10 max-w-7xl mx-auto space-y-10 relative z-10">
+<!-- Page Header -->
+<header>
+<h1 class="text-[2rem] font-bold font-headline text-on-surface tracking-tight">Genel Bakış</h1>
+<p class="text-on-surface-variant font-body text-sm mt-1">Sürdürülebilir enerji tüketim özetiniz.</p>
+</header>
+<!-- Stats Grid (Bento Style) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Stat Card 1 -->
+<div class="bg-surface-container-low rounded-[12px] p-6 flex flex-col justify-between relative overflow-hidden group">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center mb-4">
+<span class="material-symbols-outlined">bolt</span>
+</div>
+<div>
+<p class="text-xs font-label text-on-surface-variant uppercase tracking-widest mb-1">Toplam Tüketim</p>
+<p class="text-3xl font-headline font-bold text-on-surface">342.5 <span class="text-base font-normal text-on-surface-variant">kWh</span></p>
+</div>
+</div>
+<!-- Stat Card 2 -->
+<div class="bg-surface-container-low rounded-[12px] p-6 flex flex-col justify-between relative overflow-hidden">
+<div class="w-10 h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center mb-4">
+<span class="material-symbols-outlined">eco</span>
+</div>
+<div>
+<p class="text-xs font-label text-on-surface-variant uppercase tracking-widest mb-1">Karbon Tasarrufu</p>
+<p class="text-3xl font-headline font-bold text-on-surface">128 <span class="text-base font-normal text-on-surface-variant">kg</span></p>
+</div>
+</div>
+<!-- Stat Card 3 -->
+<div class="bg-surface-container-low rounded-[12px] p-6 flex flex-col justify-between relative overflow-hidden">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest text-on-surface flex items-center justify-center mb-4">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+</div>
+<div>
+<p class="text-xs font-label text-on-surface-variant uppercase tracking-widest mb-1">Aylık Harcama</p>
+<p class="text-3xl font-headline font-bold text-on-surface">₺1,450</p>
+</div>
+</div>
+</div>
+<!-- Complex Section: Active Devices & Orders -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Active Device (Energy Flow Card - Glassmorphism) -->
+<div class="lg:col-span-2 relative rounded-[1rem] p-8 overflow-hidden flex flex-col justify-between min-h-[300px]">
+<!-- Glass Background -->
+<div class="absolute inset-0 bg-surface/60 backdrop-blur-[20px] z-0"></div>
+<!-- Gradient Hint underneath -->
+<div class="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10 z-[-1]"></div>
+<div class="relative z-10 flex justify-between items-start mb-8">
+<div>
+<h3 class="font-headline font-bold text-xl text-on-surface mb-1">Aktif Şarj İşlemi</h3>
+<p class="text-sm font-body text-on-surface-variant">İstasyon A1 - Merkez Ofis</p>
+</div>
+<span class="inline-flex items-center px-3 py-1 rounded-full bg-secondary/10 text-secondary text-xs font-bold uppercase tracking-widest gap-1">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+                            Şarj Oluyor
+                        </span>
+</div>
+<div class="relative z-10 flex items-end justify-between">
+<div>
+<p class="text-5xl font-headline font-black text-primary tracking-tighter">68<span class="text-2xl text-on-surface-variant font-normal">%</span></p>
+<p class="text-sm font-label text-on-surface-variant mt-2">Kalan Süre: ~45 dk</p>
+</div>
+<button class="bg-surface-container-high text-primary px-5 py-2.5 rounded-lg font-medium text-sm hover:bg-surface-container-highest transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">stop_circle</span>
+                            Durdur
+                        </button>
+</div>
+</div>
+<!-- Recent Orders List -->
+<div class="bg-surface-container-lowest rounded-[1rem] p-6 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.03)] border border-outline-variant/10">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline font-bold text-on-surface">Son İşlemler</h3>
+<a class="text-primary text-sm font-medium hover:underline underline-offset-4" href="#">Tümü</a>
+</div>
+<div class="flex flex-col gap-3">
+<!-- Item 1 -->
+<div class="flex items-center justify-between p-3 rounded-lg bg-surface hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">ev_station</span>
+</div>
+<div>
+<p class="text-sm font-medium text-on-surface">Kanyon AVM</p>
+<p class="text-xs text-on-surface-variant">Bugün, 14:30</p>
+</div>
+</div>
+<p class="text-sm font-bold text-on-surface">₺124</p>
+</div>
+<!-- Item 2 -->
+<div class="flex items-center justify-between p-3 rounded-lg bg-surface hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">ev_station</span>
+</div>
+<div>
+<p class="text-sm font-medium text-on-surface">Zorlu Center</p>
+<p class="text-xs text-on-surface-variant">Dün, 09:15</p>
+</div>
+</div>
+<p class="text-sm font-bold text-on-surface">₺210</p>
+</div>
+<!-- Item 3 -->
+<div class="flex items-center justify-between p-3 rounded-lg bg-surface hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">ev_station</span>
+</div>
+<div>
+<p class="text-sm font-medium text-on-surface">Ev Şarjı</p>
+<p class="text-xs text-on-surface-variant">12 Ekim, 22:00</p>
+</div>
+</div>
+<p class="text-sm font-bold text-on-surface">₺45</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

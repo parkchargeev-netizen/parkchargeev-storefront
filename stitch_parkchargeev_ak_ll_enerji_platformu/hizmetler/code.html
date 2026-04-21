@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+
+<html lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ParkChargeEV - Hizmetler</title>
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Theme Configuration (Luminous Eco-Tech) -->
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-dim": "#d2d9f4",
+                      "on-primary": "#ffffff",
+                      "surface-container-low": "#f2f3ff",
+                      "secondary-container": "#6bff8f",
+                      "on-surface": "#131b2e",
+                      "surface-container": "#eaedff",
+                      "on-tertiary-container": "#ffebe5",
+                      "secondary": "#006e2f",
+                      "on-primary-fixed": "#001551",
+                      "on-surface-variant": "#434656",
+                      "tertiary": "#992f00",
+                      "surface-container-highest": "#dae2fd",
+                      "primary-container": "#1e5bff",
+                      "on-tertiary-fixed-variant": "#832700",
+                      "primary-fixed": "#dce1ff",
+                      "error-container": "#ffdad6",
+                      "surface-container-lowest": "#ffffff",
+                      "on-error": "#ffffff",
+                      "tertiary-container": "#c33e00",
+                      "on-secondary-fixed": "#002109",
+                      "surface": "#faf8ff",
+                      "outline": "#737688",
+                      "inverse-on-surface": "#eef0ff",
+                      "on-secondary": "#ffffff",
+                      "surface-tint": "#004cec",
+                      "background": "#faf8ff",
+                      "outline-variant": "#c3c5d9",
+                      "inverse-primary": "#b7c4ff",
+                      "on-secondary-fixed-variant": "#005321",
+                      "primary": "#0044d3",
+                      "on-primary-container": "#ecedff",
+                      "surface-bright": "#faf8ff",
+                      "on-tertiary": "#ffffff",
+                      "inverse-surface": "#283044",
+                      "surface-variant": "#dae2fd",
+                      "on-primary-fixed-variant": "#0039b5",
+                      "on-background": "#131b2e",
+                      "on-secondary-container": "#007432",
+                      "tertiary-fixed-dim": "#ffb59c",
+                      "error": "#ba1a1a",
+                      "tertiary-fixed": "#ffdbd0",
+                      "on-error-container": "#93000a",
+                      "primary-fixed-dim": "#b7c4ff",
+                      "on-tertiary-fixed": "#390c00",
+                      "surface-container-high": "#e2e7ff",
+                      "secondary-fixed": "#6bff8f",
+                      "secondary-fixed-dim": "#4ae176"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "fontFamily": {
+                      "headline": ["Inter"],
+                      "body": ["Inter"],
+                      "label": ["Inter"]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom scrollbar for a premium feel */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #faf8ff; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c3c5d9; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #737688; 
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body antialiased min-h-screen flex flex-col selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopNavBar (Shared Component) -->
+<nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md shadow-sm">
+<div class="flex justify-between items-center px-8 h-20 w-full max-w-screen-2xl mx-auto">
+<!-- Brand -->
+<div class="text-2xl font-black tracking-tighter text-[#1E5BFF]">
+                ParkChargeEV
+            </div>
+<!-- Navigation Links (Desktop) -->
+<div class="hidden md:flex space-x-8 font-['Inter'] antialiased text-sm font-medium tracking-tight">
+<a class="text-slate-600 hover:text-[#1E5BFF] transition-colors flex items-center h-full pt-1" href="#">
+                    Ana Sayfa
+                </a>
+<a class="text-slate-600 hover:text-[#1E5BFF] transition-colors flex items-center h-full pt-1" href="#">
+                    Mağaza
+                </a>
+<a class="text-slate-600 hover:text-[#1E5BFF] transition-colors flex items-center h-full pt-1" href="#">
+                    Harita
+                </a>
+<!-- Active State applied to 'Hizmetler' -->
+<a class="text-[#1E5BFF] font-bold border-b-2 border-[#1E5BFF] pb-1 flex items-center h-full pt-1 mt-1" href="#">
+                    Hizmetler
+                </a>
+</div>
+<!-- Trailing Actions -->
+<div class="flex items-center space-x-4 font-['Inter'] antialiased text-sm font-medium tracking-tight">
+<button class="text-slate-600 hover:text-[#1E5BFF] transition-colors hover:bg-slate-50 px-3 py-2 rounded-lg active:scale-95 transition-transform duration-150">
+                    Sepetim
+                </button>
+<button class="bg-[#1E5BFF] text-white px-5 py-2 rounded-lg hover:opacity-90 transition-opacity active:scale-95 transition-transform duration-150">
+                    Giriş Yap
+                </button>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-grow pt-28 pb-20">
+<!-- Hero Section -->
+<section class="max-w-7xl mx-auto px-6 mb-16 pt-12">
+<div class="flex flex-col items-center text-center max-w-3xl mx-auto">
+<div class="inline-flex items-center space-x-2 bg-surface-container-high px-4 py-1.5 rounded-full mb-6 ring-1 ring-outline-variant/30">
+<span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">eco</span>
+<span class="text-xs font-bold text-primary uppercase tracking-widest">Sürdürülebilir Mobilite</span>
+</div>
+<h1 class="text-4xl md:text-5xl lg:text-6xl font-headline font-extrabold tracking-tight text-on-surface mb-6 leading-tight">
+                    Geleceğin Enerjisini <br class="hidden md:block"/>
+<span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Bugünden İnşa Edin</span>
+</h1>
+<p class="text-lg text-on-surface-variant leading-relaxed mb-10">
+                    Bireysel kullanımınızdan devasa kurumsal filolara kadar, elektrikli araç ekosistemine sorunsuz geçişiniz için tasarlanmış uçtan uca akıllı şarj çözümleri.
+                </p>
+</div>
+</section>
+<!-- Services Bento Grid -->
+<section class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6 auto-rows-[minmax(320px,_auto)]">
+<!-- Service 1: Kurulum (Large Hero Card) -->
+<div class="md:col-span-8 bg-surface-container-low rounded-[1.5rem] p-8 md:p-12 flex flex-col md:flex-row gap-8 relative overflow-hidden group hover:bg-surface-container transition-colors duration-500 ring-1 ring-outline-variant/20">
+<!-- Decorative blur -->
+<div class="absolute -top-24 -right-24 w-64 h-64 bg-primary/10 rounded-full blur-3xl group-hover:bg-primary/20 transition-all duration-700"></div>
+<div class="flex-1 flex flex-col justify-between z-10">
+<div>
+<div class="w-14 h-14 rounded-xl bg-surface-container-highest flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-primary text-3xl">ev_station</span>
+</div>
+<h2 class="text-3xl font-headline font-bold text-on-surface mb-4">Şarj Ünitesi Kurulumu</h2>
+<p class="text-on-surface-variant text-lg leading-relaxed mb-8 max-w-md">
+                                Eviniz veya iş yeriniz için en uygun AC/DC şarj istasyonunun keşfi, projelendirilmesi ve güvenli kurulumunu anahtar teslim sağlıyoruz. Akıllı altyapımızla tanışın.
+                            </p>
+</div>
+<div>
+<button class="inline-flex items-center justify-center space-x-2 bg-primary text-on-primary px-6 py-3 rounded-lg font-medium hover:opacity-90 transition-opacity">
+<span>Detaylı Bilgi</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Image Area -->
+<div class="flex-1 min-h-[250px] relative rounded-xl overflow-hidden bg-surface-dim">
+<img alt="Modern elektrikli araç şarj istasyonu kurulumu, temiz aydınlık garaj ortamı, teknolojik ekipman" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="Close-up of a modern, sleek electric vehicle charging station mounted on a clean concrete wall in a bright, contemporary garage setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuASZF7IDmAcHuJmd1fE61Yzl_Iram-aW_dwuv0cRpjU4x25FFpWhdT6sAQtvJGEp_t4ny1jRofVhDFMRemVBpMbByy2PLs_nHHUw4MZUDXRmWpTKwKZmm_9m1zHg-MePkstTP-4pXHlhANBdZxPVC3y6fcKgybyG7-AJu_ZDpd8kRCfXbP4f-3OOH_AsyTq7AVKdkDP9Y1zEly_O3rtFeA6tjHF5GUNAgc-1NmAnvAbIv-suN_G-LqcwJb6-z0iG3iyieYGXLtau0AH"/>
+</div>
+</div>
+<!-- Service 2: Teknik Servis (Tall Card) -->
+<div class="md:col-span-4 bg-primary-container rounded-[1.5rem] p-8 md:p-10 flex flex-col relative overflow-hidden group shadow-[0_8px_30px_rgb(0,68,211,0.12)]">
+<!-- Glassmorphism overlay element -->
+<div class="absolute top-0 right-0 p-8 opacity-20 transform translate-x-4 -translate-y-4">
+<span class="material-symbols-outlined text-9xl text-white" style="font-variation-settings: 'FILL' 1;">build_circle</span>
+</div>
+<div class="z-10 flex flex-col h-full">
+<div class="w-12 h-12 rounded-lg bg-white/20 backdrop-blur-md flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-on-primary-container text-2xl">construction</span>
+</div>
+<h2 class="text-2xl font-headline font-bold text-on-primary-container mb-4">7/24 Teknik Servis</h2>
+<p class="text-on-primary-container/80 text-base leading-relaxed mb-auto">
+                            Kesintisiz enerji akışı için buradayız. Uzaktan teşhis yetenekleri ve yaygın saha ekibimizle olası arızalara anında müdahale ediyor, periyodik bakımlarla cihaz ömrünü uzatıyoruz.
+                        </p>
+<div class="pt-8 mt-auto">
+<button class="inline-flex items-center text-on-primary-container font-semibold hover:opacity-80 transition-opacity group/btn">
+<span class="border-b border-transparent group-hover/btn:border-on-primary-container pb-0.5 transition-colors">Detaylı Bilgi</span>
+<span class="material-symbols-outlined ml-2 transform group-hover/btn:translate-x-1 transition-transform">arrow_right_alt</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Service 3: Kurumsal Çözümler (Medium Wide) -->
+<div class="md:col-span-7 bg-surface-container-lowest rounded-[1.5rem] p-8 flex flex-col sm:flex-row gap-6 relative overflow-hidden group hover:bg-surface-container-low transition-colors duration-300 ring-1 ring-outline-variant/20">
+<div class="flex-1 flex flex-col">
+<div class="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center mb-5">
+<span class="material-symbols-outlined text-secondary">domain</span>
+</div>
+<h2 class="text-2xl font-headline font-bold text-on-surface mb-3">Kurumsal Çözümler &amp; Filo</h2>
+<p class="text-on-surface-variant text-sm leading-relaxed mb-6">
+                            Şirket filonuzun elektrifikasyon sürecini yönetiyoruz. Toplu şarj istasyonu kurulumu, yük dengeleme (load balancing) sistemleri ve çalışanlara özel faturalandırma modülleri.
+                        </p>
+<div class="mt-auto">
+<button class="inline-flex items-center justify-center bg-surface-container-highest text-primary px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-surface-dim transition-colors">
+                                Detaylı Bilgi
+                            </button>
+</div>
+</div>
+<!-- Stats/Graphic abstract representation -->
+<div class="sm:w-48 rounded-xl bg-surface flex flex-col justify-center items-center p-4 border border-outline-variant/10 relative overflow-hidden">
+<div class="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary via-transparent to-transparent"></div>
+<span class="material-symbols-outlined text-4xl text-primary mb-2">monitoring</span>
+<div class="text-center">
+<span class="block text-2xl font-black text-on-surface">%40</span>
+<span class="text-[10px] uppercase tracking-wider text-on-surface-variant">Enerji Tasarrufu</span>
+</div>
+</div>
+</div>
+<!-- Service 4: Enerji Danışmanlığı (Medium Wide) -->
+<div class="md:col-span-5 bg-surface-container-lowest rounded-[1.5rem] p-8 flex flex-col relative overflow-hidden group hover:bg-surface-container-low transition-colors duration-300 ring-1 ring-outline-variant/20">
+<div class="w-12 h-12 rounded-full bg-tertiary-container/20 flex items-center justify-center mb-5">
+<span class="material-symbols-outlined text-tertiary">lightbulb</span>
+</div>
+<h2 class="text-2xl font-headline font-bold text-on-surface mb-3">Enerji Danışmanlığı</h2>
+<p class="text-on-surface-variant text-sm leading-relaxed mb-6">
+                        Güneş enerjisi entegrasyonu (GES) ve akıllı şebeke yönetimi ile tesisinizin enerji verimliliğini maksimize edin. Karbon ayak izinizi düşürürken maliyetlerinizi optimize ediyoruz.
+                    </p>
+<div class="mt-auto">
+<button class="inline-flex items-center text-primary font-semibold hover:text-primary-fixed-variant transition-colors group/btn text-sm">
+                            Detaylı Bilgi
+                            <span class="material-symbols-outlined ml-1 text-sm transform group-hover/btn:translate-x-1 transition-transform">arrow_forward_ios</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA Section -->
+<section class="max-w-4xl mx-auto px-6 mt-20 text-center">
+<div class="bg-surface-container p-10 md:p-16 rounded-[2rem] relative overflow-hidden">
+<!-- Abstract glowing orb -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/60 via-transparent to-transparent pointer-events-none"></div>
+<h3 class="text-3xl font-headline font-bold text-on-surface mb-4 relative z-10">Projenizi Birlikte Planlayalım</h3>
+<p class="text-on-surface-variant mb-8 relative z-10">İhtiyaçlarınıza en uygun çözümü belirlemek için uzman ekibimizle hemen iletişime geçin.</p>
+<div class="flex flex-col sm:flex-row justify-center items-center gap-4 relative z-10">
+<button class="w-full sm:w-auto bg-primary text-on-primary px-8 py-3.5 rounded-lg font-medium shadow-lg shadow-primary/20 hover:opacity-90 hover:-translate-y-0.5 transition-all">
+                        Biz Sizi Arayalım
+                    </button>
+<button class="w-full sm:w-auto bg-white text-on-surface px-8 py-3.5 rounded-lg font-medium ring-1 ring-outline-variant/30 hover:bg-surface-dim transition-colors">
+                        Sıkça Sorulan Sorular
+                    </button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer (Shared Component) -->
+<footer class="w-full rounded-none border-t border-slate-200 bg-slate-50 py-12 px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+<div class="font-bold text-slate-900">
+            ParkChargeEV
+        </div>
+<div class="flex flex-wrap justify-center gap-6 font-['Inter'] text-xs uppercase tracking-widest text-slate-500">
+<a class="hover:text-slate-900 underline underline-offset-4 transition-all opacity-100 hover:opacity-80" href="#">Kurumsal</a>
+<a class="hover:text-slate-900 underline underline-offset-4 transition-all opacity-100 hover:opacity-80" href="#">Sürdürülebilirlik</a>
+<a class="hover:text-slate-900 underline underline-offset-4 transition-all opacity-100 hover:opacity-80" href="#">Destek</a>
+<a class="hover:text-slate-900 underline underline-offset-4 transition-all opacity-100 hover:opacity-80" href="#">Kariyer</a>
+</div>
+<div class="text-[#006e2f] font-['Inter'] text-xs uppercase tracking-widest text-center md:text-right">
+            © 2024 ParkChargeEV. Sürdürülebilir Gelecek.
+        </div>
+</footer>
+</body></html>

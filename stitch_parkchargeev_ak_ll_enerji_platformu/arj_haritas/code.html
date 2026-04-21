@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+
+<html class="light" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ParkChargeEV - Şarj Haritası</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#d2d9f4",
+                        "on-primary": "#ffffff",
+                        "surface-container-low": "#f2f3ff",
+                        "secondary-container": "#6bff8f",
+                        "on-surface": "#131b2e",
+                        "surface-container": "#eaedff",
+                        "on-tertiary-container": "#ffebe5",
+                        "secondary": "#006e2f",
+                        "on-primary-fixed": "#001551",
+                        "on-surface-variant": "#434656",
+                        "tertiary": "#992f00",
+                        "surface-container-highest": "#dae2fd",
+                        "primary-container": "#1e5bff",
+                        "on-tertiary-fixed-variant": "#832700",
+                        "primary-fixed": "#dce1ff",
+                        "error-container": "#ffdad6",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff",
+                        "tertiary-container": "#c33e00",
+                        "on-secondary-fixed": "#002109",
+                        "surface": "#faf8ff",
+                        "outline": "#737688",
+                        "inverse-on-surface": "#eef0ff",
+                        "on-secondary": "#ffffff",
+                        "surface-tint": "#004cec",
+                        "background": "#faf8ff",
+                        "outline-variant": "#c3c5d9",
+                        "inverse-primary": "#b7c4ff",
+                        "on-secondary-fixed-variant": "#005321",
+                        "primary": "#0044d3",
+                        "on-primary-container": "#ecedff",
+                        "surface-bright": "#faf8ff",
+                        "on-tertiary": "#ffffff",
+                        "inverse-surface": "#283044",
+                        "surface-variant": "#dae2fd",
+                        "on-primary-fixed-variant": "#0039b5",
+                        "on-background": "#131b2e",
+                        "on-secondary-container": "#007432",
+                        "tertiary-fixed-dim": "#ffb59c",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#ffdbd0",
+                        "on-error-container": "#93000a",
+                        "primary-fixed-dim": "#b7c4ff",
+                        "on-tertiary-fixed": "#390c00",
+                        "surface-container-high": "#e2e7ff",
+                        "secondary-fixed": "#6bff8f",
+                        "secondary-fixed-dim": "#4ae176"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background h-screen flex flex-col overflow-hidden">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md shadow-sm border-b-0">
+<div class="flex justify-between items-center px-8 h-20 w-full max-w-screen-2xl mx-auto">
+<div class="text-2xl font-black tracking-tighter text-[#1E5BFF]">ParkChargeEV</div>
+<div class="hidden md:flex space-x-8 font-['Inter'] antialiased text-sm font-medium tracking-tight">
+<a class="text-slate-600 hover:text-[#1E5BFF] transition-colors" href="#">Ana Sayfa</a>
+<a class="text-slate-600 hover:text-[#1E5BFF] transition-colors" href="#">Mağaza</a>
+<a class="text-[#1E5BFF] font-bold border-b-2 border-[#1E5BFF] pb-1" href="#">Harita</a>
+<a class="text-slate-600 hover:text-[#1E5BFF] transition-colors" href="#">Hizmetler</a>
+</div>
+<div class="flex space-x-4">
+<button class="font-['Inter'] antialiased text-sm font-medium tracking-tight text-[#1E5BFF] hover:bg-slate-50 transition-all px-4 py-2 rounded-lg active:scale-95 duration-150">Sepetim</button>
+<button class="font-['Inter'] antialiased text-sm font-medium tracking-tight bg-primary text-on-primary hover:bg-primary/90 transition-all px-4 py-2 rounded-lg active:scale-95 duration-150">Giriş Yap</button>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 flex mt-20 h-[calc(100vh-5rem)]">
+<!-- Left Panel: Filters & List -->
+<aside class="w-[400px] h-full bg-surface-container-lowest border-r border-outline-variant/20 flex flex-col z-10 shadow-[10px_0_30px_-15px_rgba(0,0,0,0.1)] shrink-0 overflow-hidden">
+<!-- Search & Filters Header -->
+<div class="p-6 pb-4 bg-surface-container-low/50 backdrop-blur-sm z-20 shrink-0">
+<h1 class="text-headline-lg font-bold text-on-surface mb-6 tracking-tight">İstasyon Bul</h1>
+<div class="relative mb-6 group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">search</span>
+<input class="w-full pl-12 pr-4 py-3 bg-surface-variant/50 border-none rounded-xl text-body-lg text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary focus:bg-surface-container-lowest transition-all" placeholder="Şehir, ilçe veya istasyon adı arayın..." type="text"/>
+</div>
+<!-- Filter Chips -->
+<div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+<button class="whitespace-nowrap px-4 py-2 rounded-full bg-primary-container text-on-primary-container text-label-md font-semibold border border-primary/20 flex items-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-[18px]">bolt</span>
+                        Süper Hızlı (&gt;150kW)
+                    </button>
+<button class="whitespace-nowrap px-4 py-2 rounded-full bg-surface-container-highest text-on-surface-variant text-label-md font-medium border border-outline-variant/30 hover:bg-surface-variant transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+                        Müsait
+                    </button>
+<button class="whitespace-nowrap px-4 py-2 rounded-full bg-surface-container-highest text-on-surface-variant text-label-md font-medium border border-outline-variant/30 hover:bg-surface-variant transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">electrical_services</span>
+                        CCS 2
+                    </button>
+</div>
+</div>
+<!-- Station List -->
+<div class="flex-1 overflow-y-auto p-4 space-y-3 bg-surface z-10">
+<!-- Station Card 1 (Active) -->
+<div class="bg-surface-container-low rounded-xl p-4 border border-primary/30 shadow-[0_4px_20px_-5px_rgba(30,91,255,0.15)] cursor-pointer hover:-translate-y-0.5 transition-transform relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary"></div>
+<div class="flex justify-between items-start mb-3">
+<div>
+<h3 class="font-bold text-on-surface text-body-lg">Zorlu Center Şarj Noktası</h3>
+<p class="text-sm text-outline flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+                                1.2 km uzaklıkta
+                            </p>
+</div>
+<div class="bg-secondary/10 text-secondary px-2 py-1 rounded-md text-xs font-bold flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+                            3 Müsait
+                        </div>
+</div>
+<div class="flex items-center gap-4 mt-4 text-sm">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-primary text-[20px]">bolt</span>
+<span class="font-semibold">180 kW</span>
+</div>
+<div class="flex flex-wrap gap-1">
+<span class="bg-surface-variant px-2 py-0.5 rounded text-xs text-on-surface font-medium border border-outline-variant/20">CCS</span>
+<span class="bg-surface-variant px-2 py-0.5 rounded text-xs text-on-surface font-medium border border-outline-variant/20">Type 2</span>
+</div>
+</div>
+</div>
+<!-- Station Card 2 -->
+<div class="bg-surface-container-lowest rounded-xl p-4 border border-outline-variant/20 hover:bg-surface-container-low transition-colors cursor-pointer group">
+<div class="flex justify-between items-start mb-3">
+<div>
+<h3 class="font-bold text-on-surface text-body-lg group-hover:text-primary transition-colors">Kanyon AVM Otopark</h3>
+<p class="text-sm text-outline flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+                                2.5 km uzaklıkta
+                            </p>
+</div>
+<div class="bg-error/10 text-error px-2 py-1 rounded-md text-xs font-bold flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+                            Dolu
+                        </div>
+</div>
+<div class="flex items-center gap-4 mt-4 text-sm">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-primary text-[20px]">bolt</span>
+<span class="font-semibold">50 kW</span>
+</div>
+<div class="flex flex-wrap gap-1">
+<span class="bg-surface-variant px-2 py-0.5 rounded text-xs text-on-surface font-medium border border-outline-variant/20">CCS</span>
+</div>
+</div>
+</div>
+<!-- Station Card 3 -->
+<div class="bg-surface-container-lowest rounded-xl p-4 border border-outline-variant/20 hover:bg-surface-container-low transition-colors cursor-pointer group">
+<div class="flex justify-between items-start mb-3">
+<div>
+<h3 class="font-bold text-on-surface text-body-lg group-hover:text-primary transition-colors">İstinyePark -3. Kat</h3>
+<p class="text-sm text-outline flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+                                4.1 km uzaklıkta
+                            </p>
+</div>
+<div class="bg-secondary/10 text-secondary px-2 py-1 rounded-md text-xs font-bold flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+                            1 Müsait
+                        </div>
+</div>
+<div class="flex items-center gap-4 mt-4 text-sm">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-primary text-[20px]">bolt</span>
+<span class="font-semibold">300 kW</span>
+</div>
+<div class="flex flex-wrap gap-1">
+<span class="bg-surface-variant px-2 py-0.5 rounded text-xs text-on-surface font-medium border border-outline-variant/20">CCS</span>
+<span class="bg-surface-variant px-2 py-0.5 rounded text-xs text-on-surface font-medium border border-outline-variant/20">CHAdeMO</span>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Right Panel: Map Interface -->
+<section class="flex-1 relative bg-surface-dim overflow-hidden">
+<!-- Simulated Map Background -->
+<div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1524661135-423995f22d0b?ixlib=rb-4.0.3&amp;auto=format&amp;fit=crop&amp;w=2000&amp;q=80')] bg-cover bg-center opacity-80" data-alt="High tech minimalist map view of a city with muted roads and subtle topography, soft lighting, modern interface aesthetic" data-location="Istanbul" style=""></div>
+<div class="absolute inset-0 bg-surface/40 backdrop-blur-[2px]"></div>
+<!-- Map Controls -->
+<div class="absolute right-6 top-6 flex flex-col gap-2 z-20">
+<button class="w-10 h-10 bg-surface-container-lowest rounded-lg shadow-sm border border-outline-variant/20 flex items-center justify-center text-on-surface hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined">my_location</span>
+</button>
+<button class="w-10 h-10 bg-surface-container-lowest rounded-lg shadow-sm border border-outline-variant/20 flex items-center justify-center text-on-surface hover:bg-surface-container-low transition-colors mt-4">
+<span class="material-symbols-outlined">add</span>
+</button>
+<button class="w-10 h-10 bg-surface-container-lowest rounded-lg shadow-sm border border-outline-variant/20 flex items-center justify-center text-on-surface hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined">remove</span>
+</button>
+</div>
+<!-- Map Pins -->
+<!-- Active Pin -->
+<div class="absolute top-1/2 left-1/3 -translate-x-1/2 -translate-y-1/2 z-30 cursor-pointer">
+<div class="relative group">
+<div class="w-14 h-14 bg-primary rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(0,68,211,0.5)] border-4 border-white relative z-10 animate-bounce-slow">
+<span class="material-symbols-outlined text-on-primary text-[28px]">bolt</span>
+</div>
+<!-- Ripple effect -->
+<div class="absolute inset-0 bg-primary/30 rounded-full scale-150 animate-ping opacity-50 z-0"></div>
+</div>
+</div>
+<!-- Inactive Pin (Available) -->
+<div class="absolute top-1/3 left-2/3 z-20 cursor-pointer opacity-90 hover:opacity-100 hover:scale-110 transition-all">
+<div class="w-10 h-10 bg-secondary rounded-full flex items-center justify-center shadow-md border-2 border-white">
+<span class="material-symbols-outlined text-on-primary text-[20px]">ev_station</span>
+</div>
+</div>
+<!-- Inactive Pin (Busy) -->
+<div class="absolute bottom-1/3 left-1/2 z-20 cursor-pointer opacity-80 hover:opacity-100 hover:scale-110 transition-all grayscale-[0.5]">
+<div class="w-10 h-10 bg-error rounded-full flex items-center justify-center shadow-md border-2 border-white">
+<span class="material-symbols-outlined text-on-primary text-[20px]">ev_station</span>
+</div>
+</div>
+<!-- Station Detail Overlay (Glassmorphism Bento Box) -->
+<div class="absolute bottom-8 left-8 right-8 lg:right-auto lg:w-[450px] bg-surface/85 backdrop-blur-xl border border-outline-variant/20 rounded-2xl shadow-[0_20px_40px_-10px_rgba(0,0,0,0.15)] z-40 overflow-hidden transform transition-all duration-300">
+<div class="h-32 bg-primary relative overflow-hidden">
+<img alt="Zorlu Center Şarj" class="w-full h-full object-cover opacity-60 mix-blend-overlay" data-alt="modern EV charging station in a sleek underground parking lot with bright LED lighting and clean surfaces" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDeEJQp81pkPMB9gehQbODYs1A9UGwtAmbL2ZvrFUjzmgOJGXS8aSj57683y2xsDCk7KYdQDv_2dqsVMx8gCXb4hOPOBHiW2gWyf8E-F2nsFeY0yHjwiz5cNmpcsXR3fOPK1c-5lPV4o7adFE28K-YjfZMFe2o3bh-OejkTrHZ_w2VOeoPF7cDtuD3dk1FtLPBkyyol0DIW5GbhrMvZIWkOcE8zIsfXGfvIx8Fg5CZn0sFvCm7GWPsk8OZ8d9D0OGUUUH5gdADndZs"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/90 to-transparent"></div>
+<div class="absolute bottom-4 left-6">
+<span class="px-2 py-1 bg-white/20 backdrop-blur-md rounded text-white text-xs font-bold uppercase tracking-wider border border-white/30">Ultra Hızlı Şarj</span>
+<h2 class="text-white text-2xl font-bold mt-1 tracking-tight">Zorlu Center Şarj Noktası</h2>
+</div>
+<button class="absolute top-4 right-4 w-8 h-8 bg-black/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-black/40 transition-colors border border-white/20">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<div class="p-6">
+<div class="flex items-center justify-between mb-6">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-secondary animate-pulse"></div>
+<span class="text-secondary font-bold text-sm">3 Soket Müsait</span>
+</div>
+<span class="text-on-surface-variant font-medium text-sm flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">payments</span> 7.45 ₺ / kWh</span>
+</div>
+<!-- Connectors Grid -->
+<div class="grid grid-cols-2 gap-3 mb-6">
+<div class="bg-surface-container-lowest border border-primary/20 rounded-xl p-3 flex flex-col relative overflow-hidden">
+<div class="absolute right-0 top-0 w-12 h-12 bg-primary/5 rounded-bl-full"></div>
+<span class="text-xs text-outline font-semibold mb-1">CCS 2 (180kW)</span>
+<div class="flex justify-between items-end mt-auto">
+<span class="material-symbols-outlined text-primary text-[28px]">electrical_services</span>
+<span class="bg-secondary/10 text-secondary text-xs px-2 py-0.5 rounded font-bold">Müsait</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant/20 rounded-xl p-3 flex flex-col opacity-60 bg-stripes-light">
+<span class="text-xs text-outline font-semibold mb-1">Type 2 (22kW)</span>
+<div class="flex justify-between items-end mt-auto">
+<span class="material-symbols-outlined text-outline text-[28px]">electrical_services</span>
+<span class="bg-surface-variant text-on-surface-variant text-xs px-2 py-0.5 rounded font-bold">Kullanımda</span>
+</div>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="flex gap-3">
+<button class="flex-1 bg-primary text-on-primary py-3 rounded-xl font-bold hover:bg-primary/90 transition-all flex justify-center items-center gap-2 shadow-[0_4px_15px_-5px_rgba(0,68,211,0.4)]">
+<span class="material-symbols-outlined text-[20px]">directions_car</span>
+                            Yol Tarifi
+                        </button>
+<button class="w-12 bg-surface-container-high text-primary rounded-xl flex items-center justify-center hover:bg-surface-variant transition-colors border border-primary/10">
+<span class="material-symbols-outlined text-[20px]">bookmark_border</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+</main>
+</body></html>

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+
+<html lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ParkChargeEV - Hakkımızda</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-dim": "#d2d9f4",
+                      "on-primary": "#ffffff",
+                      "surface-container-low": "#f2f3ff",
+                      "secondary-container": "#6bff8f",
+                      "on-surface": "#131b2e",
+                      "surface-container": "#eaedff",
+                      "on-tertiary-container": "#ffebe5",
+                      "secondary": "#006e2f",
+                      "on-primary-fixed": "#001551",
+                      "on-surface-variant": "#434656",
+                      "tertiary": "#992f00",
+                      "surface-container-highest": "#dae2fd",
+                      "primary-container": "#1e5bff",
+                      "on-tertiary-fixed-variant": "#832700",
+                      "primary-fixed": "#dce1ff",
+                      "error-container": "#ffdad6",
+                      "surface-container-lowest": "#ffffff",
+                      "on-error": "#ffffff",
+                      "tertiary-container": "#c33e00",
+                      "on-secondary-fixed": "#002109",
+                      "surface": "#faf8ff",
+                      "outline": "#737688",
+                      "inverse-on-surface": "#eef0ff",
+                      "on-secondary": "#ffffff",
+                      "surface-tint": "#004cec",
+                      "background": "#faf8ff",
+                      "outline-variant": "#c3c5d9",
+                      "inverse-primary": "#b7c4ff",
+                      "on-secondary-fixed-variant": "#005321",
+                      "primary": "#0044d3",
+                      "on-primary-container": "#ecedff",
+                      "surface-bright": "#faf8ff",
+                      "on-tertiary": "#ffffff",
+                      "inverse-surface": "#283044",
+                      "surface-variant": "#dae2fd",
+                      "on-primary-fixed-variant": "#0039b5",
+                      "on-background": "#131b2e",
+                      "on-secondary-container": "#007432",
+                      "tertiary-fixed-dim": "#ffb59c",
+                      "error": "#ba1a1a",
+                      "tertiary-fixed": "#ffdbd0",
+                      "on-error-container": "#93000a",
+                      "primary-fixed-dim": "#b7c4ff",
+                      "on-tertiary-fixed": "#390c00",
+                      "surface-container-high": "#e2e7ff",
+                      "secondary-fixed": "#6bff8f",
+                      "secondary-fixed-dim": "#4ae176"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {},
+              "fontFamily": {
+                      "headline": [
+                              "Inter"
+                      ],
+                      "body": [
+                              "Inter"
+                      ],
+                      "label": [
+                              "Inter"
+                      ]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        /* Ambient shadow utility to avoid hard lines */
+        .shadow-ambient {
+            box-shadow: 0 20px 40px -10px rgba(19, 27, 46, 0.05);
+        }
+        /* No lines approach */
+        .ghost-border {
+            border: 1px solid rgba(195, 197, 217, 0.2); /* outline-variant low opacity */
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased min-h-screen flex flex-col selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md dark:bg-slate-900/80 shadow-sm dark:shadow-none bg-slate-100 dark:bg-slate-800">
+<div class="flex justify-between items-center px-8 h-20 w-full max-w-screen-2xl mx-auto font-['Inter'] antialiased text-sm font-medium tracking-tight">
+<!-- Brand -->
+<div class="text-2xl font-black tracking-tighter text-[#1E5BFF]">
+                ParkChargeEV
+            </div>
+<!-- Navigation Links -->
+<div class="hidden md:flex items-center gap-8">
+<a class="text-slate-600 dark:text-slate-400 hover:text-[#1E5BFF] transition-colors hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-95 transition-transform duration-150 px-3 py-2 rounded-md" href="#">Ana Sayfa</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-[#1E5BFF] transition-colors hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-95 transition-transform duration-150 px-3 py-2 rounded-md" href="#">Mağaza</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-[#1E5BFF] transition-colors hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-95 transition-transform duration-150 px-3 py-2 rounded-md" href="#">Harita</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-[#1E5BFF] transition-colors hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-95 transition-transform duration-150 px-3 py-2 rounded-md" href="#">Hizmetler</a>
+</div>
+<!-- Actions -->
+<div class="flex items-center gap-4">
+<button class="text-slate-600 dark:text-slate-400 hover:text-[#1E5BFF] transition-colors hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-95 transition-transform duration-150 px-4 py-2 font-semibold">
+                    Giriş Yap
+                </button>
+<button class="bg-[#1E5BFF] text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 transition-all active:scale-95 transition-transform duration-150 flex items-center gap-2 font-bold shadow-ambient">
+<span class="material-symbols-outlined text-[20px]">shopping_cart</span>
+                    Sepetim
+                </button>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-grow pt-20">
+<!-- Hero Section -->
+<section class="relative pt-24 pb-32 px-6 lg:px-12 overflow-hidden bg-gradient-to-br from-surface-container-low to-surface-dim">
+<div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16 relative z-10">
+<div class="lg:w-1/2 flex flex-col gap-6">
+<div class="inline-flex items-center gap-2 bg-white/60 backdrop-blur-sm px-4 py-2 rounded-full w-max text-primary font-medium tracking-wide text-sm ghost-border">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">eco</span>
+                        Sürdürülebilir Gelecek
+                    </div>
+<h1 class="text-5xl lg:text-[4rem] leading-[1.1] font-black text-on-surface tracking-tighter">
+                        Geleceğin Enerjisini <br/> <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Bugünden</span> Şekillendiriyoruz.
+                    </h1>
+<p class="text-lg text-on-surface-variant font-body leading-relaxed max-w-xl mt-4">
+                        ParkChargeEV olarak, teknoloji ve doğayı uyum içinde bir araya getiriyor, karbon ayak izini sıfırlama vizyonuyla yola çıkıyoruz. Akıllı şarj altyapımız ile mobilitenin kurallarını yeniden yazıyoruz.
+                    </p>
+</div>
+<div class="lg:w-1/2 relative">
+<!-- Glassmorphism decorative element -->
+<div class="absolute -inset-4 bg-secondary-container/20 rounded-full blur-3xl mix-blend-multiply"></div>
+<img alt="ParkChargeEV Vision" class="w-full h-auto object-cover rounded-[2rem] shadow-ambient ghost-border relative z-10" data-alt="modern sleek electric vehicle connected to a charging station in a bright, sunlit green park setting with modern architecture in the background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoIGQLToZfdx-YJet2Kj5AieYtcKVTygvyTFPZnoO0-KnjCglTLpQQVq1oizC91bcbRF9ez9ytnQh11euhC2cSBqlcd4jx6rJWeZHWed8R5WD_XQHtyKbGaqcpYVSSYh54BjNcrXKThRRc8ZlU3ANDFdgWq9ydcMxQyMedO-Djf83mj_iRgmoJ-3c7vw9Hc1xzJfofCHJsIpJO1f1x58OZgLLVjqAiCTnq6OCXO4wpl07spOMc8-j02vHlTu_mJlB4ZYj1qu2QNcoU"/>
+</div>
+</div>
+</section>
+<!-- Stats Section (Glassmorphism overlap) -->
+<section class="max-w-7xl mx-auto px-6 lg:px-12 -mt-16 relative z-20 mb-32">
+<div class="bg-surface/80 backdrop-blur-2xl rounded-[1.5rem] p-8 lg:p-12 shadow-ambient ghost-border">
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-8 divide-x-0">
+<!-- Tonal separation instead of lines: using bg color shifts if needed, here just pure layout -->
+<div class="flex flex-col items-center text-center p-4 rounded-xl hover:bg-surface-container-low transition-colors duration-300">
+<div class="w-16 h-16 rounded-full bg-primary-fixed flex items-center justify-center text-primary mb-4">
+<span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">bolt</span>
+</div>
+<h3 class="text-4xl font-black text-on-surface mb-1 tracking-tight">10M+</h3>
+<p class="text-sm font-medium text-on-surface-variant uppercase tracking-wider">Aktarılan kWh Enerji</p>
+</div>
+<div class="flex flex-col items-center text-center p-4 rounded-xl hover:bg-surface-container-low transition-colors duration-300">
+<div class="w-16 h-16 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container mb-4">
+<span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">ev_station</span>
+</div>
+<h3 class="text-4xl font-black text-on-surface mb-1 tracking-tight">500+</h3>
+<p class="text-sm font-medium text-on-surface-variant uppercase tracking-wider">Aktif Şarj İstasyonu</p>
+</div>
+<div class="flex flex-col items-center text-center p-4 rounded-xl hover:bg-surface-container-low transition-colors duration-300">
+<div class="w-16 h-16 rounded-full bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed mb-4">
+<span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">public</span>
+</div>
+<h3 class="text-4xl font-black text-on-surface mb-1 tracking-tight">81</h3>
+<p class="text-sm font-medium text-on-surface-variant uppercase tracking-wider">Şehirde Kapsama Alanı</p>
+</div>
+<div class="flex flex-col items-center text-center p-4 rounded-xl hover:bg-surface-container-low transition-colors duration-300">
+<div class="w-16 h-16 rounded-full bg-primary-fixed-dim flex items-center justify-center text-primary-fixed mb-4 text-primary">
+<span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">forest</span>
+</div>
+<h3 class="text-4xl font-black text-on-surface mb-1 tracking-tight">1M+</h3>
+<p class="text-sm font-medium text-on-surface-variant uppercase tracking-wider">Önlenen CO2 (Ton)</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Bento Grid Vision -->
+<section class="max-w-7xl mx-auto px-6 lg:px-12 py-16 mb-24">
+<div class="text-center mb-16">
+<h2 class="text-3xl lg:text-5xl font-black text-on-surface tracking-tighter mb-4">Teknoloji ile Doğanın Buluşması</h2>
+<p class="text-on-surface-variant max-w-2xl mx-auto text-lg leading-relaxed">Ekosistemimiz, yenilenebilir enerji kaynaklarını zeki yazılımlarla birleştirerek sürdürülebilir bir ulaşım altyapısı kurmaya odaklanmıştır.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[300px]">
+<!-- Card 1: Large -->
+<div class="md:col-span-2 bg-surface-container-highest rounded-[1.5rem] p-10 flex flex-col justify-end relative overflow-hidden group">
+<img alt="Renewable Energy" class="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-50 transition-opacity duration-500 mix-blend-overlay" data-alt="wind turbines at sunset over a green valley, symbolizing clean and renewable energy sources" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAYt2o6XyUU2GcnlvvyL5XOp1cxjW0GOp2cUvASaJiFF-SvyHwNfJoplbdRwt4s61MyUeRdlULP4geWPK8JRyWEPXzBIZ7IHEN6J3hlScaGSf2THGl4vLR8-dP67Lwzhbd2zI9sy3L3CdWtkp-eNodxq86R4Urkaj5lNpRTVn7-0Ug8N8-cYljjtZwlUTGMvIeiXbHbqA4aKuTzJtvbrfelJpWdZRO5Da7BB_3nYOc6ZSASed-AJ6x_uGu9fFx2KQWbsS9daR6JPQf"/>
+<div class="relative z-10">
+<div class="w-12 h-12 bg-white/90 backdrop-blur rounded-full flex items-center justify-center text-secondary mb-6">
+<span class="material-symbols-outlined">solar_power</span>
+</div>
+<h3 class="text-2xl font-bold text-on-surface mb-2">Yeşil Enerji Taahhüdü</h3>
+<p class="text-on-surface-variant max-w-md">Kullandığımız enerjinin %100'ünü rüzgar ve güneş gibi yenilenebilir kaynaklardan sertifikalandırıyoruz.</p>
+</div>
+</div>
+<!-- Card 2: Small -->
+<div class="bg-surface-container-low rounded-[1.5rem] p-8 flex flex-col ghost-border">
+<div class="w-12 h-12 bg-surface-container-highest rounded-full flex items-center justify-center text-primary mb-auto">
+<span class="material-symbols-outlined">memory</span>
+</div>
+<div>
+<h3 class="text-xl font-bold text-on-surface mb-2">Akıllı Ağ Yönetimi</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">Yapay zeka destekli yük dengeleme algoritmalarımız şebekeyi yormadan maksimum şarj hızı sağlar.</p>
+</div>
+</div>
+<!-- Card 3: Small -->
+<div class="bg-surface-container-low rounded-[1.5rem] p-8 flex flex-col ghost-border">
+<div class="w-12 h-12 bg-surface-container-highest rounded-full flex items-center justify-center text-tertiary mb-auto">
+<span class="material-symbols-outlined">diversity_3</span>
+</div>
+<div>
+<h3 class="text-xl font-bold text-on-surface mb-2">Topluluk Odaklı</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">Yerel yönetimler ve siteler ile işbirliği yaparak şarj altyapısını herkes için erişilebilir kılıyoruz.</p>
+</div>
+</div>
+<!-- Card 4: Large -->
+<div class="md:col-span-2 bg-gradient-to-r from-primary to-primary-container rounded-[1.5rem] p-10 flex flex-col justify-center text-white relative overflow-hidden">
+<div class="absolute right-0 top-0 w-64 h-64 bg-white/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
+<div class="relative z-10 flex flex-col md:flex-row items-center gap-8">
+<div class="flex-1">
+<h3 class="text-3xl font-black mb-4">Sıfır Karbon Vizyonu 2030</h3>
+<p class="text-on-primary-container leading-relaxed">2030 yılına kadar tüm operasyonlarımızda mutlak sıfır emisyona ulaşmayı ve tedarik zincirimizi tamamen dönüştürmeyi hedefliyoruz.</p>
+</div>
+<div class="w-32 h-32 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/30 shrink-0">
+<span class="material-symbols-outlined text-[4rem] text-white">psychiatry</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-slate-50 dark:bg-slate-950 w-full rounded-none border-t border-slate-200 dark:border-slate-800">
+<div class="w-full py-12 px-8 flex flex-col md:flex-row justify-between items-center gap-6 max-w-screen-2xl mx-auto">
+<div class="font-bold text-slate-900 dark:text-white text-lg">
+                ParkChargeEV
+            </div>
+<div class="flex flex-wrap items-center justify-center gap-8 font-['Inter'] text-xs uppercase tracking-widest text-[#006e2f]">
+<a class="text-slate-500 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white underline-offset-4 transition-all opacity-100 hover:opacity-80 hover:underline" href="#">Kurumsal</a>
+<a class="text-slate-500 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white underline-offset-4 transition-all opacity-100 hover:opacity-80 hover:underline" href="#">Sürdürülebilirlik</a>
+<a class="text-slate-500 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white underline-offset-4 transition-all opacity-100 hover:opacity-80 hover:underline" href="#">Destek</a>
+<a class="text-slate-500 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white underline-offset-4 transition-all opacity-100 hover:opacity-80 hover:underline" href="#">Kariyer</a>
+</div>
+<div class="text-slate-500 text-sm">
+                © 2024 ParkChargeEV. Sürdürülebilir Gelecek.
+            </div>
+</div>
+</footer>
+</body></html>

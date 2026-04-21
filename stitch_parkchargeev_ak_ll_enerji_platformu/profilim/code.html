@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+
+<html class="light" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Profilim - ParkChargeEV</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-dim": "#d2d9f4",
+                      "on-primary": "#ffffff",
+                      "surface-container-low": "#f2f3ff",
+                      "secondary-container": "#6bff8f",
+                      "on-surface": "#131b2e",
+                      "surface-container": "#eaedff",
+                      "on-tertiary-container": "#ffebe5",
+                      "secondary": "#006e2f",
+                      "on-primary-fixed": "#001551",
+                      "on-surface-variant": "#434656",
+                      "tertiary": "#992f00",
+                      "surface-container-highest": "#dae2fd",
+                      "primary-container": "#1e5bff",
+                      "on-tertiary-fixed-variant": "#832700",
+                      "primary-fixed": "#dce1ff",
+                      "error-container": "#ffdad6",
+                      "surface-container-lowest": "#ffffff",
+                      "on-error": "#ffffff",
+                      "tertiary-container": "#c33e00",
+                      "on-secondary-fixed": "#002109",
+                      "surface": "#faf8ff",
+                      "outline": "#737688",
+                      "inverse-on-surface": "#eef0ff",
+                      "on-secondary": "#ffffff",
+                      "surface-tint": "#004cec",
+                      "background": "#faf8ff",
+                      "outline-variant": "#c3c5d9",
+                      "inverse-primary": "#b7c4ff",
+                      "on-secondary-fixed-variant": "#005321",
+                      "primary": "#0044d3",
+                      "on-primary-container": "#ecedff",
+                      "surface-bright": "#faf8ff",
+                      "on-tertiary": "#ffffff",
+                      "inverse-surface": "#283044",
+                      "surface-variant": "#dae2fd",
+                      "on-primary-fixed-variant": "#0039b5",
+                      "on-background": "#131b2e",
+                      "on-secondary-container": "#007432",
+                      "tertiary-fixed-dim": "#ffb59c",
+                      "error": "#ba1a1a",
+                      "tertiary-fixed": "#ffdbd0",
+                      "on-error-container": "#93000a",
+                      "primary-fixed-dim": "#b7c4ff",
+                      "on-tertiary-fixed": "#390c00",
+                      "surface-container-high": "#e2e7ff",
+                      "secondary-fixed": "#6bff8f",
+                      "secondary-fixed-dim": "#4ae176"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {},
+              "fontFamily": {
+                      "headline": [
+                              "Inter"
+                      ],
+                      "body": [
+                              "Inter"
+                      ],
+                      "label": [
+                              "Inter"
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        .material-symbols-outlined {
+          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom Input Styles based on guidelines */
+        .eco-input {
+            @apply w-full bg-surface-variant text-on-surface rounded-t-lg px-4 py-3 outline-none border-b-2 border-transparent transition-colors focus:border-primary;
+        }
+        .eco-label {
+            @apply block text-xs font-label uppercase tracking-wider text-on-surface-variant mb-1;
+        }
+      </style>
+</head>
+<body class="bg-background text-on-background font-body antialiased selection:bg-primary-container selection:text-on-primary-container">
+<!-- Shell Layout: SideNavBar + Main Content -->
+<div class="flex min-h-screen w-full">
+<!-- SideNavBar (Generated from JSON) -->
+<nav class="bg-slate-50 dark:bg-slate-950 font-['Inter'] text-sm h-screen w-64 border-r-0 bg-slate-200/50 dark:bg-slate-800/50 flat no shadows fixed left-0 top-0 flex flex-col p-6 space-y-4 z-40 hidden md:flex">
+<div class="mb-8 flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-variant overflow-hidden shrink-0">
+<img alt="Kullanıcı Profili" class="w-full h-full object-cover" data-alt="close up portrait of a young professional man in a bright modern office with soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD--jp8fYQLaUZv6oXJPEYemALP5spsp3X-MdULCtGXWLpejFz33SxwwNJ-2eNgwUNkRmOn7ItY5U6GW3oHqORMI7wM_2fwhmKWd0N45kZ2IV0G0OWJlSM_by16_e3OI9oiFcbl3iQue3xaInezhv4yW5ogarLswQhuiY8im1izCX-2ZPIEC7_TC67_iMh4_9fvLRB7miuWIrKfThVqsDZR_Sfmk2aq8XxKLwyv6NIUpr1UKgO1ivdOdRgTqsCboYsXZSKpDG3DhWhv"/>
+</div>
+<div>
+<h2 class="font-bold text-on-surface">Kullanıcı Paneli</h2>
+<p class="text-xs text-on-surface-variant">Hoş Geldiniz</p>
+</div>
+</div>
+<div class="flex flex-col space-y-2 flex-grow">
+<a class="flex items-center gap-3 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 rounded-lg px-4 py-3 hover:translate-x-1 transition-transform cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Panel</span>
+</a>
+<a class="flex items-center gap-3 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 rounded-lg px-4 py-3 hover:translate-x-1 transition-transform cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined">ev_station</span>
+<span>Şarjlarım</span>
+</a>
+<a class="flex items-center gap-3 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 rounded-lg px-4 py-3 hover:translate-x-1 transition-transform cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span>Ödemeler</span>
+</a>
+<a class="flex items-center gap-3 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 rounded-lg px-4 py-3 hover:translate-x-1 transition-transform cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined">settings_input_component</span>
+<span>Cihazlarım</span>
+</a>
+<!-- Active Item (Profile maps semantically to Settings) -->
+<a class="flex items-center gap-3 bg-blue-50 dark:bg-blue-900/20 text-[#1E5BFF] font-bold rounded-lg px-4 py-3 cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span>Ayarlar</span>
+</a>
+</div>
+<button class="mt-auto bg-[#1E5BFF] text-white rounded-xl py-3 px-4 font-semibold text-sm hover:opacity-90 transition-opacity">
+                Yeni İstasyon Ekle
+            </button>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-64 p-6 md:p-10 lg:p-12">
+<!-- Mobile Header (Visible only on small screens) -->
+<div class="md:hidden flex justify-between items-center mb-8">
+<h1 class="text-xl font-bold text-on-surface">ParkChargeEV</h1>
+<button class="p-2 text-on-surface-variant bg-surface-container-low rounded-lg">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+<!-- Page Header -->
+<header class="mb-10">
+<h1 class="text-4xl font-headline font-bold text-on-surface tracking-tight mb-3">Profilim</h1>
+<p class="text-on-surface-variant text-lg max-w-2xl">Kişisel bilgilerinizi, güvenlik ayarlarınızı ve kayıtlı adreslerinizi bu alandan yönetebilirsiniz.</p>
+</header>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
+<!-- Left Column (Main Forms) -->
+<div class="lg:col-span-8 flex flex-col gap-6 lg:gap-8">
+<!-- Personal Info Card -->
+<section class="bg-surface-container-low rounded-[1.5rem] p-6 lg:p-8 relative overflow-hidden">
+<!-- Decorative blur -->
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[60px] pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-primary bg-primary/10 p-2 rounded-lg">person</span>
+<h2 class="text-xl font-semibold text-on-surface">Kişisel Bilgiler</h2>
+</div>
+<form class="grid grid-cols-1 md:grid-cols-2 gap-5">
+<div>
+<label class="eco-label" for="firstName">Ad</label>
+<input class="eco-input" id="firstName" type="text" value="Ahmet"/>
+</div>
+<div>
+<label class="eco-label" for="lastName">Soyad</label>
+<input class="eco-input" id="lastName" type="text" value="Yılmaz"/>
+</div>
+<div>
+<label class="eco-label" for="email">E-posta Adresi</label>
+<input class="eco-input" id="email" type="email" value="ahmet.yilmaz@example.com"/>
+</div>
+<div>
+<label class="eco-label" for="phone">Telefon Numarası</label>
+<input class="eco-input" id="phone" type="tel" value="+90 532 123 45 67"/>
+</div>
+<div class="md:col-span-2 flex justify-end mt-2">
+<button class="bg-primary text-on-primary font-medium py-3 px-6 rounded-xl hover:bg-primary-fixed-variant hover:text-white transition-colors shadow-[0_8px_24px_-8px_rgba(0,68,211,0.4)]" type="button">
+                                    Değişiklikleri Kaydet
+                                </button>
+</div>
+</form>
+</section>
+<!-- Address Management Card -->
+<section class="bg-surface-container-low rounded-[1.5rem] p-6 lg:p-8">
+<div class="flex items-center justify-between mb-6">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary bg-secondary/10 p-2 rounded-lg">location_on</span>
+<h2 class="text-xl font-semibold text-on-surface">Adres Yönetimi</h2>
+</div>
+<button class="flex items-center gap-2 text-sm font-medium text-primary hover:text-primary-fixed-variant transition-colors bg-surface-container-high py-2 px-4 rounded-lg">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                                Yeni Ekle
+                            </button>
+</div>
+<div class="flex flex-col gap-4">
+<!-- Address Item 1 -->
+<div class="bg-surface-container-highest rounded-xl p-5 border border-outline-variant/20 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 group hover:bg-surface-variant transition-colors">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="font-semibold text-on-surface">Ev Adresi</span>
+<span class="text-[10px] font-bold tracking-wider text-secondary bg-secondary/10 px-2 py-0.5 rounded-full uppercase">Varsayılan</span>
+</div>
+<p class="text-sm text-on-surface-variant leading-relaxed">
+                                        Atatürk Mah. Lalezar Sok. No:14 D:5<br/>
+                                        Kadıköy, İstanbul 34744
+                                    </p>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-lowest rounded-lg transition-colors" title="Düzenle">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-error hover:bg-error-container rounded-lg transition-colors" title="Sil">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</div>
+<!-- Address Item 2 -->
+<div class="bg-surface-container-high rounded-xl p-5 border border-outline-variant/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 group hover:bg-surface-variant transition-colors">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="font-semibold text-on-surface">İş Yeri</span>
+</div>
+<p class="text-sm text-on-surface-variant leading-relaxed">
+                                        Levent Mah. Çayır Çimen Sok. Eco Plaza Kat:4<br/>
+                                        Beşiktaş, İstanbul 34330
+                                    </p>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-lowest rounded-lg transition-colors" title="Düzenle">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-error hover:bg-error-container rounded-lg transition-colors" title="Sil">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column (Status & Security) -->
+<div class="lg:col-span-4 flex flex-col gap-6 lg:gap-8">
+<!-- Profile Status Card -->
+<section class="bg-surface-container-low rounded-[1.5rem] p-6 flex flex-col items-center text-center relative">
+<div class="relative mb-4 mt-2">
+<div class="w-24 h-24 rounded-full bg-surface-variant overflow-hidden border-4 border-surface-container-low shadow-[0_0_0_2px_rgba(107,255,143,0.5)]">
+<img alt="Ahmet Yılmaz" class="w-full h-full object-cover" data-alt="close up portrait of a young professional man in a bright modern office with soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMhDgrTWdRYRIu4qe0tdAM0cJOh5c26AxdpT98LB6B96gNSlpQudiRvuczd3XJ2wXizRQM4IlgZREC1VcTL1CbgRYL62bTuSmQAbKOe0Fy_4nFFsmXEOR1q26ZHkrXbYrfHmsP-EMKIw1OHr6jLtvucx6GmKojAfmrLBDWPf2XjDSeadTo5_H5Wa7nG825m294KBZhbJYopiqZneGDd5izHMahIijxTfX2sQ1wWsax-UIzLom9XaiBT6h_cjDbV0_pru99etSMdBJg"/>
+</div>
+<button class="absolute bottom-0 right-0 bg-primary text-on-primary w-8 h-8 rounded-full flex items-center justify-center shadow-md hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[16px]">photo_camera</span>
+</button>
+</div>
+<h3 class="text-lg font-bold text-on-surface">Ahmet Yılmaz</h3>
+<p class="text-sm text-on-surface-variant mb-4">Pro Üye</p>
+<div class="w-full flex items-center justify-between p-3 bg-secondary-container/20 rounded-xl border border-secondary-container/50">
+<div class="flex items-center gap-2 text-on-secondary-container">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<span class="text-sm font-medium">Hesap Onaylı</span>
+</div>
+<span class="text-xs text-secondary font-semibold">100% Güvenli</span>
+</div>
+</section>
+<!-- Security / Password Card -->
+<section class="bg-surface-container-low rounded-[1.5rem] p-6">
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-tertiary bg-tertiary/10 p-2 rounded-lg">lock</span>
+<h2 class="text-xl font-semibold text-on-surface">Güvenlik</h2>
+</div>
+<form class="flex flex-col gap-4">
+<div>
+<label class="eco-label" for="currentPassword">Mevcut Şifre</label>
+<input class="eco-input" id="currentPassword" placeholder="••••••••" type="password"/>
+</div>
+<div>
+<label class="eco-label" for="newPassword">Yeni Şifre</label>
+<input class="eco-input" id="newPassword" placeholder="••••••••" type="password"/>
+</div>
+<div>
+<label class="eco-label" for="confirmPassword">Yeni Şifre (Tekrar)</label>
+<input class="eco-input" id="confirmPassword" placeholder="••••••••" type="password"/>
+</div>
+<button class="mt-2 w-full bg-surface-container-high text-primary font-medium py-3 px-6 rounded-xl border border-outline-variant/30 hover:bg-surface-variant transition-colors flex items-center justify-center gap-2" type="button">
+<span class="material-symbols-outlined text-[20px]">key</span>
+                                Şifreyi Güncelle
+                            </button>
+</form>
+</section>
+</div>
+</div>
+<!-- Footer Shell -->
+<footer class="mt-16 w-full py-12 px-8 flex flex-col md:flex-row justify-between items-center gap-6 border-t border-slate-200 dark:border-slate-800 bg-transparent rounded-none">
+<div class="font-bold text-slate-900 dark:text-white text-lg">
+                    ParkChargeEV
+                </div>
+<div class="flex gap-6">
+<a class="font-['Inter'] text-xs uppercase tracking-widest text-slate-500 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white underline underline-offset-4 transition-all opacity-100 hover:opacity-80" href="#">Kurumsal</a>
+<a class="font-['Inter'] text-xs uppercase tracking-widest text-slate-500 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white underline underline-offset-4 transition-all opacity-100 hover:opacity-80" href="#">Sürdürülebilirlik</a>
+<a class="font-['Inter'] text-xs uppercase tracking-widest text-slate-500 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white underline underline-offset-4 transition-all opacity-100 hover:opacity-80" href="#">Destek</a>
+<a class="font-['Inter'] text-xs uppercase tracking-widest text-slate-500 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white underline underline-offset-4 transition-all opacity-100 hover:opacity-80" href="#">Kariyer</a>
+</div>
+<p class="font-['Inter'] text-xs uppercase tracking-widest text-slate-500">
+                    © 2024 ParkChargeEV. Sürdürülebilir Gelecek.
+                </p>
+</footer>
+</main>
+</div>
+</body></html>
