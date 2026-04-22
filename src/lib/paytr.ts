@@ -1,5 +1,7 @@
 import { createHmac, randomUUID } from "node:crypto";
 
+import { getPaytrConfig } from "@/lib/runtime-config";
+
 export type PaytrCheckoutItem = {
   title: string;
   unitPrice: string;
@@ -38,28 +40,14 @@ export type PaytrCallbackPayload = {
   failed_reason_msg?: string;
 };
 
-type PaytrEnv = {
-  merchantId: string;
-  merchantKey: string;
-  merchantSalt: string;
-};
-
-export function getPaytrEnv(): PaytrEnv {
-  const merchantId = process.env.PAYTR_MERCHANT_ID;
-  const merchantKey = process.env.PAYTR_MERCHANT_KEY;
-  const merchantSalt = process.env.PAYTR_MERCHANT_SALT;
-
-  if (!merchantId || !merchantKey || !merchantSalt) {
-    throw new Error(
-      "PayTR ortam değişkenleri eksik. PAYTR_MERCHANT_ID, PAYTR_MERCHANT_KEY ve PAYTR_MERCHANT_SALT tanımlanmalıdır."
-    );
-  }
-
-  return { merchantId, merchantKey, merchantSalt };
-}
-
 export function encodeBasket(items: PaytrCheckoutItem[]) {
-  return Buffer.from(JSON.stringify(items), "utf-8").toString("base64");
+  const basket = items.map((item) => [
+    item.title,
+    item.unitPrice,
+    item.quantity
+  ]);
+
+  return Buffer.from(JSON.stringify(basket), "utf-8").toString("base64");
 }
 
 export function generateMerchantOid(prefix = "PCEV") {
@@ -67,7 +55,7 @@ export function generateMerchantOid(prefix = "PCEV") {
 }
 
 export function buildPaytrIframePayload(input: PaytrIframeRequestInput) {
-  const env = getPaytrEnv();
+  const env = getPaytrConfig();
   const merchantOid = input.merchantOid ?? generateMerchantOid();
   const currency = input.currency ?? (process.env.PAYTR_CURRENCY as "TL") ?? "TL";
   const noInstallment = input.noInstallment ?? 0;
@@ -120,7 +108,7 @@ export function buildPaytrIframePayload(input: PaytrIframeRequestInput) {
 }
 
 export function verifyPaytrCallbackHash(payload: PaytrCallbackPayload) {
-  const env = getPaytrEnv();
+  const env = getPaytrConfig();
   const computedHash = createHmac("sha256", env.merchantKey)
     .update(
       payload.merchant_oid +
@@ -132,4 +120,3 @@ export function verifyPaytrCallbackHash(payload: PaytrCallbackPayload) {
 
   return computedHash === payload.hash;
 }
-

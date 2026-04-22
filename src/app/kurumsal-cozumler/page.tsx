@@ -75,7 +75,7 @@ export default function CorporateSolutionsPage() {
             </h2>
           </div>
           <p className="max-w-2xl text-base leading-7 text-on-surface-variant">
-            ParkChargeEV'in kurumsal büyüme modeli; tek tip ürün sayfası yerine,
+            ParkChargeEV&apos;in kurumsal büyüme modeli; tek tip ürün sayfası yerine,
             ihtiyaca göre uzmanlaşmış landing page yapısı üzerinden ilerlemelidir.
           </p>
         </div>

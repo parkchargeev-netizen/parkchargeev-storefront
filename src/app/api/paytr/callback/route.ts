@@ -1,4 +1,8 @@
+import { eq } from "drizzle-orm";
+
 import { verifyPaytrCallbackHash } from "@/lib/paytr";
+import { getDb } from "@/server/db/client";
+import { orders, paytrTransactions } from "@/server/db/schema";
 
 export async function POST(request: Request) {
   const formData = await request.formData();
@@ -19,14 +23,37 @@ export async function POST(request: Request) {
     return new Response("PAYTR notification failed: bad hash", { status: 400 });
   }
 
-  /*
-    TODO:
-    1. merchant_oid ile siparişi bul
-    2. callback idempotent mi kontrol et
-    3. status success ise siparişi paid yap
-    4. status failed ise failed/cancelled akışını işlet
-    5. ham callback verisini paytr_transactions tablosuna yaz
-  */
+  const db = getDb();
+  const [order] = await db
+    .select({
+      id: orders.id
+    })
+    .from(orders)
+    .where(eq(orders.merchantOid, payload.merchant_oid))
+    .limit(1);
+
+  if (!order) {
+    return new Response("PAYTR notification failed: order not found", { status: 404 });
+  }
+
+  await db
+    .update(paytrTransactions)
+    .set({
+      totalAmountKurus: Number(payload.total_amount || payload.payment_amount || "0"),
+      status: payload.status === "success" ? "callback_success" : "callback_failed",
+      rawCallback: payload,
+      updatedAt: new Date()
+    })
+    .where(eq(paytrTransactions.merchantOid, payload.merchant_oid));
+
+  await db
+    .update(orders)
+    .set({
+      status: payload.status === "success" ? "paid" : "failed",
+      paymentStatus: payload.status === "success" ? "paid" : "failed",
+      updatedAt: new Date()
+    })
+    .where(eq(orders.id, order.id));
 
   return new Response("OK");
 }

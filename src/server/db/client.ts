@@ -1,6 +1,7 @@
 import { drizzle, type PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
+import { assertDatabaseConfig } from "@/lib/runtime-config";
 import * as schema from "@/server/db/schema";
 
 let database: PostgresJsDatabase<typeof schema> | undefined;
@@ -10,11 +11,8 @@ export function getDb() {
     return database;
   }
 
-  const connectionString = process.env.DATABASE_URL;
-
-  if (!connectionString) {
-    throw new Error("DATABASE_URL tanımlanmadığı için veritabanı bağlantısı kurulamadı.");
-  }
+  assertDatabaseConfig();
+  const connectionString = process.env.DATABASE_URL as string;
 
   const client = postgres(connectionString, {
     prepare: false

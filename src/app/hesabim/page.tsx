@@ -36,8 +36,7 @@ export default function AccountPage() {
             Profilim
           </h1>
           <p className="mt-4 text-lg leading-8 text-on-surface-variant">
-            Kişisel bilgiler, adres yönetimi ve güvenlik ayarlarınızı bu alandan
-            yönetin.
+            Bu alan gerçek hesap paneli yayınlanana kadar read-only preview olarak gösterilir.
           </p>
         </header>
 
@@ -56,13 +55,18 @@ export default function AccountPage() {
                 <span className="text-sm text-on-surface-variant">{label}</span>
                 <input
                   defaultValue={value}
-                  className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-4"
+                  disabled
+                  className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-4 opacity-70"
                 />
               </label>
             ))}
           </div>
-          <button className="mt-6 rounded-2xl bg-primary px-6 py-4 text-base font-semibold text-white">
-            Değişiklikleri Kaydet
+          <button
+            type="button"
+            disabled
+            className="mt-6 rounded-2xl bg-primary px-6 py-4 text-base font-semibold text-white opacity-60"
+          >
+            Düzenleme yakında aktif
           </button>
         </div>
 
@@ -71,8 +75,12 @@ export default function AccountPage() {
             <h2 className="text-3xl font-bold tracking-[-0.05em] text-on-surface">
               Adres Yönetimi
             </h2>
-            <button className="rounded-2xl bg-surface-container-high px-4 py-3 text-sm font-semibold text-primary">
-              Yeni Ekle
+            <button
+              type="button"
+              disabled
+              className="rounded-2xl bg-surface-container-high px-4 py-3 text-sm font-semibold text-primary opacity-60"
+            >
+              Yeni Ekle yakında
             </button>
           </div>
           <div className="mt-6 grid gap-4">
@@ -97,9 +105,9 @@ export default function AccountPage() {
           <h2 className="mt-5 text-3xl font-bold tracking-[-0.05em] text-on-surface">
             Ahmet Yılmaz
           </h2>
-          <p className="mt-2 text-on-surface-variant">Pro Üye</p>
+          <p className="mt-2 text-on-surface-variant">Preview Üye</p>
           <div className="mt-6 rounded-full bg-secondary-container px-4 py-3 text-sm font-semibold text-secondary">
-            Hesap Onaylı · %100 Güvenli
+            Hesap paneli entegrasyonu geliştirme aşamasında
           </div>
         </div>
 
@@ -114,17 +122,21 @@ export default function AccountPage() {
                 <input
                   type="password"
                   defaultValue="********"
-                  className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-4"
+                  disabled
+                  className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-4 opacity-70"
                 />
               </label>
             ))}
           </div>
-          <button className="mt-6 rounded-2xl bg-surface-container-high px-6 py-4 text-base font-semibold text-primary">
-            Şifreyi Güncelle
+          <button
+            type="button"
+            disabled
+            className="mt-6 rounded-2xl bg-surface-container-high px-6 py-4 text-base font-semibold text-primary opacity-60"
+          >
+            Şifre güncelleme yakında
           </button>
         </div>
       </aside>
     </div>
   );
 }
-

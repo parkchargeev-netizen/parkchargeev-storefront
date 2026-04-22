@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { ProductGallery } from "@/components/shop/product-gallery";
 import { ProductCard } from "@/components/shop/product-card";
+import { ProductPurchasePanel } from "@/components/shop/product-purchase-panel";
 import { formatPriceTRY } from "@/lib/format";
 import {
   getProductBySlug,
@@ -53,6 +55,7 @@ export default async function ProductDetailPage({
 
   const relatedProducts = getRelatedProducts(product);
   const productJsonLd = getProductJsonLd(product);
+  const mediaItems = ["Ön görünüm", "Yan profil", "Montaj görünümü", "Video"];
   const breadcrumbJsonLd = getBreadcrumbJsonLd([
     { name: "Ana Sayfa", path: "/" },
     { name: "Mağaza", path: "/magaza" },
@@ -91,30 +94,7 @@ export default async function ProductDetailPage({
 
       <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
         <section>
-          <div className="surface-card p-5">
-            <div className="overflow-hidden rounded-[28px] bg-linear-to-br from-secondary-container/20 via-white to-primary/12 p-8">
-              <div className="aspect-[4/3] rounded-[24px] bg-linear-to-br from-slate-950 via-slate-900 to-slate-800" />
-            </div>
-
-            <div className="mt-5 grid grid-cols-4 gap-4">
-              {["Ön görünüm", "Yan profil", "Montaj görünümü", "Video"].map(
-                (item, index) => (
-                  <div
-                    key={item}
-                    className={`rounded-[20px] p-3 ${
-                      index === 0
-                        ? "border-2 border-primary bg-surface-container-low"
-                        : "bg-surface-container-low"
-                    }`}
-                  >
-                    <div className="flex aspect-square items-center justify-center rounded-[16px] bg-surface-container-high text-center text-xs font-semibold text-on-surface-variant">
-                      {item}
-                    </div>
-                  </div>
-                )
-              )}
-            </div>
-          </div>
+          <ProductGallery productName={product.name} items={mediaItems} />
 
           <div className="mt-8 grid gap-6 lg:grid-cols-2">
             <div className="surface-card p-8">
@@ -216,60 +196,15 @@ export default async function ProductDetailPage({
             ) : null}
           </div>
 
-          <div className="mt-8 rounded-[24px] bg-surface-container-low p-6">
-            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-on-surface-variant">
-              Sipariş detayları
-            </p>
-
-            <div className="mt-5">
-              <p className="text-sm font-medium text-on-surface-variant">Kablo uzunluğu</p>
-              <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                {product.cableOptions.map((option, index) => (
-                  <button
-                    key={option}
-                    className={`rounded-2xl border px-4 py-3 text-sm font-medium transition ${
-                      index === 0
-                        ? "border-primary bg-white text-primary"
-                        : "border-outline-variant/40 bg-surface text-on-surface"
-                    }`}
-                  >
-                    {option}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-6">
-              <p className="text-sm font-medium text-on-surface-variant">Miktar</p>
-              <div className="mt-3 flex items-center gap-4">
-                <div className="flex items-center gap-4 rounded-2xl bg-white px-4 py-3">
-                  <span className="text-on-surface-variant">−</span>
-                  <span className="text-lg font-semibold text-on-surface">1</span>
-                  <span className="text-on-surface-variant">+</span>
-                </div>
-                <Link
-                  href="/sepet"
-                  className="flex-1 rounded-2xl bg-linear-to-r from-primary to-secondary px-6 py-4 text-center text-base font-semibold text-white shadow-[0_18px_50px_rgba(0,68,211,0.22)]"
-                >
-                  Sepete Ekle
-                </Link>
-              </div>
-            </div>
-
-            <div className="mt-6 space-y-3 text-sm text-on-surface-variant">
-              <p>Ücretsiz kargo ve hızlı gönderim</p>
-              <p>2 yıl garanti ve kurulum desteği</p>
-              <p>PayTR ile güvenli ödeme altyapısı</p>
-            </div>
-          </div>
+          <ProductPurchasePanel product={product} />
 
           <div className="mt-8 rounded-[24px] border border-outline-variant/40 bg-white p-6">
             <h2 className="text-2xl font-bold tracking-[-0.05em] text-on-surface">
               Satın alma öncesi destek
             </h2>
             <p className="mt-4 text-sm leading-7 text-on-surface-variant">
-              Ürünün saha uygunluğunu netleştirmek için teknik keşif ve kurulum
-              danışmanlığı talebinizi iletebilirsiniz.
+              Ürünün saha uygunluğunu netleştirmek için teknik keşif ve kurulum danışmanlığı
+              talebinizi iletebilirsiniz.
             </p>
             <Link
               href="/iletisim"

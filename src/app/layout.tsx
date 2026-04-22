@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { CartProvider } from "@/components/providers/cart-provider";
 import {
   getLocalBusinessJsonLd,
   getOrganizationJsonLd,
@@ -53,21 +54,23 @@ export default function RootLayout({
   return (
     <html lang="tr">
       <body className={`${inter.variable} font-sans`}>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
-        />
-        <SiteHeader />
-        <main>{children}</main>
-        <SiteFooter />
+        <CartProvider>
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+          />
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
+          />
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+          />
+          <SiteHeader />
+          <main>{children}</main>
+          <SiteFooter />
+        </CartProvider>
       </body>
     </html>
   );

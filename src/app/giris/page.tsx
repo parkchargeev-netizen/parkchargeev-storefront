@@ -13,14 +13,19 @@ export default function LoginPage() {
           ParkChargeEV
         </p>
         <h1 className="mt-5 text-center text-5xl font-black tracking-[-0.08em] text-on-surface">
-          Tekrar hoş geldiniz
+          Müşteri girişi hazırlanıyor
         </h1>
         <p className="mt-4 text-center text-base text-on-surface-variant">
-          Siparişlerinizi, servis taleplerinizi ve cihaz profilinizi buradan
-          yönetin.
+          Sipariş, servis ve cihaz paneli için kimlik doğrulama entegrasyonu henüz yayında
+          değil. Bu ekranı sahte submit yerine dürüst preview durumunda gösteriyoruz.
         </p>
 
-        <form className="mt-10 grid gap-5">
+        <div className="mt-8 rounded-[24px] bg-surface-container-low p-5 text-sm leading-7 text-on-surface-variant">
+          Şimdilik teklif, keşif ve ödeme akışları mağaza, iletişim ve checkout ekranları
+          üzerinden çalışır. Giriş özelliği eklendiğinde bu alan gerçek auth formuna dönecek.
+        </div>
+
+        <div className="mt-10 grid gap-5">
           <label className="grid gap-2">
             <span className="text-sm font-semibold uppercase tracking-[0.24em] text-on-surface-variant">
               E-posta adresi
@@ -28,7 +33,8 @@ export default function LoginPage() {
             <input
               type="email"
               placeholder="ornek@sirket.com"
-              className="rounded-2xl border border-outline-variant/45 bg-surface-container-low px-4 py-4 outline-none ring-0 transition focus:border-primary"
+              disabled
+              className="rounded-2xl border border-outline-variant/45 bg-surface-container-low px-4 py-4 outline-none opacity-70"
             />
           </label>
 
@@ -39,38 +45,45 @@ export default function LoginPage() {
             <input
               type="password"
               placeholder="********"
-              className="rounded-2xl border border-outline-variant/45 bg-surface-container-low px-4 py-4 outline-none ring-0 transition focus:border-primary"
+              disabled
+              className="rounded-2xl border border-outline-variant/45 bg-surface-container-low px-4 py-4 outline-none opacity-70"
             />
           </label>
 
           <div className="flex items-center justify-between gap-4 text-sm text-on-surface-variant">
-            <label className="flex items-center gap-3">
-              <input type="checkbox" className="rounded border-outline-variant" />
+            <label className="flex items-center gap-3 opacity-70">
+              <input type="checkbox" disabled className="rounded border-outline-variant" />
               Beni hatırla
             </label>
-            <button type="button" className="font-semibold text-primary">
-              Şifremi unuttum
-            </button>
+            <span className="font-semibold text-primary/70">Şifre sıfırlama yakında</span>
           </div>
 
           <button
-            type="submit"
-            className="mt-3 rounded-2xl bg-linear-to-r from-primary to-secondary px-6 py-4 text-base font-semibold text-white shadow-[0_20px_50px_rgba(0,68,211,0.22)]"
+            type="button"
+            disabled
+            className="mt-3 rounded-2xl bg-linear-to-r from-primary to-secondary px-6 py-4 text-base font-semibold text-white opacity-60"
           >
-            Giriş Yap
+            Yakında Aktif
           </button>
-        </form>
+        </div>
 
         <div className="mt-8 grid gap-3 sm:grid-cols-2">
-          <button className="rounded-2xl border border-outline-variant/45 bg-white px-5 py-4 text-sm font-medium text-on-surface">
-            Kurumsal SSO ile giriş
+          <button
+            type="button"
+            disabled
+            className="rounded-2xl border border-outline-variant/45 bg-white px-5 py-4 text-sm font-medium text-on-surface opacity-60"
+          >
+            Kurumsal SSO yakında
           </button>
-          <button className="rounded-2xl border border-outline-variant/45 bg-white px-5 py-4 text-sm font-medium text-on-surface">
-            Google ile giriş
+          <button
+            type="button"
+            disabled
+            className="rounded-2xl border border-outline-variant/45 bg-white px-5 py-4 text-sm font-medium text-on-surface opacity-60"
+          >
+            Google ile giriş yakında
           </button>
         </div>
       </div>
     </div>
   );
 }
-

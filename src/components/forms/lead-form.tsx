@@ -174,7 +174,7 @@ export function LeadForm({
             value="true"
             className="mt-1 rounded border-outline-variant"
           />
-          ParkChargeEV'in benimle teklif, keşif ve proje değerlendirmesi için iletişime geçmesini kabul ediyorum.
+          ParkChargeEV&apos;in benimle teklif, keşif ve proje değerlendirmesi için iletişime geçmesini kabul ediyorum.
         </label>
 
         <div className="md:col-span-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">

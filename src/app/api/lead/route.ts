@@ -1,6 +1,13 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import {
+  getRuntimeConfigErrorPayload,
+  isRuntimeConfigError
+} from "@/lib/runtime-config";
+import { getDb } from "@/server/db/client";
+import { serviceLeads } from "@/server/db/schema";
+
 const leadSchema = z.object({
   fullName: z.string().min(3),
   company: z.string().optional().or(z.literal("")),
@@ -15,20 +22,35 @@ const leadSchema = z.object({
 export async function POST(request: Request) {
   try {
     const body = leadSchema.parse(await request.json());
+    const db = getDb();
 
-    /*
-      TODO:
-      1. customers veya service_leads tablosuna yaz
-      2. CRM / e-posta / WhatsApp bilgilendirme akışını tetikle
-      3. lead source bilgisini request headers / utm alanlarından zenginleştir
-      4. spam ve rate limit katmanı ekle
-    */
+    await db.insert(serviceLeads).values({
+      leadType: body.reason,
+      projectType: body.reason,
+      fullName: body.fullName,
+      email: body.email,
+      phone: body.phone,
+      city: body.city,
+      message: body.message,
+      payload: {
+        company: body.company || null,
+        privacyConsent: true
+      }
+    });
 
     return NextResponse.json({
       ok: true,
       message: `${body.fullName} için talep kaydı oluşturuldu. Ekip en kısa sürede dönüş yapacak.`
     });
   } catch (error) {
+    if (isRuntimeConfigError(error)) {
+      return NextResponse.json(getRuntimeConfigErrorPayload(error), {
+        status: 503
+      });
+    }
+
+    const status = error instanceof z.ZodError ? 400 : 500;
+
     return NextResponse.json(
       {
         ok: false,
@@ -37,7 +59,7 @@ export async function POST(request: Request) {
             ? error.message
             : "Talep işlenirken beklenmeyen bir hata oluştu."
       },
-      { status: 400 }
+      { status }
     );
   }
 }

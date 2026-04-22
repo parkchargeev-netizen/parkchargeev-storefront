@@ -45,14 +45,23 @@ Bu çalışma alanı, ParkChargeEV için hız, performans, güvenlik, SEO ve AI 
 
 Ön koşul:
 
-- Node.js `20+` veya `22 LTS`
 - PostgreSQL
+- Node.js `20+` veya `22 LTS`
+
+Repo içinde taşınabilir bir Node kurulumu da bulunur: `.tools/node-v22.22.2-win-x64`.
 
 Kurulum:
 
 ```bash
 npm install
 npm run dev
+```
+
+PowerShell üzerinde `node` veya `npm` PATH'te yoksa:
+
+```powershell
+.\scripts\npm-local.ps1 install
+.\scripts\npm-local.ps1 run dev
 ```
 
 Veritabanı:
@@ -62,15 +71,50 @@ npm run db:generate
 npm run db:push
 ```
 
-## Sonraki Adımlar
+## Doğrulama
 
-1. `npm install` ile bağımlılıkları kur
-2. `.env.example` dosyasını gerçek ortam değişkenleriyle doldur
-3. PostgreSQL bağlantısını aç ve `db:push` çalıştır
-4. Gerçek ürün görselleri, marka logoları ve kurumsal içerikleri bağla
-5. PayTR canlı anahtarları ve sipariş yazma mantığını tamamla
-6. İlk çalıştırma sonrası `npm run typecheck` ve `npm run build` ile doğrula
+Runtime smoke check:
 
-## Not
+```bash
+npm run verify:runtime
+```
 
-Bu çalışma alanında Node.js kurulu olmadığı için uygulama burada çalıştırılamadı. Kod iskeleti, dosya yapısı ve entegrasyon noktaları hazırlanmıştır; ilk çalıştırma sonrası tip/lint ve UI ince ayarlarının yapılması gerekir.
+Uygulama doğrulaması:
+
+```bash
+npm run verify:app
+```
+
+Release öncesi tam kontrol:
+
+```bash
+npm run verify:release
+```
+
+PowerShell üzerinde lokal Node ile aynı doğrulama:
+
+```powershell
+.\scripts\npm-local.ps1 run verify:release
+```
+
+`verify:runtime` aşağıdaki kritik kontrolleri yapar:
+
+- `DATABASE_URL` var mı
+- PostgreSQL bağlantısı gerçekten kurulabiliyor mu
+- `PAYTR_MERCHANT_ID`, `PAYTR_MERCHANT_KEY`, `PAYTR_MERCHANT_SALT` tanımlı mı
+- Lokal test modunda `PAYTR_TEST_USER_IP` önerisi gerekiyor mu
+
+## Ortam Değişkenleri
+
+Minimum canlı doğrulama için:
+
+- `DATABASE_URL`
+- `PAYTR_MERCHANT_ID`
+- `PAYTR_MERCHANT_KEY`
+- `PAYTR_MERCHANT_SALT`
+
+Lokal PayTR testlerinde önerilen ek değişken:
+
+- `PAYTR_TEST_USER_IP`
+
+Eksik runtime ayarları artık API tarafında sessiz `500` yerine `503` ve yapılandırma detaylarıyla döner.
