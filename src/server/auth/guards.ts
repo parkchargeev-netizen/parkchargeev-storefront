@@ -1,5 +1,7 @@
 import { headers } from "next/headers";
 
+import { hasDatabaseConfig } from "@/lib/runtime-config";
+import { getBootstrapAdmin } from "@/server/admin/auth-service";
 import { canAccessAdminPath, hasRequiredRole, type AdminRole } from "@/server/auth/authorization";
 import { getAdminSessionFromCookies } from "@/server/auth/session";
 import { findAdminById, getAdminSessionRecord, touchAdminSession } from "@/server/admin/auth-service";
@@ -9,6 +11,30 @@ export async function getAuthenticatedAdmin() {
 
   if (!session) {
     return null;
+  }
+
+  if (!hasDatabaseConfig()) {
+    const bootstrapAdmin = getBootstrapAdmin();
+
+    if (
+      !bootstrapAdmin ||
+      session.sub !== bootstrapAdmin.id ||
+      session.email !== bootstrapAdmin.email ||
+      session.role !== bootstrapAdmin.role
+    ) {
+      return null;
+    }
+
+    return {
+      session,
+      admin: {
+        id: bootstrapAdmin.id,
+        email: bootstrapAdmin.email,
+        fullName: bootstrapAdmin.fullName,
+        role: bootstrapAdmin.role,
+        status: bootstrapAdmin.status
+      }
+    };
   }
 
   const [admin, sessionRecord] = await Promise.all([

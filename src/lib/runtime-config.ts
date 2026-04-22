@@ -41,6 +41,10 @@ function listMissingEnv(keys: readonly RuntimeEnvKey[]) {
   return keys.filter((key) => !process.env[key]?.trim());
 }
 
+export function hasDatabaseConfig() {
+  return Boolean(process.env.DATABASE_URL?.trim());
+}
+
 function assertConfig(keys: readonly RuntimeEnvKey[], area: RuntimeConfigArea, message: string) {
   const missingKeys = listMissingEnv(keys);
 
@@ -54,6 +58,10 @@ function assertConfig(keys: readonly RuntimeEnvKey[], area: RuntimeConfigArea, m
 }
 
 export function assertDatabaseConfig() {
+  if (hasDatabaseConfig()) {
+    return;
+  }
+
   assertConfig(
     databaseEnvKeys,
     "database",

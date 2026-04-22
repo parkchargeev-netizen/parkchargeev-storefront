@@ -11,11 +11,14 @@ type AdminShellProps = {
     email: string;
     role: AdminRole;
   };
+  databaseEnabled?: boolean;
   children: ReactNode;
 };
 
-export function AdminShell({ admin, children }: AdminShellProps) {
-  const items = adminNavigation.filter((item) => item.roles.includes(admin.role));
+export function AdminShell({ admin, databaseEnabled = true, children }: AdminShellProps) {
+  const items = adminNavigation
+    .filter((item) => item.roles.includes(admin.role))
+    .filter((item) => databaseEnabled || item.href === "/admin");
 
   return (
     <div className="min-h-screen bg-slate-100">
