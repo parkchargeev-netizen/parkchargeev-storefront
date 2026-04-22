@@ -1,0 +1,18 @@
+User-agent: *
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+Content-Signal: ai-train=no, search=yes, ai-input=yes
+Host: https://parkchargeev.com
+Sitemap: https://parkchargeev.com/sitemap.xml

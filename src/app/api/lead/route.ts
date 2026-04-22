@@ -6,7 +6,7 @@ import {
   isRuntimeConfigError
 } from "@/lib/runtime-config";
 import { getDb } from "@/server/db/client";
-import { serviceLeads } from "@/server/db/schema";
+import { quoteRequests, serviceLeads } from "@/server/db/schema";
 
 const leadSchema = z.object({
   fullName: z.string().min(3),
@@ -18,6 +18,29 @@ const leadSchema = z.object({
   message: z.string().min(10),
   privacyConsent: z.string().refine((value) => value === "true")
 });
+
+function getQuoteSegment(reason: string) {
+  const normalized = reason.toLocaleLowerCase("tr-TR");
+
+  if (normalized.includes("site") || normalized.includes("apartman")) {
+    return "site_apartment" as const;
+  }
+
+  if (normalized.includes("filo") || normalized.includes("otopark")) {
+    return "fleet" as const;
+  }
+
+  if (normalized.includes("is yeri") || normalized.includes("ofis") || normalized.includes("kurumsal")) {
+    return "business" as const;
+  }
+
+  return "individual" as const;
+}
+
+function isServiceLead(reason: string) {
+  const normalized = reason.toLocaleLowerCase("tr-TR");
+  return normalized.includes("servis") || normalized.includes("bakim") || normalized.includes("destek");
+}
 
 export async function POST(request: Request) {
   try {
@@ -37,6 +60,24 @@ export async function POST(request: Request) {
         privacyConsent: true
       }
     });
+
+    if (!isServiceLead(body.reason)) {
+      await db.insert(quoteRequests).values({
+        fullName: body.fullName,
+        companyName: body.company || null,
+        segment: getQuoteSegment(body.reason),
+        email: body.email,
+        phone: body.phone,
+        city: body.city,
+        estimatedLocation: body.city,
+        requestNotes: body.message,
+        source: "website-contact-form",
+        metadata: {
+          reason: body.reason,
+          privacyConsent: true
+        }
+      });
+    }
 
     return NextResponse.json({
       ok: true,

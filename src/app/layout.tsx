@@ -2,8 +2,7 @@ import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
-import { SiteFooter } from "@/components/layout/site-footer";
-import { SiteHeader } from "@/components/layout/site-header";
+import { SiteShell } from "@/components/layout/site-shell";
 import { CartProvider } from "@/components/providers/cart-provider";
 import {
   getLocalBusinessJsonLd,
@@ -67,9 +66,7 @@ export default function RootLayout({
             type="application/ld+json"
             dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
           />
-          <SiteHeader />
-          <main>{children}</main>
-          <SiteFooter />
+          <SiteShell>{children}</SiteShell>
         </CartProvider>
       </body>
     </html>

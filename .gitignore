@@ -11,6 +11,5 @@ dist
 coverage
 *.log
 *.tsbuildinfo
-drizzle
 .tools
 .vercel

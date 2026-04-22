@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 
 import { verifyPaytrCallbackHash } from "@/lib/paytr";
 import { getDb } from "@/server/db/client";
-import { orders, paytrTransactions } from "@/server/db/schema";
+import { orderStatusHistory, orders, paytrTransactions } from "@/server/db/schema";
 
 export async function POST(request: Request) {
   const formData = await request.formData();
@@ -49,11 +49,22 @@ export async function POST(request: Request) {
   await db
     .update(orders)
     .set({
-      status: payload.status === "success" ? "paid" : "failed",
+      status: payload.status === "success" ? "pending_confirmation" : "failed",
       paymentStatus: payload.status === "success" ? "paid" : "failed",
+      paytrLastSyncedAt: new Date(),
       updatedAt: new Date()
     })
     .where(eq(orders.id, order.id));
+
+  await db.insert(orderStatusHistory).values({
+    orderId: order.id,
+    fromStatus: null,
+    toStatus: payload.status === "success" ? "pending_confirmation" : "failed",
+    note:
+      payload.status === "success"
+        ? "PayTR callback ile odeme onayi alindi."
+        : payload.failed_reason_msg || "PayTR callback odeme hatasi bildirdi."
+  });
 
   return new Response("OK");
 }

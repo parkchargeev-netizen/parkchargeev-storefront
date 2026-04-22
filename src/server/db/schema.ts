@@ -6,6 +6,7 @@ import {
   jsonb,
   pgEnum,
   pgTable,
+  primaryKey,
   text,
   timestamp,
   uniqueIndex,
@@ -19,19 +20,45 @@ export const productStatusEnum = pgEnum("product_status", [
   "archived"
 ]);
 
+export const productChargeTypeEnum = pgEnum("product_charge_type", ["ac", "dc"]);
+
+export const productPhaseEnum = pgEnum("product_phase", [
+  "single_phase",
+  "three_phase"
+]);
+
 export const customerRoleEnum = pgEnum("customer_role", [
   "guest",
   "customer",
   "admin"
 ]);
 
+export const adminRoleEnum = pgEnum("admin_role", [
+  "superadmin",
+  "sales",
+  "operations",
+  "technician",
+  "editor"
+]);
+
+export const adminUserStatusEnum = pgEnum("admin_user_status", [
+  "invited",
+  "active",
+  "disabled"
+]);
+
 export const orderStatusEnum = pgEnum("order_status", [
   "draft",
   "pending_payment",
   "payment_processing",
+  "pending_confirmation",
   "paid",
+  "confirmed",
+  "shipped",
+  "delivered",
   "failed",
   "cancelled",
+  "refunded",
   "fulfilled"
 ]);
 
@@ -48,6 +75,27 @@ export const leadStatusEnum = pgEnum("lead_status", [
   "qualified",
   "won",
   "lost"
+]);
+
+export const quoteRequestStatusEnum = pgEnum("quote_request_status", [
+  "new",
+  "reviewing",
+  "proposal_sent",
+  "negotiation",
+  "won",
+  "lost"
+]);
+
+export const quoteRequestSegmentEnum = pgEnum("quote_request_segment", [
+  "site_apartment",
+  "business",
+  "fleet",
+  "individual"
+]);
+
+export const productRelationTypeEnum = pgEnum("product_relation_type", [
+  "related",
+  "accessory"
 ]);
 
 export const brands = pgTable(
@@ -98,6 +146,28 @@ export const products = pgTable(
     useCase: varchar("use_case", { length: 80 }),
     seoTitle: varchar("seo_title", { length: 255 }),
     seoDescription: varchar("seo_description", { length: 320 }),
+    canonicalUrl: varchar("canonical_url", { length: 500 }),
+    ogImageUrl: varchar("og_image_url", { length: 500 }),
+    aiSummary: varchar("ai_summary", { length: 180 }),
+    schemaJsonLd: jsonb("schema_json_ld"),
+    defaultPriceKurus: integer("default_price_kurus"),
+    discountedPriceKurus: integer("discounted_price_kurus"),
+    discountEndsAt: timestamp("discount_ends_at", { withTimezone: true }),
+    isVatIncluded: boolean("is_vat_included").default(true).notNull(),
+    minimumStockThreshold: integer("minimum_stock_threshold").default(0).notNull(),
+    inventoryTrackingEnabled: boolean("inventory_tracking_enabled")
+      .default(true)
+      .notNull(),
+    powerKw: varchar("power_kw", { length: 40 }),
+    chargeType: productChargeTypeEnum("charge_type"),
+    connectorType: varchar("connector_type", { length: 80 }),
+    phaseType: productPhaseEnum("phase_type"),
+    ipClass: varchar("ip_class", { length: 24 }),
+    hasWifi: boolean("has_wifi").default(false).notNull(),
+    hasRfid: boolean("has_rfid").default(false).notNull(),
+    has4g: boolean("has_4g").default(false).notNull(),
+    installRequired: boolean("install_required").default(false).notNull(),
+    adminNotes: text("admin_notes"),
     searchKeywords: jsonb("search_keywords").$type<string[]>(),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
@@ -150,7 +220,11 @@ export const productMedia = pgTable(
     mediaType: varchar("media_type", { length: 40 }).default("image").notNull(),
     url: varchar("url", { length: 500 }).notNull(),
     altText: varchar("alt_text", { length: 255 }).notNull(),
-    sortOrder: integer("sort_order").default(0).notNull()
+    sortOrder: integer("sort_order").default(0).notNull(),
+    isPrimary: boolean("is_primary").default(false).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
   },
   (table) => ({
     productIndex: index("product_media_product_idx").on(table.productId)
@@ -171,6 +245,93 @@ export const productSpecs = pgTable(
   },
   (table) => ({
     productIndex: index("product_specs_product_idx").on(table.productId)
+  })
+);
+
+export const productCategoryAssignments = pgTable(
+  "product_category_assignments",
+  {
+    productId: uuid("product_id")
+      .notNull()
+      .references(() => products.id),
+    categoryId: uuid("category_id")
+      .notNull()
+      .references(() => categories.id),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+  },
+  (table) => ({
+    pk: primaryKey({
+      name: "product_category_assignments_pk",
+      columns: [table.productId, table.categoryId]
+    }),
+    categoryIndex: index("product_category_assignments_category_idx").on(table.categoryId)
+  })
+);
+
+export const productTagAssignments = pgTable(
+  "product_tag_assignments",
+  {
+    productId: uuid("product_id")
+      .notNull()
+      .references(() => products.id),
+    tag: varchar("tag", { length: 40 }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+  },
+  (table) => ({
+    pk: primaryKey({
+      name: "product_tag_assignments_pk",
+      columns: [table.productId, table.tag]
+    })
+  })
+);
+
+export const productVehicleCompatibilities = pgTable(
+  "product_vehicle_compatibilities",
+  {
+    productId: uuid("product_id")
+      .notNull()
+      .references(() => products.id),
+    vehicleBrand: varchar("vehicle_brand", { length: 60 }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+  },
+  (table) => ({
+    pk: primaryKey({
+      name: "product_vehicle_compatibilities_pk",
+      columns: [table.productId, table.vehicleBrand]
+    })
+  })
+);
+
+export const productRelations = pgTable(
+  "product_relations",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    productId: uuid("product_id")
+      .notNull()
+      .references(() => products.id),
+    relatedProductId: uuid("related_product_id")
+      .notNull()
+      .references(() => products.id),
+    relationType: productRelationTypeEnum("relation_type")
+      .default("related")
+      .notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+  },
+  (table) => ({
+    productIndex: index("product_relations_product_idx").on(table.productId),
+    uniqueRelationIndex: uniqueIndex("product_relations_unique_idx").on(
+      table.productId,
+      table.relatedProductId,
+      table.relationType
+    )
   })
 );
 
@@ -212,6 +373,76 @@ export const customerAddresses = pgTable(
   },
   (table) => ({
     customerIndex: index("customer_addresses_customer_idx").on(table.customerId)
+  })
+);
+
+export const adminUsers = pgTable(
+  "admin_users",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    email: varchar("email", { length: 180 }).notNull(),
+    fullName: varchar("full_name", { length: 160 }).notNull(),
+    role: adminRoleEnum("role").default("operations").notNull(),
+    status: adminUserStatusEnum("status").default("active").notNull(),
+    passwordHash: varchar("password_hash", { length: 255 }).notNull(),
+    phone: varchar("phone", { length: 32 }),
+    lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+  },
+  (table) => ({
+    emailIndex: uniqueIndex("admin_users_email_idx").on(table.email)
+  })
+);
+
+export const adminSessions = pgTable(
+  "admin_sessions",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    adminUserId: uuid("admin_user_id")
+      .notNull()
+      .references(() => adminUsers.id),
+    tokenId: varchar("token_id", { length: 128 }).notNull(),
+    ipAddress: varchar("ip_address", { length: 80 }),
+    userAgent: varchar("user_agent", { length: 500 }),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    lastSeenAt: timestamp("last_seen_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+  },
+  (table) => ({
+    tokenIndex: uniqueIndex("admin_sessions_token_idx").on(table.tokenId),
+    adminIndex: index("admin_sessions_admin_idx").on(table.adminUserId)
+  })
+);
+
+export const auditLogs = pgTable(
+  "audit_logs",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    actorAdminId: uuid("actor_admin_id").references(() => adminUsers.id),
+    entityType: varchar("entity_type", { length: 80 }).notNull(),
+    entityId: varchar("entity_id", { length: 120 }).notNull(),
+    action: varchar("action", { length: 120 }).notNull(),
+    summary: text("summary"),
+    beforePayload: jsonb("before_payload"),
+    afterPayload: jsonb("after_payload"),
+    ipAddress: varchar("ip_address", { length: 80 }),
+    userAgent: varchar("user_agent", { length: 500 }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+  },
+  (table) => ({
+    entityIndex: index("audit_logs_entity_idx").on(table.entityType, table.entityId),
+    actorIndex: index("audit_logs_actor_idx").on(table.actorAdminId)
   })
 );
 
@@ -270,6 +501,14 @@ export const orders = pgTable(
     paymentStatus: varchar("payment_status", { length: 40 })
       .default("pending")
       .notNull(),
+    customerName: varchar("customer_name", { length: 160 }),
+    customerEmail: varchar("customer_email", { length: 180 }),
+    customerPhone: varchar("customer_phone", { length: 32 }),
+    statusNote: text("status_note"),
+    shippingCarrier: varchar("shipping_carrier", { length: 80 }),
+    trackingNumber: varchar("tracking_number", { length: 120 }),
+    trackingUrl: varchar("tracking_url", { length: 500 }),
+    paytrLastSyncedAt: timestamp("paytr_last_synced_at", { withTimezone: true }),
     note: text("note"),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
@@ -282,6 +521,26 @@ export const orders = pgTable(
     orderNumberIndex: uniqueIndex("orders_order_number_idx").on(table.orderNumber),
     merchantOidIndex: uniqueIndex("orders_merchant_oid_idx").on(table.merchantOid),
     customerIndex: index("orders_customer_idx").on(table.customerId)
+  })
+);
+
+export const orderStatusHistory = pgTable(
+  "order_status_history",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    orderId: uuid("order_id")
+      .notNull()
+      .references(() => orders.id),
+    adminUserId: uuid("admin_user_id").references(() => adminUsers.id),
+    fromStatus: orderStatusEnum("from_status"),
+    toStatus: orderStatusEnum("to_status").notNull(),
+    note: text("note"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+  },
+  (table) => ({
+    orderIndex: index("order_status_history_order_idx").on(table.orderId)
   })
 );
 
@@ -332,6 +591,56 @@ export const paytrTransactions = pgTable(
     merchantOidIndex: uniqueIndex("paytr_transactions_merchant_oid_idx").on(
       table.merchantOid
     )
+  })
+);
+
+export const quoteRequests = pgTable(
+  "quote_requests",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    fullName: varchar("full_name", { length: 160 }).notNull(),
+    companyName: varchar("company_name", { length: 180 }),
+    segment: quoteRequestSegmentEnum("segment").default("individual").notNull(),
+    email: varchar("email", { length: 180 }),
+    phone: varchar("phone", { length: 32 }).notNull(),
+    city: varchar("city", { length: 80 }),
+    district: varchar("district", { length: 80 }),
+    estimatedLocation: varchar("estimated_location", { length: 255 }),
+    requestNotes: text("request_notes"),
+    status: quoteRequestStatusEnum("status").default("new").notNull(),
+    assignedAdminId: uuid("assigned_admin_id").references(() => adminUsers.id),
+    source: varchar("source", { length: 80 }).default("website").notNull(),
+    metadata: jsonb("metadata"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+  },
+  (table) => ({
+    statusIndex: index("quote_requests_status_idx").on(table.status),
+    assigneeIndex: index("quote_requests_assignee_idx").on(table.assignedAdminId)
+  })
+);
+
+export const quoteActivities = pgTable(
+  "quote_activities",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    quoteRequestId: uuid("quote_request_id")
+      .notNull()
+      .references(() => quoteRequests.id),
+    adminUserId: uuid("admin_user_id").references(() => adminUsers.id),
+    activityType: varchar("activity_type", { length: 80 }).notNull(),
+    note: text("note"),
+    payload: jsonb("payload"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+  },
+  (table) => ({
+    quoteIndex: index("quote_activities_quote_idx").on(table.quoteRequestId)
   })
 );
 

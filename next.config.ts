@@ -16,6 +16,12 @@ const contentSecurityPolicy = [
   ...(isProduction ? ["upgrade-insecure-requests"] : [])
 ].join("; ");
 
+const discoveryLinkHeader = [
+  '<https://parkchargeev.com/sitemap.xml>; rel="sitemap"; type="application/xml"',
+  '<https://parkchargeev.com/.well-known/api-catalog>; rel="api-catalog"',
+  '</docs/api>; rel="service-doc"'
+].join(", ");
+
 const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"]
@@ -44,6 +50,10 @@ const nextConfig: NextConfig = {
           {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=(self), payment=(self)"
+          },
+          {
+            key: "Link",
+            value: discoveryLinkHeader
           }
         ]
       }
