@@ -22,45 +22,23 @@ function MetricCard({
 }
 
 export default async function AdminDashboardPage() {
-  if (!hasDatabaseConfig()) {
-    return (
-      <div className="space-y-6">
-        <section className="surface-card border border-slate-200 bg-white/95 p-8">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-600">
-            Kurulum Bekleniyor
-          </p>
-          <h1 className="mt-3 text-3xl font-semibold text-slate-950">
-            Admin oturumu aktif, veritabani henuz bagli degil
-          </h1>
-          <p className="mt-3 max-w-3xl text-sm text-slate-600">
-            Bu gecici modda admin paneline giris yapabilirsiniz. Siparis, urun, teklif ve dashboard
-            verileri icin production ortaminda gecerli bir DATABASE_URL tanimlanmasi gerekiyor.
-          </p>
-        </section>
-
-        <section className="grid gap-4 md:grid-cols-2">
-          <div className="surface-card border border-amber-200 bg-amber-50/80 p-6">
-            <h2 className="text-lg font-semibold text-slate-950">Aktif olanlar</h2>
-            <p className="mt-3 text-sm text-slate-700">
-              Admin girisi, oturum yonetimi ve panel kabugu Vercel uzerinde kullanima hazir.
-            </p>
-          </div>
-
-          <div className="surface-card border border-slate-200 bg-white/95 p-6">
-            <h2 className="text-lg font-semibold text-slate-950">Siradaki adim</h2>
-            <p className="mt-3 text-sm text-slate-700">
-              DATABASE_URL eklendikten sonra tam panel verileri otomatik olarak aktif hale gelecek.
-            </p>
-          </div>
-        </section>
-      </div>
-    );
-  }
-
   const snapshot = await getAdminDashboardSnapshot();
+  const databaseEnabled = hasDatabaseConfig();
 
   return (
     <div className="space-y-6">
+      {!databaseEnabled ? (
+        <section className="surface-card border border-amber-200 bg-amber-50/80 p-6">
+          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-700">
+            Yerel Fallback Modu
+          </p>
+          <p className="mt-3 max-w-3xl text-sm text-slate-700">
+            Veritabani baglantisi olmadan calisabilen yerel admin veri katmani aktif. Urun,
+            siparis ve teklif aksiyonlari bu modda da kaydedilir.
+          </p>
+        </section>
+      ) : null}
+
       <section className="surface-card border border-slate-200 bg-white/95 p-8">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>

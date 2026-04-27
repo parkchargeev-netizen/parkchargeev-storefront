@@ -40,7 +40,7 @@ export default async function AdminLoginPage() {
           <div className="mb-6">
             <h2 className="text-2xl font-semibold text-slate-950">Yonetici Girisi</h2>
             <p className="mt-2 text-sm text-slate-600">
-              Ilk kurulumda `.env` icindeki bootstrap admin bilgileri ile giris yapabilirsiniz.
+              Ilk kurulumda `.env` veya `.env.local` icindeki bootstrap admin bilgileri ile giris yapabilirsiniz.
             </p>
           </div>
           <LoginForm />

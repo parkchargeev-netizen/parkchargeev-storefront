@@ -2,11 +2,13 @@ import { and, count, desc, eq } from "drizzle-orm";
 import { randomUUID } from "node:crypto";
 
 import { hasDatabaseConfig } from "@/lib/runtime-config";
+import {
+  bootstrapAdminId,
+  fallbackAssignableAdminSeeds
+} from "@/server/admin/fallback-constants";
 import { getDb } from "@/server/db/client";
 import { adminSessions, adminUsers } from "@/server/db/schema";
 import { hashPassword } from "@/server/auth/password";
-
-const bootstrapAdminId = "bootstrap-admin";
 
 export function getBootstrapAdmin() {
   const email = process.env.ADMIN_BOOTSTRAP_EMAIL?.trim().toLowerCase();
@@ -193,6 +195,29 @@ export async function deleteAdminSession(tokenId: string) {
 }
 
 export async function listAssignableAdmins() {
+  if (!hasDatabaseConfig()) {
+    const bootstrapAdmin = getBootstrapAdmin();
+
+    return [
+      ...(bootstrapAdmin
+        ? [
+            {
+              id: bootstrapAdmin.id,
+              fullName: bootstrapAdmin.fullName,
+              email: bootstrapAdmin.email,
+              role: bootstrapAdmin.role
+            }
+          ]
+        : []),
+      ...fallbackAssignableAdminSeeds.map((admin) => ({
+        id: admin.id,
+        fullName: admin.fullName,
+        email: admin.email,
+        role: admin.role
+      }))
+    ];
+  }
+
   const db = getDb();
 
   return db

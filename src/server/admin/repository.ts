@@ -12,6 +12,7 @@ import {
 } from "drizzle-orm";
 import { z } from "zod";
 
+import { hasDatabaseConfig } from "@/lib/runtime-config";
 import { slugify } from "@/lib/slug";
 import { getDb } from "@/server/db/client";
 import type { AdminSessionPayload } from "@/server/auth/session";
@@ -20,6 +21,19 @@ import {
   productCategoryOptions,
   quoteStatusOptions
 } from "@/server/admin/constants";
+import {
+  getFallbackAdminDashboardSnapshot,
+  getFallbackAdminOrderById,
+  getFallbackAdminProductById,
+  getFallbackAdminQuoteById,
+  getFallbackProductLookupOptions,
+  listFallbackAdminOrders,
+  listFallbackAdminProducts,
+  listFallbackAdminQuotes,
+  updateFallbackAdminOrder,
+  updateFallbackAdminQuote,
+  upsertFallbackAdminProduct
+} from "@/server/admin/fallback-store";
 import type {
   adminListQuerySchema,
   adminOrderUpdateSchema,
@@ -371,6 +385,10 @@ async function writeProductCollections(
 }
 
 export async function listAdminProducts(input: ListQueryInput) {
+  if (!hasDatabaseConfig()) {
+    return listFallbackAdminProducts(input);
+  }
+
   const db = getDb();
   const cursor = decodeCursor(input.cursor);
   const conditions = [];
@@ -432,6 +450,10 @@ export async function listAdminProducts(input: ListQueryInput) {
 }
 
 export async function getAdminProductById(id: string) {
+  if (!hasDatabaseConfig()) {
+    return getFallbackAdminProductById(id);
+  }
+
   const db = getDb();
   const [product] = await db.select().from(products).where(eq(products.id, id)).limit(1);
 
@@ -472,6 +494,10 @@ export async function upsertAdminProduct(
     userAgent?: string | null;
   }
 ) {
+  if (!hasDatabaseConfig()) {
+    return upsertFallbackAdminProduct(input);
+  }
+
   const db = getDb();
   const categoryRows = await resolveCategoryIds(input.categories);
   const primaryCategoryId = categoryRows[0]?.id ?? null;
@@ -622,6 +648,10 @@ export async function upsertAdminProduct(
 }
 
 export async function getProductLookupOptions() {
+  if (!hasDatabaseConfig()) {
+    return getFallbackProductLookupOptions();
+  }
+
   const db = getDb();
   return db
     .select({
@@ -633,6 +663,10 @@ export async function getProductLookupOptions() {
 }
 
 export async function listAdminOrders(input: ListQueryInput) {
+  if (!hasDatabaseConfig()) {
+    return listFallbackAdminOrders(input);
+  }
+
   const db = getDb();
   const cursor = decodeCursor(input.cursor);
   const conditions = [];
@@ -689,6 +723,10 @@ export async function listAdminOrders(input: ListQueryInput) {
 }
 
 export async function getAdminOrderById(id: string) {
+  if (!hasDatabaseConfig()) {
+    return getFallbackAdminOrderById(id);
+  }
+
   const db = getDb();
   const [order] = await db.select().from(orders).where(eq(orders.id, id)).limit(1);
 
@@ -735,6 +773,10 @@ export async function updateAdminOrder(
     userAgent?: string | null;
   }
 ) {
+  if (!hasDatabaseConfig()) {
+    return updateFallbackAdminOrder(id, input, actor);
+  }
+
   const db = getDb();
   const before = await getAdminOrderById(id);
 
@@ -785,6 +827,10 @@ export async function updateAdminOrder(
 }
 
 export async function listAdminQuotes(input: ListQueryInput) {
+  if (!hasDatabaseConfig()) {
+    return listFallbackAdminQuotes(input);
+  }
+
   const db = getDb();
   const cursor = decodeCursor(input.cursor);
   const conditions = [];
@@ -857,6 +903,10 @@ export async function listAdminQuotes(input: ListQueryInput) {
 }
 
 export async function getAdminQuoteById(id: string) {
+  if (!hasDatabaseConfig()) {
+    return getFallbackAdminQuoteById(id);
+  }
+
   const db = getDb();
   const [quote] = await db
     .select({
@@ -915,6 +965,10 @@ export async function updateAdminQuote(
     userAgent?: string | null;
   }
 ) {
+  if (!hasDatabaseConfig()) {
+    return updateFallbackAdminQuote(id, input, actor);
+  }
+
   const db = getDb();
   const before = await getAdminQuoteById(id);
 
@@ -961,13 +1015,17 @@ export async function updateAdminQuote(
 }
 
 export async function getAdminDashboardSnapshot() {
+  if (!hasDatabaseConfig()) {
+    return getFallbackAdminDashboardSnapshot();
+  }
+
   const db = getDb();
   const now = new Date();
   const todayStart = startOfDay(now);
   const monthStart = startOfMonth(now);
   const weekStart = startOfWeek(now);
   const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-  const monthlyTargetKurus = Number(process.env.ADMIN_MONTHLY_REVENUE_TARGET_KURUS ?? "2500000") * 100;
+  const monthlyTargetKurus = Number(process.env.ADMIN_MONTHLY_REVENUE_TARGET_KURUS ?? "2500000");
 
   const [
     todayRevenueRow,

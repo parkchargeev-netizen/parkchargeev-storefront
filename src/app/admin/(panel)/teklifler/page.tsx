@@ -1,5 +1,8 @@
 import Link from "next/link";
 
+import { AdminFilterBar } from "@/components/admin/table/admin-filter-bar";
+import { AdminPageHeader } from "@/components/admin/table/admin-page-header";
+import { QuotesTable } from "@/components/admin/table/quotes-table";
 import { listAdminQuotes } from "@/server/admin/repository";
 
 type QuotesPageProps = {
@@ -21,68 +24,57 @@ export default async function AdminQuotesPage({ searchParams }: QuotesPageProps)
 
   return (
     <div className="space-y-6">
-      <section className="surface-card border border-slate-200 bg-white/95 p-8">
-        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-blue-600">
-          Teklifler
-        </p>
-        <h1 className="mt-3 text-3xl font-semibold text-slate-950">B2B pipeline ve takip</h1>
-      </section>
+      <AdminPageHeader
+        eyebrow="Teklifler"
+        title="B2B pipeline ve geri donus kontrolu"
+        description="Teklif listesi reusable tablo temelinde sade, hizli ve filtrelenebilir bir takip ekranina donustu."
+        meta={
+          <>
+            <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
+              {result.items.length} teklif
+            </span>
+            <span className="inline-flex rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
+              Pipeline hazirligi
+            </span>
+          </>
+        }
+      />
 
-      <section className="surface-card border border-slate-200 bg-white/95 p-6">
+      <AdminFilterBar>
         <form className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_240px_auto]">
           <input
             name="q"
             defaultValue={query.q ?? ""}
             placeholder="Kisi, firma veya telefon ara"
-            className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+            className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm"
           />
           <input
             name="status"
             defaultValue={query.status ?? ""}
             placeholder="Durum filtre"
-            className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+            className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm"
           />
-          <button className="rounded-2xl border border-slate-300 px-4 py-3 text-sm font-medium text-slate-700">
+          <button className="rounded-2xl border border-slate-300 bg-slate-950 px-4 py-3 text-sm font-medium text-white">
             Filtrele
           </button>
         </form>
-      </section>
+      </AdminFilterBar>
 
-      <section className="grid gap-4 xl:grid-cols-2">
-        {result.items.map((quote) => (
-          <Link
-            key={quote.id}
-            href={`/admin/teklifler/${quote.id}`}
-            className="surface-card border border-slate-200 bg-white/95 p-6 transition hover:-translate-y-0.5"
-          >
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-xs uppercase tracking-[0.24em] text-slate-500">{quote.segment}</p>
-                <h2 className="mt-2 text-xl font-semibold text-slate-950">{quote.fullName}</h2>
-                <p className="mt-2 text-sm text-slate-600">{quote.companyName || "Bireysel talep"}</p>
-                <p className="mt-1 text-sm text-slate-500">{quote.phone}</p>
-              </div>
-              <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">
-                {quote.status}
-              </span>
-            </div>
-            <p className="mt-5 text-sm text-slate-600">
-              Atanan temsilci: {quote.assignedAdminName || "Atanmamis"}
-            </p>
-          </Link>
-        ))}
-      </section>
-
-      {result.nextCursor ? (
-        <div className="flex justify-center">
-          <Link
-            href={`/admin/teklifler?cursor=${encodeURIComponent(result.nextCursor)}`}
-            className="rounded-full border border-slate-300 px-5 py-3 text-sm font-medium text-slate-700"
-          >
-            Sonraki sayfa
-          </Link>
-        </div>
-      ) : null}
+      <QuotesTable
+        items={result.items}
+        footer={
+          result.nextCursor ? (
+            <Link
+              href={`/admin/teklifler?cursor=${encodeURIComponent(result.nextCursor)}`}
+              className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-white"
+            >
+              Sonraki sayfa
+            </Link>
+          ) : (
+            <span className="text-sm font-medium text-slate-500">Tum kayitlar yuklendi.</span>
+          )
+        }
+      />
     </div>
   );
 }
