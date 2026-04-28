@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import {
   Cell,
   Legend,
@@ -32,11 +33,27 @@ type DashboardChartsProps = {
   }>;
 };
 
+function ChartEmptyState() {
+  return (
+    <div className="flex h-full items-center justify-center rounded-lg bg-slate-50 text-sm font-medium text-slate-500">
+      Henuz veri yok
+    </div>
+  );
+}
+
 export function DashboardCharts({
   revenueTrend,
   quoteDistribution,
   orderDistribution
 }: DashboardChartsProps) {
+  const [isMounted, setIsMounted] = useState(false);
+  const hasRevenueTrend = revenueTrend.length > 0;
+  const hasQuoteDistribution = quoteDistribution.length > 0;
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   return (
     <div className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
       <section className="surface-card border border-slate-200 bg-white/95 p-6">
@@ -46,20 +63,24 @@ export function DashboardCharts({
         </div>
 
         <div className="h-[320px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={revenueTrend}>
-              <XAxis dataKey="month" stroke="#64748b" />
-              <YAxis stroke="#64748b" tickFormatter={(value) => `${Math.round(value / 1000)}k`} />
-              <Tooltip formatter={(value) => formatPriceTRY(Number(value ?? 0))} />
-              <Line
-                dataKey="total"
-                stroke="#0044d3"
-                strokeWidth={3}
-                dot={{ r: 4, fill: "#0044d3" }}
-                activeDot={{ r: 6 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
+          {isMounted && hasRevenueTrend ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={revenueTrend}>
+                <XAxis dataKey="month" stroke="#64748b" />
+                <YAxis stroke="#64748b" tickFormatter={(value) => `${Math.round(value / 1000)}k`} />
+                <Tooltip formatter={(value) => formatPriceTRY(Number(value ?? 0))} />
+                <Line
+                  dataKey="total"
+                  stroke="#0044d3"
+                  strokeWidth={3}
+                  dot={{ r: 4, fill: "#0044d3" }}
+                  activeDot={{ r: 6 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          ) : (
+            <ChartEmptyState />
+          )}
         </div>
       </section>
 
@@ -70,20 +91,30 @@ export function DashboardCharts({
             <p className="mt-1 text-sm text-slate-600">Durum bazli teklif dagilimi</p>
           </div>
           <div className="h-[240px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie data={quoteDistribution} dataKey="total" nameKey="status" innerRadius={55} outerRadius={82}>
-                  {quoteDistribution.map((entry, index) => (
-                    <Cell
-                      key={`${entry.status}-${index}`}
-                      fill={chartColors[index % chartColors.length]}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
+            {isMounted && hasQuoteDistribution ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={quoteDistribution}
+                    dataKey="total"
+                    nameKey="status"
+                    innerRadius={55}
+                    outerRadius={82}
+                  >
+                    {quoteDistribution.map((entry, index) => (
+                      <Cell
+                        key={`${entry.status}-${index}`}
+                        fill={chartColors[index % chartColors.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <ChartEmptyState />
+            )}
           </div>
         </section>
 

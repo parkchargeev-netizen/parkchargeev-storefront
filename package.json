@@ -11,6 +11,7 @@
     "verify:runtime": "node scripts/runtime-smoke.mjs",
     "verify:app": "npm run typecheck && npm run lint && npm run build",
     "verify:release": "npm run verify:runtime && npm run verify:app",
+    "db:bootstrap:supabase": "node scripts/bootstrap-supabase-db.mjs",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push"
   },
