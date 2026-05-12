@@ -109,7 +109,7 @@ export const listPublishedSitePagesForSitemap = unstable_cache(
 
     try {
       const db = getDb();
-      return db
+      return await db
         .select({
           slug: sitePages.slug,
           updatedAt: sitePages.updatedAt,
