@@ -41,10 +41,9 @@ body {
 
 .surface-card {
   border: 1px solid color-mix(in srgb, var(--color-outline-variant) 60%, white);
-  box-shadow: 0 24px 80px rgba(19, 27, 46, 0.08);
+  box-shadow: 0 16px 44px rgba(19, 27, 46, 0.07);
   border-radius: 28px;
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(16px);
+  background: rgba(255, 255, 255, 0.96);
 }
 
 .soft-panel {
@@ -63,14 +62,61 @@ body {
   color: transparent;
 }
 
+.managed-richtext > * + * {
+  margin-top: 1.25rem;
+}
+
+.managed-richtext h2,
+.managed-richtext h3 {
+  color: var(--color-on-surface);
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.managed-richtext h2 {
+  font-size: 2rem;
+}
+
+.managed-richtext h3 {
+  font-size: 1.4rem;
+}
+
+@media (min-width: 768px) {
+  .managed-richtext h2 {
+    font-size: 2.5rem;
+  }
+
+  .managed-richtext h3 {
+    font-size: 1.75rem;
+  }
+}
+
+.managed-richtext a {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.managed-richtext ul,
+.managed-richtext ol {
+  padding-left: 1.35rem;
+}
+
+.managed-richtext li + li {
+  margin-top: 0.5rem;
+}
+
+.deferred-section {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 680px;
+}
+
 .hero-orb-primary {
   position: absolute;
   inset: auto auto 8% -12%;
   width: 24rem;
   height: 24rem;
   border-radius: 9999px;
-  background: rgba(0, 68, 211, 0.12);
-  filter: blur(96px);
+  background: rgba(0, 68, 211, 0.07);
 }
 
 .hero-orb-secondary {
@@ -79,7 +125,5 @@ body {
   width: 32rem;
   height: 32rem;
   border-radius: 9999px;
-  background: rgba(0, 110, 47, 0.09);
-  filter: blur(110px);
+  background: rgba(0, 110, 47, 0.05);
 }
-

@@ -1,13 +1,20 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import {
+  Activity,
   ArrowUpRight,
+  BookOpen,
+  CreditCard,
   Database,
   FileText,
+  Globe,
   LayoutDashboard,
+  ListTree,
+  Map,
   Package,
   ShieldCheck,
-  ShoppingCart
+  ShoppingCart,
+  UserCog
 } from "lucide-react";
 
 import { AdminLogoutButton } from "@/components/admin/admin-logout-button";
@@ -26,9 +33,17 @@ type AdminShellProps = {
 
 const navigationIconMap = {
   "/admin": LayoutDashboard,
+  "/admin/erisim": Map,
+  "/admin/site": Globe,
   "/admin/urunler": Package,
   "/admin/siparisler": ShoppingCart,
-  "/admin/teklifler": FileText
+  "/admin/teklifler": FileText,
+  "/admin/saha": Activity,
+  "/admin/blog": BookOpen,
+  "/admin/katalog": ListTree,
+  "/admin/paytr": CreditCard,
+  "/admin/audit": ShieldCheck,
+  "/admin/adminler": UserCog
 } as const;
 
 export function AdminShell({ admin, databaseEnabled = true, children }: AdminShellProps) {
@@ -93,6 +108,7 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
                     <Link
                       key={item.href}
                       href={item.href}
+                      prefetch={false}
                       className="group flex items-center justify-between rounded-2xl border border-transparent px-4 py-3 text-sm font-medium text-slate-700 transition hover:border-slate-200 hover:bg-slate-50 hover:text-slate-950"
                     >
                       <span className="flex items-center gap-3">
@@ -123,7 +139,7 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
             </div>
           </aside>
 
-          <div className="space-y-6">
+          <div className="min-w-0 space-y-6">
             <section className="soft-panel overflow-hidden px-6 py-5">
               <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
                 <div>

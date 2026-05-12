@@ -1,14 +1,49 @@
 import type { Metadata } from "next";
 
+import { ManagedPageRenderer } from "@/components/site/managed-page-renderer";
 import { testimonials, trustMetrics } from "@/lib/mock-data";
+import { absoluteUrl } from "@/lib/site";
+import { getPublishedSitePageBySlug } from "@/server/site/repository";
 
-export const metadata: Metadata = {
+const fallbackMetadata: Metadata = {
   title: "Hakkımızda",
   description:
     "ParkChargeEV'in marka yaklaşımı, uzmanlık alanları ve neden premium EV commerce modeli olarak konumlandığı."
 };
 
-export default function AboutPage() {
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await getPublishedSitePageBySlug("hakkimizda");
+
+  if (!page) {
+    return fallbackMetadata;
+  }
+
+  return {
+    title: page.seoTitle || page.title,
+    description: page.seoDescription || page.excerpt,
+    alternates: {
+      canonical: page.canonicalUrl || absoluteUrl(`/${page.slug}`)
+    },
+    openGraph: {
+      title: page.seoTitle || page.title,
+      description: page.seoDescription || page.excerpt,
+      url: absoluteUrl(`/${page.slug}`),
+      images: page.ogImageUrl ? [{ url: page.ogImageUrl }] : undefined
+    },
+    robots: {
+      index: !page.noIndex,
+      follow: !page.noIndex
+    }
+  };
+}
+
+export default async function AboutPage() {
+  const managedPage = await getPublishedSitePageBySlug("hakkimizda");
+
+  if (managedPage) {
+    return <ManagedPageRenderer page={managedPage} />;
+  }
+
   return (
     <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
       <section className="grid gap-8 lg:grid-cols-[1fr_360px]">

@@ -12,7 +12,11 @@ const contentSecurityPolicy = [
   "img-src 'self' data: blob: https:",
   "font-src 'self' data: https://fonts.gstatic.com",
   "style-src 'self' 'unsafe-inline'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+  `script-src 'self' 'unsafe-inline'${isProduction ? "" : " 'unsafe-eval'"}`,
+  "worker-src 'self' blob:",
+  "manifest-src 'self'",
+  "media-src 'self' data: blob: https:",
+  "object-src 'none'",
   ...(isProduction ? ["upgrade-insecure-requests"] : [])
 ].join("; ");
 

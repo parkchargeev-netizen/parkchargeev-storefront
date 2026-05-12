@@ -4,19 +4,26 @@ import Link from "next/link";
 
 import { useCart } from "@/components/providers/cart-provider";
 import { ProductCard } from "@/components/shop/product-card";
+import {
+  enrichCartItems,
+  getEnrichedCartSubtotalKurus,
+  getEnrichedCartTaxKurus,
+  getEnrichedCartTotalKurus
+} from "@/lib/cart";
 import { formatPriceTRY } from "@/lib/format";
 import { products } from "@/lib/mock-data";
 
 export function CartPageClient() {
   const {
-    items,
+    items: cartItems,
     isHydrated,
-    subtotalKurus,
-    taxKurus,
-    totalKurus,
     updateQuantity,
     removeItem
   } = useCart();
+  const items = enrichCartItems(cartItems);
+  const subtotalKurus = getEnrichedCartSubtotalKurus(items);
+  const taxKurus = getEnrichedCartTaxKurus(items);
+  const totalKurus = getEnrichedCartTotalKurus(items);
 
   const suggestions = products
     .filter((product) => !items.some((item) => item.product.id === product.id))

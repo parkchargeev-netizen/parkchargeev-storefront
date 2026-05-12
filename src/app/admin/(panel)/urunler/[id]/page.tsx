@@ -1,7 +1,11 @@
 import { notFound } from "next/navigation";
 
 import { ProductForm } from "@/components/admin/product-form";
-import { getAdminProductById, getProductLookupOptions } from "@/server/admin/repository";
+import {
+  getAdminProductById,
+  getProductLookupOptions,
+  listAdminCatalog
+} from "@/server/admin/repository";
 
 type EditProductPageProps = {
   params: Promise<{
@@ -11,14 +15,22 @@ type EditProductPageProps = {
 
 export default async function EditAdminProductPage({ params }: EditProductPageProps) {
   const { id } = await params;
-  const [product, lookupOptions] = await Promise.all([
+  const [product, lookupOptions, catalog] = await Promise.all([
     getAdminProductById(id),
-    getProductLookupOptions()
+    getProductLookupOptions(),
+    listAdminCatalog()
   ]);
 
   if (!product) {
     notFound();
   }
+
+  const variants =
+    "variants" in product
+      ? product.variants
+      : product.defaultVariant
+        ? [product.defaultVariant]
+        : [];
 
   return (
     <div className="space-y-6">
@@ -36,11 +48,19 @@ export default async function EditAdminProductPage({ params }: EditProductPagePr
         mode="edit"
         productId={product.id}
         lookupOptions={lookupOptions.filter((item) => item.id !== product.id)}
+        catalogOptions={{
+          brands: catalog.brands,
+          categories: catalog.categories.map((category) => ({
+            slug: category.slug,
+            name: category.name
+          }))
+        }}
         initialValues={{
           id: product.id,
           name: product.name,
           slug: product.slug,
           status: product.status,
+          brandId: product.brandId ?? "",
           shortDescription: product.shortDescription,
           description: product.description,
           useCase: product.useCase ?? "",
@@ -71,6 +91,18 @@ export default async function EditAdminProductPage({ params }: EditProductPagePr
           vehicleBrands: product.vehicles,
           relatedProductIds: product.relatedProductIds,
           accessoryProductIds: product.accessoryProductIds,
+          variants: variants.map((variant) => ({
+            id: variant.id,
+            sku: variant.sku,
+            title: variant.title,
+            powerLabel: variant.powerLabel ?? "",
+            cableLength: variant.cableLength ?? "",
+            connectorType: variant.connectorType ?? "",
+            stockQuantity: variant.stockQuantity,
+            priceKurus: variant.priceKurus,
+            compareAtKurus: variant.compareAtKurus ?? 0,
+            isDefault: variant.isDefault
+          })),
           media: product.media.map((item) => ({
             id: item.id,
             url: item.url,

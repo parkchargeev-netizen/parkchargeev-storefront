@@ -1,15 +1,50 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { ManagedPageRenderer } from "@/components/site/managed-page-renderer";
 import { services } from "@/lib/mock-data";
+import { absoluteUrl } from "@/lib/site";
+import { getPublishedSitePageBySlug } from "@/server/site/repository";
 
-export const metadata: Metadata = {
+const fallbackMetadata: Metadata = {
   title: "Hizmetler",
   description:
     "Şarj ünitesi kurulumu, teknik servis, kurumsal çözümler ve enerji danışmanlığı hizmetleri."
 };
 
-export default function ServicesPage() {
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await getPublishedSitePageBySlug("hizmetler");
+
+  if (!page) {
+    return fallbackMetadata;
+  }
+
+  return {
+    title: page.seoTitle || page.title,
+    description: page.seoDescription || page.excerpt,
+    alternates: {
+      canonical: page.canonicalUrl || absoluteUrl(`/${page.slug}`)
+    },
+    openGraph: {
+      title: page.seoTitle || page.title,
+      description: page.seoDescription || page.excerpt,
+      url: absoluteUrl(`/${page.slug}`),
+      images: page.ogImageUrl ? [{ url: page.ogImageUrl }] : undefined
+    },
+    robots: {
+      index: !page.noIndex,
+      follow: !page.noIndex
+    }
+  };
+}
+
+export default async function ServicesPage() {
+  const page = await getPublishedSitePageBySlug("hizmetler");
+
+  if (page) {
+    return <ManagedPageRenderer page={page} />;
+  }
+
   return (
     <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
       <section className="mx-auto max-w-4xl text-center">

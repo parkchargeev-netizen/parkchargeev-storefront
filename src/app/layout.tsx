@@ -2,13 +2,6 @@ import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
-import { SiteShell } from "@/components/layout/site-shell";
-import { CartProvider } from "@/components/providers/cart-provider";
-import {
-  getLocalBusinessJsonLd,
-  getOrganizationJsonLd,
-  getWebsiteJsonLd
-} from "@/lib/structured-data";
 import { siteConfig } from "@/lib/site";
 
 import "@/app/globals.css";
@@ -46,28 +39,10 @@ export default function RootLayout({
 }: Readonly<{
   children: ReactNode;
 }>) {
-  const organizationJsonLd = getOrganizationJsonLd();
-  const localBusinessJsonLd = getLocalBusinessJsonLd();
-  const websiteJsonLd = getWebsiteJsonLd();
-
   return (
     <html lang="tr">
       <body className={`${inter.variable} font-sans`}>
-        <CartProvider>
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
-          />
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
-          />
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
-          />
-          <SiteShell>{children}</SiteShell>
-        </CartProvider>
+        {children}
       </body>
     </html>
   );

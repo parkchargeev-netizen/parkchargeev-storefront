@@ -1,12 +1,15 @@
 import { headers } from "next/headers";
+import { cache } from "react";
 
 import { hasDatabaseConfig } from "@/lib/runtime-config";
 import { getBootstrapAdmin } from "@/server/admin/auth-service";
 import { canAccessAdminPath, hasRequiredRole, type AdminRole } from "@/server/auth/authorization";
 import { getAdminSessionFromCookies } from "@/server/auth/session";
-import { findAdminById, getAdminSessionRecord, touchAdminSession } from "@/server/admin/auth-service";
+import { getAdminAuthRecord, touchAdminSession } from "@/server/admin/auth-service";
 
-export async function getAuthenticatedAdmin() {
+const sessionTouchThrottleMs = 5 * 60 * 1000;
+
+export const getAuthenticatedAdmin = cache(async function getAuthenticatedAdmin() {
   const session = await getAdminSessionFromCookies();
 
   if (!session) {
@@ -37,10 +40,9 @@ export async function getAuthenticatedAdmin() {
     };
   }
 
-  const [admin, sessionRecord] = await Promise.all([
-    findAdminById(session.sub),
-    getAdminSessionRecord(session.sid, session.sub)
-  ]);
+  const authRecord = await getAdminAuthRecord(session.sid, session.sub);
+  const admin = authRecord?.admin ?? null;
+  const sessionRecord = authRecord?.sessionRecord ?? null;
 
   if (!admin || admin.status !== "active" || !sessionRecord) {
     return null;
@@ -50,13 +52,15 @@ export async function getAuthenticatedAdmin() {
     return null;
   }
 
-  await touchAdminSession(session.sid);
+  if (sessionRecord.lastSeenAt.getTime() < Date.now() - sessionTouchThrottleMs) {
+    await touchAdminSession(session.sid);
+  }
 
   return {
     session,
     admin
   };
-}
+});
 
 export async function requireAdminRole(allowedRoles?: AdminRole[]) {
   const authenticatedAdmin = await getAuthenticatedAdmin();

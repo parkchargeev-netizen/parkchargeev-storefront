@@ -8,7 +8,13 @@ import {
 } from "@/server/admin/fallback-constants";
 import { getDb } from "@/server/db/client";
 import { adminSessions, adminUsers } from "@/server/db/schema";
-import { hashPassword } from "@/server/auth/password";
+import { hashPassword, verifyPassword } from "@/server/auth/password";
+
+type AdminUserRecord = typeof adminUsers.$inferSelect;
+
+const bootstrapEnsureCacheMs = 5 * 60 * 1000;
+let bootstrapEnsurePromise: Promise<AdminUserRecord | null> | null = null;
+let bootstrapEnsureResolvedAt = 0;
 
 export function getBootstrapAdmin() {
   const email = process.env.ADMIN_BOOTSTRAP_EMAIL?.trim().toLowerCase();
@@ -47,16 +53,9 @@ export function authenticateBootstrapAdmin(email: string, password: string) {
   return bootstrapAdmin;
 }
 
-export async function ensureBootstrapAdmin() {
+async function ensureBootstrapAdminUncached() {
   if (!hasDatabaseConfig()) {
-    return;
-  }
-
-  const db = getDb();
-  const [existingCount] = await db.select({ count: count() }).from(adminUsers);
-
-  if ((existingCount?.count ?? 0) > 0) {
-    return;
+    return null;
   }
 
   const email = process.env.ADMIN_BOOTSTRAP_EMAIL?.trim();
@@ -65,16 +64,79 @@ export async function ensureBootstrapAdmin() {
     process.env.ADMIN_BOOTSTRAP_NAME?.trim() || "ParkChargeEV Superadmin";
 
   if (!email || !password) {
-    return;
+    return null;
   }
 
-  await db.insert(adminUsers).values({
-    email,
-    fullName,
-    role: "superadmin",
-    status: "active",
-    passwordHash: hashPassword(password)
-  });
+  const db = getDb();
+  const normalizedEmail = email.toLowerCase();
+  const [existingAdmin] = await db
+    .select()
+    .from(adminUsers)
+    .where(eq(adminUsers.email, normalizedEmail))
+    .limit(1);
+
+  if (existingAdmin) {
+    const passwordChanged = !verifyPassword(password, existingAdmin.passwordHash);
+    const profileChanged =
+      existingAdmin.fullName !== fullName ||
+      existingAdmin.role !== "superadmin" ||
+      existingAdmin.status !== "active";
+
+    if (passwordChanged || profileChanged) {
+      const [updatedAdmin] = await db
+        .update(adminUsers)
+        .set({
+          fullName,
+          role: "superadmin",
+          status: "active",
+          ...(passwordChanged ? { passwordHash: hashPassword(password) } : {}),
+          updatedAt: new Date()
+        })
+        .where(eq(adminUsers.id, existingAdmin.id))
+        .returning();
+
+      if (passwordChanged) {
+        await db.delete(adminSessions).where(eq(adminSessions.adminUserId, existingAdmin.id));
+      }
+
+      return updatedAdmin ?? existingAdmin;
+    }
+
+    return existingAdmin;
+  }
+
+  const [createdAdmin] = await db
+    .insert(adminUsers)
+    .values({
+      email: normalizedEmail,
+      fullName,
+      role: "superadmin",
+      status: "active",
+      passwordHash: hashPassword(password)
+    })
+    .returning();
+
+  return createdAdmin ?? null;
+}
+
+export async function ensureBootstrapAdmin() {
+  const now = Date.now();
+
+  if (bootstrapEnsurePromise && now - bootstrapEnsureResolvedAt < bootstrapEnsureCacheMs) {
+    return bootstrapEnsurePromise;
+  }
+
+  bootstrapEnsurePromise = ensureBootstrapAdminUncached()
+    .then((admin) => {
+      bootstrapEnsureResolvedAt = Date.now();
+      return admin;
+    })
+    .catch((error) => {
+      bootstrapEnsurePromise = null;
+      throw error;
+    });
+
+  return bootstrapEnsurePromise;
 }
 
 export async function findAdminByEmail(email: string) {
@@ -141,21 +203,25 @@ export async function createAdminSessionRecord(input: {
   const db = getDb();
   const tokenId = randomUUID();
 
-  await db.insert(adminSessions).values({
-    adminUserId: input.adminUserId,
-    tokenId,
-    ipAddress: input.ipAddress ?? null,
-    userAgent: input.userAgent ?? null,
-    expiresAt: input.expiresAt
-  });
-
-  await db
-    .update(adminUsers)
-    .set({
-      lastLoginAt: new Date(),
-      updatedAt: new Date()
-    })
-    .where(eq(adminUsers.id, input.adminUserId));
+  await Promise.all([
+    db.insert(adminSessions).values({
+      adminUserId: input.adminUserId,
+      tokenId,
+      ipAddress: input.ipAddress ?? null,
+      userAgent: input.userAgent ?? null,
+      expiresAt: input.expiresAt
+    }),
+    db
+      .update(adminUsers)
+      .set({
+        lastLoginAt: new Date(),
+        updatedAt: new Date()
+      })
+      .where(eq(adminUsers.id, input.adminUserId))
+      .catch((error) => {
+        console.warn("Admin last login timestamp could not be updated.", error);
+      })
+  ]);
 
   return tokenId;
 }
@@ -172,6 +238,65 @@ export async function getAdminSessionRecord(tokenId: string, adminUserId: string
     .limit(1);
 
   return session ?? null;
+}
+
+export async function getAdminAuthRecord(tokenId: string, adminUserId: string) {
+  const db = getDb();
+  const [row] = await db
+    .select({
+      adminId: adminUsers.id,
+      email: adminUsers.email,
+      fullName: adminUsers.fullName,
+      role: adminUsers.role,
+      status: adminUsers.status,
+      phone: adminUsers.phone,
+      lastLoginAt: adminUsers.lastLoginAt,
+      createdAt: adminUsers.createdAt,
+      updatedAt: adminUsers.updatedAt,
+      sessionId: adminSessions.id,
+      sessionTokenId: adminSessions.tokenId,
+      sessionAdminUserId: adminSessions.adminUserId,
+      ipAddress: adminSessions.ipAddress,
+      userAgent: adminSessions.userAgent,
+      expiresAt: adminSessions.expiresAt,
+      lastSeenAt: adminSessions.lastSeenAt,
+      sessionCreatedAt: adminSessions.createdAt
+    })
+    .from(adminSessions)
+    .innerJoin(adminUsers, eq(adminUsers.id, adminSessions.adminUserId))
+    .where(
+      and(eq(adminSessions.tokenId, tokenId), eq(adminSessions.adminUserId, adminUserId))
+    )
+    .orderBy(desc(adminSessions.createdAt))
+    .limit(1);
+
+  if (!row) {
+    return null;
+  }
+
+  return {
+    admin: {
+      id: row.adminId,
+      email: row.email,
+      fullName: row.fullName,
+      role: row.role,
+      status: row.status,
+      phone: row.phone,
+      lastLoginAt: row.lastLoginAt,
+      createdAt: row.createdAt,
+      updatedAt: row.updatedAt
+    },
+    sessionRecord: {
+      id: row.sessionId,
+      adminUserId: row.sessionAdminUserId,
+      tokenId: row.sessionTokenId,
+      ipAddress: row.ipAddress,
+      userAgent: row.userAgent,
+      expiresAt: row.expiresAt,
+      lastSeenAt: row.lastSeenAt,
+      createdAt: row.sessionCreatedAt
+    }
+  };
 }
 
 export async function touchAdminSession(tokenId: string) {

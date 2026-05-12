@@ -98,6 +98,75 @@ export const productRelationTypeEnum = pgEnum("product_relation_type", [
   "accessory"
 ]);
 
+export const sitePageStatusEnum = pgEnum("site_page_status", [
+  "draft",
+  "published",
+  "archived"
+]);
+
+export const navigationAreaEnum = pgEnum("navigation_area", [
+  "primary",
+  "footer",
+  "legal"
+]);
+
+export const sitePages = pgTable(
+  "site_pages",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    slug: varchar("slug", { length: 220 }).notNull(),
+    title: varchar("title", { length: 180 }).notNull(),
+    eyebrow: varchar("eyebrow", { length: 120 }),
+    excerpt: text("excerpt").notNull(),
+    body: text("body").notNull(),
+    seoTitle: varchar("seo_title", { length: 255 }),
+    seoDescription: varchar("seo_description", { length: 320 }),
+    canonicalUrl: varchar("canonical_url", { length: 500 }),
+    ogImageUrl: varchar("og_image_url", { length: 500 }),
+    status: sitePageStatusEnum("status").default("draft").notNull(),
+    showInSitemap: boolean("show_in_sitemap").default(true).notNull(),
+    noIndex: boolean("no_index").default(false).notNull(),
+    sitemapPriority: integer("sitemap_priority").default(70).notNull(),
+    changeFrequency: varchar("change_frequency", { length: 24 })
+      .default("monthly")
+      .notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+  },
+  (table) => ({
+    slugIndex: uniqueIndex("site_pages_slug_idx").on(table.slug),
+    statusIndex: index("site_pages_status_idx").on(table.status)
+  })
+);
+
+export const navigationItems = pgTable(
+  "navigation_items",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    area: navigationAreaEnum("area").default("primary").notNull(),
+    label: varchar("label", { length: 120 }).notNull(),
+    href: varchar("href", { length: 500 }).notNull(),
+    sortOrder: integer("sort_order").default(0).notNull(),
+    isActive: boolean("is_active").default(true).notNull(),
+    opensInNewTab: boolean("opens_in_new_tab").default(false).notNull(),
+    rel: varchar("rel", { length: 120 }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+  },
+  (table) => ({
+    areaIndex: index("navigation_items_area_idx").on(table.area, table.sortOrder),
+    areaHrefIndex: uniqueIndex("navigation_items_area_href_idx").on(table.area, table.href)
+  })
+);
+
 export const brands = pgTable(
   "brands",
   {

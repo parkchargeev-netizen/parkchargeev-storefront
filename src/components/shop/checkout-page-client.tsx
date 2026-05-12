@@ -5,6 +5,12 @@ import Script from "next/script";
 import { useEffect, useState } from "react";
 
 import { useCart } from "@/components/providers/cart-provider";
+import {
+  enrichCartItems,
+  getEnrichedCartSubtotalKurus,
+  getEnrichedCartTaxKurus,
+  getEnrichedCartTotalKurus
+} from "@/lib/cart";
 import { formatPriceTRY } from "@/lib/format";
 
 type CheckoutPageClientProps = {
@@ -43,13 +49,14 @@ export function CheckoutPageClient({
   initialMerchantOid
 }: CheckoutPageClientProps) {
   const {
-    items,
+    items: cartItems,
     isHydrated,
-    subtotalKurus,
-    taxKurus,
-    totalKurus,
     clearCart
   } = useCart();
+  const items = enrichCartItems(cartItems);
+  const subtotalKurus = getEnrichedCartSubtotalKurus(items);
+  const taxKurus = getEnrichedCartTaxKurus(items);
+  const totalKurus = getEnrichedCartTotalKurus(items);
   const [draft, setDraft] = useState<CheckoutDraft>(initialDraft);
   const [iframeToken, setIframeToken] = useState<string | null>(null);
   const [merchantOid, setMerchantOid] = useState<string | null>(

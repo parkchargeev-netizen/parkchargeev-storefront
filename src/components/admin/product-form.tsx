@@ -1,12 +1,12 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import type { z } from "zod";
 
-import { RichTextEditor } from "@/components/admin/rich-text-editor";
 import {
   productCategoryOptions,
   productStatusOptions,
@@ -16,6 +16,18 @@ import {
 import { adminProductSchema } from "@/server/admin/validators";
 
 type ProductFormValues = z.input<typeof adminProductSchema>;
+
+const RichTextEditor = dynamic(
+  () => import("@/components/admin/rich-text-editor").then((module) => module.RichTextEditor),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="min-h-[220px] rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-500">
+        Editor yukleniyor...
+      </div>
+    )
+  }
+);
 
 type ProductLookupOption = {
   id: string;
@@ -27,12 +39,20 @@ type ProductFormProps = {
   productId?: string;
   initialValues?: Partial<ProductFormValues>;
   lookupOptions: ProductLookupOption[];
+  catalogOptions?: {
+    brands: ProductLookupOption[];
+    categories: Array<{
+      slug: string;
+      name: string;
+    }>;
+  };
 };
 
 const emptyValues: ProductFormValues = {
   name: "",
   slug: "",
   status: "draft",
+  brandId: "",
   shortDescription: "",
   description: "<p></p>",
   useCase: "",
@@ -62,6 +82,7 @@ const emptyValues: ProductFormValues = {
   vehicleBrands: [],
   relatedProductIds: [],
   accessoryProductIds: [],
+  variants: [],
   media: [],
   specs: [],
   seoTitle: "",
@@ -77,11 +98,14 @@ export function ProductForm({
   mode,
   productId,
   initialValues,
-  lookupOptions
+  lookupOptions,
+  catalogOptions
 }: ProductFormProps) {
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [uploadMessage, setUploadMessage] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const mergedDefaults = useMemo<ProductFormValues>(
     () => ({
@@ -93,6 +117,7 @@ export function ProductForm({
       relatedProductIds: initialValues?.relatedProductIds ?? emptyValues.relatedProductIds,
       accessoryProductIds:
         initialValues?.accessoryProductIds ?? emptyValues.accessoryProductIds,
+      variants: initialValues?.variants ?? emptyValues.variants,
       media: initialValues?.media ?? emptyValues.media,
       specs: initialValues?.specs ?? emptyValues.specs,
       searchKeywords: initialValues?.searchKeywords ?? emptyValues.searchKeywords
@@ -117,6 +142,11 @@ export function ProductForm({
     name: "media"
   });
 
+  const variantFields = useFieldArray({
+    control,
+    name: "variants"
+  });
+
   const specFields = useFieldArray({
     control,
     name: "specs"
@@ -126,6 +156,13 @@ export function ProductForm({
   const selectedTags = watch("tags") ?? [];
   const selectedVehicles = watch("vehicleBrands") ?? [];
   const selectedKeywords = watch("searchKeywords") ?? [];
+  const categoryOptions =
+    catalogOptions?.categories.length
+      ? catalogOptions.categories.map((category) => ({
+          slug: category.slug,
+          label: category.name
+        }))
+      : productCategoryOptions;
 
   function toggleArrayValue(field: "categories" | "tags" | "vehicleBrands", value: string) {
     const current = watch(field) ?? [];
@@ -144,6 +181,39 @@ export function ProductForm({
     });
   }
 
+  async function uploadMediaFile(file: File, targetIndex?: number) {
+    setUploadMessage(null);
+    setIsUploading(true);
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await fetch("/api/admin/media/upload", {
+      method: "POST",
+      body: formData
+    });
+    const data = (await response.json()) as { ok: boolean; url?: string; message?: string };
+
+    setIsUploading(false);
+
+    if (!response.ok || !data.ok || !data.url) {
+      setUploadMessage(data.message ?? "Gorsel yuklenemedi.");
+      return;
+    }
+
+    if (typeof targetIndex === "number") {
+      setValue(`media.${targetIndex}.url`, data.url, { shouldValidate: true });
+    } else {
+      mediaFields.append({
+        url: data.url,
+        altText: watch("name") || "Urun gorseli",
+        isPrimary: mediaFields.fields.length === 0
+      });
+    }
+
+    setUploadMessage("Gorsel yuklendi.");
+  }
+
   const onSubmit = handleSubmit(async (values) => {
     setErrorMessage(null);
     setSuccessMessage(null);
@@ -152,17 +222,37 @@ export function ProductForm({
       mode === "create" ? "/api/admin/products" : `/api/admin/products/${productId}`;
     const method = mode === "create" ? "POST" : "PATCH";
 
+    const variants = (values.variants ?? []).filter((variant) => variant.sku && variant.title);
+    const defaultVariant = variants.find((variant) => variant.isDefault) ?? variants[0];
+    const payload = {
+      ...values,
+      ...(defaultVariant
+        ? {
+            sku: defaultVariant.sku,
+            variantTitle: defaultVariant.title,
+            powerLabel: defaultVariant.powerLabel ?? "",
+            cableLength: defaultVariant.cableLength ?? "",
+            connectorType: defaultVariant.connectorType ?? values.connectorType,
+            priceKurus: defaultVariant.priceKurus,
+            compareAtKurus: defaultVariant.compareAtKurus ?? 0,
+            stockQuantity: defaultVariant.stockQuantity
+          }
+        : {}),
+      slug: values.slug || values.name,
+      variantTitle: defaultVariant?.title || values.variantTitle || values.name,
+      variants: variants.map((variant, index) => ({
+        ...variant,
+        isDefault: defaultVariant ? variant === defaultVariant : index === 0
+      })),
+      searchKeywords: (values.searchKeywords ?? []).filter(Boolean)
+    };
+
     const response = await fetch(endpoint, {
       method,
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        ...values,
-        slug: values.slug || values.name,
-        variantTitle: values.variantTitle || values.name,
-        searchKeywords: (values.searchKeywords ?? []).filter(Boolean)
-      })
+      body: JSON.stringify(payload)
     });
 
     const data = (await response.json()) as { ok: boolean; message?: string; product?: { id: string } };
@@ -215,6 +305,18 @@ export function ProductForm({
               {productStatusOptions.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-700">Marka</label>
+            <select className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm" {...register("brandId")}>
+              <option value="">Marka yok</option>
+              {(catalogOptions?.brands ?? []).map((brand) => (
+                <option key={brand.id} value={brand.id}>
+                  {brand.name}
                 </option>
               ))}
             </select>
@@ -299,11 +401,108 @@ export function ProductForm({
       </section>
 
       <section className="surface-card border border-slate-200 bg-white/95 p-6">
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-xl font-semibold text-slate-950">Varyantlar</h2>
+            <p className="mt-1 text-sm text-slate-600">
+              Fiyat, stok, kablo ve konnektor bilgisini varyant bazinda yonetin.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() =>
+              variantFields.append({
+                sku: watch("sku") || "",
+                title: watch("variantTitle") || watch("name") || "",
+                powerLabel: watch("powerLabel") || "",
+                cableLength: watch("cableLength") || "",
+                connectorType: watch("connectorType") || "",
+                stockQuantity: watch("stockQuantity") || 0,
+                priceKurus: watch("priceKurus") || 0,
+                compareAtKurus: watch("compareAtKurus") || 0,
+                isDefault: variantFields.fields.length === 0
+              })
+            }
+            className="rounded-full border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700"
+          >
+            Varyant ekle
+          </button>
+        </div>
+        <div className="space-y-4">
+          {variantFields.fields.map((field, index) => (
+            <div key={field.id} className="grid gap-4 rounded-3xl border border-slate-200 bg-slate-50 p-4 xl:grid-cols-6">
+              <input
+                className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+                placeholder="SKU"
+                {...register(`variants.${index}.sku`)}
+              />
+              <input
+                className="rounded-2xl border border-slate-300 px-4 py-3 text-sm xl:col-span-2"
+                placeholder="Baslik"
+                {...register(`variants.${index}.title`)}
+              />
+              <input
+                type="number"
+                className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+                placeholder="Fiyat"
+                {...register(`variants.${index}.priceKurus`, { valueAsNumber: true })}
+              />
+              <input
+                type="number"
+                className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+                placeholder="Stok"
+                {...register(`variants.${index}.stockQuantity`, { valueAsNumber: true })}
+              />
+              <div className="flex items-center gap-3">
+                <label className="flex items-center gap-2 text-sm text-slate-700">
+                  <input type="checkbox" {...register(`variants.${index}.isDefault`)} />
+                  Varsayilan
+                </label>
+                <button
+                  type="button"
+                  onClick={() => variantFields.remove(index)}
+                  className="rounded-full border border-red-200 px-3 py-2 text-sm text-red-700"
+                >
+                  Sil
+                </button>
+              </div>
+              <input
+                className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+                placeholder="Power label"
+                {...register(`variants.${index}.powerLabel`)}
+              />
+              <input
+                className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+                placeholder="Kablo"
+                {...register(`variants.${index}.cableLength`)}
+              />
+              <input
+                className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+                placeholder="Konnektor"
+                {...register(`variants.${index}.connectorType`)}
+              />
+              <input
+                type="number"
+                className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+                placeholder="Karsilastirma"
+                {...register(`variants.${index}.compareAtKurus`, { valueAsNumber: true })}
+              />
+            </div>
+          ))}
+          {variantFields.fields.length === 0 ? (
+            <p className="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600">
+              Varyant eklenmezse ustteki varsayilan SKU, fiyat ve stok alanlari kaydedilir.
+            </p>
+          ) : null}
+        </div>
+      </section>
+
+      <section className="surface-card border border-slate-200 bg-white/95 p-6">
         <div className="grid gap-6 lg:grid-cols-3">
           <div>
             <p className="mb-3 text-sm font-semibold text-slate-800">Kategoriler</p>
             <div className="space-y-2">
-              {productCategoryOptions.map((option) => (
+              {categoryOptions.map((option) => (
                 <label key={option.slug} className="flex items-center gap-3 rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-700">
                   <input
                     type="checkbox"
@@ -391,16 +590,44 @@ export function ProductForm({
       </section>
 
       <section className="surface-card border border-slate-200 bg-white/95 p-6">
-        <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-slate-950">Gorseller</h2>
-          <button
-            type="button"
-            onClick={() => mediaFields.append({ url: "", altText: "", isPrimary: mediaFields.fields.length === 0 })}
-            className="rounded-full border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700"
-          >
-            Gorsel ekle
-          </button>
+        <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <h2 className="text-xl font-semibold text-slate-950">Gorseller</h2>
+            <p className="mt-1 text-sm text-slate-600">
+              Supabase Storage alanina dosya yukleyebilir veya dis gorsel URL degeri girebilirsiniz.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <label className="inline-flex cursor-pointer rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-medium text-blue-700">
+              {isUploading ? "Yukleniyor..." : "Dosya yukle"}
+              <input
+                type="file"
+                accept="image/*"
+                className="sr-only"
+                disabled={isUploading}
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  if (file) {
+                    void uploadMediaFile(file);
+                    event.currentTarget.value = "";
+                  }
+                }}
+              />
+            </label>
+            <button
+              type="button"
+              onClick={() => mediaFields.append({ url: "", altText: "", isPrimary: mediaFields.fields.length === 0 })}
+              className="rounded-full border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700"
+            >
+              URL ekle
+            </button>
+          </div>
         </div>
+        {uploadMessage ? (
+          <p className="mb-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+            {uploadMessage}
+          </p>
+        ) : null}
         <div className="space-y-4">
           {mediaFields.fields.map((field, index) => (
             <div key={field.id} className="grid gap-4 rounded-3xl border border-slate-200 bg-slate-50 p-4 lg:grid-cols-[1fr_240px_auto]">
@@ -418,6 +645,22 @@ export function ProductForm({
                 <label className="flex items-center gap-2 text-sm text-slate-700">
                   <input type="checkbox" {...register(`media.${index}.isPrimary`)} />
                   Ana gorsel
+                </label>
+                <label className="cursor-pointer rounded-full border border-blue-200 px-3 py-2 text-sm text-blue-700">
+                  Degistir
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="sr-only"
+                    disabled={isUploading}
+                    onChange={(event) => {
+                      const file = event.target.files?.[0];
+                      if (file) {
+                        void uploadMediaFile(file, index);
+                        event.currentTarget.value = "";
+                      }
+                    }}
+                  />
                 </label>
                 <button type="button" onClick={() => mediaFields.remove(index)} className="rounded-full border border-red-200 px-3 py-2 text-sm text-red-700">
                   Sil

@@ -1,7 +1,11 @@
+import Link from "next/link";
+
 import { DashboardCharts } from "@/components/admin/dashboard-charts";
 import { formatPriceTRY } from "@/lib/format";
 import { hasDatabaseConfig } from "@/lib/runtime-config";
 import { getAdminDashboardSnapshot } from "@/server/admin/repository";
+import { requireAdminRole } from "@/server/auth/guards";
+import type { AdminRole } from "@/server/auth/authorization";
 
 function MetricCard({
   label,
@@ -21,9 +25,48 @@ function MetricCard({
   );
 }
 
+const quickActions = [
+  {
+    href: "/admin/urunler",
+    label: "Urun yonetimi",
+    detail: "Liste, varyant, stok, fiyat ve medya akisi",
+    roles: ["superadmin", "sales"]
+  },
+  {
+    href: "/admin/katalog",
+    label: "Katalog sozlukleri",
+    detail: "Marka ve kategori kayitlari",
+    roles: ["superadmin", "sales"]
+  },
+  {
+    href: "/admin/blog",
+    label: "Icerik ve blog",
+    detail: "Blog CRUD ve editor yetkili icerik operasyonu",
+    roles: ["superadmin", "editor"]
+  },
+  {
+    href: "/admin/erisim",
+    label: "Tum erisim haritasi",
+    detail: "Role gore acik moduller ve CSV kisayollari",
+    roles: ["superadmin", "sales", "operations", "technician", "editor"]
+  }
+] satisfies Array<{
+  href: string;
+  label: string;
+  detail: string;
+  roles: AdminRole[];
+}>;
+
 export default async function AdminDashboardPage() {
-  const snapshot = await getAdminDashboardSnapshot();
+  const [snapshot, authenticatedAdmin] = await Promise.all([
+    getAdminDashboardSnapshot(),
+    requireAdminRole()
+  ]);
   const databaseEnabled = hasDatabaseConfig();
+  const role = authenticatedAdmin?.session.role;
+  const visibleQuickActions = role
+    ? quickActions.filter((action) => action.roles.includes(role))
+    : [];
 
   return (
     <div className="space-y-6">
@@ -50,13 +93,36 @@ export default async function AdminDashboardPage() {
               Siparis, teklif ve musteri hareketleri tek bakista izlenebilir. KPI kartlari su an canli veritabanindan besleniyor.
             </p>
           </div>
-          <div className="rounded-3xl bg-slate-950 px-5 py-4 text-white">
-            <p className="text-xs uppercase tracking-[0.24em] text-slate-300">Aylik hedef ilerleme</p>
-            <p className="mt-2 text-3xl font-semibold">
-              %{snapshot.kpis.targetProgress.toFixed(1)}
-            </p>
+          <div className="flex flex-col gap-3">
+            <div className="rounded-3xl bg-slate-950 px-5 py-4 text-white">
+              <p className="text-xs uppercase tracking-[0.24em] text-slate-300">Aylik hedef ilerleme</p>
+              <p className="mt-2 text-3xl font-semibold">
+                %{snapshot.kpis.targetProgress.toFixed(1)}
+              </p>
+            </div>
+            <Link
+              href="/admin/erisim"
+              prefetch={false}
+              className="rounded-3xl border border-slate-300 bg-white px-5 py-3 text-center text-sm font-semibold text-slate-800 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+            >
+              Tum admin kisayollari
+            </Link>
           </div>
         </div>
+      </section>
+
+      <section className="grid gap-4 lg:grid-cols-5">
+        {visibleQuickActions.map((action) => (
+          <Link
+            key={action.href}
+            href={action.href}
+            prefetch={false}
+            className="surface-card border border-slate-200 bg-white/95 p-5 transition hover:border-blue-200 hover:bg-blue-50/70"
+          >
+            <p className="text-sm font-semibold text-slate-950">{action.label}</p>
+            <p className="mt-2 text-xs leading-5 text-slate-600">{action.detail}</p>
+          </Link>
+        ))}
       </section>
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -108,7 +174,7 @@ export default async function AdminDashboardPage() {
           <h2 className="text-lg font-semibold text-slate-950">Son 10 Siparis</h2>
           <div className="mt-5 space-y-3">
             {snapshot.activity.recentOrders.map((order) => (
-              <div key={order.id} className="rounded-2xl bg-slate-50 px-4 py-3">
+              <Link key={order.id} href={`/admin/siparisler/${order.id}`} prefetch={false} className="block rounded-2xl bg-slate-50 px-4 py-3 transition hover:bg-blue-50">
                 <div className="flex items-center justify-between gap-4">
                   <div>
                     <p className="text-sm font-semibold text-slate-900">{order.orderNumber}</p>
@@ -119,7 +185,7 @@ export default async function AdminDashboardPage() {
                     <p className="text-xs text-slate-500">{order.status}</p>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -128,11 +194,11 @@ export default async function AdminDashboardPage() {
           <h2 className="text-lg font-semibold text-slate-950">Son 5 Teklif</h2>
           <div className="mt-5 space-y-3">
             {snapshot.activity.recentQuotes.map((quote) => (
-              <div key={quote.id} className="rounded-2xl bg-slate-50 px-4 py-3">
+              <Link key={quote.id} href={`/admin/teklifler/${quote.id}`} prefetch={false} className="block rounded-2xl bg-slate-50 px-4 py-3 transition hover:bg-blue-50">
                 <p className="text-sm font-semibold text-slate-900">{quote.fullName}</p>
                 <p className="text-sm text-slate-600">{quote.companyName || "Bireysel talep"}</p>
                 <p className="mt-2 text-xs text-slate-500">{quote.status}</p>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -141,11 +207,11 @@ export default async function AdminDashboardPage() {
           <h2 className="text-lg font-semibold text-slate-950">Son 3 Servis Talebi</h2>
           <div className="mt-5 space-y-3">
             {snapshot.activity.recentServiceRequests.map((item) => (
-              <div key={item.id} className="rounded-2xl bg-slate-50 px-4 py-3">
+              <Link key={item.id} href={`/admin/saha/${item.id}`} prefetch={false} className="block rounded-2xl bg-slate-50 px-4 py-3 transition hover:bg-blue-50">
                 <p className="text-sm font-semibold text-slate-900">{item.fullName}</p>
                 <p className="text-sm text-slate-600">{item.leadType}</p>
                 <p className="mt-2 text-xs text-slate-500">{item.status}</p>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

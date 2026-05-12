@@ -1,8 +1,11 @@
 import { ProductForm } from "@/components/admin/product-form";
-import { getProductLookupOptions } from "@/server/admin/repository";
+import { getProductLookupOptions, listAdminCatalog } from "@/server/admin/repository";
 
 export default async function NewAdminProductPage() {
-  const lookupOptions = await getProductLookupOptions();
+  const [lookupOptions, catalog] = await Promise.all([
+    getProductLookupOptions(),
+    listAdminCatalog()
+  ]);
 
   return (
     <div className="space-y-6">
@@ -16,7 +19,17 @@ export default async function NewAdminProductPage() {
         </p>
       </section>
 
-      <ProductForm mode="create" lookupOptions={lookupOptions} />
+      <ProductForm
+        mode="create"
+        lookupOptions={lookupOptions}
+        catalogOptions={{
+          brands: catalog.brands,
+          categories: catalog.categories.map((category) => ({
+            slug: category.slug,
+            name: category.name
+          }))
+        }}
+      />
     </div>
   );
 }

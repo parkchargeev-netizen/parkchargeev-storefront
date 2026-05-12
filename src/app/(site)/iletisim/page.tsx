@@ -1,20 +1,54 @@
 import type { Metadata } from "next";
 
 import { LeadForm } from "@/components/forms/lead-form";
+import { ManagedPageRenderer } from "@/components/site/managed-page-renderer";
 import { globalFaqs, trustMetrics } from "@/lib/mock-data";
-import { siteConfig } from "@/lib/site";
+import { absoluteUrl, siteConfig } from "@/lib/site";
 import {
   getFaqJsonLd,
   getLocalBusinessJsonLd
 } from "@/lib/structured-data";
+import { getPublishedSitePageBySlug } from "@/server/site/repository";
 
-export const metadata: Metadata = {
+const fallbackMetadata: Metadata = {
   title: "İletişim",
   description:
     "Keşif, teklif, kurulum, servis ve iş ortaklığı talepleri için ParkChargeEV ile iletişime geçin."
 };
 
-export default function ContactPage() {
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await getPublishedSitePageBySlug("iletisim");
+
+  if (!page) {
+    return fallbackMetadata;
+  }
+
+  return {
+    title: page.seoTitle || page.title,
+    description: page.seoDescription || page.excerpt,
+    alternates: {
+      canonical: page.canonicalUrl || absoluteUrl(`/${page.slug}`)
+    },
+    openGraph: {
+      title: page.seoTitle || page.title,
+      description: page.seoDescription || page.excerpt,
+      url: absoluteUrl(`/${page.slug}`),
+      images: page.ogImageUrl ? [{ url: page.ogImageUrl }] : undefined
+    },
+    robots: {
+      index: !page.noIndex,
+      follow: !page.noIndex
+    }
+  };
+}
+
+export default async function ContactPage() {
+  const page = await getPublishedSitePageBySlug("iletisim");
+
+  if (page) {
+    return <ManagedPageRenderer page={page} />;
+  }
+
   const localBusinessJsonLd = getLocalBusinessJsonLd();
   const faqJsonLd = getFaqJsonLd(globalFaqs);
 

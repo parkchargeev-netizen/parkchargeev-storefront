@@ -15,7 +15,10 @@ export function getDb() {
   const connectionString = process.env.DATABASE_URL as string;
 
   const client = postgres(connectionString, {
-    prepare: false
+    prepare: false,
+    max: 3,
+    connect_timeout: 10,
+    idle_timeout: 20
   });
 
   database = drizzle(client, { schema });

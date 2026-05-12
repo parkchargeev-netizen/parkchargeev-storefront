@@ -117,7 +117,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 py-10 lg:px-8">
+      <section className="deferred-section mx-auto max-w-7xl px-6 py-10 lg:px-8">
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
           {trustMetrics.map((metric) => (
             <div key={metric.label} className="surface-card p-6">
@@ -135,7 +135,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 py-10 lg:px-8">
+      <section className="deferred-section mx-auto max-w-7xl px-6 py-10 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <p className="text-sm font-semibold uppercase tracking-[0.34em] text-primary">
             Uçtan uca deneyim
@@ -166,7 +166,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 py-14 lg:px-8">
+      <section className="deferred-section mx-auto max-w-7xl px-6 py-14 lg:px-8">
         <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.34em] text-primary">
@@ -188,7 +188,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 py-10 lg:px-8">
+      <section className="deferred-section mx-auto max-w-7xl px-6 py-10 lg:px-8">
         <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.34em] text-secondary">
@@ -210,7 +210,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 py-10 lg:px-8">
+      <section className="deferred-section mx-auto max-w-7xl px-6 py-10 lg:px-8">
         <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.34em] text-primary">
@@ -232,7 +232,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 py-10 lg:px-8">
+      <section className="deferred-section mx-auto max-w-7xl px-6 py-10 lg:px-8">
         <div className="overflow-hidden rounded-[32px] bg-slate-950 px-8 py-10 text-white shadow-[0_24px_80px_rgba(0,0,0,0.2)] lg:px-12">
           <p className="text-sm font-semibold uppercase tracking-[0.34em] text-white/60">
             Sosyal kanıt
@@ -256,7 +256,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-5xl px-6 py-10 lg:px-8">
+      <section className="deferred-section mx-auto max-w-5xl px-6 py-10 lg:px-8">
         <div className="surface-card p-10 text-center lg:p-14">
           <p className="text-sm font-semibold uppercase tracking-[0.34em] text-primary">
             Projenizi birlikte planlayalım

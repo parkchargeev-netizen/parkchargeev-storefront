@@ -8,10 +8,12 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
+    "verify:admin": "node scripts/admin-smoke.mjs",
     "verify:runtime": "node scripts/runtime-smoke.mjs",
     "verify:app": "npm run typecheck && npm run lint && npm run build",
     "verify:release": "npm run verify:runtime && npm run verify:app",
     "db:bootstrap:supabase": "node scripts/bootstrap-supabase-db.mjs",
+    "db:site-cms": "node scripts/apply-site-cms-migration.mjs",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push"
   },

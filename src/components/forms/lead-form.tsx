@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { contactReasons } from "@/lib/mock-data";
+import { contactReasons } from "@/lib/contact-reasons";
 
 type LeadFormProps = {
   title?: string;

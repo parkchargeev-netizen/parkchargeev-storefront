@@ -22,6 +22,16 @@ export const adminNavigation: Array<{
     roles: ["superadmin", "sales", "operations", "technician", "editor"]
   },
   {
+    href: "/admin/erisim",
+    label: "Erisim",
+    roles: ["superadmin", "sales", "operations", "technician", "editor"]
+  },
+  {
+    href: "/admin/site",
+    label: "Site",
+    roles: ["superadmin", "editor"]
+  },
+  {
     href: "/admin/urunler",
     label: "Urunler",
     roles: ["superadmin", "sales"]
@@ -35,6 +45,36 @@ export const adminNavigation: Array<{
     href: "/admin/teklifler",
     label: "Teklifler",
     roles: ["superadmin", "sales"]
+  },
+  {
+    href: "/admin/saha",
+    label: "Saha",
+    roles: ["superadmin", "operations", "technician"]
+  },
+  {
+    href: "/admin/blog",
+    label: "Icerik",
+    roles: ["superadmin", "editor"]
+  },
+  {
+    href: "/admin/katalog",
+    label: "Katalog",
+    roles: ["superadmin", "sales"]
+  },
+  {
+    href: "/admin/paytr",
+    label: "PayTR",
+    roles: ["superadmin", "sales"]
+  },
+  {
+    href: "/admin/audit",
+    label: "Audit",
+    roles: ["superadmin"]
+  },
+  {
+    href: "/admin/adminler",
+    label: "Adminler",
+    roles: ["superadmin"]
   }
 ];
 
@@ -118,6 +158,14 @@ export const quoteSegmentOptions: Array<{
   { value: "fleet", label: "Filo" },
   { value: "individual", label: "Bireysel" }
 ];
+
+export const leadStatusOptions = [
+  { value: "new", label: "Yeni" },
+  { value: "contacted", label: "Iletisime Gecildi" },
+  { value: "qualified", label: "Nitelikli" },
+  { value: "won", label: "Kazanildi" },
+  { value: "lost", label: "Kaybedildi" }
+] as const;
 
 export function formatOrderStatusLabel(status: OrderStatus) {
   return orderStatusOptions.find((option) => option.value === status)?.label ?? status;

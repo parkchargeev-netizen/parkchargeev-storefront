@@ -65,8 +65,12 @@ export async function POST(request: Request) {
       return response;
     }
 
-    await ensureBootstrapAdmin();
-    const admin = await findAdminByEmail(payload.email);
+    const bootstrapAdmin = await ensureBootstrapAdmin();
+    const normalizedEmail = payload.email.toLowerCase();
+    const admin =
+      bootstrapAdmin?.email === normalizedEmail
+        ? bootstrapAdmin
+        : await findAdminByEmail(payload.email);
 
     if (!admin || admin.status !== "active" || !verifyPassword(payload.password, admin.passwordHash)) {
       return NextResponse.json(

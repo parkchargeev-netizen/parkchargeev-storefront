@@ -1,13 +1,15 @@
 import { products, type ProductModel } from "@/lib/mock-data";
+import {
+  CART_STORAGE_KEY,
+  CART_TAX_RATE,
+  type CartItem,
+  getCartTotalQuantity,
+  normalizeCartQuantity,
+  normalizeStoredCartItems
+} from "@/lib/cart-core";
 
-export const CART_STORAGE_KEY = "parkchargeev-cart-v1";
-export const CART_TAX_RATE = 0.2;
-
-export type CartItem = {
-  productId: string;
-  quantity: number;
-  cableOption: string;
-};
+export { CART_STORAGE_KEY, CART_TAX_RATE, getCartTotalQuantity };
+export type { CartItem };
 
 export type EnrichedCartItem = CartItem & {
   product: ProductModel;
@@ -19,7 +21,7 @@ function findProduct(productId: string) {
 }
 
 export function normalizeCartItems(items: CartItem[]) {
-  return items
+  return normalizeStoredCartItems(items)
     .map((item) => {
       const product = findProduct(item.productId);
 
@@ -27,9 +29,7 @@ export function normalizeCartItems(items: CartItem[]) {
         return null;
       }
 
-      const quantity = Number.isFinite(item.quantity)
-        ? Math.min(Math.max(Math.trunc(item.quantity), 1), 99)
-        : 1;
+      const quantity = normalizeCartQuantity(item.quantity);
       const cableOption = product.cableOptions.includes(item.cableOption)
         ? item.cableOption
         : product.cableOptions[0];
@@ -61,20 +61,28 @@ export function enrichCartItems(items: CartItem[]) {
     .filter((item): item is EnrichedCartItem => item !== null);
 }
 
+export function getEnrichedCartSubtotalKurus(items: EnrichedCartItem[]) {
+  return items.reduce((total, item) => total + item.lineTotalKurus, 0);
+}
+
+export function getEnrichedCartTaxKurus(items: EnrichedCartItem[]) {
+  return Math.round(getEnrichedCartSubtotalKurus(items) * CART_TAX_RATE);
+}
+
+export function getEnrichedCartTotalKurus(items: EnrichedCartItem[]) {
+  return getEnrichedCartSubtotalKurus(items) + getEnrichedCartTaxKurus(items);
+}
+
 export function getCartSubtotalKurus(items: CartItem[]) {
-  return enrichCartItems(items).reduce((total, item) => total + item.lineTotalKurus, 0);
+  return getEnrichedCartSubtotalKurus(enrichCartItems(items));
 }
 
 export function getCartTaxKurus(items: CartItem[]) {
-  return Math.round(getCartSubtotalKurus(items) * CART_TAX_RATE);
+  return getEnrichedCartTaxKurus(enrichCartItems(items));
 }
 
 export function getCartTotalKurus(items: CartItem[]) {
-  return getCartSubtotalKurus(items) + getCartTaxKurus(items);
-}
-
-export function getCartTotalQuantity(items: CartItem[]) {
-  return normalizeCartItems(items).reduce((total, item) => total + item.quantity, 0);
+  return getEnrichedCartTotalKurus(enrichCartItems(items));
 }
 
 export function getCheckoutItems(items: CartItem[]) {

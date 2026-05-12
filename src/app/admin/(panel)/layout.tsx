@@ -5,6 +5,9 @@ import { AdminShell } from "@/components/admin/admin-shell";
 import { hasDatabaseConfig } from "@/lib/runtime-config";
 import { requireAdminRole } from "@/server/auth/guards";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function AdminPanelLayout({ children }: { children: ReactNode }) {
   const authenticatedAdmin = await requireAdminRole();
 

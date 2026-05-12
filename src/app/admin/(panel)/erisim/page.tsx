@@ -1,0 +1,89 @@
+import Link from "next/link";
+import { redirect } from "next/navigation";
+
+import { AdminPageHeader } from "@/components/admin/table/admin-page-header";
+import { getAdminAccessLinks, type AdminAccessLink } from "@/server/admin/access-map";
+import { requireAdminRole } from "@/server/auth/guards";
+
+const groupOrder: AdminAccessLink["group"][] = [
+  "Operasyon",
+  "Katalog",
+  "Icerik",
+  "Yonetim",
+  "Disari Aktar"
+];
+
+function groupLinks(links: AdminAccessLink[]) {
+  return groupOrder.map((group) => ({
+    group,
+    links: links.filter((link) => link.group === group)
+  }));
+}
+
+export default async function AdminAccessMapPage() {
+  const authenticatedAdmin = await requireAdminRole();
+
+  if (!authenticatedAdmin) {
+    redirect("/admin/login");
+  }
+
+  const links = getAdminAccessLinks(authenticatedAdmin.session.role);
+  const groupedLinks = groupLinks(links).filter((section) => section.links.length > 0);
+
+  return (
+    <div className="space-y-6">
+      <AdminPageHeader
+        eyebrow="Erisim Haritasi"
+        title="Yetkili oldugunuz tum admin alanlari"
+        description="Sidebar disinda kalan yeni kayit, export ve operasyon kisayollari dahil panel icindeki tum erisilebilir noktalar burada listelenir."
+        meta={
+          <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
+            {links.length} kisayol
+          </span>
+        }
+      />
+
+      {groupedLinks.map((section) => (
+        <section key={section.group} className="surface-card border border-slate-200 bg-white/95 p-6">
+          <h2 className="text-xl font-semibold text-slate-950">{section.group}</h2>
+          <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {section.links.map((link) => {
+              const content = (
+                <>
+                  <p className="text-sm font-semibold text-slate-950">{link.label}</p>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">{link.description}</p>
+                  <p className="mt-4 text-xs font-semibold uppercase tracking-[0.16em] text-blue-600">
+                    {link.href.startsWith("/api/") ? "Indir" : "Ac"}
+                  </p>
+                </>
+              );
+
+              if (link.href.startsWith("/api/")) {
+                return (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    className="rounded-3xl border border-slate-200 bg-slate-50 p-5 transition hover:border-blue-200 hover:bg-blue-50"
+                  >
+                    {content}
+                  </a>
+                );
+              }
+
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  prefetch={false}
+                  className="rounded-3xl border border-slate-200 bg-slate-50 p-5 transition hover:border-blue-200 hover:bg-blue-50"
+                >
+                  {content}
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+      ))}
+    </div>
+  );
+}

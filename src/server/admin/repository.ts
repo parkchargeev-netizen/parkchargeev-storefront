@@ -10,12 +10,14 @@ import {
   or,
   sql
 } from "drizzle-orm";
+import { revalidateTag, unstable_cache } from "next/cache";
 import { z } from "zod";
 
 import { hasDatabaseConfig } from "@/lib/runtime-config";
 import { slugify } from "@/lib/slug";
 import { getDb } from "@/server/db/client";
 import type { AdminSessionPayload } from "@/server/auth/session";
+import { hashPassword } from "@/server/auth/password";
 import { recordAuditLog } from "@/server/admin/audit";
 import {
   productCategoryOptions,
@@ -35,13 +37,24 @@ import {
   upsertFallbackAdminProduct
 } from "@/server/admin/fallback-store";
 import type {
+  adminBlogPostSchema,
+  adminBrandSchema,
+  adminCategorySchema,
   adminListQuerySchema,
   adminOrderUpdateSchema,
+  adminPaytrOperationSchema,
   adminProductSchema,
-  adminQuoteUpdateSchema
+  adminQuoteUpdateSchema,
+  adminServiceLeadUpdateSchema,
+  adminUserSchema
 } from "@/server/admin/validators";
 import {
+  adminSessions,
   adminUsers,
+  auditLogs,
+  blogPosts,
+  brands,
+  cartItems,
   categories,
   customers,
   orderItems,
@@ -65,6 +78,12 @@ type ProductInput = z.infer<typeof adminProductSchema>;
 type OrderUpdateInput = z.infer<typeof adminOrderUpdateSchema>;
 type QuoteUpdateInput = z.infer<typeof adminQuoteUpdateSchema>;
 type ListQueryInput = z.infer<typeof adminListQuerySchema>;
+type AdminUserInput = z.infer<typeof adminUserSchema>;
+type BlogPostInput = z.infer<typeof adminBlogPostSchema>;
+type ServiceLeadUpdateInput = z.infer<typeof adminServiceLeadUpdateSchema>;
+type BrandInput = z.infer<typeof adminBrandSchema>;
+type CategoryInput = z.infer<typeof adminCategorySchema>;
+type PaytrOperationInput = z.infer<typeof adminPaytrOperationSchema>;
 
 type CursorPayload = {
   updatedAt: string;
@@ -87,6 +106,24 @@ function decodeCursor(cursor?: string) {
   } catch {
     return null;
   }
+}
+
+function parseFilterDate(value?: string, endOfDay = false) {
+  if (!value) {
+    return null;
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  if (endOfDay && !value.includes("T")) {
+    date.setDate(date.getDate() + 1);
+  }
+
+  return date;
 }
 
 const revenueStatuses = [
@@ -142,6 +179,101 @@ function buildProductSchemaJsonLd(input: ProductInput) {
           : "https://schema.org/OutOfStock"
     }
   };
+}
+
+function normalizeProductVariants(input: ProductInput) {
+  const variants =
+    input.variants.length > 0
+      ? input.variants
+      : [
+          {
+            sku: input.sku,
+            title: input.variantTitle,
+            powerLabel: input.powerLabel,
+            cableLength: input.cableLength,
+            connectorType: input.connectorType,
+            stockQuantity: input.stockQuantity,
+            priceKurus: input.priceKurus,
+            compareAtKurus: input.compareAtKurus,
+            isDefault: true
+          }
+        ];
+
+  const hasDefault = variants.some((variant) => variant.isDefault);
+  let defaultSeen = false;
+
+  return variants.map((variant, index) => {
+    const isDefault = hasDefault ? variant.isDefault && !defaultSeen : index === 0;
+
+    if (isDefault) {
+      defaultSeen = true;
+    }
+
+    return {
+      ...variant,
+      isDefault
+    };
+  });
+}
+
+async function writeProductVariants(productId: string, input: ProductInput) {
+  const db = getDb();
+  const variants = normalizeProductVariants(input);
+  const existing = await db
+    .select({ id: productVariants.id })
+    .from(productVariants)
+    .where(eq(productVariants.productId, productId));
+  const existingIds = new Set(existing.map((variant) => variant.id));
+  const incomingIds = new Set(variants.map((variant) => variant.id).filter(Boolean));
+
+  for (const variant of variants) {
+    const values = {
+      productId,
+      sku: variant.sku,
+      title: variant.title,
+      powerLabel: variant.powerLabel || null,
+      cableLength: variant.cableLength || null,
+      connectorType: variant.connectorType || null,
+      stockQuantity: variant.stockQuantity,
+      priceKurus: variant.priceKurus,
+      compareAtKurus: variant.compareAtKurus ?? null,
+      isDefault: variant.isDefault
+    };
+
+    if (variant.id && existingIds.has(variant.id)) {
+      await db
+        .update(productVariants)
+        .set(values)
+        .where(and(eq(productVariants.id, variant.id), eq(productVariants.productId, productId)));
+      continue;
+    }
+
+    await db.insert(productVariants).values(values);
+  }
+
+  const removableIds = existing
+    .map((variant) => variant.id)
+    .filter((id) => !incomingIds.has(id));
+
+  for (const id of removableIds) {
+    const [orderReference] = await db
+      .select({ total: count() })
+      .from(orderItems)
+      .where(eq(orderItems.variantId, id));
+    const [cartReference] = await db
+      .select({ total: count() })
+      .from(cartItems)
+      .where(eq(cartItems.variantId, id));
+
+    if (Number(orderReference?.total ?? 0) === 0 && Number(cartReference?.total ?? 0) === 0) {
+      await db.delete(productVariants).where(eq(productVariants.id, id));
+    } else {
+      await db
+        .update(productVariants)
+        .set({ isDefault: false, stockQuantity: 0 })
+        .where(eq(productVariants.id, id));
+    }
+  }
 }
 
 async function ensureDefaultCategories() {
@@ -403,6 +535,17 @@ export async function listAdminProducts(input: ListQueryInput) {
     conditions.push(eq(products.status, input.status as typeof products.$inferSelect.status));
   }
 
+  const fromDate = parseFilterDate(input.from);
+  const toDate = parseFilterDate(input.to, true);
+
+  if (fromDate) {
+    conditions.push(gte(products.updatedAt, fromDate));
+  }
+
+  if (toDate) {
+    conditions.push(lt(products.updatedAt, toDate));
+  }
+
   if (cursor) {
     conditions.push(
       or(
@@ -434,6 +577,7 @@ export async function listAdminProducts(input: ListQueryInput) {
       return {
         ...item,
         defaultVariant,
+        variants,
         media,
         tags: collections.tags.get(item.id) ?? [],
         categories: collections.categories.get(item.id) ?? [],
@@ -468,6 +612,7 @@ export async function getAdminProductById(id: string) {
   return {
     ...product,
     defaultVariant,
+    variants,
     media: collections.media.get(id) ?? [],
     specs: collections.specs.get(id) ?? [],
     tags: collections.tags.get(id) ?? [],
@@ -508,6 +653,7 @@ export async function upsertAdminProduct(
     slug,
     status: input.status,
     categoryId: primaryCategoryId,
+    brandId: input.brandId || null,
     shortDescription: input.shortDescription,
     description: input.description,
     useCase: input.useCase || null,
@@ -542,42 +688,6 @@ export async function upsertAdminProduct(
 
     await db.update(products).set(baseProductValues).where(eq(products.id, input.id));
 
-    const [variant] = await db
-      .select()
-      .from(productVariants)
-      .where(eq(productVariants.productId, input.id))
-      .limit(1);
-
-    if (variant) {
-      await db
-        .update(productVariants)
-        .set({
-          sku: input.sku,
-          title: input.variantTitle,
-          powerLabel: input.powerLabel || null,
-          cableLength: input.cableLength || null,
-          connectorType: input.connectorType || null,
-          stockQuantity: input.stockQuantity,
-          priceKurus: input.priceKurus,
-          compareAtKurus: input.compareAtKurus ?? null,
-          isDefault: true
-        })
-        .where(eq(productVariants.id, variant.id));
-    } else {
-      await db.insert(productVariants).values({
-        productId: input.id,
-        sku: input.sku,
-        title: input.variantTitle,
-        powerLabel: input.powerLabel || null,
-        cableLength: input.cableLength || null,
-        connectorType: input.connectorType || null,
-        stockQuantity: input.stockQuantity,
-        priceKurus: input.priceKurus,
-        compareAtKurus: input.compareAtKurus ?? null,
-        isDefault: true
-      });
-    }
-
     await writeProductCollections(
       input.id,
       input,
@@ -585,6 +695,7 @@ export async function upsertAdminProduct(
       requestMeta?.ipAddress,
       requestMeta?.userAgent
     );
+    await writeProductVariants(input.id, input);
 
     const after = await getAdminProductById(input.id);
 
@@ -601,6 +712,8 @@ export async function upsertAdminProduct(
       userAgent: requestMeta?.userAgent
     });
 
+    revalidateTag("admin-product-lookup");
+
     return after;
   }
 
@@ -609,19 +722,6 @@ export async function upsertAdminProduct(
     .values(baseProductValues)
     .returning({ id: products.id });
 
-  await db.insert(productVariants).values({
-    productId: createdProduct.id,
-    sku: input.sku,
-    title: input.variantTitle,
-    powerLabel: input.powerLabel || null,
-    cableLength: input.cableLength || null,
-    connectorType: input.connectorType || null,
-    stockQuantity: input.stockQuantity,
-    priceKurus: input.priceKurus,
-    compareAtKurus: input.compareAtKurus ?? null,
-    isDefault: true
-  });
-
   await writeProductCollections(
     createdProduct.id,
     input,
@@ -629,6 +729,7 @@ export async function upsertAdminProduct(
     requestMeta?.ipAddress,
     requestMeta?.userAgent
   );
+  await writeProductVariants(createdProduct.id, input);
 
   const after = await getAdminProductById(createdProduct.id);
 
@@ -644,10 +745,12 @@ export async function upsertAdminProduct(
     userAgent: requestMeta?.userAgent
   });
 
+  revalidateTag("admin-product-lookup");
+
   return after;
 }
 
-export async function getProductLookupOptions() {
+async function loadProductLookupOptions() {
   if (!hasDatabaseConfig()) {
     return getFallbackProductLookupOptions();
   }
@@ -661,6 +764,15 @@ export async function getProductLookupOptions() {
     .from(products)
     .orderBy(products.name);
 }
+
+export const getProductLookupOptions = unstable_cache(
+  loadProductLookupOptions,
+  ["admin-product-lookup"],
+  {
+    revalidate: 120,
+    tags: ["admin-product-lookup"]
+  }
+);
 
 export async function listAdminOrders(input: ListQueryInput) {
   if (!hasDatabaseConfig()) {
@@ -683,6 +795,17 @@ export async function listAdminOrders(input: ListQueryInput) {
 
   if (input.status) {
     conditions.push(eq(orders.status, input.status as typeof orders.$inferSelect.status));
+  }
+
+  const fromDate = parseFilterDate(input.from);
+  const toDate = parseFilterDate(input.to, true);
+
+  if (fromDate) {
+    conditions.push(gte(orders.createdAt, fromDate));
+  }
+
+  if (toDate) {
+    conditions.push(lt(orders.createdAt, toDate));
   }
 
   if (cursor) {
@@ -851,6 +974,17 @@ export async function listAdminQuotes(input: ListQueryInput) {
     );
   }
 
+  const fromDate = parseFilterDate(input.from);
+  const toDate = parseFilterDate(input.to, true);
+
+  if (fromDate) {
+    conditions.push(gte(quoteRequests.createdAt, fromDate));
+  }
+
+  if (toDate) {
+    conditions.push(lt(quoteRequests.createdAt, toDate));
+  }
+
   if (cursor) {
     conditions.push(
       or(
@@ -1014,7 +1148,7 @@ export async function updateAdminQuote(
   return after;
 }
 
-export async function getAdminDashboardSnapshot() {
+async function loadAdminDashboardSnapshot() {
   if (!hasDatabaseConfig()) {
     return getFallbackAdminDashboardSnapshot();
   }
@@ -1026,150 +1160,989 @@ export async function getAdminDashboardSnapshot() {
   const weekStart = startOfWeek(now);
   const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
   const monthlyTargetKurus = Number(process.env.ADMIN_MONTHLY_REVENUE_TARGET_KURUS ?? "2500000");
+  const todayStartIso = todayStart.toISOString();
+  const monthStartIso = monthStart.toISOString();
+  const weekStartIso = weekStart.toISOString();
+  const sevenDaysAgoIso = sevenDaysAgo.toISOString();
 
-  const [
-    todayRevenueRow,
-    monthRevenueRow,
-    pendingOrdersRow,
-    pendingQuotesRow,
-    openServiceRow,
-    newCustomersRow,
-    completedInstallationsRow,
-    recentOrders,
-    recentQuotes,
-    recentServiceRequests,
-    revenueTrendRows,
-    quoteDistributionRows,
-    orderDistributionRows
-  ] = await Promise.all([
-    db
-      .select({
-        total: sql<number>`coalesce(sum(${orders.totalKurus}), 0)`
-      })
-      .from(orders)
-      .where(and(inArray(orders.status, [...revenueStatuses]), gte(orders.createdAt, todayStart))),
-    db
-      .select({
-        total: sql<number>`coalesce(sum(${orders.totalKurus}), 0)`
-      })
-      .from(orders)
-      .where(and(inArray(orders.status, [...revenueStatuses]), gte(orders.createdAt, monthStart))),
-    db
-      .select({ count: count() })
-      .from(orders)
-      .where(inArray(orders.status, [...pendingOrderStatuses])),
-    db
-      .select({ count: count() })
-      .from(quoteRequests)
-      .where(inArray(quoteRequests.status, openQuoteStatuses)),
-    db
-      .select({ count: count() })
-      .from(serviceLeads)
-      .where(
-        and(
-          ilike(serviceLeads.leadType, "%servis%"),
-          inArray(serviceLeads.status, ["new", "contacted", "qualified"])
-        )
-      ),
-    db
-      .select({ count: count() })
-      .from(customers)
-      .where(gte(customers.createdAt, sevenDaysAgo)),
-    db
-      .select({ count: count() })
-      .from(orders)
-      .where(and(inArray(orders.status, ["delivered", "fulfilled"]), gte(orders.updatedAt, weekStart))),
-    db
-      .select({
-        id: orders.id,
-        orderNumber: orders.orderNumber,
-        customerName: orders.customerName,
-        totalKurus: orders.totalKurus,
-        status: orders.status,
-        updatedAt: orders.updatedAt
-      })
-      .from(orders)
-      .orderBy(desc(orders.updatedAt))
-      .limit(10),
-    db
-      .select({
-        id: quoteRequests.id,
-        fullName: quoteRequests.fullName,
-        companyName: quoteRequests.companyName,
-        status: quoteRequests.status,
-        updatedAt: quoteRequests.updatedAt
-      })
-      .from(quoteRequests)
-      .orderBy(desc(quoteRequests.updatedAt))
-      .limit(5),
-    db
-      .select({
-        id: serviceLeads.id,
-        fullName: serviceLeads.fullName,
-        leadType: serviceLeads.leadType,
-        status: serviceLeads.status,
-        createdAt: serviceLeads.createdAt
-      })
-      .from(serviceLeads)
-      .orderBy(desc(serviceLeads.createdAt))
-      .limit(3),
-    db.execute(sql`
-      select
-        to_char(date_trunc('month', ${orders.createdAt}), 'YYYY-MM') as month,
-        coalesce(sum(${orders.totalKurus}), 0)::int as total
-      from ${orders}
-      where ${orders.status} = any(${sql.raw(`ARRAY['paid','confirmed','shipped','delivered','fulfilled']::order_status[]`)})
-        and ${orders.createdAt} >= date_trunc('month', now()) - interval '11 months'
-      group by 1
-      order by 1 asc
-    `),
-    db.execute(sql`
-      select ${quoteRequests.status} as status, count(*)::int as total
-      from ${quoteRequests}
-      group by ${quoteRequests.status}
-      order by total desc
-    `),
-    db.execute(sql`
-      select ${orders.status} as status, count(*)::int as total
-      from ${orders}
-      group by ${orders.status}
-      order by total desc
-    `)
-  ]);
-
-  const todayRevenue = Number(todayRevenueRow[0]?.total ?? 0);
-  const monthRevenue = Number(monthRevenueRow[0]?.total ?? 0);
-  const targetProgress = monthlyTargetKurus > 0 ? (monthRevenue / monthlyTargetKurus) * 100 : 0;
-
-  return {
+  const emptySnapshot = {
     kpis: {
-      todayRevenue,
-      monthRevenue,
-      targetProgress,
-      pendingOrders: pendingOrdersRow[0]?.count ?? 0,
-      pendingQuotes: pendingQuotesRow[0]?.count ?? 0,
-      openServiceRequests: openServiceRow[0]?.count ?? 0,
-      completedInstallations: completedInstallationsRow[0]?.count ?? 0,
-      newCustomers: newCustomersRow[0]?.count ?? 0
+      todayRevenue: 0,
+      monthRevenue: 0,
+      targetProgress: 0,
+      pendingOrders: 0,
+      pendingQuotes: 0,
+      openServiceRequests: 0,
+      completedInstallations: 0,
+      newCustomers: 0
     },
     charts: {
-      revenueTrend: revenueTrendRows.map((row) => ({
-        month: String(row.month),
-        total: Number(row.total)
-      })),
-      quoteDistribution: quoteDistributionRows.map((row) => ({
-        status: String(row.status),
-        total: Number(row.total)
-      })),
-      orderDistribution: orderDistributionRows.map((row) => ({
-        status: String(row.status),
-        total: Number(row.total)
-      }))
+      revenueTrend: [],
+      quoteDistribution: [],
+      orderDistribution: []
     },
     activity: {
-      recentOrders,
-      recentQuotes,
-      recentServiceRequests
+      recentOrders: [],
+      recentQuotes: [],
+      recentServiceRequests: []
     }
   };
+
+  try {
+    const [
+      kpiRows,
+      recentOrders,
+      recentQuotes,
+      recentServiceRequests,
+      revenueTrendRows
+    ] = await Promise.all([
+      db.execute(sql`
+        select
+          (select coalesce(sum(${orders.totalKurus}), 0)::int from ${orders}
+            where ${orders.status} = any(${sql.raw(`ARRAY['paid','confirmed','shipped','delivered','fulfilled']::order_status[]`)})
+              and ${orders.createdAt} >= ${todayStartIso}::timestamptz) as today_revenue,
+          (select coalesce(sum(${orders.totalKurus}), 0)::int from ${orders}
+            where ${orders.status} = any(${sql.raw(`ARRAY['paid','confirmed','shipped','delivered','fulfilled']::order_status[]`)})
+              and ${orders.createdAt} >= ${monthStartIso}::timestamptz) as month_revenue,
+          (select count(*)::int from ${orders}
+            where ${orders.status} = any(${sql.raw(`ARRAY['pending_payment','payment_processing','pending_confirmation']::order_status[]`)})) as pending_orders,
+          (select count(*)::int from ${quoteRequests}
+            where ${quoteRequests.status} = any(${sql.raw(`ARRAY['new','reviewing','proposal_sent','negotiation']::quote_request_status[]`)})) as pending_quotes,
+          (select count(*)::int from ${serviceLeads}
+            where ${serviceLeads.leadType} ilike '%servis%'
+              and ${serviceLeads.status} = any(${sql.raw(`ARRAY['new','contacted','qualified']::lead_status[]`)})) as open_service_requests,
+          (select count(*)::int from ${orders}
+            where ${orders.status} = any(${sql.raw(`ARRAY['delivered','fulfilled']::order_status[]`)})
+              and ${orders.updatedAt} >= ${weekStartIso}::timestamptz) as completed_installations,
+          (select count(*)::int from ${customers}
+            where ${customers.createdAt} >= ${sevenDaysAgoIso}::timestamptz) as new_customers
+      `),
+      db
+        .select({
+          id: orders.id,
+          orderNumber: orders.orderNumber,
+          customerName: orders.customerName,
+          totalKurus: orders.totalKurus,
+          status: orders.status,
+          updatedAt: orders.updatedAt
+        })
+        .from(orders)
+        .orderBy(desc(orders.updatedAt))
+        .limit(10),
+      db
+        .select({
+          id: quoteRequests.id,
+          fullName: quoteRequests.fullName,
+          companyName: quoteRequests.companyName,
+          status: quoteRequests.status,
+          updatedAt: quoteRequests.updatedAt
+        })
+        .from(quoteRequests)
+        .orderBy(desc(quoteRequests.updatedAt))
+        .limit(5),
+      db
+        .select({
+          id: serviceLeads.id,
+          fullName: serviceLeads.fullName,
+          leadType: serviceLeads.leadType,
+          status: serviceLeads.status,
+          createdAt: serviceLeads.createdAt
+        })
+        .from(serviceLeads)
+        .orderBy(desc(serviceLeads.createdAt))
+        .limit(3),
+      db.execute(sql`
+        select
+          to_char(date_trunc('month', ${orders.createdAt}), 'YYYY-MM') as month,
+          coalesce(sum(${orders.totalKurus}), 0)::int as total
+        from ${orders}
+        where ${orders.status} = any(${sql.raw(`ARRAY['paid','confirmed','shipped','delivered','fulfilled']::order_status[]`)})
+          and ${orders.createdAt} >= date_trunc('month', now()) - interval '11 months'
+        group by 1
+        order by 1 asc
+      `)
+    ]);
+
+    const kpis = kpiRows[0] as Record<string, unknown> | undefined;
+    const todayRevenue = Number(kpis?.today_revenue ?? 0);
+    const monthRevenue = Number(kpis?.month_revenue ?? 0);
+    const targetProgress = monthlyTargetKurus > 0 ? (monthRevenue / monthlyTargetKurus) * 100 : 0;
+
+    return {
+      kpis: {
+        todayRevenue,
+        monthRevenue,
+        targetProgress,
+        pendingOrders: Number(kpis?.pending_orders ?? 0),
+        pendingQuotes: Number(kpis?.pending_quotes ?? 0),
+        openServiceRequests: Number(kpis?.open_service_requests ?? 0),
+        completedInstallations: Number(kpis?.completed_installations ?? 0),
+        newCustomers: Number(kpis?.new_customers ?? 0)
+      },
+      charts: {
+        revenueTrend: revenueTrendRows.map((row) => ({
+          month: String(row.month),
+          total: Number(row.total)
+        })),
+        quoteDistribution: [],
+        orderDistribution: []
+      },
+      activity: {
+        recentOrders,
+        recentQuotes,
+        recentServiceRequests
+      }
+    };
+  } catch (error) {
+    console.warn("Admin dashboard snapshot could not be loaded.", error);
+    return emptySnapshot;
+  }
+}
+
+export const getAdminDashboardSnapshot = unstable_cache(
+  loadAdminDashboardSnapshot,
+  ["admin-dashboard-snapshot"],
+  { revalidate: 45, tags: ["admin-dashboard"] }
+);
+
+export async function listAdminUsers(input: ListQueryInput) {
+  if (!hasDatabaseConfig()) {
+    return { items: [], nextCursor: null };
+  }
+
+  const db = getDb();
+  const cursor = decodeCursor(input.cursor);
+  const conditions = [];
+
+  if (input.q) {
+    conditions.push(
+      or(ilike(adminUsers.fullName, `%${input.q}%`), ilike(adminUsers.email, `%${input.q}%`))
+    );
+  }
+
+  if (input.status) {
+    conditions.push(eq(adminUsers.status, input.status as typeof adminUsers.$inferSelect.status));
+  }
+
+  const fromDate = parseFilterDate(input.from);
+  const toDate = parseFilterDate(input.to, true);
+
+  if (fromDate) {
+    conditions.push(gte(adminUsers.updatedAt, fromDate));
+  }
+
+  if (toDate) {
+    conditions.push(lt(adminUsers.updatedAt, toDate));
+  }
+
+  if (cursor) {
+    conditions.push(
+      or(
+        lt(adminUsers.updatedAt, new Date(cursor.updatedAt)),
+        and(eq(adminUsers.updatedAt, new Date(cursor.updatedAt)), lt(adminUsers.id, cursor.id))
+      )
+    );
+  }
+
+  const rows = await db
+    .select({
+      id: adminUsers.id,
+      email: adminUsers.email,
+      fullName: adminUsers.fullName,
+      role: adminUsers.role,
+      status: adminUsers.status,
+      phone: adminUsers.phone,
+      lastLoginAt: adminUsers.lastLoginAt,
+      createdAt: adminUsers.createdAt,
+      updatedAt: adminUsers.updatedAt
+    })
+    .from(adminUsers)
+    .where(conditions.length > 0 ? and(...conditions) : undefined)
+    .orderBy(desc(adminUsers.updatedAt), desc(adminUsers.id))
+    .limit(input.limit + 1);
+
+  const hasMore = rows.length > input.limit;
+  const items = hasMore ? rows.slice(0, input.limit) : rows;
+
+  return {
+    items,
+    nextCursor: hasMore
+      ? encodeCursor({
+          updatedAt: items.at(-1)?.updatedAt.toISOString() ?? new Date().toISOString(),
+          id: items.at(-1)?.id ?? ""
+        })
+      : null
+  };
+}
+
+export async function upsertAdminUser(
+  input: AdminUserInput,
+  actor: AdminSessionPayload | null,
+  requestMeta?: { ipAddress?: string | null; userAgent?: string | null }
+) {
+  if (!hasDatabaseConfig()) {
+    return null;
+  }
+
+  const db = getDb();
+  const now = new Date();
+
+  if (input.id) {
+    const [before] = await db.select().from(adminUsers).where(eq(adminUsers.id, input.id)).limit(1);
+
+    if (!before) {
+      return null;
+    }
+
+    const passwordChanged = Boolean(input.password);
+
+    await db
+      .update(adminUsers)
+      .set({
+        email: input.email.toLowerCase(),
+        fullName: input.fullName,
+        role: input.role,
+        status: input.status,
+        phone: input.phone || null,
+        ...(passwordChanged ? { passwordHash: hashPassword(input.password as string) } : {}),
+        updatedAt: now
+      })
+      .where(eq(adminUsers.id, input.id));
+
+    if (input.status !== "active" || passwordChanged) {
+      await db.delete(adminSessions).where(eq(adminSessions.adminUserId, input.id));
+    }
+
+    const [after] = await db.select().from(adminUsers).where(eq(adminUsers.id, input.id)).limit(1);
+
+    await recordAuditLog({
+      db,
+      actor,
+      entityType: "admin_user",
+      entityId: input.id,
+      action: "update",
+      summary: `${input.email} admin kullanicisi guncellendi.`,
+      beforePayload: before,
+      afterPayload: after,
+      ipAddress: requestMeta?.ipAddress,
+      userAgent: requestMeta?.userAgent
+    });
+
+    return after;
+  }
+
+  if (!input.password) {
+    throw new Error("Yeni admin kullanicisi icin sifre gereklidir.");
+  }
+
+  const [created] = await db
+    .insert(adminUsers)
+    .values({
+      email: input.email.toLowerCase(),
+      fullName: input.fullName,
+      role: input.role,
+      status: input.status,
+      phone: input.phone || null,
+      passwordHash: hashPassword(input.password),
+      updatedAt: now
+    })
+    .returning();
+
+  await recordAuditLog({
+    db,
+    actor,
+    entityType: "admin_user",
+    entityId: created.id,
+    action: "create",
+    summary: `${created.email} admin kullanicisi olusturuldu.`,
+    afterPayload: created,
+    ipAddress: requestMeta?.ipAddress,
+    userAgent: requestMeta?.userAgent
+  });
+
+  return created;
+}
+
+export async function listAdminUserSessions(input: ListQueryInput) {
+  if (!hasDatabaseConfig()) {
+    return { items: [], nextCursor: null };
+  }
+
+  const db = getDb();
+  const cursor = decodeCursor(input.cursor);
+  const conditions = [];
+
+  if (input.q) {
+    conditions.push(
+      or(ilike(adminUsers.email, `%${input.q}%`), ilike(adminUsers.fullName, `%${input.q}%`))
+    );
+  }
+
+  const fromDate = parseFilterDate(input.from);
+  const toDate = parseFilterDate(input.to, true);
+
+  if (fromDate) {
+    conditions.push(gte(adminSessions.createdAt, fromDate));
+  }
+
+  if (toDate) {
+    conditions.push(lt(adminSessions.createdAt, toDate));
+  }
+
+  if (cursor) {
+    conditions.push(
+      or(
+        lt(adminSessions.createdAt, new Date(cursor.updatedAt)),
+        and(eq(adminSessions.createdAt, new Date(cursor.updatedAt)), lt(adminSessions.id, cursor.id))
+      )
+    );
+  }
+
+  const rows = await db
+    .select({
+      id: adminSessions.id,
+      adminUserId: adminSessions.adminUserId,
+      adminName: adminUsers.fullName,
+      adminEmail: adminUsers.email,
+      ipAddress: adminSessions.ipAddress,
+      userAgent: adminSessions.userAgent,
+      expiresAt: adminSessions.expiresAt,
+      lastSeenAt: adminSessions.lastSeenAt,
+      createdAt: adminSessions.createdAt
+    })
+    .from(adminSessions)
+    .leftJoin(adminUsers, eq(adminUsers.id, adminSessions.adminUserId))
+    .where(conditions.length > 0 ? and(...conditions) : undefined)
+    .orderBy(desc(adminSessions.createdAt), desc(adminSessions.id))
+    .limit(input.limit + 1);
+
+  const hasMore = rows.length > input.limit;
+  const items = hasMore ? rows.slice(0, input.limit) : rows;
+
+  return {
+    items,
+    nextCursor: hasMore
+      ? encodeCursor({
+          updatedAt: items.at(-1)?.createdAt.toISOString() ?? new Date().toISOString(),
+          id: items.at(-1)?.id ?? ""
+        })
+      : null
+  };
+}
+
+export async function listAdminServiceLeads(input: ListQueryInput) {
+  if (!hasDatabaseConfig()) {
+    return { items: [], nextCursor: null };
+  }
+
+  const db = getDb();
+  const cursor = decodeCursor(input.cursor);
+  const conditions = [];
+
+  if (input.q) {
+    conditions.push(
+      or(
+        ilike(serviceLeads.fullName, `%${input.q}%`),
+        ilike(serviceLeads.phone, `%${input.q}%`),
+        ilike(serviceLeads.email, `%${input.q}%`),
+        ilike(serviceLeads.leadType, `%${input.q}%`)
+      )
+    );
+  }
+
+  if (input.status) {
+    conditions.push(eq(serviceLeads.status, input.status as typeof serviceLeads.$inferSelect.status));
+  }
+
+  const fromDate = parseFilterDate(input.from);
+  const toDate = parseFilterDate(input.to, true);
+
+  if (fromDate) {
+    conditions.push(gte(serviceLeads.createdAt, fromDate));
+  }
+
+  if (toDate) {
+    conditions.push(lt(serviceLeads.createdAt, toDate));
+  }
+
+  if (cursor) {
+    conditions.push(
+      or(
+        lt(serviceLeads.createdAt, new Date(cursor.updatedAt)),
+        and(eq(serviceLeads.createdAt, new Date(cursor.updatedAt)), lt(serviceLeads.id, cursor.id))
+      )
+    );
+  }
+
+  const rows = await db
+    .select()
+    .from(serviceLeads)
+    .where(conditions.length > 0 ? and(...conditions) : undefined)
+    .orderBy(desc(serviceLeads.createdAt), desc(serviceLeads.id))
+    .limit(input.limit + 1);
+
+  const hasMore = rows.length > input.limit;
+  const items = hasMore ? rows.slice(0, input.limit) : rows;
+
+  return {
+    items,
+    nextCursor: hasMore
+      ? encodeCursor({
+          updatedAt: items.at(-1)?.createdAt.toISOString() ?? new Date().toISOString(),
+          id: items.at(-1)?.id ?? ""
+        })
+      : null
+  };
+}
+
+export async function getAdminServiceLeadById(id: string) {
+  if (!hasDatabaseConfig()) {
+    return null;
+  }
+
+  const db = getDb();
+  const [lead] = await db.select().from(serviceLeads).where(eq(serviceLeads.id, id)).limit(1);
+  return lead ?? null;
+}
+
+export async function updateAdminServiceLead(
+  id: string,
+  input: ServiceLeadUpdateInput,
+  actor: AdminSessionPayload | null,
+  requestMeta?: { ipAddress?: string | null; userAgent?: string | null }
+) {
+  if (!hasDatabaseConfig()) {
+    return null;
+  }
+
+  const db = getDb();
+  const before = await getAdminServiceLeadById(id);
+
+  if (!before) {
+    return null;
+  }
+
+  const payload =
+    before.payload && typeof before.payload === "object" && !Array.isArray(before.payload)
+      ? { ...(before.payload as Record<string, unknown>) }
+      : {};
+  const notes = Array.isArray(payload.adminNotes) ? payload.adminNotes : [];
+  const nextPayload = {
+    ...payload,
+    assignedAdminId: input.assignedAdminId ?? payload.assignedAdminId ?? null,
+    adminNotes: input.note
+      ? [
+          ...notes,
+          {
+            note: input.note,
+            adminUserId: actor?.sub ?? null,
+            createdAt: new Date().toISOString()
+          }
+        ]
+      : notes
+  };
+
+  await db
+    .update(serviceLeads)
+    .set({
+      status: input.status,
+      payload: nextPayload
+    })
+    .where(eq(serviceLeads.id, id));
+
+  const after = await getAdminServiceLeadById(id);
+
+  await recordAuditLog({
+    db,
+    actor,
+    entityType: "service_lead",
+    entityId: id,
+    action: "update",
+    summary: `${before.fullName} saha talebi guncellendi.`,
+    beforePayload: before,
+    afterPayload: after,
+    ipAddress: requestMeta?.ipAddress,
+    userAgent: requestMeta?.userAgent
+  });
+
+  return after;
+}
+
+export async function listAdminBlogPosts(input: ListQueryInput) {
+  if (!hasDatabaseConfig()) {
+    return { items: [], nextCursor: null };
+  }
+
+  const db = getDb();
+  const cursor = decodeCursor(input.cursor);
+  const conditions = [];
+
+  if (input.q) {
+    conditions.push(or(ilike(blogPosts.title, `%${input.q}%`), ilike(blogPosts.slug, `%${input.q}%`)));
+  }
+
+  if (input.status === "published") {
+    conditions.push(sql`${blogPosts.publishedAt} is not null`);
+  } else if (input.status === "draft") {
+    conditions.push(sql`${blogPosts.publishedAt} is null`);
+  }
+
+  const fromDate = parseFilterDate(input.from);
+  const toDate = parseFilterDate(input.to, true);
+
+  if (fromDate) {
+    conditions.push(gte(blogPosts.updatedAt, fromDate));
+  }
+
+  if (toDate) {
+    conditions.push(lt(blogPosts.updatedAt, toDate));
+  }
+
+  if (cursor) {
+    conditions.push(
+      or(
+        lt(blogPosts.updatedAt, new Date(cursor.updatedAt)),
+        and(eq(blogPosts.updatedAt, new Date(cursor.updatedAt)), lt(blogPosts.id, cursor.id))
+      )
+    );
+  }
+
+  const rows = await db
+    .select()
+    .from(blogPosts)
+    .where(conditions.length > 0 ? and(...conditions) : undefined)
+    .orderBy(desc(blogPosts.updatedAt), desc(blogPosts.id))
+    .limit(input.limit + 1);
+
+  const hasMore = rows.length > input.limit;
+  const items = hasMore ? rows.slice(0, input.limit) : rows;
+
+  return {
+    items,
+    nextCursor: hasMore
+      ? encodeCursor({
+          updatedAt: items.at(-1)?.updatedAt.toISOString() ?? new Date().toISOString(),
+          id: items.at(-1)?.id ?? ""
+        })
+      : null
+  };
+}
+
+export async function getAdminBlogPostById(id: string) {
+  if (!hasDatabaseConfig()) {
+    return null;
+  }
+
+  const db = getDb();
+  const [post] = await db.select().from(blogPosts).where(eq(blogPosts.id, id)).limit(1);
+  return post ?? null;
+}
+
+export async function upsertAdminBlogPost(
+  input: BlogPostInput,
+  actor: AdminSessionPayload | null,
+  requestMeta?: { ipAddress?: string | null; userAgent?: string | null }
+) {
+  if (!hasDatabaseConfig()) {
+    return null;
+  }
+
+  const db = getDb();
+  const slug = slugify(input.slug || input.title);
+  const values = {
+    title: input.title,
+    slug,
+    excerpt: input.excerpt,
+    body: input.body,
+    seoTitle: input.seoTitle || null,
+    seoDescription: input.seoDescription || null,
+    publishedAt: input.publishedAt ? new Date(input.publishedAt) : null,
+    updatedAt: new Date()
+  };
+
+  if (input.id) {
+    const before = await getAdminBlogPostById(input.id);
+
+    await db.update(blogPosts).set(values).where(eq(blogPosts.id, input.id));
+    const after = await getAdminBlogPostById(input.id);
+
+    await recordAuditLog({
+      db,
+      actor,
+      entityType: "blog_post",
+      entityId: input.id,
+      action: "update",
+      summary: `${input.title} icerigi guncellendi.`,
+      beforePayload: before,
+      afterPayload: after,
+      ipAddress: requestMeta?.ipAddress,
+      userAgent: requestMeta?.userAgent
+    });
+
+    return after;
+  }
+
+  const [created] = await db.insert(blogPosts).values(values).returning();
+
+  await recordAuditLog({
+    db,
+    actor,
+    entityType: "blog_post",
+    entityId: created.id,
+    action: "create",
+    summary: `${created.title} icerigi olusturuldu.`,
+    afterPayload: created,
+    ipAddress: requestMeta?.ipAddress,
+    userAgent: requestMeta?.userAgent
+  });
+
+  return created;
+}
+
+async function loadAdminCatalog() {
+  if (!hasDatabaseConfig()) {
+    return { brands: [], categories: [] };
+  }
+
+  await ensureDefaultCategories();
+  const db = getDb();
+  const [brandRows, categoryRows] = await Promise.all([
+    db.select().from(brands).orderBy(brands.name),
+    db.select().from(categories).orderBy(categories.name)
+  ]);
+
+  return {
+    brands: brandRows,
+    categories: categoryRows
+  };
+}
+
+export const listAdminCatalog = unstable_cache(loadAdminCatalog, ["admin-catalog"], {
+  revalidate: 120,
+  tags: ["admin-catalog"]
+});
+
+export async function upsertAdminBrand(
+  input: BrandInput,
+  actor: AdminSessionPayload | null,
+  requestMeta?: { ipAddress?: string | null; userAgent?: string | null }
+) {
+  if (!hasDatabaseConfig()) {
+    return null;
+  }
+
+  const db = getDb();
+  const values = {
+    name: input.name,
+    slug: slugify(input.slug || input.name),
+    websiteUrl: input.websiteUrl || null,
+    description: input.description || null
+  };
+
+  if (input.id) {
+    await db.update(brands).set(values).where(eq(brands.id, input.id));
+    await recordAuditLog({
+      db,
+      actor,
+      entityType: "brand",
+      entityId: input.id,
+      action: "update",
+      summary: `${input.name} markasi guncellendi.`,
+      afterPayload: values,
+      ipAddress: requestMeta?.ipAddress,
+      userAgent: requestMeta?.userAgent
+    });
+    revalidateTag("admin-catalog");
+    return { id: input.id, ...values };
+  }
+
+  const [created] = await db.insert(brands).values(values).returning();
+  await recordAuditLog({
+    db,
+    actor,
+    entityType: "brand",
+    entityId: created.id,
+    action: "create",
+    summary: `${created.name} markasi olusturuldu.`,
+    afterPayload: created,
+    ipAddress: requestMeta?.ipAddress,
+    userAgent: requestMeta?.userAgent
+  });
+  revalidateTag("admin-catalog");
+  return created;
+}
+
+export async function upsertAdminCategory(
+  input: CategoryInput,
+  actor: AdminSessionPayload | null,
+  requestMeta?: { ipAddress?: string | null; userAgent?: string | null }
+) {
+  if (!hasDatabaseConfig()) {
+    return null;
+  }
+
+  const db = getDb();
+  const values = {
+    name: input.name,
+    slug: slugify(input.slug || input.name),
+    description: input.description || null,
+    parentId: input.parentId ?? null
+  };
+
+  if (input.id) {
+    await db.update(categories).set(values).where(eq(categories.id, input.id));
+    await recordAuditLog({
+      db,
+      actor,
+      entityType: "category",
+      entityId: input.id,
+      action: "update",
+      summary: `${input.name} kategorisi guncellendi.`,
+      afterPayload: values,
+      ipAddress: requestMeta?.ipAddress,
+      userAgent: requestMeta?.userAgent
+    });
+    revalidateTag("admin-catalog");
+    return { id: input.id, ...values };
+  }
+
+  const [created] = await db.insert(categories).values(values).returning();
+  await recordAuditLog({
+    db,
+    actor,
+    entityType: "category",
+    entityId: created.id,
+    action: "create",
+    summary: `${created.name} kategorisi olusturuldu.`,
+    afterPayload: created,
+    ipAddress: requestMeta?.ipAddress,
+    userAgent: requestMeta?.userAgent
+  });
+  revalidateTag("admin-catalog");
+  return created;
+}
+
+export async function listAdminAuditLogs(input: ListQueryInput) {
+  if (!hasDatabaseConfig()) {
+    return { items: [], nextCursor: null };
+  }
+
+  const db = getDb();
+  const cursor = decodeCursor(input.cursor);
+  const conditions = [];
+
+  if (input.q) {
+    conditions.push(
+      or(
+        ilike(auditLogs.entityType, `%${input.q}%`),
+        ilike(auditLogs.entityId, `%${input.q}%`),
+        ilike(auditLogs.action, `%${input.q}%`),
+        ilike(auditLogs.summary, `%${input.q}%`)
+      )
+    );
+  }
+
+  if (input.status) {
+    conditions.push(eq(auditLogs.entityType, input.status));
+  }
+
+  const fromDate = parseFilterDate(input.from);
+  const toDate = parseFilterDate(input.to, true);
+
+  if (fromDate) {
+    conditions.push(gte(auditLogs.createdAt, fromDate));
+  }
+
+  if (toDate) {
+    conditions.push(lt(auditLogs.createdAt, toDate));
+  }
+
+  if (cursor) {
+    conditions.push(
+      or(
+        lt(auditLogs.createdAt, new Date(cursor.updatedAt)),
+        and(eq(auditLogs.createdAt, new Date(cursor.updatedAt)), lt(auditLogs.id, cursor.id))
+      )
+    );
+  }
+
+  const rows = await db
+    .select({
+      id: auditLogs.id,
+      entityType: auditLogs.entityType,
+      entityId: auditLogs.entityId,
+      action: auditLogs.action,
+      summary: auditLogs.summary,
+      beforePayload: auditLogs.beforePayload,
+      afterPayload: auditLogs.afterPayload,
+      ipAddress: auditLogs.ipAddress,
+      userAgent: auditLogs.userAgent,
+      createdAt: auditLogs.createdAt,
+      actorName: adminUsers.fullName,
+      actorEmail: adminUsers.email
+    })
+    .from(auditLogs)
+    .leftJoin(adminUsers, eq(adminUsers.id, auditLogs.actorAdminId))
+    .where(conditions.length > 0 ? and(...conditions) : undefined)
+    .orderBy(desc(auditLogs.createdAt), desc(auditLogs.id))
+    .limit(input.limit + 1);
+
+  const hasMore = rows.length > input.limit;
+  const items = hasMore ? rows.slice(0, input.limit) : rows;
+
+  return {
+    items,
+    nextCursor: hasMore
+      ? encodeCursor({
+          updatedAt: items.at(-1)?.createdAt.toISOString() ?? new Date().toISOString(),
+          id: items.at(-1)?.id ?? ""
+        })
+      : null
+  };
+}
+
+export async function listAdminPaytrTransactions(input: ListQueryInput) {
+  if (!hasDatabaseConfig()) {
+    return { items: [], nextCursor: null };
+  }
+
+  const db = getDb();
+  const cursor = decodeCursor(input.cursor);
+  const conditions = [];
+
+  if (input.q) {
+    conditions.push(
+      or(
+        ilike(paytrTransactions.merchantOid, `%${input.q}%`),
+        ilike(orders.orderNumber, `%${input.q}%`),
+        ilike(orders.customerEmail, `%${input.q}%`)
+      )
+    );
+  }
+
+  if (input.status) {
+    conditions.push(eq(paytrTransactions.status, input.status as typeof paytrTransactions.$inferSelect.status));
+  }
+
+  const fromDate = parseFilterDate(input.from);
+  const toDate = parseFilterDate(input.to, true);
+
+  if (fromDate) {
+    conditions.push(gte(paytrTransactions.createdAt, fromDate));
+  }
+
+  if (toDate) {
+    conditions.push(lt(paytrTransactions.createdAt, toDate));
+  }
+
+  if (cursor) {
+    conditions.push(
+      or(
+        lt(paytrTransactions.updatedAt, new Date(cursor.updatedAt)),
+        and(
+          eq(paytrTransactions.updatedAt, new Date(cursor.updatedAt)),
+          lt(paytrTransactions.id, cursor.id)
+        )
+      )
+    );
+  }
+
+  const rows = await db
+    .select({
+      id: paytrTransactions.id,
+      orderId: paytrTransactions.orderId,
+      merchantOid: paytrTransactions.merchantOid,
+      paymentAmountKurus: paytrTransactions.paymentAmountKurus,
+      totalAmountKurus: paytrTransactions.totalAmountKurus,
+      status: paytrTransactions.status,
+      rawRequest: paytrTransactions.rawRequest,
+      rawCallback: paytrTransactions.rawCallback,
+      createdAt: paytrTransactions.createdAt,
+      updatedAt: paytrTransactions.updatedAt,
+      orderNumber: orders.orderNumber,
+      orderStatus: orders.status,
+      paymentStatus: orders.paymentStatus,
+      customerEmail: orders.customerEmail
+    })
+    .from(paytrTransactions)
+    .leftJoin(orders, eq(orders.id, paytrTransactions.orderId))
+    .where(conditions.length > 0 ? and(...conditions) : undefined)
+    .orderBy(desc(paytrTransactions.updatedAt), desc(paytrTransactions.id))
+    .limit(input.limit + 1);
+
+  const hasMore = rows.length > input.limit;
+  const items = hasMore ? rows.slice(0, input.limit) : rows;
+
+  return {
+    items,
+    nextCursor: hasMore
+      ? encodeCursor({
+          updatedAt: items.at(-1)?.updatedAt.toISOString() ?? new Date().toISOString(),
+          id: items.at(-1)?.id ?? ""
+        })
+      : null
+  };
+}
+
+export async function runAdminPaytrOperation(
+  transactionId: string,
+  input: PaytrOperationInput,
+  actor: AdminSessionPayload | null,
+  requestMeta?: { ipAddress?: string | null; userAgent?: string | null }
+) {
+  if (!hasDatabaseConfig()) {
+    return null;
+  }
+
+  const db = getDb();
+  const [transaction] = await db
+    .select()
+    .from(paytrTransactions)
+    .where(eq(paytrTransactions.id, transactionId))
+    .limit(1);
+
+  if (!transaction) {
+    return null;
+  }
+
+  const nextOrderValues =
+    input.action === "mark_refunded"
+      ? {
+          status: "refunded" as const,
+          paymentStatus: "refunded",
+          statusNote: input.note || "Admin tarafindan iade olarak isaretlendi.",
+          updatedAt: new Date()
+        }
+      : {
+          status:
+            transaction.status === "callback_success" ? ("pending_confirmation" as const) : ("failed" as const),
+          paymentStatus: transaction.status === "callback_success" ? "paid" : "failed",
+          statusNote: input.note || "PayTR transaction durumuna gore manuel mutabakat yapildi.",
+          updatedAt: new Date()
+        };
+
+  await db.update(orders).set(nextOrderValues).where(eq(orders.id, transaction.orderId));
+
+  await db.insert(orderStatusHistory).values({
+    orderId: transaction.orderId,
+    adminUserId: actor?.sub ?? null,
+    fromStatus: null,
+    toStatus: nextOrderValues.status,
+    note: nextOrderValues.statusNote
+  });
+
+  await recordAuditLog({
+    db,
+    actor,
+    entityType: "paytr_transaction",
+    entityId: transaction.id,
+    action: input.action,
+    summary: input.note || "PayTR operasyonu uygulandi.",
+    beforePayload: transaction,
+    afterPayload: nextOrderValues,
+    ipAddress: requestMeta?.ipAddress,
+    userAgent: requestMeta?.userAgent
+  });
+
+  return getAdminOrderById(transaction.orderId);
 }

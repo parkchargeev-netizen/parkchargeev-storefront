@@ -2,8 +2,11 @@ import type { MetadataRoute } from "next";
 
 import { articles, products, solutionPages } from "@/lib/mock-data";
 import { absoluteUrl } from "@/lib/site";
+import { listPublishedSitePagesForSitemap } from "@/server/site/repository";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const managedPages = await listPublishedSitePagesForSitemap();
+  const managedRouteSet = new Set(managedPages.map((page) => `/${page.slug}`));
   const staticRoutes = [
     "/",
     "/magaza",
@@ -21,10 +24,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ];
 
   return [
-    ...staticRoutes.map((route) => ({
+    ...staticRoutes.filter((route) => !managedRouteSet.has(route)).map((route) => ({
       url: absoluteUrl(route),
       changeFrequency: "weekly" as const,
       priority: route === "/" ? 1 : 0.8
+    })),
+    ...managedPages.map((page) => ({
+      url: absoluteUrl(`/${page.slug}`),
+      lastModified: page.updatedAt,
+      changeFrequency: page.changeFrequency as MetadataRoute.Sitemap[number]["changeFrequency"],
+      priority: page.sitemapPriority / 100
     })),
     ...products.map((product) => ({
       url: absoluteUrl(`/urun/${product.slug}`),

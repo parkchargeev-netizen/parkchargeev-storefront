@@ -1,0 +1,15 @@
+import { NextResponse } from "next/server";
+
+import { listAdminCatalog } from "@/server/admin/repository";
+import { requireAdminRole } from "@/server/auth/guards";
+
+export async function GET() {
+  const authenticatedAdmin = await requireAdminRole(["superadmin", "sales"]);
+
+  if (!authenticatedAdmin) {
+    return NextResponse.json({ ok: false, message: "Yetkisiz erisim." }, { status: 401 });
+  }
+
+  const catalog = await listAdminCatalog();
+  return NextResponse.json({ ok: true, ...catalog });
+}

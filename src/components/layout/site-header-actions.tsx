@@ -1,12 +1,8 @@
-"use client";
-
 import Link from "next/link";
 
-import { useCart } from "@/components/providers/cart-provider";
+import { SiteCartLink } from "@/components/layout/site-cart-link";
 
 export function SiteHeaderActions() {
-  const { totalQuantity } = useCart();
-
   return (
     <div className="flex items-center gap-3">
       <Link
@@ -15,12 +11,7 @@ export function SiteHeaderActions() {
       >
         Ara
       </Link>
-      <Link
-        href="/sepet"
-        className="rounded-xl border border-outline-variant/40 bg-surface-container-low px-4 py-2 text-sm font-medium text-on-surface transition hover:border-primary/30 hover:text-primary"
-      >
-        Sepetim{totalQuantity > 0 ? ` (${totalQuantity})` : ""}
-      </Link>
+      <SiteCartLink />
       <Link
         href="/iletisim"
         className="rounded-xl border border-primary/15 bg-white px-4 py-2 text-sm font-semibold text-primary transition hover:border-primary/30"

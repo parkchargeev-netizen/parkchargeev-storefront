@@ -1,8 +1,18 @@
 import Link from "next/link";
 
 import { siteConfig } from "@/lib/site";
+import type { PublicSiteNavigation } from "@/server/site/repository";
 
-export function SiteFooter() {
+type SiteFooterProps = {
+  navigation?: Pick<PublicSiteNavigation, "footer" | "legal">;
+};
+
+export function SiteFooter({
+  navigation = {
+    footer: siteConfig.footerNavigation,
+    legal: siteConfig.legalNavigation
+  }
+}: SiteFooterProps) {
   return (
     <footer className="border-t border-outline-variant/40 bg-white">
       <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
@@ -31,8 +41,14 @@ export function SiteFooter() {
               Navigasyon
             </p>
             <div className="mt-5 grid gap-3 text-sm text-on-surface-variant">
-              {siteConfig.footerNavigation.map((item) => (
-                <Link key={item.href} href={item.href} className="transition hover:text-primary">
+              {navigation.footer.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  target={item.opensInNewTab ? "_blank" : undefined}
+                  rel={item.rel ?? (item.opensInNewTab ? "noopener noreferrer" : undefined)}
+                  className="transition hover:text-primary"
+                >
                   {item.label}
                 </Link>
               ))}
@@ -44,8 +60,14 @@ export function SiteFooter() {
               Destek
             </p>
             <div className="mt-5 grid gap-3 text-sm text-on-surface-variant">
-              {siteConfig.legalNavigation.map((item) => (
-                <Link key={item.href} href={item.href} className="transition hover:text-primary">
+              {navigation.legal.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  target={item.opensInNewTab ? "_blank" : undefined}
+                  rel={item.rel ?? (item.opensInNewTab ? "noopener noreferrer" : undefined)}
+                  className="transition hover:text-primary"
+                >
                   {item.label}
                 </Link>
               ))}

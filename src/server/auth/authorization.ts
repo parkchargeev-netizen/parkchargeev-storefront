@@ -15,7 +15,19 @@ const routeRoleMap: Array<{
   roles: AdminRole[];
 }> = [
   {
+    prefix: "/admin/erisim",
+    roles: ["superadmin", "sales", "operations", "technician", "editor"]
+  },
+  {
+    prefix: "/admin/site",
+    roles: ["superadmin", "editor"]
+  },
+  {
     prefix: "/admin/urunler",
+    roles: ["superadmin", "sales"]
+  },
+  {
+    prefix: "/admin/products",
     roles: ["superadmin", "sales"]
   },
   {
@@ -23,7 +35,15 @@ const routeRoleMap: Array<{
     roles: ["superadmin", "sales"]
   },
   {
+    prefix: "/admin/orders",
+    roles: ["superadmin", "sales"]
+  },
+  {
     prefix: "/admin/teklifler",
+    roles: ["superadmin", "sales"]
+  },
+  {
+    prefix: "/admin/quotes",
     roles: ["superadmin", "sales"]
   },
   {
@@ -33,6 +53,34 @@ const routeRoleMap: Array<{
   {
     prefix: "/admin/saha",
     roles: ["superadmin", "operations", "technician"]
+  },
+  {
+    prefix: "/admin/service-leads",
+    roles: ["superadmin", "operations", "technician"]
+  },
+  {
+    prefix: "/admin/katalog",
+    roles: ["superadmin", "sales"]
+  },
+  {
+    prefix: "/admin/paytr",
+    roles: ["superadmin", "sales"]
+  },
+  {
+    prefix: "/admin/audit",
+    roles: ["superadmin"]
+  },
+  {
+    prefix: "/admin/adminler",
+    roles: ["superadmin"]
+  },
+  {
+    prefix: "/admin/users",
+    roles: ["superadmin"]
+  },
+  {
+    prefix: "/admin/media",
+    roles: ["superadmin", "sales", "editor"]
   }
 ];
 

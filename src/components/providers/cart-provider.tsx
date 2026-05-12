@@ -11,21 +11,14 @@ import {
 import {
   CART_STORAGE_KEY,
   type CartItem,
-  enrichCartItems,
-  getCartSubtotalKurus,
-  getCartTaxKurus,
-  getCartTotalKurus,
   getCartTotalQuantity,
-  normalizeCartItems
-} from "@/lib/cart";
+  normalizeStoredCartItems
+} from "@/lib/cart-core";
 
 type CartContextValue = {
-  items: ReturnType<typeof enrichCartItems>;
+  items: CartItem[];
   isHydrated: boolean;
   totalQuantity: number;
-  subtotalKurus: number;
-  taxKurus: number;
-  totalKurus: number;
   addItem: (item: CartItem) => void;
   updateQuantity: (productId: string, cableOption: string, quantity: number) => void;
   removeItem: (productId: string, cableOption: string) => void;
@@ -43,8 +36,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const rawCart = window.localStorage.getItem(CART_STORAGE_KEY);
 
       if (rawCart) {
-        const parsed = JSON.parse(rawCart) as CartItem[];
-        setItems(normalizeCartItems(parsed));
+        setItems(normalizeStoredCartItems(JSON.parse(rawCart)));
       }
     } catch {
       window.localStorage.removeItem(CART_STORAGE_KEY);
@@ -61,15 +53,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
     window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
   }, [isHydrated, items]);
 
-  const enrichedItems = enrichCartItems(items);
   const totalQuantity = getCartTotalQuantity(items);
-  const subtotalKurus = getCartSubtotalKurus(items);
-  const taxKurus = getCartTaxKurus(items);
-  const totalKurus = getCartTotalKurus(items);
 
   function addItem(nextItem: CartItem) {
     setItems((currentItems) => {
-      const normalizedNextItem = normalizeCartItems([nextItem])[0];
+      const normalizedNextItem = normalizeStoredCartItems([nextItem])[0];
 
       if (!normalizedNextItem) {
         return currentItems;
@@ -82,10 +70,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
       );
 
       if (existingIndex === -1) {
-        return normalizeCartItems([...currentItems, normalizedNextItem]);
+        return normalizeStoredCartItems([...currentItems, normalizedNextItem]);
       }
 
-      return normalizeCartItems(
+      return normalizeStoredCartItems(
         currentItems.map((item, index) =>
           index === existingIndex
             ? {
@@ -100,7 +88,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   function updateQuantity(productId: string, cableOption: string, quantity: number) {
     setItems((currentItems) =>
-      normalizeCartItems(
+      normalizeStoredCartItems(
         currentItems.reduce<CartItem[]>((nextItems, item) => {
           if (item.productId !== productId || item.cableOption !== cableOption) {
             nextItems.push(item);
@@ -135,12 +123,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
   return (
     <CartContext.Provider
       value={{
-        items: enrichedItems,
+        items,
         isHydrated,
         totalQuantity,
-        subtotalKurus,
-        taxKurus,
-        totalKurus,
         addItem,
         updateQuantity,
         removeItem,

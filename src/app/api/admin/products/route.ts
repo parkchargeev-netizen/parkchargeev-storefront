@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { csvResponse } from "@/server/admin/csv";
 import {
   getProductLookupOptions,
   listAdminProducts,
@@ -20,11 +21,26 @@ export async function GET(request: Request) {
     q: searchParams.get("q") ?? undefined,
     status: searchParams.get("status") ?? undefined,
     cursor: searchParams.get("cursor") ?? undefined,
+    from: searchParams.get("from") ?? undefined,
+    to: searchParams.get("to") ?? undefined,
+    format: searchParams.get("format") ?? undefined,
     limit: searchParams.get("limit") ?? undefined
   });
 
   const result = await listAdminProducts(query);
   const lookupOptions = await getProductLookupOptions();
+
+  if (query.format === "csv") {
+    return csvResponse("products.csv", result.items, [
+      { header: "Urun", value: (item) => item.name },
+      { header: "Slug", value: (item) => item.slug },
+      { header: "Durum", value: (item) => item.status },
+      { header: "Fiyat", value: (item) => item.defaultVariant?.priceKurus ?? item.defaultPriceKurus },
+      { header: "Stok", value: (item) => item.defaultVariant?.stockQuantity ?? 0 },
+      { header: "Kategoriler", value: (item) => item.categories.join(", ") },
+      { header: "Guncelleme", value: (item) => item.updatedAt }
+    ]);
+  }
 
   return NextResponse.json({
     ok: true,
