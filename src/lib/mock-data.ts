@@ -45,6 +45,15 @@ export type StationModel = {
   connectorTypes: string[];
   pricePerKwh: string;
   city: string;
+  district: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  availableSockets: number;
+  totalSockets: number;
+  hours: string;
+  operator: string;
+  amenities: string[];
 };
 
 export type SolutionModel = {
@@ -665,7 +674,16 @@ export const stations: StationModel[] = [
     power: "180 kW",
     connectorTypes: ["CCS2", "Type 2"],
     pricePerKwh: "7.45 ₺ / kWh",
-    city: "İstanbul"
+    city: "İstanbul",
+    district: "Beşiktaş",
+    address: "Zorlu Center, Levazım Mahallesi, Koru Sokağı",
+    latitude: 41.0668,
+    longitude: 29.0169,
+    availableSockets: 3,
+    totalSockets: 6,
+    hours: "7/24",
+    operator: "ParkChargeEV",
+    amenities: ["AVM", "Kapalı otopark", "Yeme-içme"]
   },
   {
     id: "station_kanyon",
@@ -675,7 +693,16 @@ export const stations: StationModel[] = [
     power: "50 kW",
     connectorTypes: ["CCS2"],
     pricePerKwh: "8.10 ₺ / kWh",
-    city: "İstanbul"
+    city: "İstanbul",
+    district: "Levent",
+    address: "Kanyon AVM, Büyükdere Caddesi",
+    latitude: 41.0784,
+    longitude: 29.0106,
+    availableSockets: 0,
+    totalSockets: 4,
+    hours: "10:00 - 22:00",
+    operator: "ParkChargeEV",
+    amenities: ["AVM", "Kapalı otopark"]
   },
   {
     id: "station_istinye",
@@ -685,7 +712,187 @@ export const stations: StationModel[] = [
     power: "300 kW",
     connectorTypes: ["CCS2", "CHAdeMO"],
     pricePerKwh: "9.40 ₺ / kWh",
-    city: "İstanbul"
+    city: "İstanbul",
+    district: "Sarıyer",
+    address: "İstinyePark AVM, Pınar Mahallesi",
+    latitude: 41.1094,
+    longitude: 29.032,
+    availableSockets: 1,
+    totalSockets: 4,
+    hours: "7/24",
+    operator: "ParkChargeEV",
+    amenities: ["AVM", "Vale", "Hızlı şarj"]
+  },
+  {
+    id: "station_akasya",
+    name: "Akasya AVM E-Şarj Alanı",
+    distance: "8.6 km",
+    status: "4 müsait",
+    power: "120 kW",
+    connectorTypes: ["CCS2", "Type 2"],
+    pricePerKwh: "7.90 ₺ / kWh",
+    city: "İstanbul",
+    district: "Üsküdar",
+    address: "Akasya AVM, Acıbadem Mahallesi",
+    latitude: 40.9967,
+    longitude: 29.0544,
+    availableSockets: 4,
+    totalSockets: 8,
+    hours: "7/24",
+    operator: "ParkChargeEV",
+    amenities: ["AVM", "Açık otopark", "Kafe"]
+  },
+  {
+    id: "station_mall_of_istanbul",
+    name: "Mall of İstanbul DC Hub",
+    distance: "18.4 km",
+    status: "2 müsait",
+    power: "240 kW",
+    connectorTypes: ["CCS2"],
+    pricePerKwh: "8.75 ₺ / kWh",
+    city: "İstanbul",
+    district: "Başakşehir",
+    address: "Mall of İstanbul, Süleyman Demirel Bulvarı",
+    latitude: 41.0636,
+    longitude: 28.8069,
+    availableSockets: 2,
+    totalSockets: 6,
+    hours: "7/24",
+    operator: "ParkChargeEV",
+    amenities: ["AVM", "Hızlı şarj", "Aile alanı"]
+  },
+  {
+    id: "station_istanbul_airport",
+    name: "İstanbul Havalimanı Şarj Alanı",
+    distance: "36.0 km",
+    status: "5 müsait",
+    power: "300 kW",
+    connectorTypes: ["CCS2", "CHAdeMO", "Type 2"],
+    pricePerKwh: "9.25 ₺ / kWh",
+    city: "İstanbul",
+    district: "Arnavutköy",
+    address: "İstanbul Havalimanı otopark alanı",
+    latitude: 41.262,
+    longitude: 28.742,
+    availableSockets: 5,
+    totalSockets: 10,
+    hours: "7/24",
+    operator: "ParkChargeEV",
+    amenities: ["Havalimanı", "Uzun süreli park", "Hızlı şarj"]
+  },
+  {
+    id: "station_ankara_armada",
+    name: "Armada Ankara Şarj Noktası",
+    distance: "443 km",
+    status: "2 müsait",
+    power: "180 kW",
+    connectorTypes: ["CCS2", "Type 2"],
+    pricePerKwh: "7.65 ₺ / kWh",
+    city: "Ankara",
+    district: "Söğütözü",
+    address: "Armada AVM, Eskişehir Yolu",
+    latitude: 39.9135,
+    longitude: 32.809,
+    availableSockets: 2,
+    totalSockets: 6,
+    hours: "7/24",
+    operator: "ParkChargeEV",
+    amenities: ["AVM", "Kapalı otopark", "Restoran"]
+  },
+  {
+    id: "station_ankamall",
+    name: "Ankamall Otopark Şarj",
+    distance: "450 km",
+    status: "Bakımda",
+    power: "60 kW",
+    connectorTypes: ["CCS2"],
+    pricePerKwh: "7.20 ₺ / kWh",
+    city: "Ankara",
+    district: "Yenimahalle",
+    address: "Ankamall AVM, Akköprü",
+    latitude: 39.9506,
+    longitude: 32.8338,
+    availableSockets: 0,
+    totalSockets: 4,
+    hours: "Geçici bakım",
+    operator: "ParkChargeEV",
+    amenities: ["AVM", "Servis alanı"]
+  },
+  {
+    id: "station_izmir_istinye",
+    name: "İstinyePark İzmir Hızlı Şarj",
+    distance: "480 km",
+    status: "3 müsait",
+    power: "180 kW",
+    connectorTypes: ["CCS2", "Type 2"],
+    pricePerKwh: "8.35 ₺ / kWh",
+    city: "İzmir",
+    district: "Balçova",
+    address: "İstinyePark İzmir, Balçova",
+    latitude: 38.4019,
+    longitude: 27.0788,
+    availableSockets: 3,
+    totalSockets: 6,
+    hours: "10:00 - 22:00",
+    operator: "ParkChargeEV",
+    amenities: ["AVM", "Kafe", "Açık otopark"]
+  },
+  {
+    id: "station_bursa_marka",
+    name: "Bursa Marka AVM Şarj",
+    distance: "156 km",
+    status: "1 müsait",
+    power: "120 kW",
+    connectorTypes: ["CCS2"],
+    pricePerKwh: "7.95 ₺ / kWh",
+    city: "Bursa",
+    district: "Nilüfer",
+    address: "Sur Yapı Marka AVM, Odunluk Mahallesi",
+    latitude: 40.211,
+    longitude: 28.999,
+    availableSockets: 1,
+    totalSockets: 4,
+    hours: "7/24",
+    operator: "ParkChargeEV",
+    amenities: ["AVM", "Kapalı otopark"]
+  },
+  {
+    id: "station_kocaeli_symbol",
+    name: "Kocaeli Symbol DC Şarj",
+    distance: "102 km",
+    status: "2 müsait",
+    power: "150 kW",
+    connectorTypes: ["CCS2", "CHAdeMO"],
+    pricePerKwh: "8.05 ₺ / kWh",
+    city: "Kocaeli",
+    district: "İzmit",
+    address: "Symbol Kocaeli AVM, Ovacık Mahallesi",
+    latitude: 40.766,
+    longitude: 29.946,
+    availableSockets: 2,
+    totalSockets: 5,
+    hours: "7/24",
+    operator: "ParkChargeEV",
+    amenities: ["AVM", "Otoyol erişimi", "Hızlı şarj"]
+  },
+  {
+    id: "station_antalya_migros",
+    name: "Antalya Migros Şarj İstasyonu",
+    distance: "698 km",
+    status: "4 müsait",
+    power: "180 kW",
+    connectorTypes: ["CCS2", "Type 2"],
+    pricePerKwh: "8.55 ₺ / kWh",
+    city: "Antalya",
+    district: "Konyaaltı",
+    address: "5M Migros AVM, Arapsuyu Mahallesi",
+    latitude: 36.884,
+    longitude: 30.66,
+    availableSockets: 4,
+    totalSockets: 8,
+    hours: "7/24",
+    operator: "ParkChargeEV",
+    amenities: ["AVM", "Sahil erişimi", "Açık otopark"]
   }
 ];
 
