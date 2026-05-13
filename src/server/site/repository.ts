@@ -28,53 +28,49 @@ function fallbackNavigation(): PublicSiteNavigation {
   };
 }
 
-export const getPublicSiteNavigation = unstable_cache(
-  async (): Promise<PublicSiteNavigation> => {
-    if (!hasDatabaseConfig()) {
+export async function getPublicSiteNavigation(): Promise<PublicSiteNavigation> {
+  if (!hasDatabaseConfig()) {
+    return fallbackNavigation();
+  }
+
+  try {
+    const db = getDb();
+    const rows = await db
+      .select()
+      .from(navigationItems)
+      .where(eq(navigationItems.isActive, true))
+      .orderBy(navigationItems.area, navigationItems.sortOrder, navigationItems.label);
+
+    if (rows.length === 0) {
       return fallbackNavigation();
     }
 
-    try {
-      const db = getDb();
-      const rows = await db
-        .select()
-        .from(navigationItems)
-        .where(eq(navigationItems.isActive, true))
-        .orderBy(navigationItems.area, navigationItems.sortOrder, navigationItems.label);
+    const navigation: Record<keyof PublicSiteNavigation, PublicNavigationItem[]> = {
+      primary: [],
+      footer: [],
+      legal: []
+    };
 
-      if (rows.length === 0) {
-        return fallbackNavigation();
-      }
-
-      const navigation: Record<keyof PublicSiteNavigation, PublicNavigationItem[]> = {
-        primary: [],
-        footer: [],
-        legal: []
-      };
-
-      for (const row of rows) {
-        navigation[row.area].push({
-          id: row.id,
-          label: row.label,
-          href: row.href,
-          opensInNewTab: row.opensInNewTab,
-          rel: row.rel
-        });
-      }
-
-      return {
-        primary: navigation.primary.length > 0 ? navigation.primary : fallbackNavigation().primary,
-        footer: navigation.footer.length > 0 ? navigation.footer : fallbackNavigation().footer,
-        legal: navigation.legal.length > 0 ? navigation.legal : fallbackNavigation().legal
-      };
-    } catch (error) {
-      console.warn("Public navigation could not be loaded.", error);
-      return fallbackNavigation();
+    for (const row of rows) {
+      navigation[row.area].push({
+        id: row.id,
+        label: row.label,
+        href: row.href,
+        opensInNewTab: row.opensInNewTab,
+        rel: row.rel
+      });
     }
-  },
-  ["public-site-navigation"],
-  { revalidate: 300, tags: ["site-navigation"] }
-);
+
+    return {
+      primary: navigation.primary.length > 0 ? navigation.primary : fallbackNavigation().primary,
+      footer: navigation.footer.length > 0 ? navigation.footer : fallbackNavigation().footer,
+      legal: navigation.legal.length > 0 ? navigation.legal : fallbackNavigation().legal
+    };
+  } catch (error) {
+    console.warn("Public navigation could not be loaded.", error);
+    return fallbackNavigation();
+  }
+}
 
 export const getPublishedSitePageBySlug = unstable_cache(
   async (slug: string) => {
