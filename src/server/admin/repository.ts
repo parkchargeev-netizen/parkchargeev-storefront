@@ -1193,110 +1193,106 @@ async function loadAdminDashboardSnapshot() {
   };
 
   try {
-    const [
-      kpiRows,
-      recentOrders,
-      recentQuotes,
-      recentServiceRequests,
-      revenueTrendRows,
-      quoteDistributionRows,
-      orderDistributionRows,
-      activeSessionRows,
-      recentAuditLogs
-    ] = await Promise.all([
-      db.execute(sql`
-        select
-          (select coalesce(sum(${orders.totalKurus}), 0)::int from ${orders}
-            where ${orders.status} = any(${sql.raw(`ARRAY['paid','confirmed','shipped','delivered','fulfilled']::order_status[]`)})
-              and ${orders.createdAt} >= ${todayStartIso}::timestamptz) as today_revenue,
-          (select coalesce(sum(${orders.totalKurus}), 0)::int from ${orders}
-            where ${orders.status} = any(${sql.raw(`ARRAY['paid','confirmed','shipped','delivered','fulfilled']::order_status[]`)})
-              and ${orders.createdAt} >= ${monthStartIso}::timestamptz) as month_revenue,
-          (select count(*)::int from ${orders}
-            where ${orders.status} = any(${sql.raw(`ARRAY['pending_payment','payment_processing','pending_confirmation']::order_status[]`)})) as pending_orders,
-          (select count(*)::int from ${quoteRequests}
-            where ${quoteRequests.status} = any(${sql.raw(`ARRAY['new','reviewing','proposal_sent','negotiation']::quote_request_status[]`)})) as pending_quotes,
-          (select count(*)::int from ${serviceLeads}
-            where ${serviceLeads.leadType} ilike '%servis%'
-              and ${serviceLeads.status} = any(${sql.raw(`ARRAY['new','contacted','qualified']::lead_status[]`)})) as open_service_requests,
-          (select count(*)::int from ${orders}
-            where ${orders.status} = any(${sql.raw(`ARRAY['delivered','fulfilled']::order_status[]`)})
-              and ${orders.updatedAt} >= ${weekStartIso}::timestamptz) as completed_installations,
-          (select count(*)::int from ${customers}
-            where ${customers.createdAt} >= ${sevenDaysAgoIso}::timestamptz) as new_customers
-      `),
-      db
-        .select({
-          id: orders.id,
-          orderNumber: orders.orderNumber,
-          customerName: orders.customerName,
-          totalKurus: orders.totalKurus,
-          status: orders.status,
-          updatedAt: orders.updatedAt
-        })
-        .from(orders)
-        .orderBy(desc(orders.updatedAt))
-        .limit(10),
-      db
-        .select({
-          id: quoteRequests.id,
-          fullName: quoteRequests.fullName,
-          companyName: quoteRequests.companyName,
-          status: quoteRequests.status,
-          updatedAt: quoteRequests.updatedAt
-        })
-        .from(quoteRequests)
-        .orderBy(desc(quoteRequests.updatedAt))
-        .limit(5),
-      db
-        .select({
-          id: serviceLeads.id,
-          fullName: serviceLeads.fullName,
-          leadType: serviceLeads.leadType,
-          status: serviceLeads.status,
-          createdAt: serviceLeads.createdAt
-        })
-        .from(serviceLeads)
-        .orderBy(desc(serviceLeads.createdAt))
-        .limit(3),
-      db.execute(sql`
-        select
-          to_char(date_trunc('month', ${orders.createdAt}), 'YYYY-MM') as month,
-          coalesce(sum(${orders.totalKurus}), 0)::int as total
-        from ${orders}
-        where ${orders.status} = any(${sql.raw(`ARRAY['paid','confirmed','shipped','delivered','fulfilled']::order_status[]`)})
-          and ${orders.createdAt} >= date_trunc('month', now()) - interval '11 months'
-        group by 1
-        order by 1 asc
-      `),
-      db.execute(sql`
-        select ${quoteRequests.status}::text as status, count(*)::int as total
-        from ${quoteRequests}
-        group by ${quoteRequests.status}
-        order by 1 asc
-      `),
-      db.execute(sql`
-        select ${orders.status}::text as status, count(*)::int as total
-        from ${orders}
-        group by ${orders.status}
-        order by 1 asc
-      `),
-      db
-        .select({ total: count() })
-        .from(adminSessions)
-        .where(gte(adminSessions.expiresAt, now)),
-      db
-        .select({
-          id: auditLogs.id,
-          entityType: auditLogs.entityType,
-          action: auditLogs.action,
-          summary: auditLogs.summary,
-          createdAt: auditLogs.createdAt
-        })
-        .from(auditLogs)
-        .orderBy(desc(auditLogs.createdAt))
-        .limit(4)
-    ]);
+    const kpiRows = await db.execute(sql`
+      select
+        (select coalesce(sum(${orders.totalKurus}), 0)::int from ${orders}
+          where ${orders.status} = any(${sql.raw(`ARRAY['paid','confirmed','shipped','delivered','fulfilled']::order_status[]`)})
+            and ${orders.createdAt} >= ${todayStartIso}::timestamptz) as today_revenue,
+        (select coalesce(sum(${orders.totalKurus}), 0)::int from ${orders}
+          where ${orders.status} = any(${sql.raw(`ARRAY['paid','confirmed','shipped','delivered','fulfilled']::order_status[]`)})
+            and ${orders.createdAt} >= ${monthStartIso}::timestamptz) as month_revenue,
+        (select count(*)::int from ${orders}
+          where ${orders.status} = any(${sql.raw(`ARRAY['pending_payment','payment_processing','pending_confirmation']::order_status[]`)})) as pending_orders,
+        (select count(*)::int from ${quoteRequests}
+          where ${quoteRequests.status} = any(${sql.raw(`ARRAY['new','reviewing','proposal_sent','negotiation']::quote_request_status[]`)})) as pending_quotes,
+        (select count(*)::int from ${serviceLeads}
+          where ${serviceLeads.leadType} ilike '%servis%'
+            and ${serviceLeads.status} = any(${sql.raw(`ARRAY['new','contacted','qualified']::lead_status[]`)})) as open_service_requests,
+        (select count(*)::int from ${orders}
+          where ${orders.status} = any(${sql.raw(`ARRAY['delivered','fulfilled']::order_status[]`)})
+            and ${orders.updatedAt} >= ${weekStartIso}::timestamptz) as completed_installations,
+        (select count(*)::int from ${customers}
+          where ${customers.createdAt} >= ${sevenDaysAgoIso}::timestamptz) as new_customers
+    `);
+
+    const recentOrders = await db
+      .select({
+        id: orders.id,
+        orderNumber: orders.orderNumber,
+        customerName: orders.customerName,
+        totalKurus: orders.totalKurus,
+        status: orders.status,
+        updatedAt: orders.updatedAt
+      })
+      .from(orders)
+      .orderBy(desc(orders.updatedAt))
+      .limit(10);
+
+    const recentQuotes = await db
+      .select({
+        id: quoteRequests.id,
+        fullName: quoteRequests.fullName,
+        companyName: quoteRequests.companyName,
+        status: quoteRequests.status,
+        updatedAt: quoteRequests.updatedAt
+      })
+      .from(quoteRequests)
+      .orderBy(desc(quoteRequests.updatedAt))
+      .limit(5);
+
+    const recentServiceRequests = await db
+      .select({
+        id: serviceLeads.id,
+        fullName: serviceLeads.fullName,
+        leadType: serviceLeads.leadType,
+        status: serviceLeads.status,
+        createdAt: serviceLeads.createdAt
+      })
+      .from(serviceLeads)
+      .orderBy(desc(serviceLeads.createdAt))
+      .limit(3);
+
+    const revenueTrendRows = await db.execute(sql`
+      select
+        to_char(date_trunc('month', ${orders.createdAt}), 'YYYY-MM') as month,
+        coalesce(sum(${orders.totalKurus}), 0)::int as total
+      from ${orders}
+      where ${orders.status} = any(${sql.raw(`ARRAY['paid','confirmed','shipped','delivered','fulfilled']::order_status[]`)})
+        and ${orders.createdAt} >= date_trunc('month', now()) - interval '11 months'
+      group by 1
+      order by 1 asc
+    `);
+
+    const quoteDistributionRows = await db.execute(sql`
+      select ${quoteRequests.status}::text as status, count(*)::int as total
+      from ${quoteRequests}
+      group by ${quoteRequests.status}
+      order by 1 asc
+    `);
+
+    const orderDistributionRows = await db.execute(sql`
+      select ${orders.status}::text as status, count(*)::int as total
+      from ${orders}
+      group by ${orders.status}
+      order by 1 asc
+    `);
+
+    const activeSessionRows = await db
+      .select({ total: count() })
+      .from(adminSessions)
+      .where(gte(adminSessions.expiresAt, now));
+
+    const recentAuditLogs = await db
+      .select({
+        id: auditLogs.id,
+        entityType: auditLogs.entityType,
+        action: auditLogs.action,
+        summary: auditLogs.summary,
+        createdAt: auditLogs.createdAt
+      })
+      .from(auditLogs)
+      .orderBy(desc(auditLogs.createdAt))
+      .limit(4);
 
     const kpis = kpiRows[0] as Record<string, unknown> | undefined;
     const todayRevenue = Number(kpis?.today_revenue ?? 0);
