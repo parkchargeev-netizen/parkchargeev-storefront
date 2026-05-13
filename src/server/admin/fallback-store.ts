@@ -1573,6 +1573,10 @@ export async function getFallbackAdminDashboardSnapshot() {
           status: lead.status,
           createdAt: new Date(lead.createdAt)
         }))
+    },
+    security: {
+      activeSessions: 1,
+      recentAuditLogs: []
     }
   };
 }

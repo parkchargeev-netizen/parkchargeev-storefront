@@ -1185,6 +1185,10 @@ async function loadAdminDashboardSnapshot() {
       recentOrders: [],
       recentQuotes: [],
       recentServiceRequests: []
+    },
+    security: {
+      activeSessions: 0,
+      recentAuditLogs: []
     }
   };
 
@@ -1194,7 +1198,11 @@ async function loadAdminDashboardSnapshot() {
       recentOrders,
       recentQuotes,
       recentServiceRequests,
-      revenueTrendRows
+      revenueTrendRows,
+      quoteDistributionRows,
+      orderDistributionRows,
+      activeSessionRows,
+      recentAuditLogs
     ] = await Promise.all([
       db.execute(sql`
         select
@@ -1260,7 +1268,34 @@ async function loadAdminDashboardSnapshot() {
           and ${orders.createdAt} >= date_trunc('month', now()) - interval '11 months'
         group by 1
         order by 1 asc
-      `)
+      `),
+      db.execute(sql`
+        select ${quoteRequests.status}::text as status, count(*)::int as total
+        from ${quoteRequests}
+        group by ${quoteRequests.status}
+        order by 1 asc
+      `),
+      db.execute(sql`
+        select ${orders.status}::text as status, count(*)::int as total
+        from ${orders}
+        group by ${orders.status}
+        order by 1 asc
+      `),
+      db
+        .select({ total: count() })
+        .from(adminSessions)
+        .where(gte(adminSessions.expiresAt, now)),
+      db
+        .select({
+          id: auditLogs.id,
+          entityType: auditLogs.entityType,
+          action: auditLogs.action,
+          summary: auditLogs.summary,
+          createdAt: auditLogs.createdAt
+        })
+        .from(auditLogs)
+        .orderBy(desc(auditLogs.createdAt))
+        .limit(4)
     ]);
 
     const kpis = kpiRows[0] as Record<string, unknown> | undefined;
@@ -1284,13 +1319,23 @@ async function loadAdminDashboardSnapshot() {
           month: String(row.month),
           total: Number(row.total)
         })),
-        quoteDistribution: [],
-        orderDistribution: []
+        quoteDistribution: quoteDistributionRows.map((row) => ({
+          status: String(row.status),
+          total: Number(row.total)
+        })),
+        orderDistribution: orderDistributionRows.map((row) => ({
+          status: String(row.status),
+          total: Number(row.total)
+        }))
       },
       activity: {
         recentOrders,
         recentQuotes,
         recentServiceRequests
+      },
+      security: {
+        activeSessions: Number(activeSessionRows[0]?.total ?? 0),
+        recentAuditLogs
       }
     };
   } catch (error) {

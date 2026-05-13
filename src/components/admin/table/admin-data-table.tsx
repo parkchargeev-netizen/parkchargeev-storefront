@@ -19,6 +19,7 @@ type AdminDataTableProps<TData> = {
   data: TData[];
   emptyTitle: string;
   emptyDescription: string;
+  caption?: string;
   footer?: ReactNode;
 };
 
@@ -27,6 +28,7 @@ export function AdminDataTable<TData>({
   data,
   emptyTitle,
   emptyDescription,
+  caption,
   footer
 }: AdminDataTableProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -48,6 +50,9 @@ export function AdminDataTable<TData>({
     <section className="surface-card overflow-hidden border border-slate-200 bg-white/95">
       <div className="overflow-x-auto">
         <table className="min-w-full border-separate border-spacing-0">
+          <caption className="sr-only">
+            {caption ?? `${emptyTitle} icin admin veri tablosu`}
+          </caption>
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
@@ -58,13 +63,23 @@ export function AdminDataTable<TData>({
                   return (
                     <th
                       key={header.id}
+                      scope="col"
+                      aria-sort={
+                        sortDirection === "asc"
+                          ? "ascending"
+                          : sortDirection === "desc"
+                            ? "descending"
+                            : canSort
+                              ? "none"
+                              : undefined
+                      }
                       className="border-b border-slate-200 bg-slate-50/80 px-4 py-3 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 first:pl-6 last:pr-6"
                     >
                       {header.isPlaceholder ? null : canSort ? (
                         <button
                           type="button"
                           onClick={header.column.getToggleSortingHandler()}
-                          className="inline-flex items-center gap-2 text-left"
+                          className="inline-flex items-center gap-2 rounded-lg text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                         >
                           <span>
                             {flexRender(header.column.columnDef.header, header.getContext())}

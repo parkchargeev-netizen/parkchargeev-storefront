@@ -144,6 +144,7 @@ export function OrdersTable({ items, footer }: OrdersTableProps) {
     <AdminDataTable
       columns={columns}
       data={items}
+      caption="Siparisler admin listesi"
       emptyTitle="Siparis bulunamadi"
       emptyDescription="Arama veya durum filtrelerini degistirerek sonucu genisletebilirsiniz."
       footer={footer}

@@ -109,6 +109,7 @@ export function QuotesTable({ items, footer }: QuotesTableProps) {
     <AdminDataTable
       columns={columns}
       data={items}
+      caption="Teklif talepleri admin listesi"
       emptyTitle="Teklif bulunamadi"
       emptyDescription="Filtreleri duzenleyerek veya yeni talepler geldikce bu alan dolacak."
       footer={footer}

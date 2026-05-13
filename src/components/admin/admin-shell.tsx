@@ -1,8 +1,6 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
 import {
   Activity,
-  ArrowUpRight,
   BookOpen,
   CreditCard,
   Database,
@@ -17,7 +15,13 @@ import {
   UserCog
 } from "lucide-react";
 
+import {
+  AdminCommandMenu,
+  type AdminCommandItem
+} from "@/components/admin/admin-command-menu";
 import { AdminLogoutButton } from "@/components/admin/admin-logout-button";
+import { AdminNavLink } from "@/components/admin/admin-nav-link";
+import { AdminSessionGuard } from "@/components/admin/admin-session-guard";
 import { adminNavigation, adminRoleLabels } from "@/server/admin/constants";
 import type { AdminRole } from "@/server/auth/authorization";
 
@@ -46,17 +50,88 @@ const navigationIconMap = {
   "/admin/adminler": UserCog
 } as const;
 
+const navigationDetailMap: Record<string, string> = {
+  "/admin": "KPI, kuyruk ve operasyon ozeti",
+  "/admin/erisim": "Tum yetkili admin modulleri",
+  "/admin/site": "Menu, sayfa ve public icerik yonetimi",
+  "/admin/urunler": "Katalog, stok, fiyat ve SEO",
+  "/admin/siparisler": "Odeme, teslimat ve fulfillment",
+  "/admin/teklifler": "B2B/B2C teklif pipeline",
+  "/admin/saha": "Servis ve saha talepleri",
+  "/admin/blog": "Blog ve icerik operasyonu",
+  "/admin/katalog": "Marka ve kategori sozlukleri",
+  "/admin/paytr": "Odeme hareketleri",
+  "/admin/audit": "Islem kayitlari ve izleme",
+  "/admin/adminler": "Rol ve admin kullanici yonetimi"
+};
+
+const commandActionItems: Array<AdminCommandItem & { roles: AdminRole[]; requiresDatabase?: boolean }> = [
+  {
+    href: "/admin/urunler/yeni",
+    label: "Yeni urun olustur",
+    detail: "Katalog, fiyat, stok ve SEO alanlarini doldur",
+    group: "Hizli islem",
+    roles: ["superadmin", "sales"],
+    requiresDatabase: true
+  },
+  {
+    href: "/admin/blog/yeni",
+    label: "Yeni blog yazisi",
+    detail: "Public icerik akisini guncelle",
+    group: "Hizli islem",
+    roles: ["superadmin", "editor"],
+    requiresDatabase: true
+  },
+  {
+    href: "/admin/site#new-navigation",
+    label: "Menu linki ekle",
+    detail: "Ust menu ve footer navigasyonunu yonet",
+    group: "Hizli islem",
+    roles: ["superadmin", "editor"],
+    requiresDatabase: true
+  },
+  {
+    href: "/admin/audit",
+    label: "Audit log incele",
+    detail: "Degisiklikleri, aktorleri ve islem gecmisini kontrol et",
+    group: "Guvenlik",
+    roles: ["superadmin"],
+    requiresDatabase: true
+  },
+  {
+    href: "/admin/adminler",
+    label: "Admin ve oturumlari yonet",
+    detail: "Roller, aktif oturumlar ve yetki seviyesi",
+    group: "Guvenlik",
+    roles: ["superadmin"],
+    requiresDatabase: true
+  }
+];
+
 export function AdminShell({ admin, databaseEnabled = true, children }: AdminShellProps) {
   const items = adminNavigation
     .filter((item) => item.roles.includes(admin.role))
     .filter((item) => databaseEnabled || item.href === "/admin");
+  const commandItems: AdminCommandItem[] = [
+    ...items.map((item) => ({
+      href: item.href,
+      label: item.label,
+      detail: navigationDetailMap[item.href] ?? "Admin modulu",
+      group: "Moduller"
+    })),
+    ...commandActionItems
+      .filter((item) => item.roles.includes(admin.role))
+      .filter((item) => databaseEnabled || !item.requiresDatabase)
+      .map(({ roles: _roles, requiresDatabase: _requiresDatabase, ...item }) => item)
+  ];
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(0,68,211,0.08),transparent_22%),radial-gradient(circle_at_bottom_right,rgba(0,110,47,0.08),transparent_22%),#eef2ff]">
+    <div className="min-h-screen bg-[#f6f7fb]">
+      <AdminSessionGuard />
       <div className="mx-auto max-w-[1680px] px-4 py-5 lg:px-6">
         <div className="grid gap-6 xl:grid-cols-[310px_minmax(0,1fr)]">
           <aside className="surface-card sticky top-5 h-fit overflow-hidden border border-slate-200 bg-white/95 p-6">
-            <div className="rounded-[28px] border border-blue-100 bg-[linear-gradient(135deg,rgba(0,68,211,0.09),rgba(0,110,47,0.04))] p-5">
+            <div className="rounded-[28px] border border-blue-100 bg-[linear-gradient(135deg,rgba(0,68,211,0.08),rgba(0,110,47,0.05))] p-5">
               <p className="text-sm font-semibold uppercase tracking-[0.24em] text-blue-700">
                 ParkChargeEV Admin
               </p>
@@ -64,7 +139,7 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
                 Operasyon Kontrol Merkezi
               </h1>
               <p className="mt-3 text-sm leading-6 text-slate-600">
-                Katalog, siparis ve teklif akisini tek panelden yonetin.
+                Katalog, siparis, teklif ve saha islerini oncelik sirasiyla yonetin.
               </p>
             </div>
 
@@ -98,27 +173,19 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
                 Calisma Alani
               </p>
-              <nav className="mt-3 space-y-2">
+              <nav className="mt-3 space-y-2" aria-label="Admin modulleri">
                 {items.map((item) => {
                   const Icon =
                     navigationIconMap[item.href as keyof typeof navigationIconMap] ??
                     LayoutDashboard;
 
                   return (
-                    <Link
+                    <AdminNavLink
                       key={item.href}
                       href={item.href}
-                      prefetch={false}
-                      className="group flex items-center justify-between rounded-2xl border border-transparent px-4 py-3 text-sm font-medium text-slate-700 transition hover:border-slate-200 hover:bg-slate-50 hover:text-slate-950"
-                    >
-                      <span className="flex items-center gap-3">
-                        <span className="rounded-2xl bg-slate-100 p-2 text-slate-500 transition group-hover:bg-blue-50 group-hover:text-blue-700">
-                          <Icon className="h-4 w-4" />
-                        </span>
-                        {item.label}
-                      </span>
-                      <ArrowUpRight className="h-4 w-4 text-slate-300 transition group-hover:text-slate-500" />
-                    </Link>
+                      icon={<Icon className="h-4 w-4" />}
+                      label={item.label}
+                    />
                   );
                 })}
               </nav>
@@ -129,8 +196,8 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
                 Panel Durumu
               </p>
               <p className="mt-3 text-sm leading-6 text-slate-600">
-                Yeni shell ve reusable data table foundation aktif. Bu alan, operasyon odakli yeni
-                admin deneyiminin giris katmani olarak kullaniliyor.
+                Komut aramasi, rol bazli navigasyon, oturum uyarisi ve admin-only guvenlik
+                basliklari aktif.
               </p>
             </div>
 
@@ -147,34 +214,19 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
                     Control Center
                   </p>
                   <h2 className="mt-2 text-2xl font-semibold text-slate-950">
-                    Queue-first admin foundation
+                    Bugunun islem masasi
                   </h2>
                   <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-                    Liste gorunumleri reusable tablo omurgasina, shell ise operasyon merkezine
-                    donusen yeni bilgi mimarisine gore yenileniyor.
+                    Arama, hizli islem, guvenlik durumu ve rol kapsamli moduller tek ust katmanda
+                    toplandi.
                   </p>
                 </div>
 
-                <div className="grid gap-3 sm:grid-cols-3">
-                  <div className="rounded-3xl border border-white/70 bg-white/80 px-4 py-3">
-                    <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Role</p>
-                    <p className="mt-2 text-sm font-semibold text-slate-950">
-                      {adminRoleLabels[admin.role]}
-                    </p>
-                  </div>
-                  <div className="rounded-3xl border border-white/70 bg-white/80 px-4 py-3">
-                    <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Data</p>
-                    <p className="mt-2 text-sm font-semibold text-slate-950">
-                      {databaseEnabled ? "Canli baglanti" : "Yerel fallback"}
-                    </p>
-                  </div>
-                  <div className="rounded-3xl border border-white/70 bg-white/80 px-4 py-3">
-                    <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Modules</p>
-                    <p className="mt-2 text-sm font-semibold text-slate-950">
-                      {items.length} aktif gorunum
-                    </p>
-                  </div>
-                </div>
+                <AdminCommandMenu
+                  items={commandItems}
+                  roleLabel={adminRoleLabels[admin.role]}
+                  databaseEnabled={databaseEnabled}
+                />
               </div>
             </section>
 

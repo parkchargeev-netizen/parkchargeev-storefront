@@ -72,20 +72,34 @@ async function verifyAdminJwt(token: string) {
   }
 }
 
+function applyAdminSecurityHeaders(response: NextResponse) {
+  response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate");
+  response.headers.set("Pragma", "no-cache");
+  response.headers.set("X-Robots-Tag", "noindex, nofollow");
+  response.headers.set("X-Frame-Options", "DENY");
+  response.headers.set("X-Content-Type-Options", "nosniff");
+  response.headers.set("Referrer-Policy", "same-origin");
+  response.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+
+  return response;
+}
+
 function getUnauthorizedResponse(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith("/api/admin")) {
-    return NextResponse.json(
-      {
-        ok: false,
-        message: "Yetkisiz erisim."
-      },
-      { status: 401 }
+    return applyAdminSecurityHeaders(
+      NextResponse.json(
+        {
+          ok: false,
+          message: "Yetkisiz erisim."
+        },
+        { status: 401 }
+      )
     );
   }
 
   const loginUrl = new URL("/admin/login", request.url);
   loginUrl.searchParams.set("redirectTo", request.nextUrl.pathname);
-  return NextResponse.redirect(loginUrl);
+  return applyAdminSecurityHeaders(NextResponse.redirect(loginUrl));
 }
 
 export async function middleware(request: NextRequest) {
@@ -114,7 +128,7 @@ export async function middleware(request: NextRequest) {
   }
 
   if (pathname === "/admin/login" || pathname === "/api/admin/auth/login") {
-    return NextResponse.next();
+    return applyAdminSecurityHeaders(NextResponse.next());
   }
 
   const token = request.cookies.get("parkchargeev_admin_session")?.value;
@@ -130,16 +144,18 @@ export async function middleware(request: NextRequest) {
   }
 
   if (!canAccessAdminPath(payload.role, pathname.replace("/api", ""))) {
-    return NextResponse.json(
-      {
-        ok: false,
-        message: "Bu alana erisim yetkiniz yok."
-      },
-      { status: 403 }
+    return applyAdminSecurityHeaders(
+      NextResponse.json(
+        {
+          ok: false,
+          message: "Bu alana erisim yetkiniz yok."
+        },
+        { status: 403 }
+      )
     );
   }
 
-  return NextResponse.next();
+  return applyAdminSecurityHeaders(NextResponse.next());
 }
 
 export const config = {

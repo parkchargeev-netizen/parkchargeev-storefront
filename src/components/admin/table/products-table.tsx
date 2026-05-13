@@ -111,6 +111,7 @@ export function ProductsTable({ items, footer }: ProductsTableProps) {
     <AdminDataTable
       columns={columns}
       data={items}
+      caption="Urunler admin listesi"
       emptyTitle="Urun bulunamadi"
       emptyDescription="Filtreleri degistirerek veya yeni urun olusturarak devam edebilirsiniz."
       footer={footer}
