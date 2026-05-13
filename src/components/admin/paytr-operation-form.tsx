@@ -32,7 +32,7 @@ export function PaytrOperationForm({ transactionId }: PaytrOperationFormProps) {
     });
     const data = (await response.json()) as { ok: boolean; message?: string };
 
-    setFeedback(data.ok ? "PayTR operasyonu uygulandi." : data.message ?? "Islem basarisiz.");
+    setFeedback(data.ok ? "PayTR operasyonu uygulandı." : data.message ?? "İşlem başarısız.");
     setIsSubmitting(false);
 
     if (data.ok) {
@@ -49,7 +49,7 @@ export function PaytrOperationForm({ transactionId }: PaytrOperationFormProps) {
         onChange={(event) => setAction(event.target.value)}
       >
         <option value="reconcile">Manuel mutabakat</option>
-        <option value="mark_refunded">Iade olarak isaretle</option>
+        <option value="mark_refunded">İade olarak işaretle</option>
       </select>
       <input
         className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
@@ -63,7 +63,7 @@ export function PaytrOperationForm({ transactionId }: PaytrOperationFormProps) {
         disabled={isSubmitting}
         className="rounded-2xl border border-slate-300 px-4 py-3 text-sm font-semibold text-slate-800 disabled:opacity-70"
       >
-        {isSubmitting ? "Isleniyor..." : "Uygula"}
+        {isSubmitting ? "İşleniyor..." : "Uygula"}
       </button>
     </form>
   );

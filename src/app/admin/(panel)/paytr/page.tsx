@@ -18,6 +18,28 @@ type AdminPaytrPageProps = {
 };
 
 const paytrStatusOptions = ["created", "token_received", "callback_success", "callback_failed"];
+const paytrStatusLabels: Record<string, string> = {
+  created: "Oluşturuldu",
+  token_received: "Token alındı",
+  callback_success: "Callback başarılı",
+  callback_failed: "Callback başarısız"
+};
+const paymentStatusLabels: Record<string, string> = {
+  paid: "Ödendi",
+  failed: "Başarısız",
+  pending: "Beklemede",
+  processing: "İşleniyor",
+  refunded: "İade edildi",
+  cancelled: "İptal edildi"
+};
+
+function formatPaytrStatus(status: string) {
+  return paytrStatusLabels[status] ?? status;
+}
+
+function formatPaymentStatus(status?: string | null) {
+  return status ? paymentStatusLabels[status] ?? status : "-";
+}
 
 function buildExportHref(query: Record<string, string | undefined>) {
   const params = new URLSearchParams();
@@ -57,9 +79,9 @@ export default async function AdminPaytrPage({ searchParams }: AdminPaytrPagePro
   return (
     <div className="space-y-6">
       <AdminPageHeader
-        eyebrow="PayTR Operasyonlari"
-        title="Odeme mutabakati ve iade takibi"
-        description="PayTR transaction kayitlarini inceleyin, callback sonucuna gore manuel mutabakat veya iade isaretleme yapin."
+        eyebrow="PayTR Operasyonları"
+        title="Ödeme mutabakatı ve iade takibi"
+        description="PayTR işlem kayıtlarını inceleyin, callback sonucuna göre manuel mutabakat veya iade işaretleme yapın."
         action={
           <a href={buildExportHref(query)} className="inline-flex rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-white">
             CSV indir
@@ -67,19 +89,19 @@ export default async function AdminPaytrPage({ searchParams }: AdminPaytrPagePro
         }
         meta={
           <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
-            {result.items.length} islem
+            {result.items.length} işlem
           </span>
         }
       />
 
       <section className="surface-card border border-slate-200 bg-white/95 p-6">
-        <h2 className="text-xl font-semibold text-slate-950">Canli odeme ayarlari</h2>
+        <h2 className="text-xl font-semibold text-slate-950">Canlı ödeme ayarları</h2>
         <div className="mt-5 grid gap-3 md:grid-cols-3">
           {paytrEnvStatus.map((item) => (
             <div key={item.key} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
               <p className="text-xs uppercase tracking-[0.16em] text-slate-500">{item.key}</p>
               <p className={`mt-2 text-sm font-semibold ${item.configured ? "text-emerald-700" : "text-rose-700"}`}>
-                {item.configured ? "Tanimli" : "Eksik"}
+                {item.configured ? "Tanımlı" : "Eksik"}
               </p>
             </div>
           ))}
@@ -88,12 +110,12 @@ export default async function AdminPaytrPage({ searchParams }: AdminPaytrPagePro
 
       <AdminFilterBar>
         <form className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_220px_170px_170px_auto]">
-          <input name="q" defaultValue={query.q ?? ""} placeholder="Merchant OID, siparis veya e-posta ara" className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm" />
+          <input name="q" defaultValue={query.q ?? ""} placeholder="Üye iş yeri OID, sipariş veya e-posta ara" className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm" />
           <select name="status" defaultValue={query.status ?? ""} className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-            <option value="">Tum durumlar</option>
+            <option value="">Tüm durumlar</option>
             {paytrStatusOptions.map((status) => (
               <option key={status} value={status}>
-                {status}
+                {formatPaytrStatus(status)}
               </option>
             ))}
           </select>
@@ -110,11 +132,11 @@ export default async function AdminPaytrPage({ searchParams }: AdminPaytrPagePro
               <div>
                 <div className="flex flex-wrap items-center gap-3">
                   <p className="font-semibold text-slate-950">{transaction.merchantOid}</p>
-                  <AdminStatusBadge label={transaction.status} tone={getPaytrTone(transaction.status)} />
+                  <AdminStatusBadge label={formatPaytrStatus(transaction.status)} tone={getPaytrTone(transaction.status)} />
                 </div>
                 <dl className="mt-4 grid gap-3 md:grid-cols-3">
                   <div>
-                    <dt className="text-xs uppercase tracking-[0.16em] text-slate-500">Siparis</dt>
+                    <dt className="text-xs uppercase tracking-[0.16em] text-slate-500">Sipariş</dt>
                     <dd className="mt-1 text-sm text-slate-700">
                       {transaction.orderId ? (
                         <Link href={`/admin/siparisler/${transaction.orderId}`} className="font-semibold text-blue-700">
@@ -132,12 +154,12 @@ export default async function AdminPaytrPage({ searchParams }: AdminPaytrPagePro
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-xs uppercase tracking-[0.16em] text-slate-500">Odeme</dt>
-                    <dd className="mt-1 text-sm text-slate-700">{transaction.paymentStatus ?? "-"}</dd>
+                    <dt className="text-xs uppercase tracking-[0.16em] text-slate-500">Ödeme</dt>
+                    <dd className="mt-1 text-sm text-slate-700">{formatPaymentStatus(transaction.paymentStatus)}</dd>
                   </div>
                 </dl>
                 <details className="mt-4">
-                  <summary className="cursor-pointer text-sm font-semibold text-slate-700">Callback ve request verisi</summary>
+                  <summary className="cursor-pointer text-sm font-semibold text-slate-700">Callback ve istek verisi</summary>
                   <pre className="mt-3 max-h-72 overflow-auto rounded-2xl bg-slate-950 p-4 text-xs text-slate-100">
                     {JSON.stringify(
                       { rawRequest: transaction.rawRequest, rawCallback: transaction.rawCallback },
@@ -151,7 +173,7 @@ export default async function AdminPaytrPage({ searchParams }: AdminPaytrPagePro
             </div>
           ))}
           {result.items.length === 0 ? (
-            <p className="text-sm text-slate-500">PayTR transaction kaydi bulunamadi.</p>
+            <p className="text-sm text-slate-500">PayTR işlem kaydı bulunamadı.</p>
           ) : null}
         </div>
         <div className="mt-5">

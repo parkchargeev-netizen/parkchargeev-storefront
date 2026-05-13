@@ -90,7 +90,7 @@ function getUnauthorizedResponse(request: NextRequest) {
       NextResponse.json(
         {
           ok: false,
-          message: "Yetkisiz erisim."
+          message: "Yetkisiz erişim."
         },
         { status: 401 }
       )
@@ -148,7 +148,7 @@ export async function middleware(request: NextRequest) {
       NextResponse.json(
         {
           ok: false,
-          message: "Bu alana erisim yetkiniz yok."
+          message: "Bu alana erişim yetkiniz yok."
         },
         { status: 403 }
       )

@@ -17,7 +17,7 @@ const RichTextEditor = dynamic(
     ssr: false,
     loading: () => (
       <div className="min-h-[220px] rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-500">
-        Editor yukleniyor...
+        Editör yükleniyor...
       </div>
     )
   }
@@ -67,11 +67,11 @@ export function BlogPostForm({ mode, postId, initialValues }: BlogPostFormProps)
     const data = (await response.json()) as { ok: boolean; message?: string; post?: { id: string } };
 
     if (!data.ok) {
-      setFeedback(data.message ?? "Icerik kaydedilemedi.");
+      setFeedback(data.message ?? "İçerik kaydedilemedi.");
       return;
     }
 
-    setFeedback("Icerik kaydedildi.");
+    setFeedback("İçerik kaydedildi.");
 
     if (mode === "create" && data.post?.id) {
       router.push(`/admin/blog/${data.post.id}`);
@@ -86,7 +86,7 @@ export function BlogPostForm({ mode, postId, initialValues }: BlogPostFormProps)
       <div className="grid gap-4 md:grid-cols-2">
         <input
           className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
-          placeholder="Baslik"
+          placeholder="Başlık"
           {...register("title")}
         />
         <input
@@ -98,7 +98,7 @@ export function BlogPostForm({ mode, postId, initialValues }: BlogPostFormProps)
       <textarea
         rows={3}
         className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
-        placeholder="Ozet"
+        placeholder="Özet"
         {...register("excerpt")}
       />
       <Controller
@@ -114,7 +114,7 @@ export function BlogPostForm({ mode, postId, initialValues }: BlogPostFormProps)
         />
         <input
           className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
-          placeholder="Yayin tarihi"
+          placeholder="Yayın tarihi"
           type="datetime-local"
           {...register("publishedAt")}
         />
@@ -140,7 +140,7 @@ export function BlogPostForm({ mode, postId, initialValues }: BlogPostFormProps)
         disabled={isSubmitting}
         className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white disabled:opacity-70"
       >
-        {isSubmitting ? "Kaydediliyor..." : "Icerigi kaydet"}
+        {isSubmitting ? "Kaydediliyor..." : "İçeriği kaydet"}
       </button>
     </form>
   );

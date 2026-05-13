@@ -47,8 +47,8 @@ export default async function AdminQuotesPage({ searchParams }: QuotesPageProps)
     <div className="space-y-6">
       <AdminPageHeader
         eyebrow="Teklifler"
-        title="B2B pipeline ve geri donus kontrolu"
-        description="Teklif listesi reusable tablo temelinde sade, hizli ve filtrelenebilir bir takip ekranina donustu."
+        title="B2B satış akışı ve geri dönüş kontrolü"
+        description="Teklif listesi yeniden kullanılabilir tablo temelinde sade, hızlı ve filtrelenebilir bir takip ekranına dönüştü."
         action={
           <a
             href={buildHref("/api/admin/quotes", query, { format: "csv", limit: "50" })}
@@ -63,7 +63,7 @@ export default async function AdminQuotesPage({ searchParams }: QuotesPageProps)
               {result.items.length} teklif
             </span>
             <span className="inline-flex rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
-              Pipeline hazirligi
+              Akış hazırlığı
             </span>
           </>
         }
@@ -74,7 +74,7 @@ export default async function AdminQuotesPage({ searchParams }: QuotesPageProps)
           <input
             name="q"
             defaultValue={query.q ?? ""}
-            placeholder="Kisi, firma veya telefon ara"
+            placeholder="Kişi, firma veya telefon ara"
             className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm"
           />
           <select
@@ -82,7 +82,7 @@ export default async function AdminQuotesPage({ searchParams }: QuotesPageProps)
             defaultValue={query.status ?? ""}
             className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm"
           >
-            <option value="">Tum durumlar</option>
+            <option value="">Tüm durumlar</option>
             {quoteStatusOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
@@ -118,7 +118,7 @@ export default async function AdminQuotesPage({ searchParams }: QuotesPageProps)
               Sonraki sayfa
             </Link>
           ) : (
-            <span className="text-sm font-medium text-slate-500">Tum kayitlar yuklendi.</span>
+            <span className="text-sm font-medium text-slate-500">Tüm kayıtlar yüklendi.</span>
           )
         }
       />

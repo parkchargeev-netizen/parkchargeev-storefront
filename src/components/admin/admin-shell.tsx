@@ -51,58 +51,58 @@ const navigationIconMap = {
 } as const;
 
 const navigationDetailMap: Record<string, string> = {
-  "/admin": "KPI, kuyruk ve operasyon ozeti",
-  "/admin/erisim": "Tum yetkili admin modulleri",
-  "/admin/site": "Menu, sayfa ve public icerik yonetimi",
+  "/admin": "KPI, kuyruk ve operasyon özeti",
+  "/admin/erisim": "Tüm yetkili admin modülleri",
+  "/admin/site": "Menü, sayfa ve yayındaki içerik yönetimi",
   "/admin/urunler": "Katalog, stok, fiyat ve SEO",
-  "/admin/siparisler": "Odeme, teslimat ve fulfillment",
-  "/admin/teklifler": "B2B/B2C teklif pipeline",
+  "/admin/siparisler": "Ödeme, teslimat ve sipariş karşılama",
+  "/admin/teklifler": "B2B/B2C teklif akışı",
   "/admin/saha": "Servis ve saha talepleri",
-  "/admin/blog": "Blog ve icerik operasyonu",
-  "/admin/katalog": "Marka ve kategori sozlukleri",
-  "/admin/paytr": "Odeme hareketleri",
-  "/admin/audit": "Islem kayitlari ve izleme",
-  "/admin/adminler": "Rol ve admin kullanici yonetimi"
+  "/admin/blog": "Blog ve içerik operasyonu",
+  "/admin/katalog": "Marka ve kategori sözlükleri",
+  "/admin/paytr": "Ödeme hareketleri",
+  "/admin/audit": "İşlem kayıtları ve izleme",
+  "/admin/adminler": "Rol ve admin kullanıcı yönetimi"
 };
 
 const commandActionItems: Array<AdminCommandItem & { roles: AdminRole[]; requiresDatabase?: boolean }> = [
   {
     href: "/admin/urunler/yeni",
-    label: "Yeni urun olustur",
-    detail: "Katalog, fiyat, stok ve SEO alanlarini doldur",
-    group: "Hizli islem",
+    label: "Yeni ürün oluştur",
+    detail: "Katalog, fiyat, stok ve SEO alanlarını doldur",
+    group: "Hızlı işlem",
     roles: ["superadmin", "sales"],
     requiresDatabase: true
   },
   {
     href: "/admin/blog/yeni",
-    label: "Yeni blog yazisi",
-    detail: "Public icerik akisini guncelle",
-    group: "Hizli islem",
+    label: "Yeni blog yazısı",
+    detail: "Yayındaki içerik akışını güncelle",
+    group: "Hızlı işlem",
     roles: ["superadmin", "editor"],
     requiresDatabase: true
   },
   {
     href: "/admin/site#new-navigation",
-    label: "Menu linki ekle",
-    detail: "Ust menu ve footer navigasyonunu yonet",
-    group: "Hizli islem",
+    label: "Menü linki ekle",
+    detail: "Üst menü ve footer navigasyonunu yönet",
+    group: "Hızlı işlem",
     roles: ["superadmin", "editor"],
     requiresDatabase: true
   },
   {
     href: "/admin/audit",
-    label: "Audit log incele",
-    detail: "Degisiklikleri, aktorleri ve islem gecmisini kontrol et",
-    group: "Guvenlik",
+    label: "Denetim logunu incele",
+    detail: "Değişiklikleri, aktörleri ve işlem geçmişini kontrol et",
+    group: "Güvenlik",
     roles: ["superadmin"],
     requiresDatabase: true
   },
   {
     href: "/admin/adminler",
-    label: "Admin ve oturumlari yonet",
+    label: "Admin ve oturumları yönet",
     detail: "Roller, aktif oturumlar ve yetki seviyesi",
-    group: "Guvenlik",
+    group: "Güvenlik",
     roles: ["superadmin"],
     requiresDatabase: true
   }
@@ -116,8 +116,8 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
     ...items.map((item) => ({
       href: item.href,
       label: item.label,
-      detail: navigationDetailMap[item.href] ?? "Admin modulu",
-      group: "Moduller"
+      detail: navigationDetailMap[item.href] ?? "Admin modülü",
+      group: "Modüller"
     })),
     ...commandActionItems
       .filter((item) => item.roles.includes(admin.role))
@@ -139,7 +139,7 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
                 Operasyon Kontrol Merkezi
               </h1>
               <p className="mt-3 text-sm leading-6 text-slate-600">
-                Katalog, siparis, teklif ve saha islerini oncelik sirasiyla yonetin.
+                Katalog, sipariş, teklif ve saha işlerini öncelik sırasıyla yönetin.
               </p>
             </div>
 
@@ -164,16 +164,16 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
                   }`}
                 >
                   <Database className="h-3.5 w-3.5" />
-                  {databaseEnabled ? "Canli veri modu" : "Fallback veri modu"}
+                  {databaseEnabled ? "Canlı veri modu" : "Yerel yedek veri modu"}
                 </span>
               </div>
             </div>
 
             <div className="mt-8">
               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
-                Calisma Alani
+                Çalışma Alanı
               </p>
-              <nav className="mt-3 space-y-2" aria-label="Admin modulleri">
+              <nav className="mt-3 space-y-2" aria-label="Admin modülleri">
                 {items.map((item) => {
                   const Icon =
                     navigationIconMap[item.href as keyof typeof navigationIconMap] ??
@@ -196,8 +196,8 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
                 Panel Durumu
               </p>
               <p className="mt-3 text-sm leading-6 text-slate-600">
-                Komut aramasi, rol bazli navigasyon, oturum uyarisi ve admin-only guvenlik
-                basliklari aktif.
+                Komut araması, rol bazlı navigasyon, oturum uyarısı ve sadece admin güvenlik
+                başlıkları aktif.
               </p>
             </div>
 
@@ -211,14 +211,14 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
               <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
-                    Control Center
+                    Kontrol Merkezi
                   </p>
                   <h2 className="mt-2 text-2xl font-semibold text-slate-950">
-                    Bugunun islem masasi
+                    Bugünün işlem masası
                   </h2>
                   <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-                    Arama, hizli islem, guvenlik durumu ve rol kapsamli moduller tek ust katmanda
-                    toplandi.
+                    Arama, hızlı işlem, güvenlik durumu ve rol kapsamlı modüller tek üst katmanda
+                    toplandı.
                   </p>
                 </div>
 

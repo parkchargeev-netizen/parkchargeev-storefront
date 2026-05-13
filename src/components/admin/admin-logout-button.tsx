@@ -30,7 +30,7 @@ export function AdminLogoutButton() {
       disabled={isPending}
     >
       <LogOut className="h-4 w-4" />
-      {isPending ? "Cikis yapiliyor..." : "Cikis Yap"}
+      {isPending ? "Çıkış yapılıyor..." : "Çıkış Yap"}
     </button>
   );
 }

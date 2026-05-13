@@ -4,156 +4,156 @@ export type AdminAccessLink = {
   href: string;
   label: string;
   description: string;
-  group: "Operasyon" | "Katalog" | "Icerik" | "Yonetim" | "Disari Aktar";
+  group: "Operasyon" | "Katalog" | "İçerik" | "Yönetim" | "Dışarı Aktar";
   roles: AdminRole[];
 };
 
 export const adminAccessLinks: AdminAccessLink[] = [
   {
     href: "/admin",
-    label: "Dashboard",
-    description: "KPI, son siparis, teklif ve saha talebi ozeti.",
+    label: "Gösterge Paneli",
+    description: "KPI, son sipariş, teklif ve saha talebi özeti.",
     group: "Operasyon",
     roles: ["superadmin", "sales", "operations", "technician", "editor"]
   },
   {
     href: "/admin/urunler",
-    label: "Urunler",
-    description: "Urun listesi, filtreleme, CSV export ve detay duzenleme.",
+    label: "Ürünler",
+    description: "Ürün listesi, filtreleme, CSV dışa aktarma ve detay düzenleme.",
     group: "Katalog",
     roles: ["superadmin", "sales"]
   },
   {
     href: "/admin/site",
-    label: "Site yonetimi",
-    description: "Navbar, footer linkleri, SEO alanlari ve yonetilebilir sayfalar.",
-    group: "Yonetim",
+    label: "Site yönetimi",
+    description: "Navbar, footer linkleri, SEO alanları ve yönetilebilir sayfalar.",
+    group: "Yönetim",
     roles: ["superadmin", "editor"]
   },
   {
     href: "/admin/site?status=primary",
-    label: "Ust menu yonetimi",
-    description: "Header navbar linklerini tek ekranda sirala, aktif/pasif yap ve guncelle.",
-    group: "Yonetim",
+    label: "Üst menü yönetimi",
+    description: "Header navbar linklerini tek ekranda sırala, aktif/pasif yap ve güncelle.",
+    group: "Yönetim",
     roles: ["superadmin", "editor"]
   },
   {
     href: "/admin/site?status=published",
-    label: "Yayindaki sayfalar",
-    description: "Public gorunen CMS sayfalarini, SEO ve sitemap kararlarini yonet.",
-    group: "Yonetim",
+    label: "Yayındaki sayfalar",
+    description: "Yayında görünen CMS sayfalarını, SEO ve sitemap kararlarını yönet.",
+    group: "Yönetim",
     roles: ["superadmin", "editor"]
   },
   {
     href: "/admin/site?status=draft",
     label: "Taslak sayfalar",
-    description: "Yeni sayfa hazirliklarini ve yayin oncesi icerik detaylarini tamamla.",
-    group: "Yonetim",
+    description: "Yeni sayfa hazırlıklarını ve yayın öncesi içerik detaylarını tamamla.",
+    group: "Yönetim",
     roles: ["superadmin", "editor"]
   },
   {
     href: "/admin/urunler/yeni",
-    label: "Yeni urun",
-    description: "Marka, kategori, medya ve coklu varyantla urun olusturma.",
+    label: "Yeni ürün",
+    description: "Marka, kategori, medya ve çoklu varyantla ürün oluşturma.",
     group: "Katalog",
     roles: ["superadmin", "sales"]
   },
   {
     href: "/admin/katalog",
     label: "Marka ve kategori",
-    description: "Urun formunu besleyen katalog sozlukleri.",
+    description: "Ürün formunu besleyen katalog sözlükleri.",
     group: "Katalog",
     roles: ["superadmin", "sales"]
   },
   {
     href: "/admin/siparisler",
-    label: "Siparisler",
-    description: "Siparis liste, detay, kargo ve durum yonetimi.",
+    label: "Siparişler",
+    description: "Sipariş liste, detay, kargo ve durum yönetimi.",
     group: "Operasyon",
     roles: ["superadmin", "sales"]
   },
   {
     href: "/admin/teklifler",
     label: "Teklifler",
-    description: "B2B talepler, atama, pipeline ve durum guncelleme.",
+    description: "B2B talepler, atama, satış akışı ve durum güncelleme.",
     group: "Operasyon",
     roles: ["superadmin", "sales"]
   },
   {
     href: "/admin/saha",
     label: "Saha talepleri",
-    description: "Kesif, servis ve kurulum taleplerinin atama/durum akisi.",
+    description: "Keşif, servis ve kurulum taleplerinin atama/durum akışı.",
     group: "Operasyon",
     roles: ["superadmin", "operations", "technician"]
   },
   {
     href: "/admin/blog",
-    label: "Icerikler",
-    description: "Blog yazisi listeleme, filtreleme ve duzenleme.",
-    group: "Icerik",
+    label: "İçerikler",
+    description: "Blog yazısı listeleme, filtreleme ve düzenleme.",
+    group: "İçerik",
     roles: ["superadmin", "editor"]
   },
   {
     href: "/admin/blog/yeni",
-    label: "Yeni icerik",
-    description: "Blog yazisi ve SEO alanlarini olusturma.",
-    group: "Icerik",
+    label: "Yeni içerik",
+    description: "Blog yazısı ve SEO alanlarını oluşturma.",
+    group: "İçerik",
     roles: ["superadmin", "editor"]
   },
   {
     href: "/admin/paytr",
-    label: "PayTR operasyonlari",
-    description: "Transaction inceleme, mutabakat ve iade isaretleme.",
+    label: "PayTR operasyonları",
+    description: "İşlem inceleme, mutabakat ve iade işaretleme.",
     group: "Operasyon",
     roles: ["superadmin", "sales"]
   },
   {
     href: "/admin/adminler",
-    label: "Admin kullanicilar",
-    description: "Kullanici ekleme, rol, durum, sifre ve oturum yonetimi.",
-    group: "Yonetim",
+    label: "Admin kullanıcıları",
+    description: "Kullanıcı ekleme, rol, durum, şifre ve oturum yönetimi.",
+    group: "Yönetim",
     roles: ["superadmin"]
   },
   {
     href: "/admin/audit",
-    label: "Audit log",
-    description: "Admin mutasyon kayitlari ve payload detaylari.",
-    group: "Yonetim",
+    label: "Denetim logu",
+    description: "Admin mutasyon kayıtları ve veri detayları.",
+    group: "Yönetim",
     roles: ["superadmin"]
   },
   {
     href: "/api/admin/products?format=csv&limit=50",
-    label: "Urun CSV",
-    description: "Filtrelenmemis son 50 urun kaydini indirir.",
-    group: "Disari Aktar",
+    label: "Ürün CSV",
+    description: "Filtrelenmemiş son 50 ürün kaydını indirir.",
+    group: "Dışarı Aktar",
     roles: ["superadmin", "sales"]
   },
   {
     href: "/api/admin/orders?format=csv&limit=50",
-    label: "Siparis CSV",
-    description: "Filtrelenmemis son 50 siparis kaydini indirir.",
-    group: "Disari Aktar",
+    label: "Sipariş CSV",
+    description: "Filtrelenmemiş son 50 sipariş kaydını indirir.",
+    group: "Dışarı Aktar",
     roles: ["superadmin", "sales"]
   },
   {
     href: "/api/admin/quotes?format=csv&limit=50",
     label: "Teklif CSV",
-    description: "Filtrelenmemis son 50 teklif kaydini indirir.",
-    group: "Disari Aktar",
+    description: "Filtrelenmemiş son 50 teklif kaydını indirir.",
+    group: "Dışarı Aktar",
     roles: ["superadmin", "sales"]
   },
   {
     href: "/api/admin/service-leads?format=csv&limit=50",
     label: "Saha CSV",
-    description: "Filtrelenmemis son 50 saha talebini indirir.",
-    group: "Disari Aktar",
+    description: "Filtrelenmemiş son 50 saha talebini indirir.",
+    group: "Dışarı Aktar",
     roles: ["superadmin", "operations", "technician"]
   },
   {
     href: "/api/admin/audit?format=csv&limit=50",
-    label: "Audit CSV",
-    description: "Filtrelenmemis son 50 audit kaydini indirir.",
-    group: "Disari Aktar",
+    label: "Denetim CSV",
+    description: "Filtrelenmemiş son 50 denetim kaydını indirir.",
+    group: "Dışarı Aktar",
     roles: ["superadmin"]
   }
 ];

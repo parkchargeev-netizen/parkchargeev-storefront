@@ -28,13 +28,26 @@ const pageFrequencies = ["always", "hourly", "daily", "weekly", "monthly", "year
 function areaLabel(area: string) {
   switch (area) {
     case "primary":
-      return "Ust menu";
+      return "Üst menü";
     case "footer":
       return "Footer";
     case "legal":
       return "Destek";
     default:
       return area;
+  }
+}
+
+function pageStatusLabel(status: string) {
+  switch (status) {
+    case "published":
+      return "Yayında";
+    case "draft":
+      return "Taslak";
+    case "archived":
+      return "Arşiv";
+    default:
+      return status;
   }
 }
 
@@ -77,9 +90,9 @@ export async function SiteManagementPanel({
   return (
     <section id="site-management" className="scroll-mt-6 space-y-6">
       <AdminPageHeader
-        eyebrow="Site Yonetimi"
-        title="Tek ekrandan navbar, sayfa ve SEO kontrolu"
-        description="Ust menu, footer, destek linkleri, yonetilebilir sayfalar, sitemap ve noindex kararlarini ayni operasyon ekranindan yonetin."
+        eyebrow="Site Yönetimi"
+        title="Tek ekrandan navbar, sayfa ve SEO kontrolü"
+        description="Üst menü, footer, destek linkleri, yönetilebilir sayfalar, sitemap ve noindex kararlarını aynı operasyon ekranından yönetin."
         meta={
           <>
             <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
@@ -96,7 +109,7 @@ export async function SiteManagementPanel({
         {[
           {
             href: siteHref(basePath, "primary"),
-            label: "Ust menu",
+            label: "Üst menü",
             value: String(navigation.items.filter((item) => item.area === "primary").length),
             detail: "Header navigasyonu"
           },
@@ -108,15 +121,15 @@ export async function SiteManagementPanel({
           },
           {
             href: siteHref(basePath, "published"),
-            label: "Yayindaki sayfalar",
+            label: "Yayındaki sayfalar",
             value: String(publishedPageCount),
-            detail: "Public gorunen CMS sayfalari"
+            detail: "Yayında görünen CMS sayfaları"
           },
           {
             href: siteHref(basePath, "draft"),
             label: "Taslak sayfalar",
             value: String(draftPageCount),
-            detail: "Hazirliktaki sayfalar"
+            detail: "Hazırlıktaki sayfalar"
           }
         ].map((item) => (
           <Link
@@ -145,10 +158,10 @@ export async function SiteManagementPanel({
             defaultValue={query.status ?? ""}
             className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm"
           >
-            <option value="">Tum durum / alanlar</option>
-            <option value="published">Yayinda sayfalar</option>
+            <option value="">Tüm durum / alanlar</option>
+            <option value="published">Yayında sayfalar</option>
             <option value="draft">Taslak sayfalar</option>
-            <option value="primary">Ust menu</option>
+            <option value="primary">Üst menü</option>
             <option value="footer">Footer</option>
             <option value="legal">Destek</option>
           </select>
@@ -160,11 +173,11 @@ export async function SiteManagementPanel({
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
         {[
-          { href: siteHref(basePath), label: "Tum alanlar" },
-          { href: siteHref(basePath, "primary"), label: "Ust menu" },
+          { href: siteHref(basePath), label: "Tüm alanlar" },
+          { href: siteHref(basePath, "primary"), label: "Üst menü" },
           { href: siteHref(basePath, "footer"), label: "Footer" },
           { href: siteHref(basePath, "legal"), label: "Destek linkleri" },
-          { href: siteHref(basePath, "published"), label: "Yayindaki sayfalar" },
+          { href: siteHref(basePath, "published"), label: "Yayındaki sayfalar" },
           { href: siteHref(basePath, "draft"), label: "Taslak sayfalar" }
         ].map((item) => (
           <Link
@@ -184,7 +197,7 @@ export async function SiteManagementPanel({
             <div>
               <h2 className="text-xl font-semibold text-slate-950">Yeni navigasyon linki</h2>
               <p className="mt-1 text-sm text-slate-600">
-                Aktif linkler kaydedildikten sonra public navbar/footer cache yenilenir.
+                Aktif linkler kaydedildikten sonra yayındaki navbar/footer önbelleği yenilenir.
               </p>
             </div>
             <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
@@ -201,15 +214,15 @@ export async function SiteManagementPanel({
               prefetch={false}
               className="mt-5 inline-flex rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white"
             >
-              Menu linki ekle
+              Menü linki ekle
             </Link>
           )}
         </section>
 
         <section id="new-site-page" className="surface-card scroll-mt-6 border border-slate-200 bg-white/95 p-5 lg:p-6">
-          <h2 className="text-xl font-semibold text-slate-950">Yeni detayli sayfa</h2>
+          <h2 className="text-xl font-semibold text-slate-950">Yeni detaylı sayfa</h2>
           <p className="mt-1 text-sm text-slate-600">
-            Slug, hero, HTML icerik, SEO, sosyal gorsel, sitemap ve yayin kararlarini birlikte girin.
+            Slug, hero, HTML içerik, SEO, sosyal görsel, sitemap ve yayın kararlarını birlikte girin.
           </p>
           {showNewPageForm ? (
             <div className="mt-5">
@@ -221,7 +234,7 @@ export async function SiteManagementPanel({
               prefetch={false}
               className="mt-5 inline-flex rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white"
             >
-              Detayli sayfa ekle
+              Detaylı sayfa ekle
             </Link>
           )}
         </section>
@@ -232,7 +245,7 @@ export async function SiteManagementPanel({
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-700">
-                Navigasyon duzenle
+                Navigasyon düzenle
               </p>
               <h2 className="mt-2 text-xl font-semibold text-slate-950">
                 {selectedNavigationItem.label}
@@ -268,7 +281,7 @@ export async function SiteManagementPanel({
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-700">
-                Sayfa duzenle
+                Sayfa düzenle
               </p>
               <h2 className="mt-2 text-xl font-semibold text-slate-950">{selectedPage.title}</h2>
             </div>
@@ -322,20 +335,20 @@ export async function SiteManagementPanel({
                     prefetch={false}
                     className="rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
                   >
-                    Duzenle
+                    Düzenle
                   </Link>
                 </div>
               </div>
             </div>
           ))}
           {navigation.items.length === 0 ? (
-            <p className="text-sm text-slate-500">Navigasyon kaydi yoksa site sabit menuyu kullanir.</p>
+            <p className="text-sm text-slate-500">Navigasyon kaydı yoksa site sabit menüyü kullanır.</p>
           ) : null}
         </div>
       </section>
 
       <section className="surface-card border border-slate-200 bg-white/95 p-5 lg:p-6">
-        <h2 className="text-xl font-semibold text-slate-950">Yonetilebilir sayfalar</h2>
+        <h2 className="text-xl font-semibold text-slate-950">Yönetilebilir sayfalar</h2>
         <div className="mt-5 space-y-4">
           {pages.items.map((page) => (
             <div key={page.id} className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
@@ -346,25 +359,25 @@ export async function SiteManagementPanel({
                   <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-500">{page.excerpt}</p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <AdminStatusBadge label={page.status} tone={page.status === "published" ? "success" : page.status === "draft" ? "warning" : "neutral"} />
+                  <AdminStatusBadge label={pageStatusLabel(page.status)} tone={page.status === "published" ? "success" : page.status === "draft" ? "warning" : "neutral"} />
                   {page.noIndex ? <AdminStatusBadge label="Noindex" tone="warning" /> : null}
-                  {!page.showInSitemap ? <AdminStatusBadge label="Sitemap disi" tone="neutral" /> : null}
+                  {!page.showInSitemap ? <AdminStatusBadge label="Sitemap dışı" tone="neutral" /> : null}
                   <Link href={`/${page.slug}`} prefetch={false} className="rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700">
-                    Ac
+                    Aç
                   </Link>
                   <Link
                     href={editHref(basePath, "editPage", page.id)}
                     prefetch={false}
                     className="rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
                   >
-                    Duzenle
+                    Düzenle
                   </Link>
                 </div>
               </div>
             </div>
           ))}
           {pages.items.length === 0 ? (
-            <p className="text-sm text-slate-500">Henuz yonetilebilir sayfa yok.</p>
+            <p className="text-sm text-slate-500">Henüz yönetilebilir sayfa yok.</p>
           ) : null}
         </div>
       </section>

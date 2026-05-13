@@ -39,7 +39,7 @@ export function LoginForm() {
     const data = (await response.json()) as { ok: boolean; message?: string };
 
     if (!response.ok || !data.ok) {
-      setErrorMessage(data.message ?? "Giris basarisiz.");
+      setErrorMessage(data.message ?? "Giriş başarısız.");
       return;
     }
 
@@ -67,7 +67,7 @@ export function LoginForm() {
 
       <div>
         <label className="mb-2 block text-sm font-medium text-slate-700" htmlFor="password">
-          Sifre
+          Şifre
         </label>
         <input
           id="password"
@@ -92,7 +92,7 @@ export function LoginForm() {
         className="w-full rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
         disabled={isSubmitting}
       >
-        {isSubmitting ? "Giris yapiliyor..." : "Admin Girisi"}
+        {isSubmitting ? "Giriş yapılıyor..." : "Admin Girişi"}
       </button>
     </form>
   );

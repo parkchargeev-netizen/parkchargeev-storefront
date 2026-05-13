@@ -35,9 +35,9 @@ export default async function AdminAuditPage({ searchParams }: AdminAuditPagePro
   return (
     <div className="space-y-6">
       <AdminPageHeader
-        eyebrow="Audit Log"
-        title="Admin islem kayitlari"
-        description="Mutasyonlarin aktor, varlik, aksiyon, IP ve payload detaylarini takip edin."
+        eyebrow="Denetim Logu"
+        title="Admin işlem kayıtları"
+        description="Mutasyonların aktör, varlık, aksiyon, IP ve veri detaylarını takip edin."
         action={
           <a href={buildExportHref(query)} className="inline-flex rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-white">
             CSV indir
@@ -52,8 +52,8 @@ export default async function AdminAuditPage({ searchParams }: AdminAuditPagePro
 
       <AdminFilterBar>
         <form className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_180px_170px_170px_auto]">
-          <input name="q" defaultValue={query.q ?? ""} placeholder="Varlik, aksiyon veya ozet ara" className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm" />
-          <input name="status" defaultValue={query.status ?? ""} placeholder="Entity type" className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm" />
+          <input name="q" defaultValue={query.q ?? ""} placeholder="Varlık, aksiyon veya özet ara" className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm" />
+          <input name="status" defaultValue={query.status ?? ""} placeholder="Varlık tipi" className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm" />
           <input name="from" type="date" defaultValue={query.from ?? ""} className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm" />
           <input name="to" type="date" defaultValue={query.to ?? ""} className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm" />
           <button className="rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white">Filtrele</button>
@@ -69,7 +69,7 @@ export default async function AdminAuditPage({ searchParams }: AdminAuditPagePro
                   <p className="text-sm font-semibold text-slate-950">
                     {log.entityType} / {log.action}
                   </p>
-                  <p className="mt-1 text-sm text-slate-600">{log.summary ?? "Ozet yok"}</p>
+                  <p className="mt-1 text-sm text-slate-600">{log.summary ?? "Özet yok"}</p>
                   <p className="mt-2 text-xs text-slate-500">
                     {log.actorEmail ?? "Sistem"} / {log.ipAddress ?? "-"} / {new Date(log.createdAt).toLocaleString("tr-TR")}
                   </p>
@@ -79,7 +79,7 @@ export default async function AdminAuditPage({ searchParams }: AdminAuditPagePro
                 </span>
               </div>
               <details className="mt-4">
-                <summary className="cursor-pointer text-sm font-semibold text-slate-700">Payload detaylari</summary>
+                <summary className="cursor-pointer text-sm font-semibold text-slate-700">Veri detayları</summary>
                 <pre className="mt-3 max-h-96 overflow-auto rounded-2xl bg-slate-950 p-4 text-xs text-slate-100">
                   {JSON.stringify(
                     { before: log.beforePayload, after: log.afterPayload, userAgent: log.userAgent },
@@ -91,7 +91,7 @@ export default async function AdminAuditPage({ searchParams }: AdminAuditPagePro
             </article>
           ))}
           {result.items.length === 0 ? (
-            <p className="text-sm text-slate-500">Audit log bulunamadi.</p>
+            <p className="text-sm text-slate-500">Denetim logu bulunamadı.</p>
           ) : null}
         </div>
         <div className="mt-5">

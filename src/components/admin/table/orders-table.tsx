@@ -66,10 +66,44 @@ function getPaymentTone(status: string) {
   return "neutral";
 }
 
+function formatOrderStatus(status: string) {
+  const labels: Record<string, string> = {
+    pending_payment: "Ödeme Bekliyor",
+    pending_confirmation: "Ödeme Alındı",
+    confirmed: "Onaylandı",
+    shipped: "Kargoya Verildi",
+    delivered: "Teslim Edildi",
+    cancelled: "İptal",
+    refunded: "İade",
+    failed: "Başarısız",
+    paid: "Ödendi",
+    fulfilled: "Tamamlandı",
+    payment_processing: "Ödeme İşleniyor",
+    draft: "Taslak"
+  };
+
+  return labels[status] ?? status;
+}
+
+function formatPaymentStatus(status: string) {
+  const labels: Record<string, string> = {
+    paid: "Ödendi",
+    completed: "Tamamlandı",
+    confirmed: "Onaylandı",
+    pending: "Beklemede",
+    processing: "İşleniyor",
+    failed: "Başarısız",
+    cancelled: "İptal",
+    refunded: "İade"
+  };
+
+  return labels[status] ?? status;
+}
+
 const columns: Array<ColumnDef<OrderRow>> = [
   {
     accessorKey: "orderNumber",
-    header: "Siparis",
+    header: "Sipariş",
     cell: ({ row }) => (
       <div className="min-w-[240px]">
         <Link
@@ -79,7 +113,7 @@ const columns: Array<ColumnDef<OrderRow>> = [
           {row.original.orderNumber}
         </Link>
         <p className="mt-1 text-sm text-slate-600">
-          {row.original.customerName || "Misafir musteri"}
+          {row.original.customerName || "Misafir müşteri"}
         </p>
         <p className="mt-1 text-xs text-slate-500">
           {row.original.customerEmail || "E-posta yok"}
@@ -89,11 +123,11 @@ const columns: Array<ColumnDef<OrderRow>> = [
   },
   {
     id: "items",
-    header: "Urunler",
+    header: "Ürünler",
     accessorFn: (row) => row.items.length,
     cell: ({ row }) => (
       <div className="max-w-[280px] text-sm text-slate-600">
-        {row.original.items.map((item) => item.productName).join(", ") || "Urun bulunamadi"}
+        {row.original.items.map((item) => item.productName).join(", ") || "Ürün bulunamadı"}
       </div>
     )
   },
@@ -106,15 +140,15 @@ const columns: Array<ColumnDef<OrderRow>> = [
     accessorKey: "status",
     header: "Durum",
     cell: ({ row }) => (
-      <AdminStatusBadge label={row.original.status} tone={getOrderTone(row.original.status)} />
+      <AdminStatusBadge label={formatOrderStatus(row.original.status)} tone={getOrderTone(row.original.status)} />
     )
   },
   {
     accessorKey: "paymentStatus",
-    header: "Odeme",
+    header: "Ödeme",
     cell: ({ row }) => (
       <AdminStatusBadge
-        label={row.original.paymentStatus}
+        label={formatPaymentStatus(row.original.paymentStatus)}
         tone={getPaymentTone(row.original.paymentStatus)}
       />
     )
@@ -144,9 +178,9 @@ export function OrdersTable({ items, footer }: OrdersTableProps) {
     <AdminDataTable
       columns={columns}
       data={items}
-      caption="Siparisler admin listesi"
-      emptyTitle="Siparis bulunamadi"
-      emptyDescription="Arama veya durum filtrelerini degistirerek sonucu genisletebilirsiniz."
+      caption="Siparişler admin listesi"
+      emptyTitle="Sipariş bulunamadı"
+      emptyDescription="Arama veya durum filtrelerini değiştirerek sonucu genişletebilirsiniz."
       footer={footer}
     />
   );

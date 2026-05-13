@@ -36,10 +36,20 @@ function getProductTone(status: ProductRow["status"]) {
   }
 }
 
+function formatProductStatus(status: ProductRow["status"]) {
+  const labels: Record<ProductRow["status"], string> = {
+    active: "Aktif",
+    draft: "Taslak",
+    archived: "Pasif"
+  };
+
+  return labels[status];
+}
+
 const columns: Array<ColumnDef<ProductRow>> = [
   {
     accessorKey: "name",
-    header: "Urun",
+    header: "Ürün",
     cell: ({ row }) => (
       <div className="min-w-[260px]">
         <Link
@@ -62,14 +72,14 @@ const columns: Array<ColumnDef<ProductRow>> = [
     header: "Durum",
     cell: ({ row }) => (
       <AdminStatusBadge
-        label={row.original.status}
+        label={formatProductStatus(row.original.status)}
         tone={getProductTone(row.original.status)}
       />
     )
   },
   {
     id: "price",
-    header: "Varsayilan Fiyat",
+    header: "Varsayılan Fiyat",
     accessorFn: (row) => row.defaultVariant?.priceKurus ?? 0,
     cell: ({ row }) =>
       row.original.defaultVariant
@@ -100,7 +110,7 @@ const columns: Array<ColumnDef<ProductRow>> = [
         href={`/admin/urunler/${row.original.id}`}
         className="inline-flex rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
       >
-        Incele
+        İncele
       </Link>
     )
   }
@@ -111,9 +121,9 @@ export function ProductsTable({ items, footer }: ProductsTableProps) {
     <AdminDataTable
       columns={columns}
       data={items}
-      caption="Urunler admin listesi"
-      emptyTitle="Urun bulunamadi"
-      emptyDescription="Filtreleri degistirerek veya yeni urun olusturarak devam edebilirsiniz."
+      caption="Ürünler admin listesi"
+      emptyTitle="Ürün bulunamadı"
+      emptyDescription="Filtreleri değiştirerek veya yeni ürün oluşturarak devam edebilirsiniz."
       footer={footer}
     />
   );

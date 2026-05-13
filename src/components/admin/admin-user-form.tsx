@@ -23,7 +23,7 @@ type AdminUserFormProps = {
 const statusOptions = [
   { value: "invited", label: "Davetli" },
   { value: "active", label: "Aktif" },
-  { value: "disabled", label: "Devre disi" }
+  { value: "disabled", label: "Devre dışı" }
 ] as const;
 
 const roleOptions = Object.entries(adminRoleLabels) as Array<[AdminRole, string]>;
@@ -60,7 +60,7 @@ export function AdminUserForm({ mode, user }: AdminUserFormProps) {
     });
     const data = (await response.json()) as { ok: boolean; message?: string };
 
-    setFeedback(data.ok ? "Admin kullanici kaydedildi." : data.message ?? "Islem basarisiz.");
+    setFeedback(data.ok ? "Admin kullanıcı kaydedildi." : data.message ?? "İşlem başarısız.");
 
     if (data.ok) {
       router.refresh();
@@ -105,7 +105,7 @@ export function AdminUserForm({ mode, user }: AdminUserFormProps) {
       </div>
       <input
         className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
-        placeholder={mode === "create" ? "Gecici sifre" : "Yeni sifre (bos birakilirsa degismez)"}
+        placeholder={mode === "create" ? "Geçici şifre" : "Yeni şifre (boş bırakılırsa değişmez)"}
         type="password"
         {...register("password")}
       />
@@ -124,7 +124,7 @@ export function AdminUserForm({ mode, user }: AdminUserFormProps) {
         disabled={isSubmitting}
         className="rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white disabled:opacity-70"
       >
-        {isSubmitting ? "Kaydediliyor..." : mode === "create" ? "Admin ekle" : "Kaydet / sifre sifirla"}
+        {isSubmitting ? "Kaydediliyor..." : mode === "create" ? "Admin ekle" : "Kaydet / şifre sıfırla"}
       </button>
     </form>
   );

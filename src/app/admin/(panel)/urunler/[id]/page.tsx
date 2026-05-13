@@ -36,11 +36,11 @@ export default async function EditAdminProductPage({ params }: EditProductPagePr
     <div className="space-y-6">
       <section className="surface-card border border-slate-200 bg-white/95 p-8">
         <p className="text-sm font-semibold uppercase tracking-[0.24em] text-blue-600">
-          Urun Duzenle
+          Ürün Düzenle
         </p>
         <h1 className="mt-3 text-3xl font-semibold text-slate-950">{product.name}</h1>
         <p className="mt-3 max-w-3xl text-sm text-slate-600">
-          Bu ekran urunun katalog, teknik, SEO ve AI summary alanlarini ayni anda gunceller.
+          Bu ekran ürünün katalog, teknik, SEO ve AI özeti alanlarını aynı anda günceller.
         </p>
       </section>
 

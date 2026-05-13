@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 
 import { OrderStatusForm } from "@/components/admin/order-status-form";
 import { formatPriceTRY } from "@/lib/format";
+import { formatOrderStatusLabel } from "@/server/admin/constants";
 import { getAdminOrderById } from "@/server/admin/repository";
 
 type OrderDetailPageProps = {
@@ -9,6 +10,17 @@ type OrderDetailPageProps = {
     id: string;
   }>;
 };
+
+const paytrStatusLabels: Record<string, string> = {
+  created: "Oluşturuldu",
+  token_received: "Token alındı",
+  callback_success: "Callback başarılı",
+  callback_failed: "Callback başarısız"
+};
+
+function formatPaytrStatus(status?: string | null) {
+  return status ? paytrStatusLabels[status] ?? status : "Kayıt yok";
+}
 
 export default async function AdminOrderDetailPage({ params }: OrderDetailPageProps) {
   const { id } = await params;
@@ -23,16 +35,16 @@ export default async function AdminOrderDetailPage({ params }: OrderDetailPagePr
       <section className="space-y-6">
         <div className="surface-card border border-slate-200 bg-white/95 p-8">
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-blue-600">
-            Siparis Detayi
+            Sipariş Detayı
           </p>
           <h1 className="mt-3 text-3xl font-semibold text-slate-950">{order.orderNumber}</h1>
           <p className="mt-3 text-sm text-slate-600">
-            PayTR durum kaydi ve siparis gecmisi tek ekranda.
+            PayTR durum kaydı ve sipariş geçmişi tek ekranda.
           </p>
         </div>
 
         <div className="surface-card border border-slate-200 bg-white/95 p-6">
-          <h2 className="text-xl font-semibold text-slate-950">Siparis kalemleri</h2>
+          <h2 className="text-xl font-semibold text-slate-950">Sipariş kalemleri</h2>
           <div className="mt-5 space-y-3">
             {order.items.map((item) => (
               <div key={item.id} className="rounded-2xl bg-slate-50 px-4 py-4">
@@ -53,14 +65,14 @@ export default async function AdminOrderDetailPage({ params }: OrderDetailPagePr
         </div>
 
         <div className="surface-card border border-slate-200 bg-white/95 p-6">
-          <h2 className="text-xl font-semibold text-slate-950">Durum gecmisi</h2>
+          <h2 className="text-xl font-semibold text-slate-950">Durum geçmişi</h2>
           <div className="mt-5 space-y-3">
             {order.history.map((item) => (
               <div key={item.id} className="rounded-2xl bg-slate-50 px-4 py-4">
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <p className="text-sm font-semibold text-slate-900">
-                      {item.fromStatus || "ilk"} → {item.toStatus}
+                      {item.fromStatus ? formatOrderStatusLabel(item.fromStatus) : "İlk"} → {formatOrderStatusLabel(item.toStatus)}
                     </p>
                     <p className="mt-1 text-sm text-slate-600">{item.note || "Not yok"}</p>
                   </div>
@@ -77,10 +89,10 @@ export default async function AdminOrderDetailPage({ params }: OrderDetailPagePr
 
       <aside className="space-y-6">
         <div className="surface-card border border-slate-200 bg-white/95 p-6">
-          <h2 className="text-xl font-semibold text-slate-950">Ozet</h2>
+          <h2 className="text-xl font-semibold text-slate-950">Özet</h2>
           <div className="mt-5 space-y-3 text-sm text-slate-700">
             <div className="flex items-center justify-between">
-              <span>Musteri</span>
+              <span>Müşteri</span>
               <span className="font-semibold text-slate-950">{order.customerName || "-"}</span>
             </div>
             <div className="flex items-center justify-between">
@@ -97,13 +109,13 @@ export default async function AdminOrderDetailPage({ params }: OrderDetailPagePr
             </div>
             <div className="flex items-center justify-between">
               <span>PayTR</span>
-              <span>{order.transaction?.status || "Kayit yok"}</span>
+              <span>{formatPaytrStatus(order.transaction?.status)}</span>
             </div>
           </div>
         </div>
 
         <div className="surface-card border border-slate-200 bg-white/95 p-6">
-          <h2 className="text-xl font-semibold text-slate-950">Durum Guncelle</h2>
+          <h2 className="text-xl font-semibold text-slate-950">Durum Güncelle</h2>
           <div className="mt-5">
             <OrderStatusForm
               orderId={order.id}

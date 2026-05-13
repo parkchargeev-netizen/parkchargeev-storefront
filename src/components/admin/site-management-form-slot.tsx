@@ -66,14 +66,14 @@ function FormSkeleton({ label }: { label: string }) {
 export function SiteManagementFormSlot(props: SiteManagementFormSlotProps) {
   if (props.kind === "navigation") {
     return (
-      <Suspense fallback={<FormSkeleton label="Menu formu yukleniyor..." />}>
+      <Suspense fallback={<FormSkeleton label="Menü formu yükleniyor..." />}>
         <NavigationItemForm mode={props.mode} item={props.item} />
       </Suspense>
     );
   }
 
   return (
-    <Suspense fallback={<FormSkeleton label="Sayfa formu yukleniyor..." />}>
+    <Suspense fallback={<FormSkeleton label="Sayfa formu yükleniyor..." />}>
       <SitePageForm mode={props.mode} page={props.page} />
     </Suspense>
   );

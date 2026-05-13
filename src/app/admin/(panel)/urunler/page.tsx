@@ -45,9 +45,9 @@ export default async function AdminProductsPage({ searchParams }: ProductListPag
   return (
     <div className="space-y-6">
       <AdminPageHeader
-        eyebrow="Urun Yonetimi"
+        eyebrow="Ürün Yönetimi"
         title="Katalog, fiyat ve SEO kontrol merkezi"
-        description="Reusable data table foundation ile katalog takibi, fiyat / stok gorunurlugu ve urun SEO alanlari tek listede toplandi."
+        description="Yeniden kullanılabilir tablo yapısıyla katalog takibi, fiyat / stok görünürlüğü ve ürün SEO alanları tek listede toplandı."
         action={
           <>
             <a
@@ -60,14 +60,14 @@ export default async function AdminProductsPage({ searchParams }: ProductListPag
               href="/admin/urunler/yeni"
               className="inline-flex rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
             >
-              Yeni Urun
+              Yeni Ürün
             </Link>
           </>
         }
         meta={
           <>
             <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
-              {result.items.length} urun
+              {result.items.length} ürün
             </span>
             <span className="inline-flex rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
               Cursor tabanli listeleme aktif
@@ -81,7 +81,7 @@ export default async function AdminProductsPage({ searchParams }: ProductListPag
           <input
             name="q"
             defaultValue={query.q ?? ""}
-            placeholder="Urun, slug veya SKU ara"
+            placeholder="Ürün, slug veya SKU ara"
             className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm"
           />
           <select
@@ -89,7 +89,7 @@ export default async function AdminProductsPage({ searchParams }: ProductListPag
             defaultValue={query.status ?? ""}
             className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm"
           >
-            <option value="">Tum durumlar</option>
+            <option value="">Tüm durumlar</option>
             <option value="draft">Taslak</option>
             <option value="active">Aktif</option>
             <option value="archived">Pasif</option>
@@ -123,7 +123,7 @@ export default async function AdminProductsPage({ searchParams }: ProductListPag
               Sonraki sayfa
             </Link>
           ) : (
-            <span className="text-sm font-medium text-slate-500">Tum kayitlar yuklendi.</span>
+            <span className="text-sm font-medium text-slate-500">Tüm kayıtlar yüklendi.</span>
           )
         }
       />

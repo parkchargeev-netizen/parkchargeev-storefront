@@ -8,9 +8,9 @@ export default async function AdminCatalogPage() {
   return (
     <div className="space-y-6">
       <AdminPageHeader
-        eyebrow="Katalog Yonetimi"
-        title="Marka ve kategori sozlugu"
-        description="Urun formunun beslendigi marka ve kategori kayitlarini panelden yonetin."
+        eyebrow="Katalog Yönetimi"
+        title="Marka ve kategori sözlüğü"
+        description="Ürün formunun beslendiği marka ve kategori kayıtlarını panelden yönetin."
         meta={
           <>
             <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
@@ -48,7 +48,7 @@ export default async function AdminCatalogPage() {
             </div>
           ))}
           {catalog.brands.length === 0 ? (
-            <p className="text-sm text-slate-500">Henuz marka yok.</p>
+            <p className="text-sm text-slate-500">Henüz marka yok.</p>
           ) : null}
         </div>
       </section>
@@ -62,7 +62,7 @@ export default async function AdminCatalogPage() {
             </div>
           ))}
           {catalog.categories.length === 0 ? (
-            <p className="text-sm text-slate-500">Henuz kategori yok.</p>
+            <p className="text-sm text-slate-500">Henüz kategori yok.</p>
           ) : null}
         </div>
       </section>

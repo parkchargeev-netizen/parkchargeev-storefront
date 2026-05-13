@@ -20,7 +20,7 @@ export function getBootstrapAdmin() {
   const email = process.env.ADMIN_BOOTSTRAP_EMAIL?.trim().toLowerCase();
   const password = process.env.ADMIN_BOOTSTRAP_PASSWORD?.trim();
   const fullName =
-    process.env.ADMIN_BOOTSTRAP_NAME?.trim() || "ParkChargeEV Superadmin";
+    process.env.ADMIN_BOOTSTRAP_NAME?.trim() || "ParkChargeEV Süper Admin";
 
   if (!email || !password) {
     return null;
@@ -61,7 +61,7 @@ async function ensureBootstrapAdminUncached() {
   const email = process.env.ADMIN_BOOTSTRAP_EMAIL?.trim();
   const password = process.env.ADMIN_BOOTSTRAP_PASSWORD?.trim();
   const fullName =
-    process.env.ADMIN_BOOTSTRAP_NAME?.trim() || "ParkChargeEV Superadmin";
+    process.env.ADMIN_BOOTSTRAP_NAME?.trim() || "ParkChargeEV Süper Admin";
 
   if (!email || !password) {
     return null;

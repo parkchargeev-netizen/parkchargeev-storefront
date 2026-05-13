@@ -10,6 +10,17 @@ type QuoteDetailPageProps = {
   }>;
 };
 
+function formatQuoteSegment(segment: string) {
+  const labels: Record<string, string> = {
+    site_apartment: "Site / Apartman",
+    business: "İş Yeri",
+    fleet: "Filo",
+    individual: "Bireysel"
+  };
+
+  return labels[segment] ?? segment;
+}
+
 export default async function AdminQuoteDetailPage({ params }: QuoteDetailPageProps) {
   const { id } = await params;
   const [quote, assignableAdmins] = await Promise.all([
@@ -26,23 +37,23 @@ export default async function AdminQuoteDetailPage({ params }: QuoteDetailPagePr
       <section className="space-y-6">
         <div className="surface-card border border-slate-200 bg-white/95 p-8">
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-blue-600">
-            Teklif Detayi
+            Teklif Detayı
           </p>
           <h1 className="mt-3 text-3xl font-semibold text-slate-950">{quote.fullName}</h1>
           <p className="mt-3 text-sm text-slate-600">
-            {quote.companyName || "Bireysel talep"} · {quote.segment}
+            {quote.companyName || "Bireysel talep"} · {formatQuoteSegment(quote.segment)}
           </p>
         </div>
 
         <div className="surface-card border border-slate-200 bg-white/95 p-6">
-          <h2 className="text-xl font-semibold text-slate-950">Talep notlari</h2>
+          <h2 className="text-xl font-semibold text-slate-950">Talep notları</h2>
           <p className="mt-4 text-sm leading-7 text-slate-700">
             {quote.requestNotes || "Talep notu bulunmuyor."}
           </p>
         </div>
 
         <div className="surface-card border border-slate-200 bg-white/95 p-6">
-          <h2 className="text-xl font-semibold text-slate-950">Aktivite gecmisi</h2>
+          <h2 className="text-xl font-semibold text-slate-950">Aktivite geçmişi</h2>
           <div className="mt-5 space-y-3">
             {quote.activities.map((activity) => (
               <div key={activity.id} className="rounded-2xl bg-slate-50 px-4 py-4">
@@ -64,7 +75,7 @@ export default async function AdminQuoteDetailPage({ params }: QuoteDetailPagePr
 
       <aside className="space-y-6">
         <div className="surface-card border border-slate-200 bg-white/95 p-6">
-          <h2 className="text-xl font-semibold text-slate-950">Iletisim</h2>
+          <h2 className="text-xl font-semibold text-slate-950">İletişim</h2>
           <div className="mt-5 space-y-3 text-sm text-slate-700">
             <div className="flex items-center justify-between">
               <span>E-posta</span>
@@ -80,13 +91,13 @@ export default async function AdminQuoteDetailPage({ params }: QuoteDetailPagePr
             </div>
             <div className="flex items-center justify-between">
               <span>Atanan</span>
-              <span>{quote.assignedAdminName || "Atanmamis"}</span>
+              <span>{quote.assignedAdminName || "Atanmamış"}</span>
             </div>
           </div>
         </div>
 
         <div className="surface-card border border-slate-200 bg-white/95 p-6">
-          <h2 className="text-xl font-semibold text-slate-950">Durum Guncelle</h2>
+          <h2 className="text-xl font-semibold text-slate-950">Durum Güncelle</h2>
           <div className="mt-5">
             <QuoteStatusForm
               quoteId={quote.id}

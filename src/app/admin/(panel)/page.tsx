@@ -187,49 +187,49 @@ const quickActions: Array<{
 }> = [
   {
     href: "/admin/siparisler",
-    label: "Siparis kuyrugu",
-    detail: "Odeme ve onay bekleyen kayitlar",
+    label: "Sipariş kuyruğu",
+    detail: "Ödeme ve onay bekleyen kayıtlar",
     roles: ["superadmin", "sales"]
   },
   {
     href: "/admin/teklifler",
-    label: "Teklif pipeline",
-    detail: "Yeni, inceleme ve muzakere talepleri",
+    label: "Teklif akışı",
+    detail: "Yeni, inceleme ve müzakere talepleri",
     roles: ["superadmin", "sales"]
   },
   {
     href: "/admin/site",
-    label: "Site yonetimi",
-    detail: "Menu, landing sayfalari ve public icerik",
+    label: "Site yönetimi",
+    detail: "Menü, açılış sayfaları ve yayındaki içerik",
     roles: ["superadmin", "editor"]
   },
   {
     href: "/admin/audit",
-    label: "Audit ve guvenlik",
-    detail: "Islem gecmisi ve admin oturum denetimi",
+    label: "Denetim ve güvenlik",
+    detail: "İşlem geçmişi ve admin oturum denetimi",
     roles: ["superadmin"]
   }
 ];
 
 const adminStandards = [
   {
-    label: "Aksiyon odakli kuyruk",
-    detail: "Siparis, teklif ve saha talepleri siradaki is olarak ayrildi.",
+    label: "Aksiyon odaklı kuyruk",
+    detail: "Sipariş, teklif ve saha talepleri sıradaki iş olarak ayrıldı.",
     status: "Aktif"
   },
   {
-    label: "Rol bazli erisim",
-    detail: "Moduller role gore filtreleniyor ve middleware seviyesinde korunuyor.",
+    label: "Rol bazlı erişim",
+    detail: "Modüller role göre filtreleniyor ve middleware seviyesinde korunuyor.",
     status: "Aktif"
   },
   {
-    label: "Oturum guvenligi",
-    detail: "Cikis butonu, no-store basliklari ve hareketsizlik uyarisi var.",
+    label: "Oturum güvenliği",
+    detail: "Çıkış butonu, no-store başlıkları ve hareketsizlik uyarısı var.",
     status: "Aktif"
   },
   {
-    label: "Erisilebilir tablolar",
-    detail: "Siralanabilir listeler ve CSV cikislari operasyon gorunumlerinde kullaniliyor.",
+    label: "Erişilebilir tablolar",
+    detail: "Sıralanabilir listeler ve CSV çıkışları operasyon görünümlerinde kullanılıyor.",
     status: "Aktif"
   }
 ] as const;
@@ -254,7 +254,7 @@ export default async function AdminDashboardPage() {
     snapshot.kpis.pendingQuotes +
     snapshot.kpis.openServiceRequests;
   const securityHref = role === "superadmin" ? "/admin/adminler" : "/admin/erisim";
-  const securityAction = role === "superadmin" ? "Oturumlari denetle" : "Erisim haritasi";
+  const securityAction = role === "superadmin" ? "Oturumları denetle" : "Erişim haritası";
   const queueCards: Array<{
     href: string;
     label: string;
@@ -267,10 +267,10 @@ export default async function AdminDashboardPage() {
   }> = [
     {
       href: "/admin/siparisler?status=pending_confirmation",
-      label: "Siparis onay bekliyor",
+      label: "Sipariş onay bekliyor",
       value: snapshot.kpis.pendingOrders,
-      detail: "Odeme, stok ve teslimat kontrolu gereken kayitlar.",
-      action: "Siparisleri incele",
+      detail: "Ödeme, stok ve teslimat kontrolü gereken kayıtlar.",
+      action: "Siparişleri incele",
       icon: <ShoppingCart className="h-5 w-5" />,
       tone: snapshot.kpis.pendingOrders > 0 ? "warning" : "success",
       roles: ["superadmin", "sales"]
@@ -279,8 +279,8 @@ export default async function AdminDashboardPage() {
       href: "/admin/teklifler",
       label: "Teklif aksiyonu",
       value: snapshot.kpis.pendingQuotes,
-      detail: "Yeni, inceleme veya muzakere asamasindaki talepler.",
-      action: "Pipeline ac",
+      detail: "Yeni, inceleme veya muzakere aşamasındaki talepler.",
+      action: "Akışı aç",
       icon: <FileText className="h-5 w-5" />,
       tone: snapshot.kpis.pendingQuotes > 0 ? "info" : "success",
       roles: ["superadmin", "sales"]
@@ -289,7 +289,7 @@ export default async function AdminDashboardPage() {
       href: "/admin/saha",
       label: "Saha ve servis",
       value: snapshot.kpis.openServiceRequests,
-      detail: "Servis, kesif ve kurulum ekibine aktarilacak leadler.",
+      detail: "Servis, keşif ve kurulum ekibine aktarılacak talepler.",
       action: "Saha talepleri",
       icon: <Wrench className="h-5 w-5" />,
       tone: snapshot.kpis.openServiceRequests > 0 ? "warning" : "success",
@@ -297,9 +297,9 @@ export default async function AdminDashboardPage() {
     },
     {
       href: securityHref,
-      label: "Guvenlik sinyali",
+      label: "Güvenlik sinyali",
       value: snapshot.security.activeSessions,
-      detail: "Aktif admin oturumlari ve son audit hareketleri.",
+      detail: "Aktif admin oturumları ve son denetim hareketleri.",
       action: securityAction,
       icon: <ShieldCheck className="h-5 w-5" />,
       tone: snapshot.security.activeSessions > 1 ? "info" : "neutral",
@@ -319,11 +319,11 @@ export default async function AdminDashboardPage() {
       {!databaseEnabled ? (
         <section className="surface-card border border-amber-200 bg-amber-50/80 p-6">
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-700">
-            Yerel Fallback Modu
+            Yerel Yedek Mod
           </p>
           <p className="mt-3 max-w-3xl text-sm text-slate-700">
-            Veritabani baglantisi olmadan calisabilen yerel admin veri katmani aktif. Urun,
-            siparis ve teklif aksiyonlari bu modda da kaydedilir.
+            Veritabanı bağlantısı olmadan çalışabilen yerel admin veri katmanı aktif. Ürün,
+            sipariş ve teklif aksiyonları bu modda da kaydedilir.
           </p>
         </section>
       ) : null}
@@ -335,16 +335,16 @@ export default async function AdminDashboardPage() {
               Operasyon Komuta Paneli
             </p>
             <h1 className="mt-3 max-w-4xl text-3xl font-semibold leading-tight text-slate-950 lg:text-4xl">
-              Bugun neye odaklanmaniz gerektigini tek bakista gosterir.
+              Bugün neye odaklanmanız gerektiğini tek bakışta gösterir.
             </h1>
             <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-600">
-              Siparis, teklif, saha, guvenlik ve icerik sinyalleri ayni ekranda toplanir; acik
-              kuyruklar ilk siraya, detayli analizler alt bolumlere iner.
+              Sipariş, teklif, saha, güvenlik ve içerik sinyalleri aynı ekranda toplanır; açık
+              kuyruklar ilk sıraya, detaylı analizler alt bölümlere iner.
             </p>
             <div className="mt-6 grid gap-3 sm:grid-cols-3">
               <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                  Acik kuyruk
+                  Açık kuyruk
                 </p>
                 <p className="mt-2 text-2xl font-semibold text-slate-950">{openQueueTotal}</p>
               </div>
@@ -361,7 +361,7 @@ export default async function AdminDashboardPage() {
                   Veri modu
                 </p>
                 <p className="mt-2 text-sm font-semibold text-slate-950">
-                  {databaseEnabled ? "Canli Supabase" : "Fallback"}
+                  {databaseEnabled ? "Canlı Supabase" : "Yerel yedek"}
                 </p>
               </div>
             </div>
@@ -371,7 +371,7 @@ export default async function AdminDashboardPage() {
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-300">
-                  Aylik hedef
+                  Aylık hedef
                 </p>
                 <p className="mt-2 text-4xl font-semibold">
                   %{snapshot.kpis.targetProgress.toFixed(1)}
@@ -394,7 +394,7 @@ export default async function AdminDashboardPage() {
                 prefetch={false}
                 className="rounded-full border border-white/20 px-3 py-1 text-xs font-semibold text-white transition hover:bg-white/10"
               >
-                Siparislere git
+                Siparişlere git
               </Link>
             </div>
           </div>
@@ -434,30 +434,30 @@ export default async function AdminDashboardPage() {
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <MetricCard
-          label="Bugunku ciro"
+          label="Bugünkü ciro"
           value={formatPriceTRY(snapshot.kpis.todayRevenue)}
-          detail="Bugun olusan onayli siparis toplami"
+          detail="Bugün oluşan onaylı sipariş toplamı"
           icon={<Zap className="h-5 w-5" />}
           tone="success"
         />
         <MetricCard
           label="Bu ayki ciro"
           value={formatPriceTRY(snapshot.kpis.monthRevenue)}
-          detail="Aylik hedef karsilasmasi icin ana gosterge"
+          detail="Aylık hedef karşılaştırması için ana gösterge"
           icon={<Gauge className="h-5 w-5" />}
           tone={targetTone}
         />
         <MetricCard
           label="Bu hafta tamamlanan"
           value={String(snapshot.kpis.completedInstallations)}
-          detail="Teslim edildi veya tamamlandi durumuna gecen kayitlar"
+          detail="Teslim edildi veya tamamlandı durumuna geçen kayıtlar"
           icon={<CheckCircle2 className="h-5 w-5" />}
           tone="success"
         />
         <MetricCard
-          label="Son 7 gun yeni musteri"
+          label="Son 7 gün yeni müşteri"
           value={String(snapshot.kpis.newCustomers)}
-          detail="Kayit olan kullanici sayisi"
+          detail="Kayıt olan kullanıcı sayısı"
           icon={<Users className="h-5 w-5" />}
           tone="info"
         />
@@ -474,7 +474,7 @@ export default async function AdminDashboardPage() {
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.24em] text-blue-600">
-                Sistem ve Risk Radari
+                Sistem ve Risk Radarı
               </p>
               <h2 className="mt-2 text-2xl font-semibold text-slate-950">
                 Kritik admin kontrolleri
@@ -484,27 +484,27 @@ export default async function AdminDashboardPage() {
           </div>
           <div className="mt-5 grid gap-3 md:grid-cols-2">
             <HealthItem
-              label="Veri baglantisi"
-              detail="Admin listeleri ve KPI kartlari canli veri kaynagina bagli."
-              status={databaseEnabled ? "Canli" : "Fallback"}
+              label="Veri bağlantısı"
+              detail="Admin listeleri ve KPI kartları canlı veri kaynağına bağlı."
+              status={databaseEnabled ? "Canlı" : "Yerel yedek"}
               tone={databaseEnabled ? "success" : "warning"}
             />
             <HealthItem
-              label="PayTR konfigurasyonu"
-              detail="Odeme operasyonu icin merchant anahtarlari kontrol edildi."
-              status={paytrReady ? "Hazir" : "Eksik"}
+              label="PayTR konfigürasyonu"
+              detail="Ödeme operasyonu için merchant anahtarları kontrol edildi."
+              status={paytrReady ? "Hazır" : "Eksik"}
               tone={paytrReady ? "success" : "danger"}
             />
             <HealthItem
-              label="Oturum politikasi"
-              detail="No-store, noindex, gorunur cikis ve hareketsizlik uyarisi etkin."
+              label="Oturum politikası"
+              detail="No-store, noindex, görünür çıkış ve hareketsizlik uyarısı etkin."
               status="Aktif"
               tone="success"
             />
             <HealthItem
               label="Yetki modeli"
-              detail="Rol bazli moduller middleware ve shell seviyesinde eslesiyor."
-              status="Korumali"
+              detail="Rol bazlı modüller middleware ve shell seviyesinde eşleşiyor."
+              status="Korumalı"
               tone="success"
             />
           </div>
@@ -514,7 +514,7 @@ export default async function AdminDashboardPage() {
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.24em] text-blue-600">
-                Audit
+                Denetim
               </p>
               <h2 className="mt-2 text-2xl font-semibold text-slate-950">Son hareketler</h2>
             </div>
@@ -530,12 +530,12 @@ export default async function AdminDashboardPage() {
                   </div>
                   <p className="mt-1 text-xs text-slate-500">{log.entityType}</p>
                   <p className="mt-2 text-sm leading-6 text-slate-600">
-                    {log.summary ?? "Audit ozeti yok"}
+                    {log.summary ?? "Denetim özeti yok"}
                   </p>
                 </div>
               ))
             ) : (
-              <EmptyActivity label="Henuz audit hareketi yok." />
+              <EmptyActivity label="Henüz denetim hareketi yok." />
             )}
           </div>
         </div>
@@ -545,10 +545,10 @@ export default async function AdminDashboardPage() {
         <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.24em] text-blue-600">
-              Admin Standartlari
+              Admin Standartları
             </p>
             <h2 className="mt-2 text-2xl font-semibold text-slate-950">
-              Ust duzey panel kontrol listesi
+              Üst düzey panel kontrol listesi
             </h2>
           </div>
           <Link
@@ -556,7 +556,7 @@ export default async function AdminDashboardPage() {
             prefetch={false}
             className="rounded-2xl border border-slate-300 bg-white px-5 py-3 text-center text-sm font-semibold text-slate-800 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
           >
-            Tum admin kisayollari
+            Tüm admin kısayolları
           </Link>
         </div>
         <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
@@ -576,7 +576,7 @@ export default async function AdminDashboardPage() {
 
       <section className="grid gap-6 xl:grid-cols-3">
         <div className="surface-card border border-slate-200 bg-white/95 p-6">
-          <h2 className="text-lg font-semibold text-slate-950">Son 10 Siparis</h2>
+          <h2 className="text-lg font-semibold text-slate-950">Son 10 Sipariş</h2>
           <div className="mt-5 space-y-3">
             {snapshot.activity.recentOrders.length > 0 ? (
               snapshot.activity.recentOrders.map((order) => (
@@ -590,7 +590,7 @@ export default async function AdminDashboardPage() {
                     <div>
                       <p className="text-sm font-semibold text-slate-900">{order.orderNumber}</p>
                       <p className="text-sm text-slate-600">
-                        {order.customerName || "Misafir musteri"}
+                        {order.customerName || "Misafir müşteri"}
                       </p>
                     </div>
                     <div className="text-right">
@@ -605,7 +605,7 @@ export default async function AdminDashboardPage() {
                 </Link>
               ))
             ) : (
-              <EmptyActivity label="Henuz siparis hareketi yok." />
+              <EmptyActivity label="Henüz sipariş hareketi yok." />
             )}
           </div>
         </div>
@@ -631,7 +631,7 @@ export default async function AdminDashboardPage() {
                 </Link>
               ))
             ) : (
-              <EmptyActivity label="Henuz teklif hareketi yok." />
+              <EmptyActivity label="Henüz teklif hareketi yok." />
             )}
           </div>
         </div>
@@ -660,7 +660,7 @@ export default async function AdminDashboardPage() {
                 </Link>
               ))
             ) : (
-              <EmptyActivity label="Henuz servis talebi yok." />
+              <EmptyActivity label="Henüz servis talebi yok." />
             )}
           </div>
         </div>

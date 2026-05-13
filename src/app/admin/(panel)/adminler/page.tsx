@@ -42,9 +42,9 @@ export default async function AdminUsersPage({ searchParams }: AdminUsersPagePro
   return (
     <div className="space-y-6">
       <AdminPageHeader
-        eyebrow="Admin Kullanici Yonetimi"
-        title="Roller, erisim ve oturumlar"
-        description="Admin kullanicilari ekleyin, rollerini degistirin, devre disi birakin ve son oturumlari takip edin."
+        eyebrow="Admin Kullanıcı Yönetimi"
+        title="Roller, erişim ve oturumlar"
+        description="Admin kullanıcıları ekleyin, rollerini değiştirin, devre dışı bırakın ve son oturumları takip edin."
         action={
           <a
             href={buildExportHref(query)}
@@ -73,10 +73,10 @@ export default async function AdminUsersPage({ searchParams }: AdminUsersPagePro
             defaultValue={query.status ?? ""}
             className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm"
           >
-            <option value="">Tum durumlar</option>
+            <option value="">Tüm durumlar</option>
             <option value="active">Aktif</option>
             <option value="invited">Davetli</option>
-            <option value="disabled">Devre disi</option>
+            <option value="disabled">Devre dışı</option>
           </select>
           <input name="from" type="date" defaultValue={query.from ?? ""} className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm" />
           <input name="to" type="date" defaultValue={query.to ?? ""} className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm" />
@@ -108,7 +108,7 @@ export default async function AdminUsersPage({ searchParams }: AdminUsersPagePro
                 </div>
                 <p className="mt-2 text-sm text-slate-600">{user.email}</p>
                 <p className="mt-1 text-xs text-slate-500">
-                  Son giris: {user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString("tr-TR") : "Yok"}
+                  Son giriş: {user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString("tr-TR") : "Yok"}
                 </p>
               </div>
               <AdminUserForm mode="edit" user={user} />

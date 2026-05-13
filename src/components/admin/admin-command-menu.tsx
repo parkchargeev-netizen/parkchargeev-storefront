@@ -70,7 +70,7 @@ export function AdminCommandMenu({
         <span className="flex min-w-0 items-center gap-3">
           <Search className="h-4 w-4 shrink-0 text-slate-400" />
           <span className="truncate text-sm font-medium text-slate-600">
-            Admin alaninda ara veya hizli islem ac
+            Admin alanında ara veya hızlı işlem aç
           </span>
         </span>
         <span className="hidden items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-semibold text-slate-500 sm:flex">
@@ -91,7 +91,7 @@ export function AdminCommandMenu({
           <section
             role="dialog"
             aria-modal="true"
-            aria-label="Admin komut menusu"
+            aria-label="Admin komut menüsü"
             className="mx-auto mt-8 max-w-2xl overflow-hidden rounded-[28px] border border-white/70 bg-white shadow-[0_28px_90px_rgba(15,23,42,0.22)]"
           >
             <div className="border-b border-slate-200 p-4">
@@ -101,14 +101,14 @@ export function AdminCommandMenu({
                   autoFocus
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
-                  placeholder="Siparisler, yeni urun, audit..."
+                  placeholder="Siparişler, yeni ürün, audit..."
                   className="min-w-0 flex-1 bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400"
                 />
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
                   className="rounded-full p-2 text-slate-500 transition hover:bg-white hover:text-slate-900"
-                  aria-label="Komut menusunu kapat"
+                  aria-label="Komut menüsünü kapat"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -118,7 +118,7 @@ export function AdminCommandMenu({
                   {roleLabel}
                 </span>
                 <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-700">
-                  {databaseEnabled ? "Canli veri" : "Fallback veri"}
+                  {databaseEnabled ? "Canlı veri" : "Yerel yedek veri"}
                 </span>
               </div>
             </div>
@@ -155,9 +155,9 @@ export function AdminCommandMenu({
                 ))
               ) : (
                 <div className="px-4 py-14 text-center">
-                  <p className="text-sm font-semibold text-slate-900">Sonuc bulunamadi</p>
+                  <p className="text-sm font-semibold text-slate-900">Sonuç bulunamadı</p>
                   <p className="mt-2 text-sm text-slate-500">
-                    Baska bir modul, islem ya da durum adi deneyin.
+                    Başka bir modül, işlem ya da durum adı deneyin.
                   </p>
                 </div>
               )}

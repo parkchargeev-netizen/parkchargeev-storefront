@@ -16,7 +16,7 @@ type NavigationItemFormProps = {
 };
 
 const areaOptions = [
-  { value: "primary", label: "Ust menu" },
+  { value: "primary", label: "Üst menü" },
   { value: "footer", label: "Footer navigasyon" },
   { value: "legal", label: "Footer destek" }
 ] as const;
@@ -60,7 +60,7 @@ export function NavigationItemForm({ mode, item }: NavigationItemFormProps) {
     });
     const data = (await response.json()) as { ok: boolean; message?: string };
 
-    setFeedback(data.ok ? "Navigasyon kaydi kaydedildi." : data.message ?? "Islem basarisiz.");
+    setFeedback(data.ok ? "Navigasyon kaydı kaydedildi." : data.message ?? "İşlem başarısız.");
 
     if (data.ok) {
       if (mode === "create") {
@@ -137,7 +137,7 @@ export function NavigationItemForm({ mode, item }: NavigationItemFormProps) {
         disabled={isSubmitting}
         className="rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white disabled:opacity-70"
       >
-        {isSubmitting ? "Kaydediliyor..." : mode === "create" ? "Menu linki ekle" : "Menu linkini guncelle"}
+        {isSubmitting ? "Kaydediliyor..." : mode === "create" ? "Menü linki ekle" : "Menü linkini güncelle"}
       </button>
     </form>
   );

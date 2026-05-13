@@ -8,9 +8,9 @@ import { requireAdminRole } from "@/server/auth/guards";
 const groupOrder: AdminAccessLink["group"][] = [
   "Operasyon",
   "Katalog",
-  "Icerik",
-  "Yonetim",
-  "Disari Aktar"
+  "İçerik",
+  "Yönetim",
+  "Dışarı Aktar"
 ];
 
 function groupLinks(links: AdminAccessLink[]) {
@@ -33,12 +33,12 @@ export default async function AdminAccessMapPage() {
   return (
     <div className="space-y-6">
       <AdminPageHeader
-        eyebrow="Erisim Haritasi"
-        title="Yetkili oldugunuz tum admin alanlari"
-        description="Sidebar disinda kalan yeni kayit, export ve operasyon kisayollari dahil panel icindeki tum erisilebilir noktalar burada listelenir."
+        eyebrow="Erişim Haritası"
+        title="Yetkili olduğunuz tüm admin alanları"
+        description="Sidebar dışında kalan yeni kayıt, dışa aktarma ve operasyon kısayolları dahil panel içindeki tüm erişilebilir noktalar burada listelenir."
         meta={
           <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
-            {links.length} kisayol
+            {links.length} kısayol
           </span>
         }
       />
@@ -53,7 +53,7 @@ export default async function AdminAccessMapPage() {
                   <p className="text-sm font-semibold text-slate-950">{link.label}</p>
                   <p className="mt-2 text-sm leading-6 text-slate-600">{link.description}</p>
                   <p className="mt-4 text-xs font-semibold uppercase tracking-[0.16em] text-blue-600">
-                    {link.href.startsWith("/api/") ? "Indir" : "Ac"}
+                    {link.href.startsWith("/api/") ? "İndir" : "Aç"}
                   </p>
                 </>
               );

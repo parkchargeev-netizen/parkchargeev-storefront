@@ -51,7 +51,7 @@ export function AdminDataTable<TData>({
       <div className="overflow-x-auto">
         <table className="min-w-full border-separate border-spacing-0">
           <caption className="sr-only">
-            {caption ?? `${emptyTitle} icin admin veri tablosu`}
+            {caption ?? `${emptyTitle} için admin veri tablosu`}
           </caption>
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -141,7 +141,7 @@ export function AdminDataTable<TData>({
       {footer ? (
         <div className="flex items-center justify-between gap-3 border-t border-slate-200 bg-slate-50/70 px-6 py-4">
           <p className="text-sm text-slate-500">
-            Bu gorunumde {table.getRowModel().rows.length} kayit listeleniyor.
+            Bu görünümde {table.getRowModel().rows.length} kayıt listeleniyor.
           </p>
           {footer}
         </div>

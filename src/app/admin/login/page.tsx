@@ -18,16 +18,16 @@ export default async function AdminLoginPage() {
             ParkChargeEV Admin
           </p>
           <h1 className="max-w-xl text-4xl font-semibold leading-tight text-slate-950 md:text-5xl">
-            E-ticaret, teklif ve siparis operasyonlarini tek panelden yonetin.
+            E-ticaret, teklif ve sipariş operasyonlarını tek panelden yönetin.
           </h1>
           <p className="max-w-2xl text-lg text-slate-600">
-            Faz 1 kapsaminda urun CRUD, siparis durum yonetimi, teklif pipeline takibi ve temel KPI dashboard bu panelde bir araya getirildi.
+            Faz 1 kapsamında ürün yönetimi, sipariş durum yönetimi, teklif akışı takibi ve temel KPI gösterge paneli bu panelde bir araya getirildi.
           </p>
           <div className="grid gap-4 md:grid-cols-3">
             {[
-              "Rol bazli JWT korumasi",
-              "PayTR odeme durum takibi",
-              "Audit log hazir veri modeli"
+              "Rol bazlı JWT koruması",
+              "PayTR ödeme durum takibi",
+              "Audit log hazır veri modeli"
             ].map((item) => (
               <div key={item} className="rounded-3xl border border-white/60 bg-white/80 p-5 shadow-[0_24px_60px_rgba(15,23,42,0.08)] backdrop-blur">
                 <p className="text-sm font-medium text-slate-700">{item}</p>
@@ -38,9 +38,9 @@ export default async function AdminLoginPage() {
 
         <section className="surface-card border border-white/70 bg-white/90 p-8">
           <div className="mb-6">
-            <h2 className="text-2xl font-semibold text-slate-950">Yonetici Girisi</h2>
+            <h2 className="text-2xl font-semibold text-slate-950">Yönetici Girişi</h2>
             <p className="mt-2 text-sm text-slate-600">
-              Ilk kurulumda `.env` veya `.env.local` icindeki bootstrap admin bilgileri ile giris yapabilirsiniz.
+              İlk kurulumda `.env` veya `.env.local` içindeki bootstrap admin bilgileri ile giriş yapabilirsiniz.
             </p>
           </div>
           <LoginForm />

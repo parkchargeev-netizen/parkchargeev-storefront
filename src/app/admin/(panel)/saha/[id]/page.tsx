@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ServiceLeadStatusForm } from "@/components/admin/service-lead-status-form";
 import { AdminStatusBadge } from "@/components/admin/table/admin-status-badge";
 import { listAssignableAdmins } from "@/server/admin/auth-service";
+import { leadStatusOptions } from "@/server/admin/constants";
 import { getAdminServiceLeadById } from "@/server/admin/repository";
 
 type ServiceLeadDetailPageProps = {
@@ -15,6 +16,10 @@ function getPayloadObject(payload: unknown) {
   return payload && typeof payload === "object" && !Array.isArray(payload)
     ? (payload as Record<string, unknown>)
     : {};
+}
+
+function formatLeadStatus(status: string) {
+  return leadStatusOptions.find((option) => option.value === status)?.label ?? status;
 }
 
 export default async function ServiceLeadDetailPage({ params }: ServiceLeadDetailPageProps) {
@@ -48,7 +53,7 @@ export default async function ServiceLeadDetailPage({ params }: ServiceLeadDetai
         </div>
 
         <div className="surface-card border border-slate-200 bg-white/95 p-6">
-          <h2 className="text-xl font-semibold text-slate-950">Talep detayi</h2>
+          <h2 className="text-xl font-semibold text-slate-950">Talep detayı</h2>
           <dl className="mt-5 grid gap-4 md:grid-cols-2">
             <div className="rounded-2xl bg-slate-50 p-4">
               <dt className="text-xs uppercase tracking-[0.16em] text-slate-500">Telefon</dt>
@@ -64,7 +69,7 @@ export default async function ServiceLeadDetailPage({ params }: ServiceLeadDetai
             </div>
             <div className="rounded-2xl bg-slate-50 p-4">
               <dt className="text-xs uppercase tracking-[0.16em] text-slate-500">Atanan</dt>
-              <dd className="mt-2 text-sm font-semibold text-slate-900">{assignedAdmin?.fullName ?? "Atanmamis"}</dd>
+              <dd className="mt-2 text-sm font-semibold text-slate-900">{assignedAdmin?.fullName ?? "Atanmamış"}</dd>
             </div>
           </dl>
           <p className="mt-5 rounded-2xl bg-slate-50 p-4 text-sm leading-7 text-slate-700">
@@ -73,7 +78,7 @@ export default async function ServiceLeadDetailPage({ params }: ServiceLeadDetai
         </div>
 
         <div className="surface-card border border-slate-200 bg-white/95 p-6">
-          <h2 className="text-xl font-semibold text-slate-950">Operasyon notlari</h2>
+          <h2 className="text-xl font-semibold text-slate-950">Operasyon notları</h2>
           <div className="mt-5 space-y-3">
             {notes.length > 0 ? (
               notes.map((note, index) => {
@@ -86,13 +91,13 @@ export default async function ServiceLeadDetailPage({ params }: ServiceLeadDetai
                 );
               })
             ) : (
-              <p className="text-sm text-slate-500">Henuz operasyon notu yok.</p>
+              <p className="text-sm text-slate-500">Henüz operasyon notu yok.</p>
             )}
           </div>
         </div>
 
         <details className="surface-card border border-slate-200 bg-white/95 p-6">
-          <summary className="cursor-pointer text-sm font-semibold text-slate-900">Ham payload</summary>
+          <summary className="cursor-pointer text-sm font-semibold text-slate-900">Ham veri</summary>
           <pre className="mt-4 overflow-auto rounded-2xl bg-slate-950 p-4 text-xs text-slate-100">
             {JSON.stringify(payload, null, 2)}
           </pre>
@@ -103,11 +108,11 @@ export default async function ServiceLeadDetailPage({ params }: ServiceLeadDetai
         <div className="surface-card border border-slate-200 bg-white/95 p-6">
           <h2 className="text-xl font-semibold text-slate-950">Durum</h2>
           <div className="mt-5">
-            <AdminStatusBadge label={lead.status} tone="info" />
+            <AdminStatusBadge label={formatLeadStatus(lead.status)} tone="info" />
           </div>
         </div>
         <div className="surface-card border border-slate-200 bg-white/95 p-6">
-          <h2 className="text-xl font-semibold text-slate-950">Talebi guncelle</h2>
+          <h2 className="text-xl font-semibold text-slate-950">Talebi güncelle</h2>
           <div className="mt-5">
             <ServiceLeadStatusForm
               leadId={lead.id}

@@ -181,7 +181,7 @@ export const adminNavigationItemSchema = z.object({
     .max(500)
     .refine(
       (value) => value.startsWith("/") || value.startsWith("https://"),
-      "Link / ile veya https:// ile baslamalidir."
+      "Link / ile veya https:// ile başlamalıdır."
     ),
   sortOrder: z.coerce.number().int().min(0).max(9999).default(0),
   isActive: z.boolean().default(true),
@@ -197,7 +197,7 @@ export const adminSitePageSchema = z.object({
     .min(1)
     .max(220)
     .transform((value) => value.replace(/^\/+|\/+$/g, ""))
-    .refine((value) => value.length > 0, "Slug bos olamaz."),
+    .refine((value) => value.length > 0, "Slug boş olamaz."),
   title: z.string().trim().min(3).max(180),
   eyebrow: z.string().trim().max(120).optional().or(z.literal("")),
   excerpt: z.string().trim().min(10).max(2000),

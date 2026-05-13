@@ -46,9 +46,9 @@ export default async function AdminOrdersPage({ searchParams }: OrdersPageProps)
   return (
     <div className="space-y-6">
       <AdminPageHeader
-        eyebrow="Siparisler"
-        title="Odeme, fulfilment ve durum takibi"
-        description="Siparis akisi artik reusable data table omurgasi uzerinde ilerliyor. PayTR odeme durumu, siparis asamasi ve musteri ozeti ayni listede okunuyor."
+        eyebrow="Siparişler"
+        title="Ödeme, karşılama ve durum takibi"
+        description="Sipariş akışı artık yeniden kullanılabilir tablo yapısı üzerinde ilerliyor. PayTR ödeme durumu, sipariş aşaması ve müşteri özeti aynı listede okunuyor."
         action={
           <a
             href={buildHref("/api/admin/orders", query, { format: "csv", limit: "50" })}
@@ -60,10 +60,10 @@ export default async function AdminOrdersPage({ searchParams }: OrdersPageProps)
         meta={
           <>
             <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
-              {result.items.length} siparis
+              {result.items.length} sipariş
             </span>
             <span className="inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-              Durum ve odeme izleme
+              Durum ve ödeme izleme
             </span>
           </>
         }
@@ -74,7 +74,7 @@ export default async function AdminOrdersPage({ searchParams }: OrdersPageProps)
           <input
             name="q"
             defaultValue={query.q ?? ""}
-            placeholder="Siparis no, musteri veya e-posta"
+            placeholder="Sipariş no, müşteri veya e-posta"
             className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm"
           />
           <select
@@ -82,7 +82,7 @@ export default async function AdminOrdersPage({ searchParams }: OrdersPageProps)
             defaultValue={query.status ?? ""}
             className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm"
           >
-            <option value="">Tum durumlar</option>
+            <option value="">Tüm durumlar</option>
             {orderStatusOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
@@ -118,7 +118,7 @@ export default async function AdminOrdersPage({ searchParams }: OrdersPageProps)
               Sonraki sayfa
             </Link>
           ) : (
-            <span className="text-sm font-medium text-slate-500">Tum kayitlar yuklendi.</span>
+            <span className="text-sm font-medium text-slate-500">Tüm kayıtlar yüklendi.</span>
           )
         }
       />

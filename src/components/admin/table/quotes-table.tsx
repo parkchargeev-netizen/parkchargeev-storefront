@@ -46,6 +46,30 @@ function getQuoteTone(status: string) {
   return "info";
 }
 
+function formatQuoteStatus(status: string) {
+  const labels: Record<string, string> = {
+    new: "Yeni Talep",
+    reviewing: "İnceleniyor",
+    proposal_sent: "Teklif Gönderildi",
+    negotiation: "Müzakere",
+    won: "Kazandı",
+    lost: "Kaybetti"
+  };
+
+  return labels[status] ?? status;
+}
+
+function formatQuoteSegment(segment: string) {
+  const labels: Record<string, string> = {
+    site_apartment: "Site / Apartman",
+    business: "İş Yeri",
+    fleet: "Filo",
+    individual: "Bireysel"
+  };
+
+  return labels[segment] ?? segment;
+}
+
 const columns: Array<ColumnDef<QuoteRow>> = [
   {
     accessorKey: "fullName",
@@ -69,20 +93,20 @@ const columns: Array<ColumnDef<QuoteRow>> = [
     accessorKey: "segment",
     header: "Segment",
     cell: ({ row }) => (
-      <span className="text-sm font-medium text-slate-700">{row.original.segment}</span>
+      <span className="text-sm font-medium text-slate-700">{formatQuoteSegment(row.original.segment)}</span>
     )
   },
   {
     accessorKey: "status",
     header: "Durum",
     cell: ({ row }) => (
-      <AdminStatusBadge label={row.original.status} tone={getQuoteTone(row.original.status)} />
+      <AdminStatusBadge label={formatQuoteStatus(row.original.status)} tone={getQuoteTone(row.original.status)} />
     )
   },
   {
     accessorKey: "assignedAdminName",
     header: "Temsilci",
-    cell: ({ row }) => row.original.assignedAdminName || "Atanmamis"
+    cell: ({ row }) => row.original.assignedAdminName || "Atanmamış"
   },
   {
     accessorKey: "updatedAt",
@@ -110,8 +134,8 @@ export function QuotesTable({ items, footer }: QuotesTableProps) {
       columns={columns}
       data={items}
       caption="Teklif talepleri admin listesi"
-      emptyTitle="Teklif bulunamadi"
-      emptyDescription="Filtreleri duzenleyerek veya yeni talepler geldikce bu alan dolacak."
+      emptyTitle="Teklif bulunamadı"
+      emptyDescription="Filtreleri düzenleyerek veya yeni talepler geldikçe bu alan dolacak."
       footer={footer}
     />
   );

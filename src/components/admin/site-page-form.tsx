@@ -17,8 +17,8 @@ type SitePageFormProps = {
 
 const statusOptions = [
   { value: "draft", label: "Taslak" },
-  { value: "published", label: "Yayinda" },
-  { value: "archived", label: "Arsiv" }
+  { value: "published", label: "Yayında" },
+  { value: "archived", label: "Arşiv" }
 ] as const;
 
 const frequencyOptions = ["weekly", "monthly", "daily", "yearly", "never"] as const;
@@ -27,17 +27,17 @@ const contentTemplates = [
   {
     label: "Standart sayfa",
     body:
-      "<h2>Baslik</h2><p>Sayfa aciklamasini buraya yazin.</p><h3>Detaylar</h3><ul><li>Birinci madde</li><li>Ikinci madde</li></ul>"
+      "<h2>Başlık</h2><p>Sayfa açıklamasını buraya yazın.</p><h3>Detaylar</h3><ul><li>Birinci madde</li><li>İkinci madde</li></ul>"
   },
   {
-    label: "Hizmet sayfasi",
+    label: "Hizmet sayfası",
     body:
-      "<h2>Hizmet kapsami</h2><p>Bu hizmetin kimler icin uygun oldugunu aciklayin.</p><h2>Suresi ve sureci</h2><p>Kesif, teklif, kurulum ve destek adimlarini yazin.</p>"
+      "<h2>Hizmet kapsamı</h2><p>Bu hizmetin kimler için uygun olduğunu açıklayın.</p><h2>Süresi ve süreci</h2><p>Keşif, teklif, kurulum ve destek adımlarını yazın.</p>"
   },
   {
-    label: "SEO landing",
+    label: "SEO açılış sayfası",
     body:
-      "<h2>Neden ParkChargeEV?</h2><p>Arama niyetine uygun guven unsurlarini yazin.</p><h2>Sik sorulan sorular</h2><p>Kisa cevaplarla donusum odakli bilgi verin.</p>"
+      "<h2>Neden ParkChargeEV?</h2><p>Arama niyetine uygun güven unsurlarını yazın.</p><h2>Sık sorulan sorular</h2><p>Kısa cevaplarla dönüşüm odaklı bilgi verin.</p>"
   }
 ];
 
@@ -107,7 +107,7 @@ export function SitePageForm({ mode, page }: SitePageFormProps) {
     });
     const data = (await response.json()) as { ok: boolean; message?: string };
 
-    setFeedback(data.ok ? "Sayfa kaydedildi." : data.message ?? "Islem basarisiz.");
+    setFeedback(data.ok ? "Sayfa kaydedildi." : data.message ?? "İşlem başarısız.");
 
     if (data.ok) {
       if (mode === "create") {
@@ -138,9 +138,9 @@ export function SitePageForm({ mode, page }: SitePageFormProps) {
       <section className="rounded-2xl border border-slate-200 bg-white p-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h3 className="text-base font-semibold text-slate-950">Sayfa kimligi</h3>
+            <h3 className="text-base font-semibold text-slate-950">Sayfa kimliği</h3>
             <p className="mt-1 text-xs leading-5 text-slate-500">
-              URL, panel listesi ve public baslik alanini bu bolum belirler.
+              URL, panel listesi ve yayındaki başlık alanını bu bölüm belirler.
             </p>
           </div>
           <a
@@ -149,15 +149,15 @@ export function SitePageForm({ mode, page }: SitePageFormProps) {
             rel="noreferrer"
             className="rounded-full border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700"
           >
-            Onizle {previewPath}
+            Önizle {previewPath}
           </a>
         </div>
         <div className="mt-4 grid gap-3 lg:grid-cols-2">
           <label className="grid gap-1.5">
             <span className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
-              Sayfa basligi
+              Sayfa başlığı
             </span>
-            <input className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="EV sarj hizmetleri" {...register("title")} />
+            <input className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="EV şarj hizmetleri" {...register("title")} />
             <span className="text-xs text-slate-500">{watchedTitle?.length ?? 0}/180 karakter</span>
             <FieldError message={errors.title?.message} />
           </label>
@@ -166,26 +166,26 @@ export function SitePageForm({ mode, page }: SitePageFormProps) {
               Slug
             </span>
             <input className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="ev-sarj-hizmetleri" {...register("slug")} />
-            <span className="text-xs text-slate-500">Public URL: {previewPath}</span>
+            <span className="text-xs text-slate-500">Yayındaki URL: {previewPath}</span>
             <FieldError message={errors.slug?.message} />
           </label>
         </div>
       </section>
 
       <section className="rounded-2xl border border-slate-200 bg-white p-4">
-        <h3 className="text-base font-semibold text-slate-950">Hero ve kisa ozet</h3>
+        <h3 className="text-base font-semibold text-slate-950">Hero ve kısa özet</h3>
         <div className="mt-4 grid gap-3">
           <label className="grid gap-1.5">
             <span className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
-              Ust etiket
+              Üst etiket
             </span>
             <input className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="Kurulum hizmeti" {...register("eyebrow")} />
           </label>
           <label className="grid gap-1.5">
             <span className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
-              Kisa ozet
+              Kısa özet
             </span>
-            <textarea rows={4} className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="Sayfanin arama sonucu ve hero aciklamasi." {...register("excerpt")} />
+            <textarea rows={4} className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="Sayfanın arama sonucu ve hero açıklaması." {...register("excerpt")} />
             <span className="text-xs text-slate-500">{watchedExcerpt?.length ?? 0}/2000 karakter</span>
             <FieldError message={errors.excerpt?.message} />
           </label>
@@ -195,9 +195,9 @@ export function SitePageForm({ mode, page }: SitePageFormProps) {
       <section className="rounded-2xl border border-slate-200 bg-white p-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h3 className="text-base font-semibold text-slate-950">Icerik govdesi</h3>
+            <h3 className="text-base font-semibold text-slate-950">İçerik gövdesi</h3>
             <p className="mt-1 text-xs leading-5 text-slate-500">
-              HTML desteklenir; script ve riskli tagler public tarafta temizlenir.
+              HTML desteklenir; script ve riskli etiketler yayındaki tarafta temizlenir.
             </p>
           </div>
           <span className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-600">
@@ -219,20 +219,20 @@ export function SitePageForm({ mode, page }: SitePageFormProps) {
         <textarea
           rows={12}
           className="mt-4 w-full rounded-2xl border border-slate-300 px-4 py-3 font-mono text-sm leading-6"
-          placeholder="<h2>Baslik</h2><p>Sayfa icerigi</p>"
+          placeholder="<h2>Başlık</h2><p>Sayfa içeriği</p>"
           {...register("body")}
         />
         <FieldError message={errors.body?.message} />
       </section>
 
       <section className="rounded-2xl border border-slate-200 bg-white p-4">
-        <h3 className="text-base font-semibold text-slate-950">SEO ve sosyal paylasim</h3>
+        <h3 className="text-base font-semibold text-slate-950">SEO ve sosyal paylaşım</h3>
         <div className="mt-4 grid gap-3 lg:grid-cols-2">
           <label className="grid gap-1.5">
             <span className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
               SEO title
             </span>
-            <input className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="Google basligi" {...register("seoTitle")} />
+            <input className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="Google başlığı" {...register("seoTitle")} />
           </label>
           <label className="grid gap-1.5">
             <span className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
@@ -245,7 +245,7 @@ export function SitePageForm({ mode, page }: SitePageFormProps) {
           <span className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
             SEO description
           </span>
-          <textarea rows={3} className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="Arama sonucunda gorunecek ozet." {...register("seoDescription")} />
+          <textarea rows={3} className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="Arama sonucunda görünecek özet." {...register("seoDescription")} />
         </label>
         <label className="mt-3 grid gap-1.5">
           <span className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
@@ -256,7 +256,7 @@ export function SitePageForm({ mode, page }: SitePageFormProps) {
       </section>
 
       <section className="rounded-2xl border border-slate-200 bg-white p-4">
-        <h3 className="text-base font-semibold text-slate-950">Yayin ve sitemap</h3>
+        <h3 className="text-base font-semibold text-slate-950">Yayın ve sitemap</h3>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 2xl:grid-cols-[160px_170px_160px_minmax(160px,1fr)_minmax(140px,1fr)]">
           <select className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" {...register("status")}>
             {statusOptions.map((option) => (
@@ -272,7 +272,7 @@ export function SitePageForm({ mode, page }: SitePageFormProps) {
               </option>
             ))}
           </select>
-          <input type="number" className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="SEO oncelik" {...register("sitemapPriority", { valueAsNumber: true })} />
+          <input type="number" className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="SEO öncelik" {...register("sitemapPriority", { valueAsNumber: true })} />
           <label className="flex min-h-12 items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
             <input type="checkbox" {...register("showInSitemap")} />
             Sitemap listesine ekle
@@ -284,7 +284,7 @@ export function SitePageForm({ mode, page }: SitePageFormProps) {
         </div>
         {watchedNoIndex ? (
           <p className="mt-3 rounded-2xl bg-amber-50 px-4 py-3 text-sm text-amber-800">
-            Noindex aktifse sayfa sitemap listesinde gorunmez ve arama motorlarina indexlenmemesi soylenir.
+            Noindex aktifse sayfa sitemap listesinde görünmez ve arama motorlarına indexlenmemesi söylenir.
           </p>
         ) : null}
       </section>
@@ -295,7 +295,7 @@ export function SitePageForm({ mode, page }: SitePageFormProps) {
         disabled={isSubmitting}
         className="w-full rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white disabled:opacity-70 lg:w-auto"
       >
-        {isSubmitting ? "Kaydediliyor..." : mode === "create" ? "Detayli sayfa ekle" : "Sayfayi guncelle"}
+        {isSubmitting ? "Kaydediliyor..." : mode === "create" ? "Detaylı sayfa ekle" : "Sayfayı güncelle"}
       </button>
     </form>
   );

@@ -285,7 +285,7 @@ async function ensureDefaultCategories() {
       productCategoryOptions.map((item) => ({
         name: item.label,
         slug: item.slug,
-        description: `${item.label} kategori kaydi`
+        description: `${item.label} kategori kaydı`
       }))
     )
     .onConflictDoNothing();
@@ -505,7 +505,7 @@ async function writeProductCollections(
     entityType: "product_collections",
     entityId: productId,
     action: "sync",
-    summary: "Urun koleksiyon alanlari senkronize edildi.",
+    summary: "Ürün koleksiyon alanları senkronize edildi.",
     afterPayload: {
       categories: input.categories,
       tags: input.tags,
@@ -705,7 +705,7 @@ export async function upsertAdminProduct(
       entityType: "product",
       entityId: input.id,
       action: "update",
-      summary: `${input.name} urunu guncellendi.`,
+      summary: `${input.name} ürünü güncellendi.`,
       beforePayload: before,
       afterPayload: after,
       ipAddress: requestMeta?.ipAddress,
@@ -739,7 +739,7 @@ export async function upsertAdminProduct(
     entityType: "product",
     entityId: createdProduct.id,
     action: "create",
-    summary: `${input.name} urunu olusturuldu.`,
+    summary: `${input.name} ürünü oluşturuldu.`,
     afterPayload: after,
     ipAddress: requestMeta?.ipAddress,
     userAgent: requestMeta?.userAgent
@@ -939,7 +939,7 @@ export async function updateAdminOrder(
     entityType: "order",
     entityId: id,
     action: "update",
-    summary: `${before.orderNumber} siparisinin durumu guncellendi.`,
+    summary: `${before.orderNumber} siparişinin durumu güncellendi.`,
     beforePayload: before,
     afterPayload: after,
     ipAddress: requestMeta?.ipAddress,
@@ -1123,7 +1123,7 @@ export async function updateAdminQuote(
     quoteRequestId: id,
     adminUserId: actor?.sub ?? null,
     activityType: "status_change",
-    note: input.note || `${input.status} durumuna guncellendi.`,
+    note: input.note || `${input.status} durumuna güncellendi.`,
     payload: {
       fromStatus: before.status,
       toStatus: input.status
@@ -1138,7 +1138,7 @@ export async function updateAdminQuote(
     entityType: "quote_request",
     entityId: id,
     action: "update",
-    summary: `${before.fullName} teklif kaydi guncellendi.`,
+    summary: `${before.fullName} teklif kaydı güncellendi.`,
     beforePayload: before,
     afterPayload: after,
     ipAddress: requestMeta?.ipAddress,
@@ -1462,7 +1462,7 @@ export async function upsertAdminUser(
       entityType: "admin_user",
       entityId: input.id,
       action: "update",
-      summary: `${input.email} admin kullanicisi guncellendi.`,
+      summary: `${input.email} admin kullanıcısı güncellendi.`,
       beforePayload: before,
       afterPayload: after,
       ipAddress: requestMeta?.ipAddress,
@@ -1473,7 +1473,7 @@ export async function upsertAdminUser(
   }
 
   if (!input.password) {
-    throw new Error("Yeni admin kullanicisi icin sifre gereklidir.");
+    throw new Error("Yeni admin kullanıcısı için şifre gereklidir.");
   }
 
   const [created] = await db
@@ -1495,7 +1495,7 @@ export async function upsertAdminUser(
     entityType: "admin_user",
     entityId: created.id,
     action: "create",
-    summary: `${created.email} admin kullanicisi olusturuldu.`,
+    summary: `${created.email} admin kullanıcısı oluşturuldu.`,
     afterPayload: created,
     ipAddress: requestMeta?.ipAddress,
     userAgent: requestMeta?.userAgent
@@ -1699,7 +1699,7 @@ export async function updateAdminServiceLead(
     entityType: "service_lead",
     entityId: id,
     action: "update",
-    summary: `${before.fullName} saha talebi guncellendi.`,
+    summary: `${before.fullName} saha talebi güncellendi.`,
     beforePayload: before,
     afterPayload: after,
     ipAddress: requestMeta?.ipAddress,
@@ -1813,7 +1813,7 @@ export async function upsertAdminBlogPost(
       entityType: "blog_post",
       entityId: input.id,
       action: "update",
-      summary: `${input.title} icerigi guncellendi.`,
+      summary: `${input.title} içeriği güncellendi.`,
       beforePayload: before,
       afterPayload: after,
       ipAddress: requestMeta?.ipAddress,
@@ -1831,7 +1831,7 @@ export async function upsertAdminBlogPost(
     entityType: "blog_post",
     entityId: created.id,
     action: "create",
-    summary: `${created.title} icerigi olusturuldu.`,
+    summary: `${created.title} içeriği oluşturuldu.`,
     afterPayload: created,
     ipAddress: requestMeta?.ipAddress,
     userAgent: requestMeta?.userAgent
@@ -1888,7 +1888,7 @@ export async function upsertAdminBrand(
       entityType: "brand",
       entityId: input.id,
       action: "update",
-      summary: `${input.name} markasi guncellendi.`,
+      summary: `${input.name} markası güncellendi.`,
       afterPayload: values,
       ipAddress: requestMeta?.ipAddress,
       userAgent: requestMeta?.userAgent
@@ -1904,7 +1904,7 @@ export async function upsertAdminBrand(
     entityType: "brand",
     entityId: created.id,
     action: "create",
-    summary: `${created.name} markasi olusturuldu.`,
+    summary: `${created.name} markası oluşturuldu.`,
     afterPayload: created,
     ipAddress: requestMeta?.ipAddress,
     userAgent: requestMeta?.userAgent
@@ -1938,7 +1938,7 @@ export async function upsertAdminCategory(
       entityType: "category",
       entityId: input.id,
       action: "update",
-      summary: `${input.name} kategorisi guncellendi.`,
+      summary: `${input.name} kategorisi güncellendi.`,
       afterPayload: values,
       ipAddress: requestMeta?.ipAddress,
       userAgent: requestMeta?.userAgent
@@ -1954,7 +1954,7 @@ export async function upsertAdminCategory(
     entityType: "category",
     entityId: created.id,
     action: "create",
-    summary: `${created.name} kategorisi olusturuldu.`,
+    summary: `${created.name} kategorisi oluşturuldu.`,
     afterPayload: created,
     ipAddress: requestMeta?.ipAddress,
     userAgent: requestMeta?.userAgent
@@ -2151,14 +2151,14 @@ export async function runAdminPaytrOperation(
       ? {
           status: "refunded" as const,
           paymentStatus: "refunded",
-          statusNote: input.note || "Admin tarafindan iade olarak isaretlendi.",
+          statusNote: input.note || "Admin tarafından iade olarak işaretlendi.",
           updatedAt: new Date()
         }
       : {
           status:
             transaction.status === "callback_success" ? ("pending_confirmation" as const) : ("failed" as const),
           paymentStatus: transaction.status === "callback_success" ? "paid" : "failed",
-          statusNote: input.note || "PayTR transaction durumuna gore manuel mutabakat yapildi.",
+          statusNote: input.note || "PayTR işlem durumuna göre manuel mutabakat yapıldı.",
           updatedAt: new Date()
         };
 
@@ -2178,7 +2178,7 @@ export async function runAdminPaytrOperation(
     entityType: "paytr_transaction",
     entityId: transaction.id,
     action: input.action,
-    summary: input.note || "PayTR operasyonu uygulandi.",
+    summary: input.note || "PayTR operasyonu uygulandı.",
     beforePayload: transaction,
     afterPayload: nextOrderValues,
     ipAddress: requestMeta?.ipAddress,

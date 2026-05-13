@@ -52,7 +52,7 @@ export function CatalogForm({ type, item, categories = [] }: CatalogFormProps) {
     });
     const data = (await response.json()) as { ok: boolean; message?: string };
 
-    setFeedback(data.ok ? "Katalog kaydi kaydedildi." : data.message ?? "Islem basarisiz.");
+    setFeedback(data.ok ? "Katalog kaydı kaydedildi." : data.message ?? "İşlem başarısız.");
     setIsSubmitting(false);
 
     if (data.ok) {
@@ -96,7 +96,7 @@ export function CatalogForm({ type, item, categories = [] }: CatalogFormProps) {
           value={parentId}
           onChange={(event) => setParentId(event.target.value)}
         >
-          <option value="">Ust kategori yok</option>
+          <option value="">Üst kategori yok</option>
           {categories
             .filter((category) => category.id !== item?.id)
             .map((category) => (
@@ -109,7 +109,7 @@ export function CatalogForm({ type, item, categories = [] }: CatalogFormProps) {
       <textarea
         rows={3}
         className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
-        placeholder="Aciklama"
+        placeholder="Açıklama"
         value={description}
         onChange={(event) => setDescription(event.target.value)}
       />
@@ -119,7 +119,7 @@ export function CatalogForm({ type, item, categories = [] }: CatalogFormProps) {
         disabled={isSubmitting}
         className="rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white disabled:opacity-70"
       >
-        {isSubmitting ? "Kaydediliyor..." : item?.id ? "Guncelle" : "Ekle"}
+        {isSubmitting ? "Kaydediliyor..." : item?.id ? "Güncelle" : "Ekle"}
       </button>
     </form>
   );

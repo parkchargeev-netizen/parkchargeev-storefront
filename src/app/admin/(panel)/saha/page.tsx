@@ -46,6 +46,10 @@ function getLeadTone(status: string) {
   return "info" as const;
 }
 
+function formatLeadStatus(status: string) {
+  return leadStatusOptions.find((option) => option.value === status)?.label ?? status;
+}
+
 export default async function AdminServiceLeadsPage({ searchParams }: AdminServiceLeadsPageProps) {
   const query = (await searchParams) ?? {};
   const result = await listAdminServiceLeads({ ...query, limit: 12 });
@@ -54,8 +58,8 @@ export default async function AdminServiceLeadsPage({ searchParams }: AdminServi
     <div className="space-y-6">
       <AdminPageHeader
         eyebrow="Saha Talepleri"
-        title="Servis, kesif ve kurulum operasyonlari"
-        description="Service lead kayitlarini listeleyin, durumlari takip edin ve talebi saha ekibine atayin."
+        title="Servis, keşif ve kurulum operasyonları"
+        description="Saha talebi kayıtlarını listeleyin, durumları takip edin ve talebi saha ekibine atayın."
         action={
           <a href={buildExportHref(query)} className="inline-flex rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-white">
             CSV indir
@@ -72,7 +76,7 @@ export default async function AdminServiceLeadsPage({ searchParams }: AdminServi
         <form className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_220px_170px_170px_auto]">
           <input name="q" defaultValue={query.q ?? ""} placeholder="Ad, telefon veya talep tipi ara" className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm" />
           <select name="status" defaultValue={query.status ?? ""} className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
-            <option value="">Tum durumlar</option>
+            <option value="">Tüm durumlar</option>
             {leadStatusOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
@@ -91,7 +95,7 @@ export default async function AdminServiceLeadsPage({ searchParams }: AdminServi
             <thead className="text-xs uppercase tracking-[0.16em] text-slate-500">
               <tr>
                 <th className="px-3 py-3">Talep</th>
-                <th className="px-3 py-3">Iletisim</th>
+                <th className="px-3 py-3">İletişim</th>
                 <th className="px-3 py-3">Lokasyon</th>
                 <th className="px-3 py-3">Durum</th>
                 <th className="px-3 py-3">Tarih</th>
@@ -113,7 +117,7 @@ export default async function AdminServiceLeadsPage({ searchParams }: AdminServi
                   </td>
                   <td className="px-3 py-4 text-slate-600">{[lead.city, lead.district].filter(Boolean).join(" / ") || "-"}</td>
                   <td className="px-3 py-4">
-                    <AdminStatusBadge label={lead.status} tone={getLeadTone(lead.status)} />
+                    <AdminStatusBadge label={formatLeadStatus(lead.status)} tone={getLeadTone(lead.status)} />
                   </td>
                   <td className="px-3 py-4 text-slate-600">{new Date(lead.createdAt).toLocaleDateString("tr-TR")}</td>
                   <td className="px-3 py-4">
@@ -132,7 +136,7 @@ export default async function AdminServiceLeadsPage({ searchParams }: AdminServi
               Sonraki sayfa
             </Link>
           ) : (
-            <span className="text-sm font-medium text-slate-500">Tum kayitlar yuklendi.</span>
+            <span className="text-sm font-medium text-slate-500">Tüm kayıtlar yüklendi.</span>
           )}
         </div>
       </section>

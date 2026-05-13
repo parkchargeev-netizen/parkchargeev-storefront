@@ -21,6 +21,18 @@ type ServiceLeadStatusFormProps = {
   };
 };
 
+function formatRole(role: string) {
+  const labels: Record<string, string> = {
+    superadmin: "Süper Admin",
+    sales: "Satış",
+    operations: "Operasyon",
+    technician: "Saha Teknisyeni",
+    editor: "İçerik Editörü"
+  };
+
+  return labels[role] ?? role;
+}
+
 export function ServiceLeadStatusForm({
   leadId,
   assignableAdmins,
@@ -51,7 +63,7 @@ export function ServiceLeadStatusForm({
     });
     const data = (await response.json()) as { ok: boolean; message?: string };
 
-    setFeedback(data.ok ? "Saha talebi guncellendi." : data.message ?? "Islem basarisiz.");
+    setFeedback(data.ok ? "Saha talebi güncellendi." : data.message ?? "İşlem başarısız.");
     setIsSubmitting(false);
 
     if (data.ok) {
@@ -78,10 +90,10 @@ export function ServiceLeadStatusForm({
         value={assignedAdminId}
         onChange={(event) => setAssignedAdminId(event.target.value)}
       >
-        <option value="">Atanmamis</option>
+        <option value="">Atanmamış</option>
         {assignableAdmins.map((admin) => (
           <option key={admin.id} value={admin.id}>
-            {admin.fullName} ({admin.role})
+            {admin.fullName} ({formatRole(admin.role)})
           </option>
         ))}
       </select>
@@ -102,7 +114,7 @@ export function ServiceLeadStatusForm({
         disabled={isSubmitting}
         className="w-full rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white disabled:opacity-70"
       >
-        {isSubmitting ? "Guncelleniyor..." : "Talebi guncelle"}
+        {isSubmitting ? "Güncelleniyor..." : "Talebi güncelle"}
       </button>
     </form>
   );

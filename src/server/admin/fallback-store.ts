@@ -266,7 +266,7 @@ function decodeCursor(cursor?: string) {
 function getBootstrapAdminSummary() {
   const email = process.env.ADMIN_BOOTSTRAP_EMAIL?.trim().toLowerCase();
   const fullName =
-    process.env.ADMIN_BOOTSTRAP_NAME?.trim() || "ParkChargeEV Superadmin";
+    process.env.ADMIN_BOOTSTRAP_NAME?.trim() || "ParkChargeEV Süper Admin";
 
   if (!email) {
     return null;
@@ -330,7 +330,7 @@ function findMarketingProduct(slug: string) {
   const product = marketingProducts.find((item) => item.slug === slug);
 
   if (!product) {
-    throw new Error(`Fallback urunu bulunamadi: ${slug}`);
+    throw new Error(`Yerel yedek ürünü bulunamadı: ${slug}`);
   }
 
   return product;
@@ -435,7 +435,7 @@ function createSeedProducts(): FallbackProductRecord[] {
       status: "active" as const,
       stockQuantity: 11,
       minimumStockThreshold: 3,
-      vehicles: ["Renault", "Hyundai", "Diger"],
+      vehicles: ["Renault", "Hyundai", "Diğer"],
       hasWifi: false,
       hasRfid: false,
       has4g: false,
@@ -461,7 +461,7 @@ function createSeedProducts(): FallbackProductRecord[] {
     {
       id: "55555555-5555-4555-8555-555555555555",
       variantId: "55555555-5555-4555-8555-555555555556",
-      slug: "type-2-sarj-kablosu-5m",
+      slug: "type-2-şarj-kablosu-5m",
       status: "active" as const,
       stockQuantity: 34,
       minimumStockThreshold: 6,
@@ -563,7 +563,7 @@ function createSeedProducts(): FallbackProductRecord[] {
   const business = records.find((item) => item.slug === "business-charge-dual-22kw");
   const eco = records.find((item) => item.slug === "ecocharge-lite-74kw");
   const dc = records.find((item) => item.slug === "dc-fast-60kw");
-  const cable = records.find((item) => item.slug === "type-2-sarj-kablosu-5m");
+  const cable = records.find((item) => item.slug === "type-2-şarj-kablosu-5m");
 
   if (home && eco && cable) {
     home.relatedProductIds = [eco.id];
@@ -604,12 +604,12 @@ function createSeedOrders(products: FallbackProductRecord[]): FallbackOrderRecor
       customerName: "Ahmet Yilmaz",
       customerEmail: "ahmet@example.com",
       customerPhone: "05551234567",
-      statusNote: "Kurulum tamamlandi ve teslim edildi.",
+      statusNote: "Kurulum tamamlandı ve teslim edildi.",
       shippingCarrier: "ParkChargeEV Lojistik",
       trackingNumber: "LCL-1001",
       trackingUrl: "https://example.com/kargo/LCL-1001",
       paytrLastSyncedAt: isoDaysAgo(0, 14),
-      note: "Yerel fallback siparis kaydi",
+      note: "Yerel fallback sipariş kaydı",
       createdAt: isoDaysAgo(0, 9),
       updatedAt: isoDaysAgo(0, 14),
       items: [
@@ -626,11 +626,11 @@ function createSeedOrders(products: FallbackProductRecord[]): FallbackOrderRecor
         },
         {
           id: randomUUID(),
-          productId: bySlug["type-2-sarj-kablosu-5m"]?.id ?? null,
-          variantId: bySlug["type-2-sarj-kablosu-5m"]?.defaultVariant.id ?? null,
-          productName: "Type-2 Sarj Kablosu 5m",
-          variantName: "Type-2 Sarj Kablosu 5m",
-          sku: bySlug["type-2-sarj-kablosu-5m"]?.defaultVariant.sku ?? null,
+          productId: bySlug["type-2-şarj-kablosu-5m"]?.id ?? null,
+          variantId: bySlug["type-2-şarj-kablosu-5m"]?.defaultVariant.id ?? null,
+          productName: "Type-2 Şarj Kablosu 5m",
+          variantName: "Type-2 Şarj Kablosu 5m",
+          sku: bySlug["type-2-şarj-kablosu-5m"]?.defaultVariant.sku ?? null,
           quantity: 1,
           unitPriceKurus: 425000,
           lineTotalKurus: 425000
@@ -643,7 +643,7 @@ function createSeedOrders(products: FallbackProductRecord[]): FallbackOrderRecor
           adminName: salesAdmin.fullName,
           fromStatus: "pending_confirmation",
           toStatus: "confirmed",
-          note: "Odeme dogrulandi.",
+          note: "Ödeme dogrulandi.",
           createdAt: isoDaysAgo(0, 11)
         },
         {
@@ -682,12 +682,12 @@ function createSeedOrders(products: FallbackProductRecord[]): FallbackOrderRecor
       customerName: "Gizem Karan",
       customerEmail: "gizem@example.com",
       customerPhone: "05559876543",
-      statusNote: "Montaj planlamasi bekleniyor.",
+      statusNote: "Montaj planlaması bekleniyor.",
       shippingCarrier: null,
       trackingNumber: null,
       trackingUrl: null,
       paytrLastSyncedAt: isoDaysAgo(5, 16),
-      note: "Kurumsal siparis",
+      note: "Kurumsal sipariş",
       createdAt: isoDaysAgo(5, 10),
       updatedAt: isoDaysAgo(5, 16),
       items: [
@@ -710,7 +710,7 @@ function createSeedOrders(products: FallbackProductRecord[]): FallbackOrderRecor
           adminName: salesAdmin.fullName,
           fromStatus: "pending_confirmation",
           toStatus: "confirmed",
-          note: "Teklif onayi sonrasinda siparis aktive edildi.",
+          note: "Teklif onayı sonrasında sipariş aktive edildi.",
           createdAt: isoDaysAgo(5, 16)
         }
       ],
@@ -740,12 +740,12 @@ function createSeedOrders(products: FallbackProductRecord[]): FallbackOrderRecor
       customerName: "Ece Demir",
       customerEmail: "ece@example.com",
       customerPhone: "05550111223",
-      statusNote: "Odeme alindi, manuel kontrol bekleniyor.",
+      statusNote: "Ödeme alındı, manuel kontrol bekleniyor.",
       shippingCarrier: null,
       trackingNumber: null,
       trackingUrl: null,
       paytrLastSyncedAt: isoDaysAgo(1, 17),
-      note: "Bireysel siparis",
+      note: "Bireysel sipariş",
       createdAt: isoDaysAgo(1, 12),
       updatedAt: isoDaysAgo(1, 17),
       items: [
@@ -793,7 +793,7 @@ function createSeedOrders(products: FallbackProductRecord[]): FallbackOrderRecor
       trackingNumber: "PRJ-965",
       trackingUrl: "https://example.com/proje/PRJ-965",
       paytrLastSyncedAt: isoDaysAgo(38, 14),
-      note: "DC proje siparisi",
+      note: "DC proje siparişi",
       createdAt: isoDaysAgo(40, 10),
       updatedAt: isoDaysAgo(34, 14),
       items: [
@@ -847,7 +847,7 @@ function createSeedQuotes(): FallbackQuoteRecord[] {
       city: "Sakarya",
       district: "Serdivan",
       estimatedLocation: "Kapali otopark blok A",
-      requestNotes: "20 araclik otopark icin ilk faz kurulum talebi.",
+      requestNotes: "20 araçlık otopark için ilk faz kurulum talebi.",
       status: "reviewing",
       assignedAdminId: salesAdmin.id,
       source: "website",
@@ -859,7 +859,7 @@ function createSeedQuotes(): FallbackQuoteRecord[] {
           adminUserId: salesAdmin.id,
           adminName: salesAdmin.fullName,
           activityType: "assignment",
-          note: "Talep satis ekibine atandi.",
+          note: "Talep satış ekibine atandı.",
           payload: null,
           createdAt: isoDaysAgo(2, 11)
         },
@@ -868,7 +868,7 @@ function createSeedQuotes(): FallbackQuoteRecord[] {
           adminUserId: salesAdmin.id,
           adminName: salesAdmin.fullName,
           activityType: "status_change",
-          note: "Kesif planlamasi icin inceleme alindi.",
+          note: "Keşif planlaması için inceleme alındı.",
           payload: {
             fromStatus: "new",
             toStatus: "reviewing"
@@ -886,8 +886,8 @@ function createSeedQuotes(): FallbackQuoteRecord[] {
       phone: "05550010002",
       city: "Istanbul",
       district: "Maslak",
-      estimatedLocation: "Acik ofis otoparki",
-      requestNotes: "Calisan ve misafir kullanimi ayrilabilen sistem araniyor.",
+      estimatedLocation: "Açık ofis otoparki",
+      requestNotes: "Çalışan ve misafir kullanımı ayrılabilen sistem aranıyor.",
       status: "proposal_sent",
       assignedAdminId: salesAdmin.id,
       source: "website",
@@ -899,7 +899,7 @@ function createSeedQuotes(): FallbackQuoteRecord[] {
           adminUserId: salesAdmin.id,
           adminName: salesAdmin.fullName,
           activityType: "status_change",
-          note: "On teklif PDF olarak iletildi.",
+          note: "Ön teklif PDF olarak iletildi.",
           payload: {
             fromStatus: "reviewing",
             toStatus: "proposal_sent"
@@ -918,7 +918,7 @@ function createSeedQuotes(): FallbackQuoteRecord[] {
       city: "Kocaeli",
       district: "Gebze",
       estimatedLocation: "Filo sahasi",
-      requestNotes: "Gece AC, gun ici hizli DC kombinasyonu planlaniyor.",
+      requestNotes: "Gece AC, gün içi hızlı DC kombinasyonu planlanıyor.",
       status: "negotiation",
       assignedAdminId: null,
       source: "website",
@@ -930,7 +930,7 @@ function createSeedQuotes(): FallbackQuoteRecord[] {
           adminUserId: salesAdmin.id,
           adminName: salesAdmin.fullName,
           activityType: "status_change",
-          note: "Teknik sorular sonrasi muzakere asamasina gecti.",
+          note: "Teknik sorular sonrasi muzakere aşamasına gecti.",
           payload: {
             fromStatus: "proposal_sent",
             toStatus: "negotiation"
@@ -970,7 +970,7 @@ function createSeedServiceLeads(): FallbackServiceLeadRecord[] {
     },
     {
       id: "dddddddd-dddd-4ddd-8ddd-ddddddddddd3",
-      leadType: "Periyodik Bakim",
+      leadType: "Periyodik Bakım",
       status: "qualified",
       fullName: "Ali Cakir",
       createdAt: isoDaysAgo(6, 11)
@@ -1002,7 +1002,7 @@ async function readStore() {
     const store = JSON.parse(content) as FallbackStore;
 
     if (store.version !== STORE_VERSION) {
-      throw new Error("Fallback store surumu guncellendi.");
+      throw new Error("Yerel yedek veri deposu sürümü güncellendi.");
     }
 
     return store;
@@ -1438,7 +1438,7 @@ export async function updateFallbackAdminQuote(
       adminUserId: actor?.sub ?? null,
       adminName: actor?.name ?? null,
       activityType: "status_change",
-      note: input.note || `${input.status} durumuna guncellendi.`,
+      note: input.note || `${input.status} durumuna güncellendi.`,
       payload: {
         fromStatus: previousStatus,
         toStatus: input.status

@@ -23,6 +23,18 @@ type QuoteStatusFormProps = {
   assignableAdmins: AssignableAdmin[];
 };
 
+function formatRole(role: string) {
+  const labels: Record<string, string> = {
+    superadmin: "Süper Admin",
+    sales: "Satış",
+    operations: "Operasyon",
+    technician: "Saha Teknisyeni",
+    editor: "İçerik Editörü"
+  };
+
+  return labels[role] ?? role;
+}
+
 export function QuoteStatusForm({
   quoteId,
   initialValues,
@@ -54,7 +66,7 @@ export function QuoteStatusForm({
     });
 
     const data = (await response.json()) as { ok: boolean; message?: string };
-    setFeedback(data.ok ? "Teklif guncellendi." : data.message ?? "Islem basarisiz.");
+    setFeedback(data.ok ? "Teklif güncellendi." : data.message ?? "İşlem başarısız.");
 
     if (data.ok) {
       router.refresh();
@@ -75,10 +87,10 @@ export function QuoteStatusForm({
         className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
         {...register("assignedAdminId")}
       >
-        <option value="">Atanmamis</option>
+        <option value="">Atanmamış</option>
         {assignableAdmins.map((admin) => (
           <option key={admin.id} value={admin.id}>
-            {admin.fullName} - {admin.role}
+            {admin.fullName} - {formatRole(admin.role)}
           </option>
         ))}
       </select>
@@ -101,7 +113,7 @@ export function QuoteStatusForm({
         disabled={isSubmitting}
         className="w-full rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white disabled:opacity-70"
       >
-        {isSubmitting ? "Guncelleniyor..." : "Teklifi Guncelle"}
+        {isSubmitting ? "Güncelleniyor..." : "Teklifi Güncelle"}
       </button>
     </form>
   );

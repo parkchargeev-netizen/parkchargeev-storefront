@@ -43,7 +43,7 @@ export function OrderStatusForm({
     });
 
     const data = (await response.json()) as { ok: boolean; message?: string };
-    setFeedback(data.ok ? "Siparis guncellendi." : data.message ?? "Islem basarisiz.");
+    setFeedback(data.ok ? "Sipariş güncellendi." : data.message ?? "İşlem başarısız.");
 
     if (data.ok) {
       router.refresh();
@@ -61,12 +61,12 @@ export function OrderStatusForm({
       </select>
       <input
         className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
-        placeholder="Kargo firmasi"
+        placeholder="Kargo firması"
         {...register("shippingCarrier")}
       />
       <input
         className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
-        placeholder="Takip numarasi"
+        placeholder="Takip numarası"
         {...register("trackingNumber")}
       />
       <input
@@ -90,7 +90,7 @@ export function OrderStatusForm({
         disabled={isSubmitting}
         className="w-full rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white disabled:opacity-70"
       >
-        {isSubmitting ? "Guncelleniyor..." : "Siparisi Guncelle"}
+        {isSubmitting ? "Güncelleniyor..." : "Siparişi Güncelle"}
       </button>
     </form>
   );

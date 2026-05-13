@@ -15,7 +15,7 @@ type RichTextEditorProps = {
 export function RichTextEditor({
   value,
   onChange,
-  placeholder = "Icerigi yazmaya baslayin..."
+  placeholder = "İçeriği yazmaya başlayın..."
 }: RichTextEditorProps) {
   const editor = useEditor({
     extensions: [

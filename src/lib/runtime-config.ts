@@ -73,7 +73,7 @@ export function assertAdminAuthConfig() {
   assertConfig(
     adminAuthEnvKeys,
     "adminAuth",
-    "Admin oturum yonetimi eksik. ADMIN_JWT_SECRET tanimli olmadan /admin route korumasi acilamaz."
+    "Admin oturum yönetimi eksik. ADMIN_JWT_SECRET tanımlı olmadan /admin route koruması açılamaz."
   );
 }
 

@@ -23,7 +23,7 @@ const RichTextEditor = dynamic(
     ssr: false,
     loading: () => (
       <div className="min-h-[220px] rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-500">
-        Editor yukleniyor...
+        Editör yükleniyor...
       </div>
     )
   }
@@ -197,7 +197,7 @@ export function ProductForm({
     setIsUploading(false);
 
     if (!response.ok || !data.ok || !data.url) {
-      setUploadMessage(data.message ?? "Gorsel yuklenemedi.");
+      setUploadMessage(data.message ?? "Görsel yüklenemedi.");
       return;
     }
 
@@ -206,12 +206,12 @@ export function ProductForm({
     } else {
       mediaFields.append({
         url: data.url,
-        altText: watch("name") || "Urun gorseli",
+        altText: watch("name") || "Ürün görseli",
         isPrimary: mediaFields.fields.length === 0
       });
     }
 
-    setUploadMessage("Gorsel yuklendi.");
+    setUploadMessage("Görsel yüklendi.");
   }
 
   const onSubmit = handleSubmit(async (values) => {
@@ -258,11 +258,11 @@ export function ProductForm({
     const data = (await response.json()) as { ok: boolean; message?: string; product?: { id: string } };
 
     if (!response.ok || !data.ok) {
-      setErrorMessage(data.message ?? "Kayit islemi basarisiz.");
+      setErrorMessage(data.message ?? "Kayıt işlemi başarısız.");
       return;
     }
 
-    setSuccessMessage(mode === "create" ? "Urun olusturuldu." : "Urun guncellendi.");
+    setSuccessMessage(mode === "create" ? "Ürün oluşturuldu." : "Ürün güncellendi.");
 
     if (mode === "create" && data.product?.id) {
       router.push(`/admin/urunler/${data.product.id}`);
@@ -277,13 +277,13 @@ export function ProductForm({
         <div className="mb-6">
           <h2 className="text-xl font-semibold text-slate-950">Temel Bilgiler</h2>
           <p className="mt-1 text-sm text-slate-600">
-            Faz 1 kapsaminda urun kimligi, fiyat, stok ve SEO alanlari birlikte yonetilir.
+            Faz 1 kapsamında ürün kimliği, fiyat, stok ve SEO alanları birlikte yönetilir.
           </p>
         </div>
 
         <div className="grid gap-5 md:grid-cols-2">
           <div className="md:col-span-2">
-            <label className="mb-2 block text-sm font-medium text-slate-700">Urun adi</label>
+            <label className="mb-2 block text-sm font-medium text-slate-700">Ürün adı</label>
             <input
               className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
               {...register("name")}
@@ -323,7 +323,7 @@ export function ProductForm({
           </div>
 
           <div className="md:col-span-2">
-            <label className="mb-2 block text-sm font-medium text-slate-700">Kisa aciklama</label>
+            <label className="mb-2 block text-sm font-medium text-slate-700">Kısa açıklama</label>
             <textarea
               rows={3}
               className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
@@ -332,7 +332,7 @@ export function ProductForm({
           </div>
 
           <div className="md:col-span-2">
-            <label className="mb-2 block text-sm font-medium text-slate-700">Uzun aciklama</label>
+            <label className="mb-2 block text-sm font-medium text-slate-700">Uzun açıklama</label>
             <Controller
               control={control}
               name="description"
@@ -351,7 +351,7 @@ export function ProductForm({
             <input className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm" {...register("sku")} />
           </div>
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">Varyant basligi</label>
+            <label className="mb-2 block text-sm font-medium text-slate-700">Varyant başlığı</label>
             <input
               className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
               {...register("variantTitle")}
@@ -366,7 +366,7 @@ export function ProductForm({
             />
           </div>
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">Karsilastirma fiyati</label>
+            <label className="mb-2 block text-sm font-medium text-slate-700">Karşılaştırma fiyatı</label>
             <input
               type="number"
               className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
@@ -382,7 +382,7 @@ export function ProductForm({
             />
           </div>
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">Min stok esigi</label>
+            <label className="mb-2 block text-sm font-medium text-slate-700">Min stok eşiği</label>
             <input
               type="number"
               className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
@@ -391,7 +391,7 @@ export function ProductForm({
           </div>
           <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
             <input type="checkbox" className="h-4 w-4" {...register("inventoryTrackingEnabled")} />
-            <span className="text-sm font-medium text-slate-700">Stok takibi acik</span>
+            <span className="text-sm font-medium text-slate-700">Stok takibi açık</span>
           </div>
           <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
             <input type="checkbox" className="h-4 w-4" {...register("isVatIncluded")} />
@@ -405,7 +405,7 @@ export function ProductForm({
           <div>
             <h2 className="text-xl font-semibold text-slate-950">Varyantlar</h2>
             <p className="mt-1 text-sm text-slate-600">
-              Fiyat, stok, kablo ve konnektor bilgisini varyant bazinda yonetin.
+              Fiyat, stok, kablo ve konnektör bilgisini varyant bazında yönetin.
             </p>
           </div>
           <button
@@ -438,7 +438,7 @@ export function ProductForm({
               />
               <input
                 className="rounded-2xl border border-slate-300 px-4 py-3 text-sm xl:col-span-2"
-                placeholder="Baslik"
+                placeholder="Başlık"
                 {...register(`variants.${index}.title`)}
               />
               <input
@@ -456,7 +456,7 @@ export function ProductForm({
               <div className="flex items-center gap-3">
                 <label className="flex items-center gap-2 text-sm text-slate-700">
                   <input type="checkbox" {...register(`variants.${index}.isDefault`)} />
-                  Varsayilan
+                  Varsayılan
                 </label>
                 <button
                   type="button"
@@ -478,20 +478,20 @@ export function ProductForm({
               />
               <input
                 className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
-                placeholder="Konnektor"
+                placeholder="Konnektör"
                 {...register(`variants.${index}.connectorType`)}
               />
               <input
                 type="number"
                 className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
-                placeholder="Karsilastirma"
+                placeholder="Karşılaştırma"
                 {...register(`variants.${index}.compareAtKurus`, { valueAsNumber: true })}
               />
             </div>
           ))}
           {variantFields.fields.length === 0 ? (
             <p className="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600">
-              Varyant eklenmezse ustteki varsayilan SKU, fiyat ve stok alanlari kaydedilir.
+              Varyant eklenmezse üstteki varsayılan SKU, fiyat ve stok alanları kaydedilir.
             </p>
           ) : null}
         </div>
@@ -532,7 +532,7 @@ export function ProductForm({
           </div>
 
           <div>
-            <p className="mb-3 text-sm font-semibold text-slate-800">Arac uyumlulugu</p>
+            <p className="mb-3 text-sm font-semibold text-slate-800">Araç uyumluluğu</p>
             <div className="space-y-2">
               {vehicleBrandOptions.map((brand) => (
                 <label key={brand} className="flex items-center gap-3 rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-700">
@@ -555,19 +555,19 @@ export function ProductForm({
         </div>
 
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-          <input className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="Guc (kW)" {...register("powerKw")} />
+          <input className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="Güç (kW)" {...register("powerKw")} />
           <select className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" {...register("chargeType")}>
             <option value="ac">AC</option>
             <option value="dc">DC</option>
           </select>
-          <input className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="Konnektor tipi" {...register("connectorType")} />
+          <input className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="Konnektör tipi" {...register("connectorType")} />
           <select className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" {...register("phaseType")}>
             <option value="single_phase">Monofaz</option>
             <option value="three_phase">Trifaz</option>
           </select>
-          <input className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="IP sinifi" {...register("ipClass")} />
+          <input className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="IP sınıfı" {...register("ipClass")} />
           <input className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="Power label" {...register("powerLabel")} />
-          <input className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="Kablo uzunlugu" {...register("cableLength")} />
+          <input className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="Kablo uzunluğu" {...register("cableLength")} />
           <div className="flex flex-wrap gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
             <label className="flex items-center gap-2 text-sm text-slate-700">
               <input type="checkbox" {...register("hasWifi")} />
@@ -592,14 +592,14 @@ export function ProductForm({
       <section className="surface-card border border-slate-200 bg-white/95 p-6">
         <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-slate-950">Gorseller</h2>
+            <h2 className="text-xl font-semibold text-slate-950">Görseller</h2>
             <p className="mt-1 text-sm text-slate-600">
-              Supabase Storage alanina dosya yukleyebilir veya dis gorsel URL degeri girebilirsiniz.
+              Supabase Storage alanına dosya yükleyebilir veya dış görsel URL değeri girebilirsiniz.
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
             <label className="inline-flex cursor-pointer rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-medium text-blue-700">
-              {isUploading ? "Yukleniyor..." : "Dosya yukle"}
+              {isUploading ? "Yükleniyor..." : "Dosya yükle"}
               <input
                 type="file"
                 accept="image/*"
@@ -644,10 +644,10 @@ export function ProductForm({
               <div className="flex items-center gap-3">
                 <label className="flex items-center gap-2 text-sm text-slate-700">
                   <input type="checkbox" {...register(`media.${index}.isPrimary`)} />
-                  Ana gorsel
+                  Ana görsel
                 </label>
                 <label className="cursor-pointer rounded-full border border-blue-200 px-3 py-2 text-sm text-blue-700">
-                  Degistir
+                  Değiştir
                   <input
                     type="file"
                     accept="image/*"
@@ -673,21 +673,21 @@ export function ProductForm({
 
       <section className="surface-card border border-slate-200 bg-white/95 p-6">
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-slate-950">Teknik ozellikler</h2>
+          <h2 className="text-xl font-semibold text-slate-950">Teknik özellikler</h2>
           <button
             type="button"
             onClick={() => specFields.append({ groupName: "general", label: "", value: "" })}
             className="rounded-full border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700"
           >
-            Ozellik ekle
+            Özellik ekle
           </button>
         </div>
         <div className="space-y-4">
           {specFields.fields.map((field, index) => (
             <div key={field.id} className="grid gap-4 rounded-3xl border border-slate-200 bg-slate-50 p-4 lg:grid-cols-[180px_1fr_1fr_auto]">
               <input className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="Grup" {...register(`specs.${index}.groupName`)} />
-              <input className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="Baslik" {...register(`specs.${index}.label`)} />
-              <input className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="Deger" {...register(`specs.${index}.value`)} />
+              <input className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="Başlık" {...register(`specs.${index}.label`)} />
+              <input className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="Değer" {...register(`specs.${index}.value`)} />
               <button type="button" onClick={() => specFields.remove(index)} className="rounded-full border border-red-200 px-3 py-2 text-sm text-red-700">
                 Sil
               </button>
@@ -701,16 +701,16 @@ export function ProductForm({
           <h2 className="text-xl font-semibold text-slate-950">SEO + AIEO</h2>
         </div>
         <div className="grid gap-5 md:grid-cols-2">
-          <input className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="Meta title" {...register("seoTitle")} />
-          <input className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="Canonical URL" {...register("canonicalUrl")} />
-          <textarea rows={3} className="rounded-2xl border border-slate-300 px-4 py-3 text-sm md:col-span-2" placeholder="Meta description" {...register("seoDescription")} />
-          <input className="rounded-2xl border border-slate-300 px-4 py-3 text-sm md:col-span-2" placeholder="Open Graph gorsel URL" {...register("ogImageUrl")} />
-          <textarea rows={3} className="rounded-2xl border border-slate-300 px-4 py-3 text-sm md:col-span-2" placeholder="AI summary" {...register("aiSummary")} />
+          <input className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="Meta başlık" {...register("seoTitle")} />
+          <input className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="Kanonik URL" {...register("canonicalUrl")} />
+          <textarea rows={3} className="rounded-2xl border border-slate-300 px-4 py-3 text-sm md:col-span-2" placeholder="Meta açıklama" {...register("seoDescription")} />
+          <input className="rounded-2xl border border-slate-300 px-4 py-3 text-sm md:col-span-2" placeholder="Open Graph görsel URL" {...register("ogImageUrl")} />
+          <textarea rows={3} className="rounded-2xl border border-slate-300 px-4 py-3 text-sm md:col-span-2" placeholder="AI özeti" {...register("aiSummary")} />
           <div className="md:col-span-2">
             <label className="mb-2 block text-sm font-medium text-slate-700">Arama kelimeleri</label>
             <input
               className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
-              placeholder="virgulle ayirin"
+              placeholder="virgülle ayırın"
               value={selectedKeywords.join(", ")}
               onChange={(event) =>
                 setValue(
@@ -730,7 +730,7 @@ export function ProductForm({
       <section className="surface-card border border-slate-200 bg-white/95 p-6">
         <div className="mb-6 grid gap-5 lg:grid-cols-2">
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">Ilgili urunler</label>
+            <label className="mb-2 block text-sm font-medium text-slate-700">İlgili ürünler</label>
             <Controller
               control={control}
               name="relatedProductIds"
@@ -753,7 +753,7 @@ export function ProductForm({
             />
           </div>
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">Aksesuar onerileri</label>
+            <label className="mb-2 block text-sm font-medium text-slate-700">Aksesuar önerileri</label>
             <Controller
               control={control}
               name="accessoryProductIds"
@@ -780,7 +780,7 @@ export function ProductForm({
         <textarea
           rows={4}
           className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
-          placeholder="Admin notlari"
+          placeholder="Admin notları"
           {...register("adminNotes")}
         />
       </section>
@@ -803,14 +803,14 @@ export function ProductForm({
           onClick={() => router.push("/admin/urunler")}
           className="rounded-full border border-slate-300 px-5 py-3 text-sm font-medium text-slate-700"
         >
-          Listeye don
+          Listeye dön
         </button>
         <button
           type="submit"
           disabled={isSubmitting}
           className="rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white disabled:opacity-70"
         >
-          {isSubmitting ? "Kaydediliyor..." : mode === "create" ? "Urun olustur" : "Degisiklikleri kaydet"}
+          {isSubmitting ? "Kaydediliyor..." : mode === "create" ? "Ürün oluştur" : "Değişiklikleri kaydet"}
         </button>
       </div>
     </form>

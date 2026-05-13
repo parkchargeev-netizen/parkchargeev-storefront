@@ -84,16 +84,16 @@ export function AdminSessionGuard() {
           <ShieldAlert className="h-5 w-5" />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold text-slate-950">Oturum zaman asimina yaklasti</p>
+          <p className="text-sm font-semibold text-slate-950">Oturum zaman aşımına yaklaştı</p>
           <p className="mt-1 text-sm leading-6 text-slate-600">
-            Hareketsizlik nedeniyle {formatRemaining(remainingMs)} sonra cikis yapilacak.
+            Hareketsizlik nedeniyle {formatRemaining(remainingMs)} sonra çıkış yapılacak.
           </p>
           <button
             type="button"
             onClick={keepSessionVisible}
             className="mt-3 rounded-2xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
           >
-            Calismaya devam et
+            Çalışmaya devam et
           </button>
         </div>
       </div>
