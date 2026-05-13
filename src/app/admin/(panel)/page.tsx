@@ -57,6 +57,29 @@ const quickActions = [
   roles: AdminRole[];
 }>;
 
+const optimizationChecklist = [
+  {
+    label: "Public navbar",
+    detail: "Ust menu linkleri canli veriden dinamik okunuyor.",
+    status: "Aktif"
+  },
+  {
+    label: "Merchant SEO",
+    detail: "Urun, offer, kargo, iade ve breadcrumb JSON-LD uretimi aktif.",
+    status: "Hazir"
+  },
+  {
+    label: "Checkout UX",
+    detail: "Misafir odeme, net toplam tutar ve telefon gerekcesi gorunur.",
+    status: "Izle"
+  },
+  {
+    label: "Core Web Vitals",
+    detail: "LCP, INP ve CLS icin sayfa bazli saha olcumu eklenebilir.",
+    status: "Sonraki"
+  }
+] as const;
+
 export default async function AdminDashboardPage() {
   const [snapshot, authenticatedAdmin] = await Promise.all([
     getAdminDashboardSnapshot(),
@@ -123,6 +146,39 @@ export default async function AdminDashboardPage() {
             <p className="mt-2 text-xs leading-5 text-slate-600">{action.detail}</p>
           </Link>
         ))}
+      </section>
+
+      <section className="surface-card border border-slate-200 bg-white/95 p-6">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-blue-600">
+              SEO ve UX kontrolu
+            </p>
+            <h2 className="mt-2 text-2xl font-semibold text-slate-950">
+              Canli satis deneyimi icin operasyon notlari
+            </h2>
+          </div>
+          <Link
+            href="/admin/site"
+            prefetch={false}
+            className="rounded-2xl border border-slate-300 bg-white px-5 py-3 text-center text-sm font-semibold text-slate-800 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+          >
+            Site menusu ve SEO sayfalari
+          </Link>
+        </div>
+        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          {optimizationChecklist.map((item) => (
+            <div key={item.label} className="rounded-2xl bg-slate-50 p-4">
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-sm font-semibold text-slate-950">{item.label}</p>
+                <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
+                  {item.status}
+                </span>
+              </div>
+              <p className="mt-3 text-xs leading-5 text-slate-600">{item.detail}</p>
+            </div>
+          ))}
+        </div>
       </section>
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">

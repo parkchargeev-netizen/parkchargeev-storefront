@@ -19,7 +19,10 @@ export function SiteHeader({ navigation = siteConfig.primaryNavigation }: SiteHe
           {siteConfig.name}
         </Link>
 
-        <nav className="hidden items-center gap-5 text-sm font-medium text-on-surface-variant xl:flex">
+        <nav
+          aria-label="Birincil navigasyon"
+          className="hidden items-center gap-5 text-sm font-medium text-on-surface-variant xl:flex"
+        >
           {navigation.map((item) => (
             <Link
               key={item.href}
@@ -35,7 +38,10 @@ export function SiteHeader({ navigation = siteConfig.primaryNavigation }: SiteHe
 
         <SiteHeaderActions />
 
-        <nav className="flex w-full items-center gap-4 overflow-x-auto pb-1 text-sm font-medium text-on-surface-variant xl:hidden">
+        <nav
+          aria-label="Mobil birincil navigasyon"
+          className="flex w-full items-center gap-4 overflow-x-auto pb-1 text-sm font-medium text-on-surface-variant xl:hidden"
+        >
           {navigation.map((item) => (
             <Link
               key={item.href}

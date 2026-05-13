@@ -5,7 +5,8 @@ import { CartProvider } from "@/components/providers/cart-provider";
 import {
   getLocalBusinessJsonLd,
   getOrganizationJsonLd,
-  getWebsiteJsonLd
+  getWebsiteJsonLd,
+  stringifyJsonLd
 } from "@/lib/structured-data";
 import { getPublicSiteNavigation } from "@/server/site/repository";
 
@@ -25,15 +26,15 @@ export default async function PublicSiteLayout({ children }: { children: ReactNo
     <CartProvider>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(organizationJsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(localBusinessJsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(websiteJsonLd) }}
       />
       <SiteShell navigation={navigation}>{children}</SiteShell>
     </CartProvider>

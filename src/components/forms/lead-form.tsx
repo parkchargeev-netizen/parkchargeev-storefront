@@ -90,6 +90,7 @@ export function LeadForm({
           <span className="text-sm text-on-surface-variant">Ad Soyad</span>
           <input
             required
+            autoComplete="name"
             name="fullName"
             placeholder="Ad Soyad"
             className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary"
@@ -110,6 +111,7 @@ export function LeadForm({
           <input
             required
             type="email"
+            autoComplete="email"
             name="email"
             placeholder="ornek@parkchargeev.com"
             className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary"
@@ -120,10 +122,16 @@ export function LeadForm({
           <span className="text-sm text-on-surface-variant">Telefon</span>
           <input
             required
+            aria-describedby="lead-phone-help"
+            autoComplete="tel"
+            inputMode="tel"
             name="phone"
             placeholder="05xx xxx xx xx"
             className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary"
           />
+          <span id="lead-phone-help" className="text-xs leading-5 text-on-surface-variant">
+            Kesif randevusu ve teklif netlestirme icin kullanilir.
+          </span>
         </label>
 
         <label className="grid gap-2">

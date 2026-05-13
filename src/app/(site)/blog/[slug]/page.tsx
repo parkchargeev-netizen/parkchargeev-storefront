@@ -11,7 +11,8 @@ import {
 import {
   getArticleJsonLd,
   getBreadcrumbJsonLd,
-  getFaqJsonLd
+  getFaqJsonLd,
+  stringifyJsonLd
 } from "@/lib/structured-data";
 
 type ArticleDetailPageProps = {
@@ -60,16 +61,16 @@ export default async function ArticleDetailPage({
     <div className="mx-auto max-w-5xl px-6 py-12 lg:px-8">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(articleJsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(breadcrumbJsonLd) }}
       />
       {article.faq ? (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(getFaqJsonLd(article.faq)) }}
+          dangerouslySetInnerHTML={{ __html: stringifyJsonLd(getFaqJsonLd(article.faq)) }}
         />
       ) : null}
 

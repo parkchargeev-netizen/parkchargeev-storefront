@@ -320,6 +320,7 @@ export function CheckoutPageClient({
               <span className="text-sm text-on-surface-variant">Ad Soyad</span>
               <input
                 required
+                autoComplete="name"
                 value={draft.fullName}
                 onChange={(event) => updateField("fullName", event.target.value)}
                 className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary"
@@ -330,6 +331,7 @@ export function CheckoutPageClient({
               <input
                 required
                 type="email"
+                autoComplete="email"
                 value={draft.email}
                 onChange={(event) => updateField("email", event.target.value)}
                 className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary"
@@ -339,15 +341,22 @@ export function CheckoutPageClient({
               <span className="text-sm text-on-surface-variant">Telefon</span>
               <input
                 required
+                aria-describedby="checkout-phone-help"
+                autoComplete="tel"
+                inputMode="tel"
                 value={draft.phone}
                 onChange={(event) => updateField("phone", event.target.value)}
                 className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary"
               />
+              <span id="checkout-phone-help" className="text-xs leading-5 text-on-surface-variant">
+                Kargo ve kurulum randevusu icin kullanilir; pazarlama aramasi icin kullanilmaz.
+              </span>
             </label>
             <label className="grid gap-2">
               <span className="text-sm text-on-surface-variant">Şehir</span>
               <input
                 required
+                autoComplete="address-level1"
                 value={draft.city}
                 onChange={(event) => updateField("city", event.target.value)}
                 className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary"
@@ -357,6 +366,7 @@ export function CheckoutPageClient({
               <span className="text-sm text-on-surface-variant">Teslimat Adresi</span>
               <textarea
                 required
+                autoComplete="street-address"
                 rows={4}
                 value={draft.address}
                 onChange={(event) => updateField("address", event.target.value)}

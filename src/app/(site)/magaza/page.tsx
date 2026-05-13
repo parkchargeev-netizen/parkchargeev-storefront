@@ -4,6 +4,8 @@ import Link from "next/link";
 import { ProductCard } from "@/components/shop/product-card";
 import { formatPriceTRY } from "@/lib/format";
 import { products } from "@/lib/mock-data";
+import { absoluteUrl } from "@/lib/site";
+import { stringifyJsonLd } from "@/lib/structured-data";
 
 export const metadata: Metadata = {
   title: "Mağaza",
@@ -117,9 +119,24 @@ export default async function StorePage({ searchParams }: StorePageProps) {
   const maxPrice = sortedProducts.length
     ? Math.max(...sortedProducts.map((product) => product.priceKurus))
     : Math.max(...products.map((product) => product.priceKurus));
+  const itemListJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "ParkChargeEV urun listesi",
+    itemListElement: sortedProducts.map((product, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      url: absoluteUrl(`/urun/${product.slug}`),
+      name: product.name
+    }))
+  };
 
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-12 px-6 py-12 lg:flex-row lg:px-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(itemListJsonLd) }}
+      />
       <aside className="w-full lg:sticky lg:top-28 lg:w-80">
         <form action="/magaza" className="surface-card p-6">
           <p className="text-sm font-semibold uppercase tracking-[0.3em] text-primary">
@@ -270,6 +287,22 @@ export default async function StorePage({ searchParams }: StorePageProps) {
                 </Link>
               ) : null}
             </div>
+          </div>
+
+          <div className="mt-8 grid gap-3 md:grid-cols-3">
+            {[
+              ["Kargo", "Stoktaki urunlerde ucretsiz sevkiyat"],
+              ["Kurulum", "Kesif ve saha uygunluk danismanligi"],
+              ["Guvenli odeme", "PayTR iframe ile kart verisi korunur"]
+            ].map(([label, detail]) => (
+              <div
+                key={label}
+                className="rounded-2xl border border-outline-variant/35 bg-white px-4 py-3"
+              >
+                <p className="text-sm font-semibold text-on-surface">{label}</p>
+                <p className="mt-1 text-xs leading-5 text-on-surface-variant">{detail}</p>
+              </div>
+            ))}
           </div>
         </header>
 

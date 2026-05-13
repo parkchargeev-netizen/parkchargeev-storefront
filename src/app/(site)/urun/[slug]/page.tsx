@@ -14,7 +14,9 @@ import {
 import {
   getBreadcrumbJsonLd,
   getFaqJsonLd,
-  getProductJsonLd
+  getProductImageUrl,
+  getProductJsonLd,
+  stringifyJsonLd
 } from "@/lib/structured-data";
 
 type ProductDetailPageProps = {
@@ -39,7 +41,29 @@ export async function generateMetadata({
 
   return {
     title: product.name,
-    description: product.summary
+    description: product.summary,
+    alternates: {
+      canonical: `/urun/${product.slug}`
+    },
+    openGraph: {
+      title: product.name,
+      description: product.summary,
+      type: "website",
+      images: [
+        {
+          url: getProductImageUrl(product),
+          width: 1200,
+          height: 630,
+          alt: product.name
+        }
+      ]
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: product.name,
+      description: product.summary,
+      images: [getProductImageUrl(product)]
+    }
   };
 }
 
@@ -62,20 +86,45 @@ export default async function ProductDetailPage({
     { name: product.name, path: `/urun/${product.slug}` }
   ]);
   const faqJsonLd = getFaqJsonLd(product.faqs);
+  const discountPercent = product.compareAtKurus
+    ? Math.round(((product.compareAtKurus - product.priceKurus) / product.compareAtKurus) * 100)
+    : null;
+  const decisionChecks = [
+    "Kargo, KDV ve kurulum kapsamı karar öncesinde ayrı ayrı gösterilir.",
+    "Keşif talebiyle pano kapasitesi ve kablo hattı netleştirilebilir.",
+    "PayTR iFrame akışı kart verisini site sunucusuna taşımaz."
+  ];
+  const policyDetails = [
+    {
+      title: "Teslimat ve kurulum",
+      body:
+        "Stoktaki ürünlerde standart sevkiyat 2-5 iş günü olarak planlanır. Kurulum talebi varsa saha keşfi sonrası randevu ve kapsam ayrıca netleştirilir."
+    },
+    {
+      title: "İade ve değişim",
+      body:
+        "Kullanılmamış ürünlerde 14 gün içinde iade talebi alınabilir. Saha montajı yapılan projelerde keşif ve kurulum kapsamı ayrı değerlendirilir."
+    },
+    {
+      title: "Garanti ve servis",
+      body:
+        "Ürünler için 2 yıl garanti ve kurulum sonrası teknik destek süreci sunulur. Kurumsal projelerde bakım periyodu teklif kapsamına eklenebilir."
+    }
+  ];
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-10 lg:px-8">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(productJsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(breadcrumbJsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(faqJsonLd) }}
       />
 
       <div className="mb-8 flex flex-wrap items-center gap-2 text-sm text-on-surface-variant">
@@ -190,13 +239,31 @@ export default async function ProductDetailPage({
               {formatPriceTRY(product.priceKurus)}
             </p>
             {product.compareAtKurus ? (
-              <p className="pb-2 text-lg font-semibold text-on-surface-variant line-through">
-                {formatPriceTRY(product.compareAtKurus)}
-              </p>
+              <div className="pb-1">
+                <p className="text-lg font-semibold text-on-surface-variant line-through">
+                  {formatPriceTRY(product.compareAtKurus)}
+                </p>
+                {discountPercent ? (
+                  <p className="mt-1 text-sm font-semibold text-secondary">
+                    %{discountPercent} avantaj
+                  </p>
+                ) : null}
+              </div>
             ) : null}
           </div>
 
           <ProductPurchasePanel product={product} />
+
+          <div className="mt-6 grid gap-3">
+            {decisionChecks.map((item) => (
+              <div
+                key={item}
+                className="rounded-2xl border border-outline-variant/35 bg-white px-4 py-3 text-sm leading-6 text-on-surface-variant"
+              >
+                {item}
+              </div>
+            ))}
+          </div>
 
           <div className="mt-8 rounded-[24px] border border-outline-variant/40 bg-white p-6">
             <h2 className="text-2xl font-bold tracking-[-0.05em] text-on-surface">
@@ -212,6 +279,23 @@ export default async function ProductDetailPage({
             >
               Teknik Değerlendirme İste
             </Link>
+          </div>
+
+          <div className="mt-6 overflow-hidden rounded-[24px] border border-outline-variant/40 bg-white">
+            {policyDetails.map((detail, index) => (
+              <details
+                key={detail.title}
+                className={index > 0 ? "border-t border-outline-variant/30" : undefined}
+                open={index === 0}
+              >
+                <summary className="cursor-pointer px-5 py-4 text-sm font-semibold text-on-surface">
+                  {detail.title}
+                </summary>
+                <p className="px-5 pb-5 text-sm leading-7 text-on-surface-variant">
+                  {detail.body}
+                </p>
+              </details>
+            ))}
           </div>
         </aside>
       </div>

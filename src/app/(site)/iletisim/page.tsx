@@ -6,7 +6,8 @@ import { globalFaqs, trustMetrics } from "@/lib/mock-data";
 import { absoluteUrl, siteConfig } from "@/lib/site";
 import {
   getFaqJsonLd,
-  getLocalBusinessJsonLd
+  getLocalBusinessJsonLd,
+  stringifyJsonLd
 } from "@/lib/structured-data";
 import { getPublishedSitePageBySlug } from "@/server/site/repository";
 
@@ -56,11 +57,11 @@ export default async function ContactPage() {
     <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(localBusinessJsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(faqJsonLd) }}
       />
 
       <section className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">

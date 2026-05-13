@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { useCart } from "@/components/providers/cart-provider";
+import { formatPriceTRY } from "@/lib/format";
 import type { ProductModel } from "@/lib/mock-data";
 
 type ProductPurchasePanelProps = {
@@ -17,6 +18,7 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
   const [feedback, setFeedback] = useState<string | null>(null);
 
   const isOutOfStock = product.stockLabel === "Stokta Yok";
+  const estimatedLineTotal = product.priceKurus * quantity;
 
   function handleAddToCart() {
     if (isOutOfStock) {
@@ -91,13 +93,29 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
           </button>
         </div>
         {feedback ? (
-          <p className="mt-4 text-sm font-medium text-secondary">
+          <p className="mt-4 text-sm font-medium text-secondary" aria-live="polite">
             {feedback}{" "}
             <Link href="/sepet" className="text-primary underline underline-offset-4">
               Sepete git
             </Link>
           </p>
         ) : null}
+      </div>
+
+      <div className="mt-6 rounded-2xl border border-outline-variant/35 bg-white p-4">
+        <div className="flex items-center justify-between gap-4">
+          <span className="text-sm text-on-surface-variant">Tahmini ara toplam</span>
+          <span className="text-lg font-bold text-on-surface">
+            {formatPriceTRY(estimatedLineTotal)}
+          </span>
+        </div>
+        <div className="mt-3 flex items-center justify-between gap-4 text-sm text-on-surface-variant">
+          <span>Kargo</span>
+          <span className="font-semibold text-secondary">Ucretsiz</span>
+        </div>
+        <p className="mt-3 text-xs leading-5 text-on-surface-variant">
+          KDV ve varsa kurulum kalemi sepet/teklif akışında ayrı gösterilir.
+        </p>
       </div>
 
       <div className="mt-6 space-y-3 text-sm text-on-surface-variant">

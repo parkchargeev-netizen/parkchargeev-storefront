@@ -11,7 +11,8 @@ import {
 } from "@/lib/mock-data";
 import {
   getBreadcrumbJsonLd,
-  getFaqJsonLd
+  getFaqJsonLd,
+  stringifyJsonLd
 } from "@/lib/structured-data";
 
 type SolutionPageProps = {
@@ -65,11 +66,11 @@ export default async function SolutionDetailPage({
     <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(breadcrumbJsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(faqJsonLd) }}
       />
 
       <div className="mb-8 flex flex-wrap items-center gap-2 text-sm text-on-surface-variant">

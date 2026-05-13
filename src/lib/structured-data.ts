@@ -9,6 +9,14 @@ function getSameAsLinks() {
   return Object.values(siteConfig.socials).filter(Boolean);
 }
 
+export function stringifyJsonLd(payload: unknown) {
+  return JSON.stringify(payload).replace(/</g, "\\u003c");
+}
+
+export function getProductImageUrl(product: ProductModel) {
+  return absoluteUrl(`/api/og/product/${product.slug}`);
+}
+
 export function getOrganizationJsonLd() {
   return {
     "@context": "https://schema.org",
@@ -23,6 +31,29 @@ export function getOrganizationJsonLd() {
       addressLocality: siteConfig.address.addressLocality,
       addressRegion: siteConfig.address.addressRegion,
       addressCountry: siteConfig.address.addressCountry
+    },
+    contactPoint: {
+      "@type": "ContactPoint",
+      contactType: "customer support",
+      telephone: siteConfig.phone,
+      email: siteConfig.email,
+      areaServed: "TR",
+      availableLanguage: ["tr-TR"]
+    },
+    hasMerchantReturnPolicy: {
+      "@type": "MerchantReturnPolicy",
+      applicableCountry: "TR",
+      returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+      merchantReturnDays: 14,
+      returnMethod: "https://schema.org/ReturnByMail",
+      returnFees: "https://schema.org/ReturnFeesCustomerResponsibility"
+    },
+    hasShippingService: {
+      "@type": "ShippingService",
+      shippingDestination: {
+        "@type": "DefinedRegion",
+        addressCountry: "TR"
+      }
     },
     areaServed: siteConfig.serviceAreas,
     sameAs: getSameAsLinks()
@@ -97,11 +128,14 @@ export function getFaqJsonLd(faqs: FaqItem[]) {
 }
 
 export function getProductJsonLd(product: ProductModel) {
+  const productUrl = absoluteUrl(`/urun/${product.slug}`);
+
   return {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.name,
     description: product.description,
+    image: [getProductImageUrl(product)],
     brand: {
       "@type": "Brand",
       name: siteConfig.name
@@ -109,19 +143,69 @@ export function getProductJsonLd(product: ProductModel) {
     sku: product.id,
     category: product.category,
     keywords: product.seoIntent.join(", "),
-    url: absoluteUrl(`/urun/${product.slug}`),
+    url: productUrl,
+    additionalProperty: product.specs.map((spec) => ({
+      "@type": "PropertyValue",
+      name: spec.label,
+      value: spec.value
+    })),
     offers: {
       "@type": "Offer",
       priceCurrency: "TRY",
       price: (product.priceKurus / 100).toFixed(2),
+      itemCondition: "https://schema.org/NewCondition",
+      priceValidUntil: "2026-12-31",
       availability:
         product.stockLabel === "Stokta Yok"
           ? "https://schema.org/OutOfStock"
           : "https://schema.org/InStock",
-      url: absoluteUrl(`/urun/${product.slug}`),
+      url: productUrl,
       seller: {
         "@type": "Organization",
         name: siteConfig.name
+      },
+      shippingDetails: {
+        "@type": "OfferShippingDetails",
+        shippingDestination: {
+          "@type": "DefinedRegion",
+          addressCountry: "TR"
+        },
+        shippingRate: {
+          "@type": "MonetaryAmount",
+          value: "0",
+          currency: "TRY"
+        },
+        deliveryTime: {
+          "@type": "ShippingDeliveryTime",
+          handlingTime: {
+            "@type": "QuantitativeValue",
+            minValue: 1,
+            maxValue: 2,
+            unitCode: "DAY"
+          },
+          transitTime: {
+            "@type": "QuantitativeValue",
+            minValue: 2,
+            maxValue: 5,
+            unitCode: "DAY"
+          }
+        }
+      },
+      hasMerchantReturnPolicy: {
+        "@type": "MerchantReturnPolicy",
+        applicableCountry: "TR",
+        returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+        merchantReturnDays: 14,
+        returnMethod: "https://schema.org/ReturnByMail",
+        returnFees: "https://schema.org/ReturnFeesCustomerResponsibility"
+      },
+      warranty: {
+        "@type": "WarrantyPromise",
+        durationOfWarranty: {
+          "@type": "QuantitativeValue",
+          value: 2,
+          unitCode: "ANN"
+        }
       }
     }
   };
