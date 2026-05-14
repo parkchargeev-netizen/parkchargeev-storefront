@@ -79,6 +79,12 @@ Runtime smoke check:
 npm run verify:runtime
 ```
 
+UI/UX kalite kapısı:
+
+```bash
+npm run verify:uiux
+```
+
 Uygulama doğrulaması:
 
 ```bash
@@ -103,6 +109,12 @@ PowerShell üzerinde lokal Node ile aynı doğrulama:
 - PostgreSQL bağlantısı gerçekten kurulabiliyor mu
 - `PAYTR_MERCHANT_ID`, `PAYTR_MERCHANT_KEY`, `PAYTR_MERCHANT_SALT` tanımlı mı
 - Lokal test modunda `PAYTR_TEST_USER_IP` önerisi gerekiyor mu
+
+`verify:uiux` aşağıdaki kontrolleri yapar:
+
+- `docs/ui-ux` altındaki ParkChargeEV'e uyarlanmış UI/UX checklist ve prompt seti mevcut mu
+- Mağaza, ürün, sepet, ödeme, harita ve admin kritik rota dosyaları mevcut mu
+- Saf `#` link, `javascript:` href ve boş event handler gibi bariz ölü kontrol kalıpları var mı
 
 ## Ortam Değişkenleri
 
