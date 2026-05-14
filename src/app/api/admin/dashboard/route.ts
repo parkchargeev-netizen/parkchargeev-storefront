@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { getAdminDashboardSnapshot } from "@/server/admin/repository";
+import { getAdminDashboardSnapshot } from "@/server/admin/dashboard";
 import { requireAdminRole } from "@/server/auth/guards";
 
 export async function GET() {
@@ -10,7 +10,7 @@ export async function GET() {
     return NextResponse.json(
       {
         ok: false,
-        message: "Yetkisiz erisim."
+        message: "Yetkisiz erişim."
       },
       { status: 401 }
     );
