@@ -6,10 +6,34 @@ import {
   registerCustomer,
   setCustomerSessionCookie
 } from "@/server/customer/auth";
+import {
+  consumeCustomerAuthAttempt,
+  getCustomerAuthRateLimitKey
+} from "@/server/customer/auth-rate-limit";
 
 export async function POST(request: Request) {
   try {
     const payload = customerRegisterSchema.parse(await request.json());
+    const rateLimit = consumeCustomerAuthAttempt(
+      getCustomerAuthRateLimitKey(request, "register", payload.email),
+      5
+    );
+
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        {
+          ok: false,
+          message: "Çok fazla kayıt denemesi yapıldı. Lütfen biraz sonra tekrar deneyin."
+        },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": String(rateLimit.retryAfterSeconds)
+          }
+        }
+      );
+    }
+
     const result = await registerCustomer(payload);
 
     if (!result?.customer) {

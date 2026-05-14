@@ -2,11 +2,15 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { CustomerAuthPanel } from "@/components/customer/customer-auth-panel";
-import { getCustomerAccountSnapshot } from "@/server/customer/auth";
+import { getCustomerAccountSnapshot } from "@/server/customer/account-repository";
 
 export const metadata: Metadata = {
   title: "Müşteri Girişi",
-  description: "Siparişlerinizi, cihazlarınızı ve servis taleplerinizi yönetin."
+  description: "Siparişlerinizi, cihazlarınızı ve servis taleplerinizi yönetin.",
+  robots: {
+    index: false,
+    follow: false
+  }
 };
 
 export default async function LoginPage() {

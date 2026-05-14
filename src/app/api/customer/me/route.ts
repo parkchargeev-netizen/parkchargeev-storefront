@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { getCustomerAccountSnapshot } from "@/server/customer/auth";
+import { getCustomerAccountSnapshot } from "@/server/customer/account-repository";
 
 export async function GET() {
   const snapshot = await getCustomerAccountSnapshot();
@@ -25,6 +25,8 @@ export async function GET() {
       phone: snapshot.customer.phone
     },
     addresses: snapshot.addresses,
-    recentOrders: snapshot.recentOrders
+    recentOrders: snapshot.recentOrders,
+    recentQuoteRequests: snapshot.recentQuoteRequests,
+    recentServiceLeads: snapshot.recentServiceLeads
   });
 }

@@ -1,11 +1,11 @@
-import { desc, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { z } from "zod";
 
 import { getCustomerAuthConfig, hasDatabaseConfig } from "@/lib/runtime-config";
 import { getDb } from "@/server/db/client";
-import { customerAddresses, customers, orders } from "@/server/db/schema";
+import { customers } from "@/server/db/schema";
 import { hashPassword, verifyPassword } from "@/server/auth/password";
 
 const encoder = new TextEncoder();
@@ -155,52 +155,5 @@ export async function registerCustomer(input: z.infer<typeof customerRegisterSch
   return {
     customer: createdCustomer ?? null,
     alreadyRegistered: false
-  };
-}
-
-export async function getCustomerAccountSnapshot() {
-  const session = await getCustomerSessionFromCookies();
-
-  if (!session || !hasDatabaseConfig()) {
-    return null;
-  }
-
-  const db = getDb();
-  const [customer] = await db
-    .select()
-    .from(customers)
-    .where(eq(customers.id, session.sub))
-    .limit(1);
-
-  if (!customer) {
-    return null;
-  }
-
-  const [addresses, recentOrders] = await Promise.all([
-    db
-      .select()
-      .from(customerAddresses)
-      .where(eq(customerAddresses.customerId, customer.id))
-      .limit(5),
-    db
-      .select({
-        id: orders.id,
-        orderNumber: orders.orderNumber,
-        status: orders.status,
-        paymentStatus: orders.paymentStatus,
-        totalKurus: orders.totalKurus,
-        createdAt: orders.createdAt
-      })
-      .from(orders)
-      .where(eq(orders.customerId, customer.id))
-      .orderBy(desc(orders.createdAt))
-      .limit(5)
-  ]);
-
-  return {
-    session,
-    customer,
-    addresses,
-    recentOrders
   };
 }

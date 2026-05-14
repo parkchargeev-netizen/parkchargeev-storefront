@@ -86,6 +86,20 @@ function applyAdminSecurityHeaders(response: NextResponse) {
   return response;
 }
 
+function applyCustomerSecurityHeaders(response: NextResponse) {
+  response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate");
+  response.headers.set("Pragma", "no-cache");
+  response.headers.set("X-Robots-Tag", "noindex, nofollow");
+  response.headers.set("X-Frame-Options", "DENY");
+  response.headers.set("Content-Security-Policy", "frame-ancestors 'none'");
+  response.headers.set("X-Content-Type-Options", "nosniff");
+  response.headers.set("Referrer-Policy", "same-origin");
+  response.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  response.headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+
+  return response;
+}
+
 function getForbiddenResponse(message: string) {
   return applyAdminSecurityHeaders(
     NextResponse.json(
@@ -111,22 +125,24 @@ function isLocalDevOriginPair(origin: string, expectedOrigin: string) {
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "http://localhost:3100",
-    "http://127.0.0.1:3100"
+    "http://127.0.0.1:3100",
+    "http://localhost:3025",
+    "http://127.0.0.1:3025"
   ]);
 
   return localOrigins.has(origin) && localOrigins.has(expectedOrigin);
 }
 
-function isAllowedAdminOrigin(origin: string, expectedOrigin: string) {
+function isAllowedSameOrigin(origin: string, expectedOrigin: string) {
   return origin === expectedOrigin || isLocalDevOriginPair(origin, expectedOrigin);
 }
 
-function isSameOriginAdminRequest(request: NextRequest) {
+function isSameOriginRequest(request: NextRequest) {
   const origin = request.headers.get("origin");
   const expectedOrigin = request.nextUrl.origin;
 
   if (origin) {
-    return isAllowedAdminOrigin(origin, expectedOrigin);
+    return isAllowedSameOrigin(origin, expectedOrigin);
   }
 
   const referer = request.headers.get("referer");
@@ -136,7 +152,7 @@ function isSameOriginAdminRequest(request: NextRequest) {
   }
 
   try {
-    return isAllowedAdminOrigin(new URL(referer).origin, expectedOrigin);
+    return isAllowedSameOrigin(new URL(referer).origin, expectedOrigin);
   } catch {
     return false;
   }
@@ -164,6 +180,8 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const isAdminPage = pathname.startsWith("/admin");
   const isAdminApi = pathname.startsWith("/api/admin");
+  const isCustomerPage = pathname === "/giris" || pathname === "/hesabim";
+  const isCustomerApi = pathname.startsWith("/api/customer");
   const acceptHeader = request.headers.get("accept") ?? "";
   const isMarkdownRequest = request.method === "GET" && acceptHeader.includes("text/markdown");
 
@@ -181,11 +199,27 @@ export async function middleware(request: NextRequest) {
     return NextResponse.rewrite(url);
   }
 
+  if (isCustomerApi && isUnsafeMethod(request.method) && !isSameOriginRequest(request)) {
+    return applyCustomerSecurityHeaders(
+      NextResponse.json(
+        {
+          ok: false,
+          message: "Güvenlik doğrulaması başarısız oldu."
+        },
+        { status: 403 }
+      )
+    );
+  }
+
+  if (isCustomerPage || isCustomerApi) {
+    return applyCustomerSecurityHeaders(NextResponse.next());
+  }
+
   if (!isAdminPage && !isAdminApi) {
     return NextResponse.next();
   }
 
-  if (isAdminApi && isUnsafeMethod(request.method) && !isSameOriginAdminRequest(request)) {
+  if (isAdminApi && isUnsafeMethod(request.method) && !isSameOriginRequest(request)) {
     return getForbiddenResponse("Güvenlik doğrulaması başarısız oldu.");
   }
 
@@ -221,5 +255,13 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/api/admin/:path*", "/urun/:path*", "/blog/:path*"]
+  matcher: [
+    "/admin/:path*",
+    "/api/admin/:path*",
+    "/api/customer/:path*",
+    "/giris",
+    "/hesabim",
+    "/urun/:path*",
+    "/blog/:path*"
+  ]
 };
