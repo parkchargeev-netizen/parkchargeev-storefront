@@ -26,6 +26,7 @@ export const siteConfig = {
     { href: "/", label: "Ana Sayfa" },
     { href: "/magaza", label: "Mağaza" },
     { href: "/urun-secici", label: "Ürün Seçici" },
+    { href: "/karsilastir", label: "Karşılaştır" },
     { href: "/kurumsal-cozumler", label: "Kurumsal Çözümler" },
     { href: "/hizmetler", label: "Hizmetler" },
     { href: "/harita", label: "Harita" },

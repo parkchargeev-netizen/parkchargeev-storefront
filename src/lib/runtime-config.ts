@@ -101,6 +101,16 @@ export function getAdminAuthConfig() {
   };
 }
 
+export function getCustomerAuthConfig() {
+  assertAdminAuthConfig();
+
+  return {
+    jwtSecret: (process.env.CUSTOMER_JWT_SECRET ?? process.env.ADMIN_JWT_SECRET)?.trim() as string,
+    cookieName: "parkchargeev_customer_session",
+    sessionTtlSeconds: 60 * 60 * 24 * 30
+  };
+}
+
 export function getSupabaseServerConfig() {
   assertConfig(
     supabaseServerEnvKeys,

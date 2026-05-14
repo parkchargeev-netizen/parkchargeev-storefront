@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 
 import { ProductCard } from "@/components/shop/product-card";
+import { ProductComparisonClient } from "@/components/site/product-comparison-client";
 import { formatPriceTRY } from "@/lib/format";
 import { products } from "@/lib/mock-data";
 import {
@@ -60,8 +61,15 @@ const faqs = [
 ];
 
 export default function ComparePage() {
-  const acProducts = products.filter((product) => product.powerLabel.toLocaleLowerCase("tr-TR").includes("ac"));
-  const dcProducts = products.filter((product) => product.powerLabel.toLocaleLowerCase("tr-TR").includes("dc"));
+  const acProducts = products.filter((product) =>
+    product.powerLabel.toLocaleLowerCase("tr-TR").includes("ac")
+  );
+  const dcProducts = products.filter((product) =>
+    product.powerLabel.toLocaleLowerCase("tr-TR").includes("dc")
+  );
+  const acStartPrice = acProducts.length
+    ? formatPriceTRY(Math.min(...acProducts.map((item) => item.priceKurus)))
+    : "Teklif alın";
   const breadcrumbJsonLd = getBreadcrumbJsonLd([
     { name: "Ana Sayfa", path: "/" },
     { name: "Karşılaştırma", path: "/karsilastir" }
@@ -88,7 +96,8 @@ export default function ComparePage() {
             11 kW, 22 kW, AC ve DC şarj cihazlarını karşılaştır
           </h1>
           <p className="mt-6 max-w-3xl text-lg leading-8 text-on-surface-variant">
-            Kurulum yerine, araç sayısına ve park süresine göre doğru güç sınıfını seçmek yatırım maliyetini ve kullanım deneyimini doğrudan etkiler.
+            Kurulum yerine, araç sayısına ve park süresine göre doğru güç sınıfını seçmek
+            yatırım maliyetini ve kullanım deneyimini doğrudan etkiler.
           </p>
         </div>
         <aside className="surface-card p-6">
@@ -116,6 +125,8 @@ export default function ComparePage() {
           </Link>
         </aside>
       </section>
+
+      <ProductComparisonClient products={products} />
 
       <section className="mt-12 grid gap-5">
         {comparisonRows.map((row) => (
@@ -149,7 +160,7 @@ export default function ComparePage() {
             </h2>
           </div>
           <p className="text-sm font-semibold text-on-surface-variant">
-            Başlangıç fiyatı {formatPriceTRY(Math.min(...acProducts.map((item) => item.priceKurus)))}
+            Başlangıç fiyatı {acStartPrice}
           </p>
         </div>
         <div className="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
@@ -159,21 +170,23 @@ export default function ComparePage() {
         </div>
       </section>
 
-      <section className="mt-12">
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-primary">
-            DC hızlı şarj
-          </p>
-          <h2 className="mt-3 text-3xl font-black tracking-[-0.05em] text-on-surface">
-            Ticari ve yüksek devirli lokasyonlar
-          </h2>
-        </div>
-        <div className="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {dcProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      </section>
+      {dcProducts.length ? (
+        <section className="mt-12">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-primary">
+              DC hızlı şarj
+            </p>
+            <h2 className="mt-3 text-3xl font-black tracking-[-0.05em] text-on-surface">
+              Ticari ve yüksek devirli lokasyonlar
+            </h2>
+          </div>
+          <div className="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {dcProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <section className="mt-12 surface-card p-8">
         <h2 className="text-3xl font-black tracking-[-0.05em] text-on-surface">
