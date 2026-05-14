@@ -102,11 +102,31 @@ function isUnsafeMethod(method: string) {
   return !["GET", "HEAD", "OPTIONS"].includes(method.toUpperCase());
 }
 
+function isLocalDevOriginPair(origin: string, expectedOrigin: string) {
+  if (process.env.NODE_ENV === "production") {
+    return false;
+  }
+
+  const localOrigins = new Set([
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:3100",
+    "http://127.0.0.1:3100"
+  ]);
+
+  return localOrigins.has(origin) && localOrigins.has(expectedOrigin);
+}
+
+function isAllowedAdminOrigin(origin: string, expectedOrigin: string) {
+  return origin === expectedOrigin || isLocalDevOriginPair(origin, expectedOrigin);
+}
+
 function isSameOriginAdminRequest(request: NextRequest) {
   const origin = request.headers.get("origin");
+  const expectedOrigin = request.nextUrl.origin;
 
   if (origin) {
-    return origin === request.nextUrl.origin;
+    return isAllowedAdminOrigin(origin, expectedOrigin);
   }
 
   const referer = request.headers.get("referer");
@@ -116,7 +136,7 @@ function isSameOriginAdminRequest(request: NextRequest) {
   }
 
   try {
-    return new URL(referer).origin === request.nextUrl.origin;
+    return isAllowedAdminOrigin(new URL(referer).origin, expectedOrigin);
   } catch {
     return false;
   }

@@ -136,6 +136,7 @@ function emptyDashboardSnapshot(): AdminDashboardSnapshot {
 function dashboardWindow(now = new Date()) {
   return {
     now,
+    nowIso: now.toISOString(),
     todayStartIso: startOfDay(now).toISOString(),
     monthStartIso: startOfMonth(now).toISOString(),
     weekStartIso: startOfWeek(now).toISOString(),
@@ -196,7 +197,7 @@ function queryDashboardReadModel(db: AdminDb, window: ReturnType<typeof dashboar
       (select count(*)::int from ${customers}
         where ${customers.createdAt} >= ${window.sevenDaysAgoIso}::timestamptz) as new_customers,
       (select count(*)::int from ${adminSessions}
-        where ${adminSessions.expiresAt} >= ${window.now}) as active_sessions,
+        where ${adminSessions.expiresAt} >= ${window.nowIso}::timestamptz) as active_sessions,
       (
         select coalesce(jsonb_agg(jsonb_build_object(
           'month', revenue_trend.month,

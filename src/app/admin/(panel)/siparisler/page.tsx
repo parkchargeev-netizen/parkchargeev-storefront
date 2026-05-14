@@ -4,7 +4,7 @@ import { AdminFilterBar } from "@/components/admin/table/admin-filter-bar";
 import { AdminPageHeader } from "@/components/admin/table/admin-page-header";
 import { OrdersTable } from "@/components/admin/table/orders-table";
 import { orderStatusOptions } from "@/server/admin/constants";
-import { listAdminOrders } from "@/server/admin/repository";
+import { listAdminOrders } from "@/server/admin/order-repository";
 
 type OrdersPageProps = {
   searchParams?: Promise<{

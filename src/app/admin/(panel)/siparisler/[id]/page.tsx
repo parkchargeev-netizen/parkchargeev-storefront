@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { OrderStatusForm } from "@/components/admin/order-status-form";
 import { formatPriceTRY } from "@/lib/format";
 import { formatOrderStatusLabel } from "@/server/admin/constants";
-import { getAdminOrderById } from "@/server/admin/repository";
+import { getAdminOrderById } from "@/server/admin/order-repository";
 
 type OrderDetailPageProps = {
   params: Promise<{

@@ -9,6 +9,7 @@ import {
   getRuntimeConfigErrorPayload,
   isRuntimeConfigError
 } from "@/lib/runtime-config";
+import { durationSince, logError, logInfo, logWarn } from "@/lib/server-logger";
 import { absoluteUrl } from "@/lib/site";
 import { getDb } from "@/server/db/client";
 import {
@@ -49,6 +50,7 @@ function createOrderNumber() {
 }
 
 export async function POST(request: Request) {
+  const startedAt = Date.now();
   let createdMerchantOid: string | null = null;
 
   try {
@@ -183,6 +185,12 @@ export async function POST(request: Request) {
         })
         .where(eq(paytrTransactions.orderId, order.id));
 
+      logWarn("paytr.token.rejected", {
+        merchantOid,
+        reason: result.reason,
+        durationMs: durationSince(startedAt)
+      });
+
       return NextResponse.json(
         {
           ok: false,
@@ -205,6 +213,14 @@ export async function POST(request: Request) {
         updatedAt: new Date()
       })
       .where(eq(paytrTransactions.orderId, order.id));
+
+    logInfo("paytr.token.created", {
+      merchantOid,
+      orderId: order.id,
+      itemCount: body.items.length,
+      totalKurus: body.paymentAmountKurus,
+      durationMs: durationSince(startedAt)
+    });
 
     return NextResponse.json({
       ok: true,
@@ -230,10 +246,22 @@ export async function POST(request: Request) {
     }
 
     if (isRuntimeConfigError(error)) {
+      logWarn("paytr.token.runtime_config_error", {
+        area: error.area,
+        missingKeys: error.missingKeys,
+        merchantOid: createdMerchantOid,
+        durationMs: durationSince(startedAt)
+      });
+
       return NextResponse.json(getRuntimeConfigErrorPayload(error), {
         status: 503
       });
     }
+
+    logError("paytr.token.failed", error, {
+      merchantOid: createdMerchantOid,
+      durationMs: durationSince(startedAt)
+    });
 
     return NextResponse.json(
       {

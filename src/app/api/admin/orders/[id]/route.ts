@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { getAdminOrderById, updateAdminOrder } from "@/server/admin/repository";
+import { getAdminOrderById, updateAdminOrder } from "@/server/admin/order-repository";
 import { adminOrderUpdateSchema } from "@/server/admin/validators";
 import { getRequestMeta, requireAdminRole } from "@/server/auth/guards";
 

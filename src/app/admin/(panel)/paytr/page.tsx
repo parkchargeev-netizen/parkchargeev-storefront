@@ -5,7 +5,7 @@ import { AdminFilterBar } from "@/components/admin/table/admin-filter-bar";
 import { AdminPageHeader } from "@/components/admin/table/admin-page-header";
 import { AdminStatusBadge } from "@/components/admin/table/admin-status-badge";
 import { formatPriceTRY } from "@/lib/format";
-import { listAdminPaytrTransactions } from "@/server/admin/repository";
+import { listAdminPaytrTransactions } from "@/server/admin/order-repository";
 
 type AdminPaytrPageProps = {
   searchParams?: Promise<{

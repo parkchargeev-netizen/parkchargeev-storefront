@@ -91,6 +91,30 @@ UI/UX kalite kapısı:
 npm run verify:uiux
 ```
 
+Admin smoke:
+
+```bash
+npm run verify:admin
+```
+
+Playwright E2E:
+
+```bash
+npm run verify:e2e
+```
+
+Accessibility smoke:
+
+```bash
+npm run verify:a11y
+```
+
+Visual regression smoke:
+
+```bash
+npm run verify:visual
+```
+
 Uygulama doğrulaması:
 
 ```bash
@@ -121,7 +145,7 @@ PowerShell üzerinde lokal Node ile aynı doğrulama:
 - `docs/technical-architecture` altındaki ParkChargeEV'e uyarlanmış teknik mimari audit paketi mevcut mu
 - Next.js, Drizzle, auth, admin, site, runtime config ve smoke test gibi kritik katman dosyaları mevcut mu
 - API route handler dosyaları HTTP method export ediyor mu
-- Release scriptleri mimari kalite kapısını çalıştırıyor mu
+- Release scriptleri mimari, admin, E2E, accessibility ve visual kalite kapılarını çalıştırıyor mu
 - Kaynak ve dokümanlarda bilinen token/secret kalıpları var mı
 
 `verify:uiux` aşağıdaki kontrolleri yapar:
@@ -129,6 +153,14 @@ PowerShell üzerinde lokal Node ile aynı doğrulama:
 - `docs/ui-ux` altındaki ParkChargeEV'e uyarlanmış UI/UX checklist ve prompt seti mevcut mu
 - Mağaza, ürün, sepet, ödeme, harita ve admin kritik rota dosyaları mevcut mu
 - Saf `#` link, `javascript:` href ve boş event handler gibi bariz ölü kontrol kalıpları var mı
+
+`verify:e2e`, `verify:a11y` ve `verify:visual` Playwright ile gerçek tarayıcıda çalışır:
+
+- Admin login -> dashboard -> temel modül navigasyonu
+- Mağaza -> ürün -> sepet -> ödeme akışı
+- Harita -> istasyon filtresi -> istasyon seçimi
+- Kritik sayfalarda axe tabanlı accessibility smoke
+- Harita sayfası için desktop/mobil screenshot baseline
 
 ## Ortam Değişkenleri
 

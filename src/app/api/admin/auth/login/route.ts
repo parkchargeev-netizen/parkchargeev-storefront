@@ -6,6 +6,7 @@ import {
   hasDatabaseConfig,
   isRuntimeConfigError
 } from "@/lib/runtime-config";
+import { logError, logInfo, logWarn } from "@/lib/server-logger";
 import {
   authenticateBootstrapAdmin,
   createAdminSessionRecord,
@@ -66,6 +67,11 @@ export async function POST(request: Request) {
     const requestMeta = await getRequestMeta();
 
     if (isLoginRateLimited(payload.email, requestMeta.ipAddress)) {
+      logWarn("admin.login.rate_limited", {
+        ipAddress: requestMeta.ipAddress,
+        userAgent: requestMeta.userAgent
+      });
+
       return NextResponse.json(
         {
           ok: false,
@@ -80,6 +86,11 @@ export async function POST(request: Request) {
 
       if (!bootstrapAdmin) {
         recordLoginFailure(payload.email, requestMeta.ipAddress);
+        logWarn("admin.login.failed", {
+          mode: "bootstrap",
+          ipAddress: requestMeta.ipAddress,
+          userAgent: requestMeta.userAgent
+        });
         return NextResponse.json(
           {
             ok: false,
@@ -118,6 +129,11 @@ export async function POST(request: Request) {
       });
 
       clearLoginFailures(payload.email, requestMeta.ipAddress);
+      logInfo("admin.login.succeeded", {
+        mode: "bootstrap",
+        role: bootstrapAdmin.role,
+        ipAddress: requestMeta.ipAddress
+      });
       return response;
     }
 
@@ -130,6 +146,11 @@ export async function POST(request: Request) {
 
     if (!admin || admin.status !== "active" || !verifyPassword(payload.password, admin.passwordHash)) {
       recordLoginFailure(payload.email, requestMeta.ipAddress);
+      logWarn("admin.login.failed", {
+        mode: "database",
+        ipAddress: requestMeta.ipAddress,
+        userAgent: requestMeta.userAgent
+      });
       return NextResponse.json(
         {
           ok: false,
@@ -175,13 +196,25 @@ export async function POST(request: Request) {
     });
 
     clearLoginFailures(payload.email, requestMeta.ipAddress);
+    logInfo("admin.login.succeeded", {
+      mode: "database",
+      role: admin.role,
+      ipAddress: requestMeta.ipAddress
+    });
     return response;
   } catch (error) {
     if (isRuntimeConfigError(error)) {
+      logWarn("admin.login.runtime_config_error", {
+        area: error.area,
+        missingKeys: error.missingKeys
+      });
+
       return NextResponse.json(getRuntimeConfigErrorPayload(error), {
         status: 503
       });
     }
+
+    logError("admin.login.failed_unexpected", error);
 
     return NextResponse.json(
       {

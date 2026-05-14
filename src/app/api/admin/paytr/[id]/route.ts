@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { runAdminPaytrOperation } from "@/server/admin/repository";
+import { runAdminPaytrOperation } from "@/server/admin/order-repository";
 import { adminPaytrOperationSchema } from "@/server/admin/validators";
 import { getRequestMeta, requireAdminRole } from "@/server/auth/guards";
 

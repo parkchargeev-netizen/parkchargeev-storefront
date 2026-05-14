@@ -11,7 +11,16 @@ const compat = new FlatCompat({
 
 const config = [
   {
-    ignores: [".next/**", "node_modules/**", "dist/**", "out/**", ".vercel/**"]
+    ignores: [
+      ".next/**",
+      "node_modules/**",
+      "dist/**",
+      "out/**",
+      ".vercel/**",
+      "playwright-report/**",
+      "test-results/**",
+      "coverage/**"
+    ]
   },
   ...compat.extends("next/core-web-vitals")
 ];

@@ -9,6 +9,8 @@ dist
 .env.test.local
 .env.production.local
 coverage
+playwright-report
+test-results
 *.log
 *.tsbuildinfo
 .tools

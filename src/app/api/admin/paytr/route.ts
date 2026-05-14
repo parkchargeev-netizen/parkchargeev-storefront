@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { csvResponse } from "@/server/admin/csv";
-import { listAdminPaytrTransactions } from "@/server/admin/repository";
+import { listAdminPaytrTransactions } from "@/server/admin/order-repository";
 import { adminListQuerySchema } from "@/server/admin/validators";
 import { requireAdminRole } from "@/server/auth/guards";
 

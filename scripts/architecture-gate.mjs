@@ -32,14 +32,20 @@ const requiredFiles = [
   "src/server/auth/session.ts",
   "src/server/auth/authorization.ts",
   "src/server/admin/repository.ts",
+  "src/server/admin/order-repository.ts",
   "src/server/admin/validators.ts",
   "src/server/admin/audit.ts",
   "src/server/site/repository.ts",
   "src/lib/runtime-config.ts",
   "src/lib/paytr.ts",
+  "src/lib/server-logger.ts",
+  "playwright.config.ts",
   "scripts/runtime-smoke.mjs",
   "scripts/admin-smoke.mjs",
-  "scripts/ui-ux-gate.mjs"
+  "scripts/ui-ux-gate.mjs",
+  "tests/e2e/store-checkout.spec.ts",
+  "tests/e2e/admin.spec.ts",
+  "tests/e2e/map.spec.ts"
 ];
 
 const requiredScripts = [
@@ -49,6 +55,10 @@ const requiredScripts = [
   "verify:runtime",
   "verify:architecture",
   "verify:uiux",
+  "verify:admin",
+  "verify:e2e",
+  "verify:a11y",
+  "verify:visual",
   "verify:app",
   "verify:release"
 ];
@@ -126,6 +136,14 @@ function checkPackageScripts() {
     pass("scripts", "verify:release mimari gate'i calistiriyor.");
   } else {
     fail("scripts", "verify:release icinde verify:architecture yok.");
+  }
+
+  for (const releaseStep of ["verify:admin", "verify:e2e", "verify:a11y", "verify:visual"]) {
+    if (scripts["verify:release"]?.includes(releaseStep)) {
+      pass("scripts", `verify:release ${releaseStep} adimini calistiriyor.`);
+    } else {
+      fail("scripts", `verify:release icinde ${releaseStep} yok.`);
+    }
   }
 }
 
