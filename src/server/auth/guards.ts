@@ -9,6 +9,34 @@ import { getAdminAuthRecord, touchAdminSession } from "@/server/admin/auth-servi
 
 const sessionTouchThrottleMs = 5 * 60 * 1000;
 
+function getBootstrapAuthenticatedAdmin(session: Awaited<ReturnType<typeof getAdminSessionFromCookies>>) {
+  if (!session) {
+    return null;
+  }
+
+  const bootstrapAdmin = getBootstrapAdmin();
+
+  if (
+    !bootstrapAdmin ||
+    session.sub !== bootstrapAdmin.id ||
+    session.email !== bootstrapAdmin.email ||
+    session.role !== bootstrapAdmin.role
+  ) {
+    return null;
+  }
+
+  return {
+    session,
+    admin: {
+      id: bootstrapAdmin.id,
+      email: bootstrapAdmin.email,
+      fullName: bootstrapAdmin.fullName,
+      role: bootstrapAdmin.role,
+      status: bootstrapAdmin.status
+    }
+  };
+}
+
 export const getAuthenticatedAdmin = cache(async function getAuthenticatedAdmin() {
   const session = await getAdminSessionFromCookies();
 
@@ -17,27 +45,11 @@ export const getAuthenticatedAdmin = cache(async function getAuthenticatedAdmin(
   }
 
   if (!hasDatabaseConfig()) {
-    const bootstrapAdmin = getBootstrapAdmin();
+    return getBootstrapAuthenticatedAdmin(session);
+  }
 
-    if (
-      !bootstrapAdmin ||
-      session.sub !== bootstrapAdmin.id ||
-      session.email !== bootstrapAdmin.email ||
-      session.role !== bootstrapAdmin.role
-    ) {
-      return null;
-    }
-
-    return {
-      session,
-      admin: {
-        id: bootstrapAdmin.id,
-        email: bootstrapAdmin.email,
-        fullName: bootstrapAdmin.fullName,
-        role: bootstrapAdmin.role,
-        status: bootstrapAdmin.status
-      }
-    };
+  if (session.sid === "bootstrap-session") {
+    return getBootstrapAuthenticatedAdmin(session);
   }
 
   const authRecord = await getAdminAuthRecord(session.sid, session.sub);

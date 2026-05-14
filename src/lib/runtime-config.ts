@@ -95,7 +95,7 @@ export function getAdminAuthConfig() {
   assertAdminAuthConfig();
 
   return {
-    jwtSecret: process.env.ADMIN_JWT_SECRET as string,
+    jwtSecret: process.env.ADMIN_JWT_SECRET?.trim() as string,
     cookieName: "parkchargeev_admin_session",
     sessionTtlSeconds: 60 * 60 * 12
   };

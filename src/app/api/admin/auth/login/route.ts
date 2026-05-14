@@ -15,6 +15,7 @@ import {
   getBootstrapAdmin
 } from "@/server/admin/auth-service";
 import { adminLoginSchema } from "@/server/admin/validators";
+import type { AdminRole } from "@/server/auth/authorization";
 import { verifyPassword } from "@/server/auth/password";
 import { getRequestMeta } from "@/server/auth/guards";
 import { signAdminSessionToken } from "@/server/auth/session";
@@ -62,6 +63,47 @@ function clearLoginFailures(email: string, ipAddress?: string | null) {
   loginAttempts.delete(getRateLimitKey(email, ipAddress));
 }
 
+function createSessionExpiresAt() {
+  const { sessionTtlSeconds } = getAdminAuthConfig();
+  return new Date(Date.now() + sessionTtlSeconds * 1000);
+}
+
+async function createLoginResponse(admin: {
+  id: string;
+  email: string;
+  fullName: string;
+  role: AdminRole;
+}, sessionId: string, expiresAt = createSessionExpiresAt()) {
+  const { cookieName } = getAdminAuthConfig();
+  const token = await signAdminSessionToken({
+    sub: admin.id,
+    sid: sessionId,
+    email: admin.email,
+    name: admin.fullName,
+    role: admin.role
+  });
+
+  const response = NextResponse.json({
+    ok: true,
+    admin: {
+      id: admin.id,
+      email: admin.email,
+      fullName: admin.fullName,
+      role: admin.role
+    }
+  });
+
+  response.cookies.set(cookieName, token, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    expires: expiresAt
+  });
+
+  return response;
+}
+
 export async function POST(request: Request) {
   const startedAt = Date.now();
 
@@ -105,33 +147,7 @@ export async function POST(request: Request) {
         );
       }
 
-      const { sessionTtlSeconds, cookieName } = getAdminAuthConfig();
-      const expiresAt = new Date(Date.now() + sessionTtlSeconds * 1000);
-      const token = await signAdminSessionToken({
-        sub: bootstrapAdmin.id,
-        sid: "bootstrap-session",
-        email: bootstrapAdmin.email,
-        name: bootstrapAdmin.fullName,
-        role: bootstrapAdmin.role
-      });
-
-      const response = NextResponse.json({
-        ok: true,
-        admin: {
-          id: bootstrapAdmin.id,
-          email: bootstrapAdmin.email,
-          fullName: bootstrapAdmin.fullName,
-          role: bootstrapAdmin.role
-        }
-      });
-
-      response.cookies.set(cookieName, token, {
-        httpOnly: true,
-        sameSite: "lax",
-        secure: process.env.NODE_ENV === "production",
-        path: "/",
-        expires: expiresAt
-      });
+      const response = await createLoginResponse(bootstrapAdmin, "bootstrap-session");
 
       clearLoginFailures(payload.email, requestMeta.ipAddress);
       logInfo("admin.login.succeeded", {
@@ -147,18 +163,29 @@ export async function POST(request: Request) {
     const bootstrapConfig = getBootstrapAdmin();
     const isBootstrapLogin =
       bootstrapConfig?.email === normalizedEmail && bootstrapConfig.password === loginPassword;
-    let admin = await findAdminByEmail(payload.email);
 
-    if (!admin && isBootstrapLogin) {
-      admin = await ensureBootstrapAdmin({ forceRefresh: true });
+    if (bootstrapConfig && isBootstrapLogin) {
+      void ensureBootstrapAdmin({ forceRefresh: true }).catch((error) => {
+        logWarn("admin.login.bootstrap_sync_failed", {
+          durationMs: Date.now() - startedAt,
+          message: error instanceof Error ? error.message : String(error)
+        });
+      });
+
+      const response = await createLoginResponse(bootstrapConfig, "bootstrap-session");
+
+      clearLoginFailures(payload.email, requestMeta.ipAddress);
+      logInfo("admin.login.succeeded", {
+        mode: "bootstrap-database-fallback",
+        role: bootstrapConfig.role,
+        ipAddress: requestMeta.ipAddress,
+        durationMs: Date.now() - startedAt
+      });
+      return response;
     }
 
-    let passwordVerified = admin ? verifyPassword(loginPassword, admin.passwordHash) : false;
-
-    if (admin && isBootstrapLogin && !passwordVerified) {
-      admin = await ensureBootstrapAdmin({ forceRefresh: true });
-      passwordVerified = admin ? verifyPassword(loginPassword, admin.passwordHash) : false;
-    }
+    const admin = await findAdminByEmail(payload.email);
+    const passwordVerified = admin ? verifyPassword(loginPassword, admin.passwordHash) : false;
 
     if (!admin || admin.status !== "active" || !passwordVerified) {
       recordLoginFailure(payload.email, requestMeta.ipAddress);
@@ -177,8 +204,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { sessionTtlSeconds, cookieName } = getAdminAuthConfig();
-    const expiresAt = new Date(Date.now() + sessionTtlSeconds * 1000);
+    const expiresAt = createSessionExpiresAt();
     const tokenId = await createAdminSessionRecord({
       adminUserId: admin.id,
       expiresAt,
@@ -186,31 +212,7 @@ export async function POST(request: Request) {
       userAgent: requestMeta.userAgent
     });
 
-    const token = await signAdminSessionToken({
-      sub: admin.id,
-      sid: tokenId,
-      email: admin.email,
-      name: admin.fullName,
-      role: admin.role
-    });
-
-    const response = NextResponse.json({
-      ok: true,
-      admin: {
-        id: admin.id,
-        email: admin.email,
-        fullName: admin.fullName,
-        role: admin.role
-      }
-    });
-
-    response.cookies.set(cookieName, token, {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-      expires: expiresAt
-    });
+    const response = await createLoginResponse(admin, tokenId, expiresAt);
 
     clearLoginFailures(payload.email, requestMeta.ipAddress);
     logInfo("admin.login.succeeded", {
