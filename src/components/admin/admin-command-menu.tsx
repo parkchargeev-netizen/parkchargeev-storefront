@@ -1,8 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, Command, Search, X } from "lucide-react";
+
+import { AdminPrefetchLink } from "@/components/admin/admin-prefetch-link";
 
 export type AdminCommandItem = {
   href: string;
@@ -187,10 +188,9 @@ export function AdminCommandMenu({
                     </p>
                     <div className="mt-2 space-y-1">
                       {groupItems.map((item) => (
-                        <Link
+                        <AdminPrefetchLink
                           key={`${item.href}-${item.label}`}
                           href={item.href}
-                          prefetch={false}
                           onClick={() => setIsOpen(false)}
                           className="flex items-center justify-between gap-4 rounded-2xl px-3 py-3 transition hover:bg-blue-50"
                         >
@@ -203,7 +203,7 @@ export function AdminCommandMenu({
                             </span>
                           </span>
                           <ArrowRight className="h-4 w-4 shrink-0 text-slate-400" />
-                        </Link>
+                        </AdminPrefetchLink>
                       ))}
                     </div>
                   </div>

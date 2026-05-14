@@ -1,4 +1,3 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
 import {
   AlertTriangle,
@@ -16,6 +15,7 @@ import {
   Zap
 } from "lucide-react";
 
+import { AdminPrefetchLink } from "@/components/admin/admin-prefetch-link";
 import { DashboardCharts } from "@/components/admin/dashboard-charts";
 import { formatPriceTRY } from "@/lib/format";
 import {
@@ -119,9 +119,8 @@ function QueueCard({
   tone: Tone;
 }) {
   return (
-    <Link
+    <AdminPrefetchLink
       href={href}
-      prefetch={false}
       className="surface-card group flex h-full flex-col justify-between border border-slate-200 bg-white/95 p-5 transition hover:border-blue-200 hover:bg-blue-50/60"
     >
       <div className="flex items-start justify-between gap-4">
@@ -139,7 +138,7 @@ function QueueCard({
         {action}
         <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
       </span>
-    </Link>
+    </AdminPrefetchLink>
   );
 }
 
@@ -410,13 +409,12 @@ export function AdminDashboardView({
               <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${toneClass(targetTone)}`}>
                 Hedef sinyali
               </span>
-              <Link
+              <AdminPrefetchLink
                 href="/admin/siparisler"
-                prefetch={false}
                 className="rounded-full border border-white/20 px-3 py-1 text-xs font-semibold text-white transition hover:bg-white/10"
               >
                 Siparişlere git
-              </Link>
+              </AdminPrefetchLink>
             </div>
           </div>
         </div>
@@ -425,15 +423,14 @@ export function AdminDashboardView({
       {visibleQuickActions.length > 0 ? (
         <section className="grid gap-4 lg:grid-cols-4">
           {visibleQuickActions.map((action) => (
-            <Link
+            <AdminPrefetchLink
               key={action.href}
               href={action.href}
-              prefetch={false}
               className="surface-card border border-slate-200 bg-white/95 p-5 transition hover:border-blue-200 hover:bg-blue-50/70"
             >
               <p className="text-sm font-semibold text-slate-950">{action.label}</p>
               <p className="mt-2 text-xs leading-5 text-slate-600">{action.detail}</p>
-            </Link>
+            </AdminPrefetchLink>
           ))}
         </section>
       ) : null}
@@ -449,13 +446,12 @@ export function AdminDashboardView({
             </h2>
           </div>
           {canManageStations ? (
-            <Link
+            <AdminPrefetchLink
               href="/admin/istasyonlar"
-              prefetch={false}
               className="rounded-2xl border border-slate-300 bg-white px-5 py-3 text-center text-sm font-semibold text-slate-800 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
             >
               İstasyonları yönet
-            </Link>
+            </AdminPrefetchLink>
           ) : null}
         </div>
         <div className="mt-5 grid gap-3 md:grid-cols-3">
@@ -470,16 +466,15 @@ export function AdminDashboardView({
                 }
               ]
           ).map((action) => (
-            <Link
+            <AdminPrefetchLink
               key={action.label}
               href={action.href}
-              prefetch={false}
               className="rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:border-blue-200 hover:bg-blue-50"
             >
               <p className="text-sm font-semibold text-slate-950">{action.label}</p>
               <p className="mt-2 text-3xl font-semibold text-slate-950">{action.count}</p>
               <p className="mt-2 text-xs leading-5 text-slate-600">{action.detail}</p>
-            </Link>
+            </AdminPrefetchLink>
           ))}
         </div>
       </section>
@@ -618,13 +613,12 @@ export function AdminDashboardView({
               Üst düzey panel kontrol listesi
             </h2>
           </div>
-          <Link
+          <AdminPrefetchLink
             href="/admin/erisim"
-            prefetch={false}
             className="rounded-2xl border border-slate-300 bg-white px-5 py-3 text-center text-sm font-semibold text-slate-800 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
           >
             Tüm admin kısayolları
-          </Link>
+          </AdminPrefetchLink>
         </div>
         <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
           {adminStandards.map((item) => (
@@ -647,10 +641,9 @@ export function AdminDashboardView({
           <div className="mt-5 space-y-3">
             {snapshot.activity.recentOrders.length > 0 ? (
               snapshot.activity.recentOrders.map((order) => (
-                <Link
+                <AdminPrefetchLink
                   key={order.id}
                   href={`/admin/siparisler/${order.id}`}
-                  prefetch={false}
                   className="block rounded-2xl bg-slate-50 px-4 py-3 transition hover:bg-blue-50"
                 >
                   <div className="flex items-center justify-between gap-4">
@@ -669,7 +662,7 @@ export function AdminDashboardView({
                       </p>
                     </div>
                   </div>
-                </Link>
+                </AdminPrefetchLink>
               ))
             ) : (
               <EmptyActivity label="Henüz sipariş hareketi yok." />
@@ -682,10 +675,9 @@ export function AdminDashboardView({
           <div className="mt-5 space-y-3">
             {snapshot.activity.recentQuotes.length > 0 ? (
               snapshot.activity.recentQuotes.map((quote) => (
-                <Link
+                <AdminPrefetchLink
                   key={quote.id}
                   href={`/admin/teklifler/${quote.id}`}
-                  prefetch={false}
                   className="block rounded-2xl bg-slate-50 px-4 py-3 transition hover:bg-blue-50"
                 >
                   <p className="text-sm font-semibold text-slate-900">{quote.fullName}</p>
@@ -695,7 +687,7 @@ export function AdminDashboardView({
                   <p className="mt-2 text-xs text-slate-500">
                     {labelFor(quoteStatusOptions, quote.status)}
                   </p>
-                </Link>
+                </AdminPrefetchLink>
               ))
             ) : (
               <EmptyActivity label="Henüz teklif hareketi yok." />
@@ -708,10 +700,9 @@ export function AdminDashboardView({
           <div className="mt-5 space-y-3">
             {snapshot.activity.recentServiceRequests.length > 0 ? (
               snapshot.activity.recentServiceRequests.map((item) => (
-                <Link
+                <AdminPrefetchLink
                   key={item.id}
                   href={`/admin/saha/${item.id}`}
-                  prefetch={false}
                   className="block rounded-2xl bg-slate-50 px-4 py-3 transition hover:bg-blue-50"
                 >
                   <div className="flex items-start justify-between gap-3">
@@ -724,7 +715,7 @@ export function AdminDashboardView({
                   <p className="mt-2 text-xs text-slate-500">
                     {labelFor(leadStatusOptions, item.status)}
                   </p>
-                </Link>
+                </AdminPrefetchLink>
               ))
             ) : (
               <EmptyActivity label="Henüz servis talebi yok." />

@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
+import { AdminPrefetchLink } from "@/components/admin/admin-prefetch-link";
 import { AdminPageHeader } from "@/components/admin/table/admin-page-header";
 import { getAdminAccessLinks, type AdminAccessLink } from "@/server/admin/access-map";
 import { requireAdminRole } from "@/server/auth/guards";
@@ -71,14 +71,13 @@ export default async function AdminAccessMapPage() {
               }
 
               return (
-                <Link
+                <AdminPrefetchLink
                   key={link.href}
                   href={link.href}
-                  prefetch={false}
                   className="rounded-3xl border border-slate-200 bg-slate-50 p-5 transition hover:border-blue-200 hover:bg-blue-50"
                 >
                   {content}
-                </Link>
+                </AdminPrefetchLink>
               );
             })}
           </div>

@@ -1,10 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { ArrowUpRight } from "lucide-react";
 import clsx from "clsx";
+
+import { AdminPrefetchLink } from "@/components/admin/admin-prefetch-link";
 
 type AdminNavLinkProps = {
   href: string;
@@ -17,9 +18,8 @@ export function AdminNavLink({ href, icon, label }: AdminNavLinkProps) {
   const isActive = pathname === href || (href !== "/admin" && pathname.startsWith(`${href}/`));
 
   return (
-    <Link
+    <AdminPrefetchLink
       href={href}
-      prefetch={false}
       aria-current={isActive ? "page" : undefined}
       className={clsx(
         "group flex items-center justify-between rounded-2xl border px-4 py-3 text-sm font-medium transition",
@@ -47,6 +47,6 @@ export function AdminNavLink({ href, icon, label }: AdminNavLinkProps) {
           isActive ? "text-blue-500" : "text-slate-300 group-hover:text-slate-500"
         )}
       />
-    </Link>
+    </AdminPrefetchLink>
   );
 }

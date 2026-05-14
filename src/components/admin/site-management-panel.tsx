@@ -1,5 +1,4 @@
-import Link from "next/link";
-
+import { AdminPrefetchLink } from "@/components/admin/admin-prefetch-link";
 import { SiteManagementFormSlot } from "@/components/admin/site-management-form-slot";
 import { AdminFilterBar } from "@/components/admin/table/admin-filter-bar";
 import { AdminPageHeader } from "@/components/admin/table/admin-page-header";
@@ -132,16 +131,15 @@ export async function SiteManagementPanel({
             detail: "Hazırlıktaki sayfalar"
           }
         ].map((item) => (
-          <Link
+          <AdminPrefetchLink
             key={item.href}
             href={item.href}
-            prefetch={false}
             className="surface-card border border-slate-200 bg-white/95 p-5 transition hover:border-blue-200 hover:bg-blue-50/70"
           >
             <p className="text-sm font-medium text-slate-500">{item.label}</p>
             <p className="mt-3 text-3xl font-semibold text-slate-950">{item.value}</p>
             <p className="mt-2 text-xs leading-5 text-slate-600">{item.detail}</p>
-          </Link>
+          </AdminPrefetchLink>
         ))}
       </div>
 
@@ -180,14 +178,13 @@ export async function SiteManagementPanel({
           { href: siteHref(basePath, "published"), label: "Yayındaki sayfalar" },
           { href: siteHref(basePath, "draft"), label: "Taslak sayfalar" }
         ].map((item) => (
-          <Link
+          <AdminPrefetchLink
             key={item.href}
             href={item.href}
-            prefetch={false}
             className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-center text-sm font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
           >
             {item.label}
-          </Link>
+          </AdminPrefetchLink>
         ))}
       </div>
 
@@ -209,13 +206,12 @@ export async function SiteManagementPanel({
               <SiteManagementFormSlot kind="navigation" mode="create" />
             </div>
           ) : (
-            <Link
+            <AdminPrefetchLink
               href={createHref(basePath, "newNav")}
-              prefetch={false}
               className="mt-5 inline-flex rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white"
             >
               Menü linki ekle
-            </Link>
+            </AdminPrefetchLink>
           )}
         </section>
 
@@ -229,13 +225,12 @@ export async function SiteManagementPanel({
               <SiteManagementFormSlot kind="page" mode="create" />
             </div>
           ) : (
-            <Link
+            <AdminPrefetchLink
               href={createHref(basePath, "newPage")}
-              prefetch={false}
               className="mt-5 inline-flex rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white"
             >
               Detaylı sayfa ekle
-            </Link>
+            </AdminPrefetchLink>
           )}
         </section>
       </div>
@@ -251,13 +246,12 @@ export async function SiteManagementPanel({
                 {selectedNavigationItem.label}
               </h2>
             </div>
-            <Link
+            <AdminPrefetchLink
               href={`${basePath}#site-management`}
-              prefetch={false}
               className="rounded-full border border-blue-200 bg-white px-3 py-1.5 text-xs font-semibold text-blue-700"
             >
               Kapat
-            </Link>
+            </AdminPrefetchLink>
           </div>
           <SiteManagementFormSlot
             kind="navigation"
@@ -285,13 +279,12 @@ export async function SiteManagementPanel({
               </p>
               <h2 className="mt-2 text-xl font-semibold text-slate-950">{selectedPage.title}</h2>
             </div>
-            <Link
+            <AdminPrefetchLink
               href={`${basePath}#site-management`}
-              prefetch={false}
               className="rounded-full border border-blue-200 bg-white px-3 py-1.5 text-xs font-semibold text-blue-700"
             >
               Kapat
-            </Link>
+            </AdminPrefetchLink>
           </div>
           <SiteManagementFormSlot
             kind="page"
@@ -330,13 +323,12 @@ export async function SiteManagementPanel({
                 <div className="flex flex-wrap items-center gap-2">
                   <AdminStatusBadge label={areaLabel(item.area)} tone="info" />
                   <AdminStatusBadge label={item.isActive ? "Aktif" : "Pasif"} tone={item.isActive ? "success" : "neutral"} />
-                  <Link
+                  <AdminPrefetchLink
                     href={editHref(basePath, "editNav", item.id)}
-                    prefetch={false}
                     className="rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
                   >
                     Düzenle
-                  </Link>
+                  </AdminPrefetchLink>
                 </div>
               </div>
             </div>
@@ -362,16 +354,15 @@ export async function SiteManagementPanel({
                   <AdminStatusBadge label={pageStatusLabel(page.status)} tone={page.status === "published" ? "success" : page.status === "draft" ? "warning" : "neutral"} />
                   {page.noIndex ? <AdminStatusBadge label="Noindex" tone="warning" /> : null}
                   {!page.showInSitemap ? <AdminStatusBadge label="Sitemap dışı" tone="neutral" /> : null}
-                  <Link href={`/${page.slug}`} prefetch={false} className="rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700">
+                  <AdminPrefetchLink href={`/${page.slug}`} className="rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700">
                     Aç
-                  </Link>
-                  <Link
+                  </AdminPrefetchLink>
+                  <AdminPrefetchLink
                     href={editHref(basePath, "editPage", page.id)}
-                    prefetch={false}
                     className="rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
                   >
                     Düzenle
-                  </Link>
+                  </AdminPrefetchLink>
                 </div>
               </div>
             </div>

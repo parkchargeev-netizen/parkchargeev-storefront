@@ -22,6 +22,7 @@ import {
 } from "@/components/admin/admin-command-menu";
 import { AdminLogoutButton } from "@/components/admin/admin-logout-button";
 import { AdminNavLink } from "@/components/admin/admin-nav-link";
+import { AdminRouteWarmup } from "@/components/admin/admin-route-warmup";
 import { AdminSessionGuard } from "@/components/admin/admin-session-guard";
 import { adminNavigation, adminRoleLabels } from "@/server/admin/constants";
 import type { AdminRole } from "@/server/auth/authorization";
@@ -127,10 +128,12 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
       .filter((item) => databaseEnabled || !item.requiresDatabase)
       .map(({ roles: _roles, requiresDatabase: _requiresDatabase, ...item }) => item)
   ];
+  const warmupHrefs = commandItems.map((item) => item.href);
 
   return (
     <div className="min-h-screen bg-[#f6f7fb]">
       <AdminSessionGuard />
+      <AdminRouteWarmup hrefs={warmupHrefs} />
       <div className="mx-auto max-w-[1680px] px-4 py-5 lg:px-6">
         <div className="grid gap-6 xl:grid-cols-[310px_minmax(0,1fr)]">
           <aside className="surface-card sticky top-5 h-fit overflow-hidden border border-slate-200 bg-white/95 p-6">
