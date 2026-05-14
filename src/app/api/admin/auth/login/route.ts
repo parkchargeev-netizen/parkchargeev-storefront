@@ -11,7 +11,8 @@ import {
   authenticateBootstrapAdmin,
   createAdminSessionRecord,
   ensureBootstrapAdmin,
-  findAdminByEmail
+  findAdminByEmail,
+  getBootstrapAdmin
 } from "@/server/admin/auth-service";
 import { adminLoginSchema } from "@/server/admin/validators";
 import { verifyPassword } from "@/server/auth/password";
@@ -62,8 +63,11 @@ function clearLoginFailures(email: string, ipAddress?: string | null) {
 }
 
 export async function POST(request: Request) {
+  const startedAt = Date.now();
+
   try {
     const payload = adminLoginSchema.parse(await request.json());
+    const loginPassword = payload.password.trim();
     const requestMeta = await getRequestMeta();
 
     if (isLoginRateLimited(payload.email, requestMeta.ipAddress)) {
@@ -82,14 +86,15 @@ export async function POST(request: Request) {
     }
 
     if (!hasDatabaseConfig()) {
-      const bootstrapAdmin = authenticateBootstrapAdmin(payload.email, payload.password);
+      const bootstrapAdmin = authenticateBootstrapAdmin(payload.email, loginPassword);
 
       if (!bootstrapAdmin) {
         recordLoginFailure(payload.email, requestMeta.ipAddress);
         logWarn("admin.login.failed", {
           mode: "bootstrap",
           ipAddress: requestMeta.ipAddress,
-          userAgent: requestMeta.userAgent
+          userAgent: requestMeta.userAgent,
+          durationMs: Date.now() - startedAt
         });
         return NextResponse.json(
           {
@@ -132,24 +137,36 @@ export async function POST(request: Request) {
       logInfo("admin.login.succeeded", {
         mode: "bootstrap",
         role: bootstrapAdmin.role,
-        ipAddress: requestMeta.ipAddress
+        ipAddress: requestMeta.ipAddress,
+        durationMs: Date.now() - startedAt
       });
       return response;
     }
 
-    const bootstrapAdmin = await ensureBootstrapAdmin();
     const normalizedEmail = payload.email.toLowerCase();
-    const admin =
-      bootstrapAdmin?.email === normalizedEmail
-        ? bootstrapAdmin
-        : await findAdminByEmail(payload.email);
+    const bootstrapConfig = getBootstrapAdmin();
+    const isBootstrapLogin =
+      bootstrapConfig?.email === normalizedEmail && bootstrapConfig.password === loginPassword;
+    let admin = await findAdminByEmail(payload.email);
 
-    if (!admin || admin.status !== "active" || !verifyPassword(payload.password, admin.passwordHash)) {
+    if (!admin && isBootstrapLogin) {
+      admin = await ensureBootstrapAdmin({ forceRefresh: true });
+    }
+
+    let passwordVerified = admin ? verifyPassword(loginPassword, admin.passwordHash) : false;
+
+    if (admin && isBootstrapLogin && !passwordVerified) {
+      admin = await ensureBootstrapAdmin({ forceRefresh: true });
+      passwordVerified = admin ? verifyPassword(loginPassword, admin.passwordHash) : false;
+    }
+
+    if (!admin || admin.status !== "active" || !passwordVerified) {
       recordLoginFailure(payload.email, requestMeta.ipAddress);
       logWarn("admin.login.failed", {
         mode: "database",
         ipAddress: requestMeta.ipAddress,
-        userAgent: requestMeta.userAgent
+        userAgent: requestMeta.userAgent,
+        durationMs: Date.now() - startedAt
       });
       return NextResponse.json(
         {
@@ -199,7 +216,8 @@ export async function POST(request: Request) {
     logInfo("admin.login.succeeded", {
       mode: "database",
       role: admin.role,
-      ipAddress: requestMeta.ipAddress
+      ipAddress: requestMeta.ipAddress,
+      durationMs: Date.now() - startedAt
     });
     return response;
   } catch (error) {

@@ -41,7 +41,7 @@ export function AdminPrefetchLink({
   return (
     <Link
       href={href}
-      prefetch={adminHref ? (prefetch ?? true) : false}
+      prefetch={adminHref ? (prefetch ?? false) : false}
       onFocus={(event: FocusEvent<HTMLAnchorElement>) => {
         prewarmRoute();
         onFocus?.(event);

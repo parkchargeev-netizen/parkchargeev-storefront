@@ -119,10 +119,14 @@ async function ensureBootstrapAdminUncached() {
   return createdAdmin ?? null;
 }
 
-export async function ensureBootstrapAdmin() {
+export async function ensureBootstrapAdmin(options: { forceRefresh?: boolean } = {}) {
   const now = Date.now();
 
-  if (bootstrapEnsurePromise && now - bootstrapEnsureResolvedAt < bootstrapEnsureCacheMs) {
+  if (
+    !options.forceRefresh &&
+    bootstrapEnsurePromise &&
+    now - bootstrapEnsureResolvedAt < bootstrapEnsureCacheMs
+  ) {
     return bootstrapEnsurePromise;
   }
 
@@ -203,25 +207,24 @@ export async function createAdminSessionRecord(input: {
   const db = getDb();
   const tokenId = randomUUID();
 
-  await Promise.all([
-    db.insert(adminSessions).values({
-      adminUserId: input.adminUserId,
-      tokenId,
-      ipAddress: input.ipAddress ?? null,
-      userAgent: input.userAgent ?? null,
-      expiresAt: input.expiresAt
-    }),
-    db
-      .update(adminUsers)
-      .set({
-        lastLoginAt: new Date(),
-        updatedAt: new Date()
-      })
-      .where(eq(adminUsers.id, input.adminUserId))
-      .catch((error) => {
-        console.warn("Admin last login timestamp could not be updated.", error);
-      })
-  ]);
+  await db.insert(adminSessions).values({
+    adminUserId: input.adminUserId,
+    tokenId,
+    ipAddress: input.ipAddress ?? null,
+    userAgent: input.userAgent ?? null,
+    expiresAt: input.expiresAt
+  });
+
+  void db
+    .update(adminUsers)
+    .set({
+      lastLoginAt: new Date(),
+      updatedAt: new Date()
+    })
+    .where(eq(adminUsers.id, input.adminUserId))
+    .catch((error) => {
+      console.warn("Admin last login timestamp could not be updated.", error);
+    });
 
   return tokenId;
 }

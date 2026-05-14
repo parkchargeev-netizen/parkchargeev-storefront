@@ -17,7 +17,7 @@ const positiveCurrencySchema = z.coerce.number().int().min(0);
 
 export const adminLoginSchema = z.object({
   email: z.string().trim().email(),
-  password: z.string().min(8)
+  password: z.string().trim().min(8)
 });
 
 export const productSpecSchema = z.object({
