@@ -79,6 +79,12 @@ Runtime smoke check:
 npm run verify:runtime
 ```
 
+Teknik mimari kalite kapısı:
+
+```bash
+npm run verify:architecture
+```
+
 UI/UX kalite kapısı:
 
 ```bash
@@ -109,6 +115,14 @@ PowerShell üzerinde lokal Node ile aynı doğrulama:
 - PostgreSQL bağlantısı gerçekten kurulabiliyor mu
 - `PAYTR_MERCHANT_ID`, `PAYTR_MERCHANT_KEY`, `PAYTR_MERCHANT_SALT` tanımlı mı
 - Lokal test modunda `PAYTR_TEST_USER_IP` önerisi gerekiyor mu
+
+`verify:architecture` aşağıdaki kontrolleri yapar:
+
+- `docs/technical-architecture` altındaki ParkChargeEV'e uyarlanmış teknik mimari audit paketi mevcut mu
+- Next.js, Drizzle, auth, admin, site, runtime config ve smoke test gibi kritik katman dosyaları mevcut mu
+- API route handler dosyaları HTTP method export ediyor mu
+- Release scriptleri mimari kalite kapısını çalıştırıyor mu
+- Kaynak ve dokümanlarda bilinen token/secret kalıpları var mı
 
 `verify:uiux` aşağıdaki kontrolleri yapar:
 
