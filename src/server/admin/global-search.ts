@@ -184,6 +184,7 @@ export async function searchAdminWorkspace(query: string, role: AdminRole) {
         .where(
           or(
             ilike(chargingStations.name, pattern),
+            ilike(chargingStations.externalId, pattern),
             ilike(chargingStations.city, pattern),
             ilike(chargingStations.district, pattern),
             ilike(chargingStations.address, pattern)
