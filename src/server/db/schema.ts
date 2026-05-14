@@ -1,6 +1,7 @@
 import {
   type AnyPgColumn,
   boolean,
+  doublePrecision,
   index,
   integer,
   jsonb,
@@ -164,6 +165,79 @@ export const navigationItems = pgTable(
   (table) => ({
     areaIndex: index("navigation_items_area_idx").on(table.area, table.sortOrder),
     areaHrefIndex: uniqueIndex("navigation_items_area_href_idx").on(table.area, table.href)
+  })
+);
+
+export const chargingStations = pgTable(
+  "charging_stations",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    externalId: varchar("external_id", { length: 140 }).notNull(),
+    name: varchar("name", { length: 180 }).notNull(),
+    status: varchar("status", { length: 80 }).default("Aktif").notNull(),
+    power: varchar("power", { length: 80 }).notNull(),
+    connectorTypes: jsonb("connector_types").$type<string[]>().default([]).notNull(),
+    pricePerKwh: varchar("price_per_kwh", { length: 80 }).notNull(),
+    city: varchar("city", { length: 80 }).notNull(),
+    district: varchar("district", { length: 80 }).notNull(),
+    address: text("address").notNull(),
+    latitude: doublePrecision("latitude").notNull(),
+    longitude: doublePrecision("longitude").notNull(),
+    availableSockets: integer("available_sockets").default(0).notNull(),
+    totalSockets: integer("total_sockets").default(0).notNull(),
+    hours: varchar("hours", { length: 120 }).notNull(),
+    operator: varchar("operator", { length: 120 }).notNull(),
+    amenities: jsonb("amenities").$type<string[]>().default([]).notNull(),
+    isActive: boolean("is_active").default(true).notNull(),
+    sortOrder: integer("sort_order").default(0).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+  },
+  (table) => ({
+    externalIdIndex: uniqueIndex("charging_stations_external_id_idx").on(table.externalId),
+    cityDistrictIndex: index("charging_stations_city_district_idx").on(
+      table.city,
+      table.district
+    ),
+    activeSortIndex: index("charging_stations_active_sort_idx").on(
+      table.isActive,
+      table.sortOrder
+    )
+  })
+);
+
+export const cartRecoveryIntents = pgTable(
+  "cart_recovery_intents",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    email: varchar("email", { length: 180 }).notNull(),
+    fullName: varchar("full_name", { length: 180 }),
+    phone: varchar("phone", { length: 40 }),
+    totalKurus: integer("total_kurus").default(0).notNull(),
+    itemCount: integer("item_count").default(0).notNull(),
+    items: jsonb("items").$type<
+      Array<{
+        title: string;
+        quantity: number;
+        unitPrice: string;
+      }>
+    >().default([]).notNull(),
+    status: varchar("status", { length: 40 }).default("captured").notNull(),
+    source: varchar("source", { length: 80 }).default("checkout").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+  },
+  (table) => ({
+    emailIndex: index("cart_recovery_intents_email_idx").on(table.email),
+    statusIndex: index("cart_recovery_intents_status_idx").on(table.status)
   })
 );
 

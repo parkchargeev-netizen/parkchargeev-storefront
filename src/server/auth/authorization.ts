@@ -55,8 +55,20 @@ const routeRoleMap: Array<{
     roles: ["superadmin", "operations", "technician"]
   },
   {
+    prefix: "/admin/istasyonlar",
+    roles: ["superadmin", "operations", "technician"]
+  },
+  {
     prefix: "/admin/service-leads",
     roles: ["superadmin", "operations", "technician"]
+  },
+  {
+    prefix: "/admin/stations",
+    roles: ["superadmin", "operations", "technician"]
+  },
+  {
+    prefix: "/admin/search",
+    roles: ["superadmin", "sales", "operations", "technician", "editor"]
   },
   {
     prefix: "/admin/katalog",

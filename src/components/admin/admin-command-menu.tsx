@@ -24,6 +24,8 @@ export function AdminCommandMenu({
 }: AdminCommandMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [liveItems, setLiveItems] = useState<AdminCommandItem[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -53,12 +55,60 @@ export function AdminCommandMenu({
     );
   }, [items, query]);
 
+  useEffect(() => {
+    const normalizedQuery = query.trim();
+
+    if (!isOpen || normalizedQuery.length < 2) {
+      setLiveItems([]);
+      setIsSearching(false);
+      return;
+    }
+
+    const controller = new AbortController();
+    const timeout = window.setTimeout(async () => {
+      setIsSearching(true);
+
+      try {
+        const response = await fetch(`/api/admin/search?q=${encodeURIComponent(normalizedQuery)}`, {
+          signal: controller.signal
+        });
+        const data = (await response.json()) as {
+          ok: boolean;
+          items?: AdminCommandItem[];
+        };
+
+        setLiveItems(response.ok && data.ok ? data.items ?? [] : []);
+      } catch {
+        if (!controller.signal.aborted) {
+          setLiveItems([]);
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setIsSearching(false);
+        }
+      }
+    }, 220);
+
+    return () => {
+      controller.abort();
+      window.clearTimeout(timeout);
+    };
+  }, [isOpen, query]);
+
   const groupedItems = useMemo(() => {
-    return filteredItems.reduce<Record<string, AdminCommandItem[]>>((groups, item) => {
+    const mergedItems = [
+      ...liveItems.map((item) => ({
+        ...item,
+        group: `Canlı sonuçlar - ${item.group}`
+      })),
+      ...filteredItems
+    ];
+
+    return mergedItems.reduce<Record<string, AdminCommandItem[]>>((groups, item) => {
       groups[item.group] = [...(groups[item.group] ?? []), item];
       return groups;
     }, {});
-  }, [filteredItems]);
+  }, [filteredItems, liveItems]);
 
   return (
     <>
@@ -101,7 +151,7 @@ export function AdminCommandMenu({
                   autoFocus
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
-                  placeholder="Siparişler, yeni ürün, audit..."
+                  placeholder="Sipariş, müşteri, teklif, ürün, istasyon..."
                   className="min-w-0 flex-1 bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400"
                 />
                 <button
@@ -120,6 +170,11 @@ export function AdminCommandMenu({
                 <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-700">
                   {databaseEnabled ? "Canlı veri" : "Yerel yedek veri"}
                 </span>
+                {isSearching ? (
+                  <span className="rounded-full bg-blue-50 px-3 py-1 text-blue-700">
+                    Aranıyor
+                  </span>
+                ) : null}
               </div>
             </div>
 

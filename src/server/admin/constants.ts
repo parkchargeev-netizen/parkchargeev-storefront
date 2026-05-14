@@ -52,6 +52,11 @@ export const adminNavigation: Array<{
     roles: ["superadmin", "operations", "technician"]
   },
   {
+    href: "/admin/istasyonlar",
+    label: "İstasyonlar",
+    roles: ["superadmin", "operations", "technician"]
+  },
+  {
     href: "/admin/blog",
     label: "İçerik",
     roles: ["superadmin", "editor"]

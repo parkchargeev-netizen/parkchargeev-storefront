@@ -17,18 +17,73 @@ import { verifyPassword } from "@/server/auth/password";
 import { getRequestMeta } from "@/server/auth/guards";
 import { signAdminSessionToken } from "@/server/auth/session";
 
+const loginAttempts = new Map<string, { count: number; resetAt: number }>();
+const loginWindowMs = 10 * 60 * 1000;
+const maxLoginAttempts = 8;
+
+function getRateLimitKey(email: string, ipAddress?: string | null) {
+  return `${ipAddress ?? "unknown"}:${email.toLowerCase()}`;
+}
+
+function isLoginRateLimited(email: string, ipAddress?: string | null) {
+  const key = getRateLimitKey(email, ipAddress);
+  const now = Date.now();
+  const current = loginAttempts.get(key);
+
+  if (!current || current.resetAt <= now) {
+    return false;
+  }
+
+  return current.count >= maxLoginAttempts;
+}
+
+function recordLoginFailure(email: string, ipAddress?: string | null) {
+  const key = getRateLimitKey(email, ipAddress);
+  const now = Date.now();
+  const current = loginAttempts.get(key);
+
+  if (!current || current.resetAt <= now) {
+    loginAttempts.set(key, {
+      count: 1,
+      resetAt: now + loginWindowMs
+    });
+    return;
+  }
+
+  loginAttempts.set(key, {
+    count: current.count + 1,
+    resetAt: current.resetAt
+  });
+}
+
+function clearLoginFailures(email: string, ipAddress?: string | null) {
+  loginAttempts.delete(getRateLimitKey(email, ipAddress));
+}
+
 export async function POST(request: Request) {
   try {
     const payload = adminLoginSchema.parse(await request.json());
+    const requestMeta = await getRequestMeta();
+
+    if (isLoginRateLimited(payload.email, requestMeta.ipAddress)) {
+      return NextResponse.json(
+        {
+          ok: false,
+          message: "Çok fazla başarısız giriş denemesi yapıldı. Lütfen birkaç dakika sonra tekrar deneyin."
+        },
+        { status: 429 }
+      );
+    }
 
     if (!hasDatabaseConfig()) {
       const bootstrapAdmin = authenticateBootstrapAdmin(payload.email, payload.password);
 
       if (!bootstrapAdmin) {
+        recordLoginFailure(payload.email, requestMeta.ipAddress);
         return NextResponse.json(
           {
             ok: false,
-            message: "E-posta veya sifre hatali."
+            message: "E-posta veya şifre hatalı."
           },
           { status: 401 }
         );
@@ -62,6 +117,7 @@ export async function POST(request: Request) {
         expires: expiresAt
       });
 
+      clearLoginFailures(payload.email, requestMeta.ipAddress);
       return response;
     }
 
@@ -73,10 +129,11 @@ export async function POST(request: Request) {
         : await findAdminByEmail(payload.email);
 
     if (!admin || admin.status !== "active" || !verifyPassword(payload.password, admin.passwordHash)) {
+      recordLoginFailure(payload.email, requestMeta.ipAddress);
       return NextResponse.json(
         {
           ok: false,
-          message: "E-posta veya sifre hatali."
+          message: "E-posta veya şifre hatalı."
         },
         { status: 401 }
       );
@@ -84,7 +141,6 @@ export async function POST(request: Request) {
 
     const { sessionTtlSeconds, cookieName } = getAdminAuthConfig();
     const expiresAt = new Date(Date.now() + sessionTtlSeconds * 1000);
-    const requestMeta = await getRequestMeta();
     const tokenId = await createAdminSessionRecord({
       adminUserId: admin.id,
       expiresAt,
@@ -118,6 +174,7 @@ export async function POST(request: Request) {
       expires: expiresAt
     });
 
+    clearLoginFailures(payload.email, requestMeta.ipAddress);
     return response;
   } catch (error) {
     if (isRuntimeConfigError(error)) {
@@ -129,7 +186,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         ok: false,
-        message: error instanceof Error ? error.message : "Giris sirasinda beklenmeyen bir hata olustu."
+        message: error instanceof Error ? error.message : "Giriş sırasında beklenmeyen bir hata oluştu."
       },
       { status: 500 }
     );

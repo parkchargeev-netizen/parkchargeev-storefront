@@ -94,6 +94,30 @@ export default async function ProductDetailPage({
     "Keşif talebiyle pano kapasitesi ve kablo hattı netleştirilebilir.",
     "PayTR iFrame akışı kart verisini site sunucusuna taşımaz."
   ];
+  const purchaseReadiness = [
+    {
+      label: "Kurulum dahil mi?",
+      value:
+        product.category === "Aksesuar"
+          ? "Kurulum gerektirmez"
+          : "Keşif sonrası kurulum teklifi eklenebilir"
+    },
+    {
+      label: "Keşif gerekiyor mu?",
+      value:
+        product.powerLabel.toLocaleLowerCase("tr-TR").includes("dc") ||
+        product.powerLabel.includes("22")
+          ? "Önerilir"
+          : "Altyapı bilinmiyorsa önerilir"
+    },
+    {
+      label: "Uyumlu araçlar",
+      value:
+        product.category === "Aksesuar"
+          ? "Type 2 AC soketli araçlar"
+          : "Type 2 AC veya CCS2 desteğine göre seçilir"
+    }
+  ];
   const policyDetails = [
     {
       title: "Teslimat ve kurulum",
@@ -253,6 +277,22 @@ export default async function ProductDetailPage({
           </div>
 
           <ProductPurchasePanel product={product} />
+
+          <div className="mt-6 grid gap-3">
+            {purchaseReadiness.map((item) => (
+              <div
+                key={item.label}
+                className="rounded-2xl border border-primary/15 bg-primary/5 px-4 py-3"
+              >
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+                  {item.label}
+                </p>
+                <p className="mt-2 text-sm font-semibold leading-6 text-on-surface">
+                  {item.value}
+                </p>
+              </div>
+            ))}
+          </div>
 
           <div className="mt-6 grid gap-3">
             {decisionChecks.map((item) => (

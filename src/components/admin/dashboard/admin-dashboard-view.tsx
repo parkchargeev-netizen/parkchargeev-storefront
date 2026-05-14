@@ -248,6 +248,8 @@ export function AdminDashboardView({
   const visibleQuickActions = role
     ? quickActions.filter((action) => action.roles.includes(role))
     : [];
+  const canManageStations =
+    role === "superadmin" || role === "operations" || role === "technician";
   const openQueueTotal =
     snapshot.kpis.pendingOrders +
     snapshot.kpis.pendingQuotes +
@@ -312,6 +314,26 @@ export function AdminDashboardView({
       : snapshot.kpis.targetProgress >= 45
         ? "info"
         : "warning";
+  const todayActions = [
+    {
+      label: "Ödeme ve sipariş onayı",
+      count: snapshot.kpis.pendingOrders,
+      href: "/admin/siparisler?status=pending_confirmation",
+      detail: "Ödeme, stok ve teslimat kontrolü bekleyen siparişler."
+    },
+    {
+      label: "Teklif dönüşü",
+      count: snapshot.kpis.pendingQuotes,
+      href: "/admin/teklifler",
+      detail: "Yeni veya müzakere aşamasındaki satış fırsatları."
+    },
+    {
+      label: "Saha planlama",
+      count: snapshot.kpis.openServiceRequests,
+      href: "/admin/saha",
+      detail: "Keşif, servis veya kurulum ekibine aktarılacak kayıtlar."
+    }
+  ].filter((action) => action.count > 0);
 
   return (
     <div className="space-y-6">
@@ -415,6 +437,52 @@ export function AdminDashboardView({
           ))}
         </section>
       ) : null}
+
+      <section className="surface-card border border-slate-200 bg-white/95 p-6">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-blue-600">
+              Bugünün Aksiyonları
+            </p>
+            <h2 className="mt-2 text-2xl font-semibold text-slate-950">
+              Öncelikli operasyon masası
+            </h2>
+          </div>
+          {canManageStations ? (
+            <Link
+              href="/admin/istasyonlar"
+              prefetch={false}
+              className="rounded-2xl border border-slate-300 bg-white px-5 py-3 text-center text-sm font-semibold text-slate-800 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+            >
+              İstasyonları yönet
+            </Link>
+          ) : null}
+        </div>
+        <div className="mt-5 grid gap-3 md:grid-cols-3">
+          {(todayActions.length > 0
+            ? todayActions
+            : [
+                {
+                  label: "Açık kritik kuyruk yok",
+                  count: 0,
+                  href: "/admin/audit",
+                  detail: "Yeni talep geldiğinde bu alan otomatik öncelik sırasına göre dolacak."
+                }
+              ]
+          ).map((action) => (
+            <Link
+              key={action.label}
+              href={action.href}
+              prefetch={false}
+              className="rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:border-blue-200 hover:bg-blue-50"
+            >
+              <p className="text-sm font-semibold text-slate-950">{action.label}</p>
+              <p className="mt-2 text-3xl font-semibold text-slate-950">{action.count}</p>
+              <p className="mt-2 text-xs leading-5 text-slate-600">{action.detail}</p>
+            </Link>
+          ))}
+        </div>
+      </section>
 
       <section className="grid gap-4 lg:grid-cols-4">
         {visibleQueueCards.map((card) => (

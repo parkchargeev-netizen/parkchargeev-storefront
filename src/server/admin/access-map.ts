@@ -87,6 +87,13 @@ export const adminAccessLinks: AdminAccessLink[] = [
     roles: ["superadmin", "operations", "technician"]
   },
   {
+    href: "/admin/istasyonlar",
+    label: "İstasyonlar",
+    description: "Harita istasyonları, soket durumu ve konum bilgileri.",
+    group: "Operasyon",
+    roles: ["superadmin", "operations", "technician"]
+  },
+  {
     href: "/admin/blog",
     label: "İçerikler",
     description: "Blog yazısı listeleme, filtreleme ve düzenleme.",

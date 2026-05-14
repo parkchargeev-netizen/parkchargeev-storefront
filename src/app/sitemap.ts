@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 
+import { locationPages } from "@/lib/location-pages";
 import { articles, products, solutionPages } from "@/lib/mock-data";
 import { absoluteUrl } from "@/lib/site";
 import { listPublishedSitePagesForSitemap } from "@/server/site/repository";
@@ -10,6 +11,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes = [
     "/",
     "/magaza",
+    "/urun-secici",
+    "/karsilastir",
     "/harita",
     "/hizmetler",
     "/kurumsal-cozumler",
@@ -49,6 +52,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: absoluteUrl(`/kurumsal-cozumler/${solution.slug}`),
       changeFrequency: "weekly" as const,
       priority: 0.76
+    })),
+    ...locationPages.map((page) => ({
+      url: absoluteUrl(`/elektrikli-arac-sarj-istasyonu-kurulumu/${page.slug}`),
+      changeFrequency: "weekly" as const,
+      priority: 0.78
     }))
   ];
 }

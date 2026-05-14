@@ -25,6 +25,7 @@ export const siteConfig = {
   primaryNavigation: [
     { href: "/", label: "Ana Sayfa" },
     { href: "/magaza", label: "Mağaza" },
+    { href: "/urun-secici", label: "Ürün Seçici" },
     { href: "/kurumsal-cozumler", label: "Kurumsal Çözümler" },
     { href: "/hizmetler", label: "Hizmetler" },
     { href: "/harita", label: "Harita" },
@@ -39,6 +40,8 @@ export const siteConfig = {
   footerNavigation: [
     { href: "/hakkimizda", label: "Hakkımızda" },
     { href: "/kurumsal-cozumler", label: "Kurumsal Çözümler" },
+    { href: "/urun-secici", label: "Ürün Seçici" },
+    { href: "/karsilastir", label: "Karşılaştır" },
     { href: "/magaza", label: "Mağaza" },
     { href: "/blog", label: "Blog" },
     { href: "/harita", label: "Harita" },

@@ -35,6 +35,7 @@ type CheckoutDraft = {
 
 const CHECKOUT_STORAGE_KEY = "parkchargeev-checkout-draft-v1";
 const ACTIVE_ORDER_STORAGE_KEY = "parkchargeev-active-order-v1";
+const CART_INTENT_STORAGE_KEY = "parkchargeev-cart-intent-v1";
 
 const initialDraft: CheckoutDraft = {
   fullName: "",
@@ -66,6 +67,9 @@ export function CheckoutPageClient({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCheckingStatus, setIsCheckingStatus] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const cartIntentFingerprint = `${draft.email}|${totalKurus}|${items
+    .map((item) => `${item.productId}:${item.quantity}:${item.cableOption}`)
+    .join("|")}`;
 
   useEffect(() => {
     try {
@@ -82,6 +86,44 @@ export function CheckoutPageClient({
   useEffect(() => {
     window.localStorage.setItem(CHECKOUT_STORAGE_KEY, JSON.stringify(draft));
   }, [draft]);
+
+  useEffect(() => {
+    if (!isHydrated || items.length === 0 || !draft.email.includes("@")) {
+      return;
+    }
+
+    if (window.sessionStorage.getItem(CART_INTENT_STORAGE_KEY) === cartIntentFingerprint) {
+      return;
+    }
+
+    const timeout = window.setTimeout(() => {
+      void fetch("/api/cart-intent", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          email: draft.email,
+          fullName: draft.fullName,
+          phone: draft.phone,
+          totalKurus,
+          items: items.map((item) => ({
+            title: `${item.product.name} - ${item.cableOption}`,
+            unitPrice: (item.product.priceKurus / 100).toFixed(2),
+            quantity: item.quantity
+          }))
+        })
+      })
+        .then((response) => {
+          if (response.ok) {
+            window.sessionStorage.setItem(CART_INTENT_STORAGE_KEY, cartIntentFingerprint);
+          }
+        })
+        .catch(() => undefined);
+    }, 900);
+
+    return () => window.clearTimeout(timeout);
+  }, [cartIntentFingerprint, draft.email, draft.fullName, draft.phone, isHydrated, items, totalKurus]);
 
   useEffect(() => {
     if (!merchantOid) {

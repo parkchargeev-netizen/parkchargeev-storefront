@@ -70,6 +70,34 @@ function formatQuoteSegment(segment: string) {
   return labels[segment] ?? segment;
 }
 
+function getQuotePriority(row: QuoteRow) {
+  let score = 35;
+
+  if (row.segment === "fleet" || row.segment === "business") {
+    score += 25;
+  }
+
+  if (row.status === "new") {
+    score += 22;
+  }
+
+  if (row.status === "negotiation" || row.status === "proposal_sent") {
+    score += 16;
+  }
+
+  if (!row.assignedAdminName) {
+    score += 12;
+  }
+
+  const ageHours = (Date.now() - new Date(row.updatedAt).getTime()) / (1000 * 60 * 60);
+
+  if (ageHours > 24 && !["won", "lost"].includes(row.status)) {
+    score += 15;
+  }
+
+  return Math.min(score, 100);
+}
+
 const columns: Array<ColumnDef<QuoteRow>> = [
   {
     accessorKey: "fullName",
@@ -102,6 +130,17 @@ const columns: Array<ColumnDef<QuoteRow>> = [
     cell: ({ row }) => (
       <AdminStatusBadge label={formatQuoteStatus(row.original.status)} tone={getQuoteTone(row.original.status)} />
     )
+  },
+  {
+    id: "priority",
+    header: "Öncelik",
+    accessorFn: (row) => getQuotePriority(row),
+    cell: ({ row }) => {
+      const score = getQuotePriority(row.original);
+      const tone = score >= 75 ? "danger" : score >= 55 ? "warning" : "info";
+
+      return <AdminStatusBadge label={`${score}/100`} tone={tone} />;
+    }
   },
   {
     accessorKey: "assignedAdminName",

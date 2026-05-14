@@ -77,11 +77,49 @@ function applyAdminSecurityHeaders(response: NextResponse) {
   response.headers.set("Pragma", "no-cache");
   response.headers.set("X-Robots-Tag", "noindex, nofollow");
   response.headers.set("X-Frame-Options", "DENY");
+  response.headers.set("Content-Security-Policy", "frame-ancestors 'none'");
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set("Referrer-Policy", "same-origin");
   response.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  response.headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
 
   return response;
+}
+
+function getForbiddenResponse(message: string) {
+  return applyAdminSecurityHeaders(
+    NextResponse.json(
+      {
+        ok: false,
+        message
+      },
+      { status: 403 }
+    )
+  );
+}
+
+function isUnsafeMethod(method: string) {
+  return !["GET", "HEAD", "OPTIONS"].includes(method.toUpperCase());
+}
+
+function isSameOriginAdminRequest(request: NextRequest) {
+  const origin = request.headers.get("origin");
+
+  if (origin) {
+    return origin === request.nextUrl.origin;
+  }
+
+  const referer = request.headers.get("referer");
+
+  if (!referer) {
+    return true;
+  }
+
+  try {
+    return new URL(referer).origin === request.nextUrl.origin;
+  } catch {
+    return false;
+  }
 }
 
 function getUnauthorizedResponse(request: NextRequest) {
@@ -125,6 +163,10 @@ export async function middleware(request: NextRequest) {
 
   if (!isAdminPage && !isAdminApi) {
     return NextResponse.next();
+  }
+
+  if (isAdminApi && isUnsafeMethod(request.method) && !isSameOriginAdminRequest(request)) {
+    return getForbiddenResponse("Güvenlik doğrulaması başarısız oldu.");
   }
 
   if (pathname === "/admin/login" || pathname === "/api/admin/auth/login") {

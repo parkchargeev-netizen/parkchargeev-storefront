@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import { StationMapClient } from "@/components/site/station-map-client";
-import { stations } from "@/lib/mock-data";
+import { listPublicChargingStations } from "@/server/site/stations";
 
 export const metadata: Metadata = {
   title: "Şarj İstasyonları Haritası",
@@ -9,6 +9,8 @@ export const metadata: Metadata = {
     "ParkChargeEV şarj istasyonlarını harita üzerinde görüntüleyin, müsait soketleri filtreleyin ve yol tarifi alın."
 };
 
-export default function MapPage() {
+export default async function MapPage() {
+  const stations = await listPublicChargingStations();
+
   return <StationMapClient stations={stations} />;
 }
