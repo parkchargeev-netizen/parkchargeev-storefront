@@ -183,7 +183,8 @@ export async function middleware(request: NextRequest) {
   const isCustomerPage = pathname === "/giris" || pathname === "/hesabim";
   const isCustomerApi = pathname.startsWith("/api/customer");
   const isCheckoutPage = pathname === "/odeme";
-  const isPaytrTokenApi = pathname === "/api/paytr/token";
+  const isPaytrCheckoutApi =
+    pathname === "/api/paytr/token" || pathname === "/api/paytr/direct-form";
   const acceptHeader = request.headers.get("accept") ?? "";
   const isMarkdownRequest = request.method === "GET" && acceptHeader.includes("text/markdown");
 
@@ -213,7 +214,7 @@ export async function middleware(request: NextRequest) {
     );
   }
 
-  if (isPaytrTokenApi && isUnsafeMethod(request.method) && !isSameOriginRequest(request)) {
+  if (isPaytrCheckoutApi && isUnsafeMethod(request.method) && !isSameOriginRequest(request)) {
     return applyCustomerSecurityHeaders(
       NextResponse.json(
         {
@@ -225,7 +226,7 @@ export async function middleware(request: NextRequest) {
     );
   }
 
-  if (isCustomerPage || isCustomerApi || isCheckoutPage || isPaytrTokenApi) {
+  if (isCustomerPage || isCustomerApi || isCheckoutPage || isPaytrCheckoutApi) {
     return applyCustomerSecurityHeaders(NextResponse.next());
   }
 
@@ -274,6 +275,7 @@ export const config = {
     "/api/admin/:path*",
     "/api/customer/:path*",
     "/api/paytr/token",
+    "/api/paytr/direct-form",
     "/giris",
     "/hesabim",
     "/odeme",

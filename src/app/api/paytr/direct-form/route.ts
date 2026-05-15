@@ -1,7 +1,10 @@
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
-import { buildPaytrIframePayload } from "@/lib/paytr";
+import {
+  buildPaytrDirectApiPayload,
+  PAYTR_DIRECT_API_FORM_ACTION
+} from "@/lib/paytr";
 import {
   getRuntimeConfigErrorPayload,
   isRuntimeConfigError
@@ -10,7 +13,6 @@ import { durationSince, logError, logInfo, logWarn } from "@/lib/server-logger";
 import { absoluteUrl } from "@/lib/site";
 import { getDb } from "@/server/db/client";
 import { orders, paytrTransactions } from "@/server/db/schema";
-import { requestPaytrIframeToken } from "@/server/paytr/client";
 import {
   createPaytrCheckoutOrder,
   paytrCheckoutRequestSchema
@@ -34,7 +36,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           ok: false,
-          message: "Çok fazla ödeme hazırlama denemesi yapıldı. Lütfen biraz sonra tekrar deneyin."
+          message: "Cok fazla odeme hazirlama denemesi yapildi. Lutfen biraz sonra tekrar deneyin."
         },
         {
           status: 429,
@@ -47,12 +49,12 @@ export async function POST(request: Request) {
 
     const { db, merchantOid, order, userIp } = await createPaytrCheckoutOrder({
       body,
-      flow: "iframe",
+      flow: "direct_api",
       request
     });
     createdMerchantOid = merchantOid;
 
-    const payload = buildPaytrIframePayload({
+    const payload = buildPaytrDirectApiPayload({
       email: body.email,
       paymentAmountKurus: body.paymentAmountKurus,
       userIp,
@@ -62,63 +64,28 @@ export async function POST(request: Request) {
       okUrl: absoluteUrl(`/odeme?status=success&oid=${merchantOid}`),
       failUrl: absoluteUrl(`/odeme?status=failed&oid=${merchantOid}`),
       items: body.items,
-      merchantOid
+      merchantOid,
+      installmentCount: 0,
+      non3d: 0
     });
-
-    const result = await requestPaytrIframeToken(payload);
-
-    if (result.status !== "success") {
-      await db
-        .update(orders)
-        .set({
-          status: "failed",
-          paymentStatus: "token_failed",
-          updatedAt: new Date()
-        })
-        .where(eq(orders.id, order.id));
-
-      await db
-        .update(paytrTransactions)
-        .set({
-          rawRequest: {
-            requestBody: body,
-            paytrPayload: payload,
-            paytrError: result
-          },
-          updatedAt: new Date()
-        })
-        .where(eq(paytrTransactions.orderId, order.id));
-
-      logWarn("paytr.token.rejected", {
-        merchantOid,
-        reason: result.reason,
-        durationMs: durationSince(startedAt)
-      });
-
-      return NextResponse.json(
-        {
-          ok: false,
-          message: "PayTR token alınamadı.",
-          details: result
-        },
-        { status: 400 }
-      );
-    }
 
     await db
       .update(paytrTransactions)
       .set({
-        iframeToken: result.token,
-        status: "token_received",
         rawRequest: {
-          requestBody: body,
+          requestBody: {
+            email: body.email,
+            flow: "direct_api",
+            itemCount: body.items.length,
+            paymentAmountKurus: body.paymentAmountKurus
+          },
           paytrPayload: payload
         },
         updatedAt: new Date()
       })
       .where(eq(paytrTransactions.orderId, order.id));
 
-    logInfo("paytr.token.created", {
+    logInfo("paytr.direct_form.created", {
       merchantOid,
       orderId: order.id,
       itemCount: body.items.length,
@@ -128,8 +95,9 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       ok: true,
-      iframeToken: result.token,
-      merchantOid
+      merchantOid,
+      formAction: PAYTR_DIRECT_API_FORM_ACTION,
+      fields: payload
     });
   } catch (error) {
     if (createdMerchantOid) {
@@ -145,12 +113,12 @@ export async function POST(request: Request) {
           })
           .where(eq(orders.merchantOid, createdMerchantOid));
       } catch {
-        // Sipariş kurulumunda hata olsa da asıl hatayı bastırmıyoruz.
+        // Siparis kurulumunda hata olsa da asil hatayi bastirmiyoruz.
       }
     }
 
     if (isRuntimeConfigError(error)) {
-      logWarn("paytr.token.runtime_config_error", {
+      logWarn("paytr.direct_form.runtime_config_error", {
         area: error.area,
         missingKeys: error.missingKeys,
         merchantOid: createdMerchantOid,
@@ -162,7 +130,7 @@ export async function POST(request: Request) {
       });
     }
 
-    logError("paytr.token.failed", error, {
+    logError("paytr.direct_form.failed", error, {
       merchantOid: createdMerchantOid,
       durationMs: durationSince(startedAt)
     });
@@ -171,7 +139,7 @@ export async function POST(request: Request) {
       {
         ok: false,
         message:
-          error instanceof Error ? error.message : "Beklenmeyen bir hata oluştu."
+          error instanceof Error ? error.message : "Beklenmeyen bir hata olustu."
       },
       { status: 500 }
     );
