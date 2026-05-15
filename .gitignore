@@ -16,3 +16,6 @@ test-results
 .tools
 .vercel
 .data
+
+# Sentry Config File
+.env.sentry-build-plugin
