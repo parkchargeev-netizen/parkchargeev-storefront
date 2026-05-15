@@ -1,4 +1,5 @@
 import { AdminPrefetchLink } from "@/components/admin/admin-prefetch-link";
+import { SitePageDeleteButton } from "@/components/admin/site-page-delete-button";
 import { SiteManagementFormSlot } from "@/components/admin/site-management-form-slot";
 import { AdminFilterBar } from "@/components/admin/table/admin-filter-bar";
 import { AdminPageHeader } from "@/components/admin/table/admin-page-header";
@@ -279,12 +280,19 @@ export async function SiteManagementPanel({
               </p>
               <h2 className="mt-2 text-xl font-semibold text-slate-950">{selectedPage.title}</h2>
             </div>
-            <AdminPrefetchLink
-              href={`${basePath}#site-management`}
-              className="rounded-full border border-blue-200 bg-white px-3 py-1.5 text-xs font-semibold text-blue-700"
-            >
-              Kapat
-            </AdminPrefetchLink>
+            <div className="flex flex-wrap items-center gap-2">
+              <AdminPrefetchLink
+                href={`${basePath}#site-management`}
+                className="rounded-full border border-blue-200 bg-white px-3 py-1.5 text-xs font-semibold text-blue-700"
+              >
+                Kapat
+              </AdminPrefetchLink>
+              <SitePageDeleteButton
+                id={selectedPage.id}
+                title={selectedPage.title}
+                returnHref={`${basePath}#site-management`}
+              />
+            </div>
           </div>
           <SiteManagementFormSlot
             kind="page"
@@ -363,6 +371,11 @@ export async function SiteManagementPanel({
                   >
                     Düzenle
                   </AdminPrefetchLink>
+                  <SitePageDeleteButton
+                    id={page.id}
+                    title={page.title}
+                    returnHref={`${basePath}#site-management`}
+                  />
                 </div>
               </div>
             </div>

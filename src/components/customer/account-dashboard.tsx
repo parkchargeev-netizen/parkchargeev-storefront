@@ -176,8 +176,7 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
             {[
               { href: "/magaza", label: "Ürünlere dön", icon: Package },
               { href: "/karsilastir", label: "Ürün karşılaştır", icon: FileText },
-              { href: "/iletisim?konu=kurulum", label: "Kurulum desteği", icon: Headphones },
-              { href: "/harita", label: "İstasyon haritası", icon: MapPin }
+              { href: "/iletisim?konu=kurulum", label: "Kurulum desteği", icon: Headphones }
             ].map((item) => {
               const Icon = item.icon;
 

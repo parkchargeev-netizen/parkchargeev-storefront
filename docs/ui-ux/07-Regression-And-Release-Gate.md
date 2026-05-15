@@ -19,7 +19,6 @@ Bu checklist ParkChargeEV için her büyük kodlama batch'i sonrası uygulanır.
 - [ ] karşılaştırma
 - [ ] sepet
 - [ ] ödeme
-- [ ] harita
 - [ ] blog ve il landing sayfası
 - [ ] iletişim / teklif formu
 

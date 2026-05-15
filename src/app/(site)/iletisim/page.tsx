@@ -17,6 +17,95 @@ const fallbackMetadata: Metadata = {
     "Keşif, teklif, kurulum, servis ve iş ortaklığı talepleri için ParkChargeEV ile iletişime geçin."
 };
 
+function officeAddress() {
+  return `${siteConfig.address.streetAddress}, ${siteConfig.address.addressLocality} / ${siteConfig.address.addressRegion}`;
+}
+
+function ContactJsonLd() {
+  const localBusinessJsonLd = getLocalBusinessJsonLd();
+  const faqJsonLd = getFaqJsonLd(globalFaqs);
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(localBusinessJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(faqJsonLd) }}
+      />
+    </>
+  );
+}
+
+function OfficeMapCard() {
+  const address = officeAddress();
+  const mapSrc = `https://www.google.com/maps?q=${encodeURIComponent(address)}&output=embed`;
+
+  return (
+    <div className="surface-card overflow-hidden p-0">
+      <div className="p-6">
+        <p className="text-sm uppercase tracking-[0.26em] text-on-surface-variant">
+          Adres haritası
+        </p>
+        <h2 className="mt-3 text-2xl font-bold text-on-surface">Merkez ofis konumu</h2>
+        <p className="mt-3 text-sm leading-7 text-on-surface-variant">{address}</p>
+      </div>
+      <iframe
+        title="ParkChargeEV merkez ofis haritası"
+        src={mapSrc}
+        loading="lazy"
+        referrerPolicy="no-referrer-when-downgrade"
+        allowFullScreen
+        className="h-[320px] w-full border-0"
+      />
+    </div>
+  );
+}
+
+function ContactInfoCards() {
+  return (
+    <div className="grid gap-4">
+      <div className="surface-card p-6">
+        <p className="text-sm uppercase tracking-[0.26em] text-on-surface-variant">
+          Telefon
+        </p>
+        <p className="mt-3 text-2xl font-bold text-on-surface">
+          {siteConfig.phone}
+        </p>
+      </div>
+      <div className="surface-card p-6">
+        <p className="text-sm uppercase tracking-[0.26em] text-on-surface-variant">
+          E-posta
+        </p>
+        <p className="mt-3 text-2xl font-bold text-on-surface">
+          {siteConfig.email}
+        </p>
+      </div>
+      <div className="surface-card p-6">
+        <p className="text-sm uppercase tracking-[0.26em] text-on-surface-variant">
+          Merkez Ofis
+        </p>
+        <p className="mt-3 text-lg font-semibold text-on-surface">{officeAddress()}</p>
+      </div>
+      <OfficeMapCard />
+    </div>
+  );
+}
+
+function ManagedContactDetails() {
+  return (
+    <section className="mx-auto grid max-w-7xl gap-6 px-6 pb-12 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
+      <ContactInfoCards />
+      <LeadForm
+        title="Teklif, keşif ve destek formu"
+        description="Talebinizin türünü seçin; ekip doğru satış veya destek akışıyla size geri dönüş yapsın."
+      />
+    </section>
+  );
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getPublishedSitePageBySlug("iletisim");
 
@@ -47,22 +136,18 @@ export default async function ContactPage() {
   const page = await getPublishedSitePageBySlug("iletisim");
 
   if (page) {
-    return <ManagedPageRenderer page={page} />;
+    return (
+      <>
+        <ContactJsonLd />
+        <ManagedPageRenderer page={page} />
+        <ManagedContactDetails />
+      </>
+    );
   }
-
-  const localBusinessJsonLd = getLocalBusinessJsonLd();
-  const faqJsonLd = getFaqJsonLd(globalFaqs);
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(localBusinessJsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(faqJsonLd) }}
-      />
+      <ContactJsonLd />
 
       <section className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
         <div>
@@ -78,31 +163,8 @@ export default async function ContactPage() {
             destek taleplerinizi aynı iletişim mimarisinde toplayacak sayfa.
           </p>
 
-          <div className="mt-8 grid gap-4">
-            <div className="surface-card p-6">
-              <p className="text-sm uppercase tracking-[0.26em] text-on-surface-variant">
-                Telefon
-              </p>
-              <p className="mt-3 text-2xl font-bold text-on-surface">
-                {siteConfig.phone}
-              </p>
-            </div>
-            <div className="surface-card p-6">
-              <p className="text-sm uppercase tracking-[0.26em] text-on-surface-variant">
-                E-posta
-              </p>
-              <p className="mt-3 text-2xl font-bold text-on-surface">
-                {siteConfig.email}
-              </p>
-            </div>
-            <div className="surface-card p-6">
-              <p className="text-sm uppercase tracking-[0.26em] text-on-surface-variant">
-                Merkez Ofis
-              </p>
-              <p className="mt-3 text-lg font-semibold text-on-surface">
-                {siteConfig.address.streetAddress}, {siteConfig.address.addressLocality} / {siteConfig.address.addressRegion}
-              </p>
-            </div>
+          <div className="mt-8">
+            <ContactInfoCards />
           </div>
         </div>
 

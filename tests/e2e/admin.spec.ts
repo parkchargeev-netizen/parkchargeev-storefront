@@ -14,10 +14,8 @@ async function goToAdminSection(page: Page, href: string, urlPattern: RegExp) {
   const link = page.locator(`aside nav a[href="${href}"]`).first();
 
   await expect(link).toBeVisible();
-  await Promise.all([
-    page.waitForURL(urlPattern, { timeout: 30_000 }),
-    link.click()
-  ]);
+  await link.click();
+  await expect(page).toHaveURL(urlPattern, { timeout: 30_000 });
 }
 
 test("@e2e admin login -> dashboard -> temel modul navigasyonu", async ({ page }) => {

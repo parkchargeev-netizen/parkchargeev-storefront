@@ -1,5 +1,5 @@
 import { revalidateTag, unstable_cache } from "next/cache";
-import { and, asc, eq, ilike, or } from "drizzle-orm";
+import { asc, eq, ilike, or } from "drizzle-orm";
 
 import { hasDatabaseConfig } from "@/lib/runtime-config";
 import { stations as fallbackStations, type StationModel } from "@/lib/mock-data";
@@ -191,31 +191,3 @@ export async function saveAdminStation(
   revalidateTag("charging-stations");
   return toStationModel(created);
 }
-
-export const listPublicChargingStations = unstable_cache(
-  async (): Promise<StationModel[]> => {
-    if (!hasDatabaseConfig()) {
-      return fallbackStations;
-    }
-
-    try {
-      const db = getDb();
-      const rows = await db
-        .select()
-        .from(chargingStations)
-        .where(and(eq(chargingStations.isActive, true)))
-        .orderBy(asc(chargingStations.sortOrder), asc(chargingStations.city), asc(chargingStations.name));
-
-      if (rows.length === 0) {
-        return fallbackStations;
-      }
-
-      return rows.map(toStationModel);
-    } catch (error) {
-      console.warn("Public charging stations could not be loaded.", error);
-      return fallbackStations;
-    }
-  },
-  ["public-charging-stations"],
-  { revalidate: 120, tags: ["charging-stations"] }
-);

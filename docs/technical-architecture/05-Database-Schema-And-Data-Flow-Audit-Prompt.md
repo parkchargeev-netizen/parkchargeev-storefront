@@ -27,7 +27,7 @@ Kontrol başlıkları:
 Sorular:
 - veri modeli ürün mantığını doğru taşıyor mu
 - sipariş/ödeme/teklif/saha akışı veri bütünlüğü açısından savunulabilir mi
-- istasyon ve harita verisinin canonical ownership'i belli mi
+- istasyon verisinin canonical ownership'i belli mi
 - büyüdükçe sorgu ve raporlama zorlaşır mı
 - entegrasyonlardan gelen veri modele zarar veriyor mu
 

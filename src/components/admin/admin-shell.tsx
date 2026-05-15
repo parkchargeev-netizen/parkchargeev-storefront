@@ -60,7 +60,7 @@ const navigationDetailMap: Record<string, string> = {
   "/admin/siparisler": "Ödeme, teslimat ve sipariş karşılama",
   "/admin/teklifler": "B2B/B2C teklif akışı",
   "/admin/saha": "Servis ve saha talepleri",
-  "/admin/istasyonlar": "Harita istasyonları ve soket yönetimi",
+  "/admin/istasyonlar": "İstasyon ve soket yönetimi",
   "/admin/blog": "Blog ve içerik operasyonu",
   "/admin/katalog": "Marka ve kategori sözlükleri",
   "/admin/paytr": "Ödeme hareketleri",

@@ -23,14 +23,12 @@ const requiredRoutes = [
   "src/app/(site)/karsilastir/page.tsx",
   "src/app/(site)/sepet/page.tsx",
   "src/app/(site)/odeme/page.tsx",
-  "src/app/(site)/harita/page.tsx",
   "src/app/admin/(panel)/page.tsx",
   "src/app/admin/(panel)/istasyonlar/page.tsx",
   "src/app/admin/(panel)/site/page.tsx",
   "playwright.config.ts",
   "tests/e2e/store-checkout.spec.ts",
-  "tests/e2e/admin.spec.ts",
-  "tests/e2e/map.spec.ts"
+  "tests/e2e/admin.spec.ts"
 ];
 
 const sourceRoots = ["src/app", "src/components"];

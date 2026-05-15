@@ -18,14 +18,12 @@ const navigationSeed = [
   ["primary", "Magaza", "/magaza", 10],
   ["primary", "Kurumsal Cozumler", "/kurumsal-cozumler", 20],
   ["primary", "Hizmetler", "/hizmetler", 30],
-  ["primary", "Harita", "/harita", 40],
   ["primary", "Blog", "/blog", 50],
   ["primary", "Iletisim", "/iletisim", 60],
   ["footer", "Hakkimizda", "/hakkimizda", 0],
   ["footer", "Kurumsal Cozumler", "/kurumsal-cozumler", 10],
   ["footer", "Magaza", "/magaza", 20],
   ["footer", "Blog", "/blog", 30],
-  ["footer", "Harita", "/harita", 40],
   ["footer", "Iletisim", "/iletisim", 50],
   ["legal", "Destek Merkezi", "/iletisim", 0],
   ["legal", "Musteri Girisi", "/giris", 10],
@@ -159,6 +157,8 @@ try {
         updated_at = now()
     `;
   }
+
+  await sql`delete from navigation_items where href = '/harita'`;
 
   for (const page of pageSeed) {
     await sql`

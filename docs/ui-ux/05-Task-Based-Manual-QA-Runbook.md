@@ -40,12 +40,12 @@ Kontrol:
 - [ ] Gönderim sonrası başarı veya hata feedback'i var
 - [ ] Admin teklif kuyruğunda kayıt izlenebilir
 
-## Görev 4: Haritada İstasyon Bul
+## Görev 4: Karşılaştırmadan Satın Alma Aksiyonuna Geç
 
-- [ ] Harita sayfası açılıyor
-- [ ] İstasyon listesi ve marker ilişkisi anlaşılır
-- [ ] Soket/güç/durum bilgisi okunabilir
-- [ ] Mobilde harita ve liste çakışmıyor
+- [ ] Karşılaştırma sayfası açılıyor
+- [ ] Ürün farkları ve önerilen kullanım senaryoları anlaşılır
+- [ ] Ürün detayına veya sepete geçiş net
+- [ ] Mobilde karşılaştırma kartları taşmıyor
 
 ## Görev 5: Blog/SEO İçeriğinden Satış Aksiyonuna Geç
 
@@ -72,16 +72,16 @@ Kontrol:
 ## Görev 7: Admin Site ve İstasyon Yönetimi
 
 - [ ] Site yönetiminden menü veya sayfa düzenlenebiliyor
+- [ ] Site yönetiminden sayfa silinebiliyor ve ilgili menü linki kırık kalmıyor
 - [ ] Kaydedilen menü yayındaki header/footer akışına yansıyor
 - [ ] Admin istasyon ekranından istasyon eklenip düzenlenebiliyor
-- [ ] Harita sayfasında admin kayıtları görünüyor
+- [ ] İstasyon kayıtları admin panelde aranıp güncellenebiliyor
 
 ## Görev 8: Mobile Smoke Test
 
 - [ ] Ana sayfa CTA'ları taşmıyor
 - [ ] Mağaza ve ürün detay kullanılabilir
 - [ ] Sepet/ödeme formu taşmıyor
-- [ ] Harita sayfasında liste ve marker alanları okunabilir
 - [ ] Admin kritik aksiyonları küçük ekranda erişilebilir
 
 ## Test Sonu Notları

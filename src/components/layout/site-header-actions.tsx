@@ -2,9 +2,13 @@ import Link from "next/link";
 
 import { SiteCartLink } from "@/components/layout/site-cart-link";
 
-export function SiteHeaderActions() {
+type SiteHeaderActionsProps = {
+  className?: string;
+};
+
+export function SiteHeaderActions({ className = "" }: SiteHeaderActionsProps) {
   return (
-    <div className="flex items-center gap-3">
+    <div className={className || "flex items-center gap-3"}>
       <Link
         href="/arama"
         className="rounded-xl border border-outline-variant/40 bg-white px-4 py-2 text-sm font-medium text-on-surface transition hover:border-primary/30 hover:text-primary"

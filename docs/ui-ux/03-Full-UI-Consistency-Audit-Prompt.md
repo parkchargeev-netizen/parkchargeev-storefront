@@ -30,7 +30,7 @@ Layout ve spacing denetimi:
 - kart iç boşlukları
 - form grup araları
 - responsive kırılımlar
-- harita ve checkout gibi sabit formatlı alanların stabilitesi
+- ürün galeri ve checkout gibi sabit formatlı alanların stabilitesi
 
 Rapor formatı:
 1. Kapsam

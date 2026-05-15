@@ -6,12 +6,11 @@ import { ProductCard } from "@/components/shop/product-card";
 import { SolutionCard } from "@/components/solutions/solution-card";
 import { locationPages } from "@/lib/location-pages";
 import { articles, products, solutionPages } from "@/lib/mock-data";
-import { listPublicChargingStations } from "@/server/site/stations";
 
 export const metadata: Metadata = {
   title: "Arama",
   description:
-    "Ürün, çözüm, içerik, lokasyon ve şarj istasyonları arasında arama yapın."
+    "Ürün, çözüm, içerik ve lokasyon sayfaları arasında arama yapın."
 };
 
 type SearchPageProps = {
@@ -20,7 +19,6 @@ type SearchPageProps = {
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
   const { q = "" } = await searchParams;
-  const stations = await listPublicChargingStations();
   const query = q.trim().toLocaleLowerCase("tr-TR");
 
   const matchedProducts = query
@@ -40,13 +38,6 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         `${solution.title} ${solution.summary} ${solution.segment}`.toLocaleLowerCase("tr-TR").includes(query)
       )
     : [];
-  const matchedStations = query
-    ? stations.filter((station) =>
-        `${station.name} ${station.city} ${station.district} ${station.address} ${station.power} ${station.connectorTypes.join(" ")}`
-          .toLocaleLowerCase("tr-TR")
-          .includes(query)
-      )
-    : [];
   const matchedLocations = query
     ? locationPages.filter((page) =>
         `${page.city} ${page.region} ${page.summary} ${page.districts.join(" ")} ${page.useCases.join(" ")}`
@@ -58,7 +49,6 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     matchedProducts.length +
     matchedArticles.length +
     matchedSolutions.length +
-    matchedStations.length +
     matchedLocations.length;
 
   return (
@@ -86,10 +76,10 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       {!query ? (
         <section className="mt-10 surface-card p-8">
           <p className="text-lg leading-8 text-on-surface-variant">
-            Ürün, çözüm, blog, lokasyon ve şarj istasyonları arasında arama yapmak için bir ifade girin.
+            Ürün, çözüm, blog ve lokasyon sayfaları arasında arama yapmak için bir ifade girin.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
-            {["ev tipi şarj", "22 kW", "İstanbul kurulum", "Akasya istasyon", "apartman çözümü"].map((item) => (
+            {["ev tipi şarj", "22 kW", "İstanbul kurulum", "apartman çözümü"].map((item) => (
               <Link
                 key={item}
                 href={`/arama?q=${encodeURIComponent(item)}`}
@@ -160,29 +150,6 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                   </p>
                   <p className="mt-2 text-sm leading-6 text-on-surface-variant">
                     {page.summary}
-                  </p>
-                </Link>
-              ))}
-            </div>
-          </section>
-
-          <section className="mt-12">
-            <h2 className="text-3xl font-bold tracking-[-0.05em] text-on-surface">
-              Şarj istasyonları ({matchedStations.length})
-            </h2>
-            <div className="mt-6 grid gap-4 lg:grid-cols-3">
-              {matchedStations.map((station) => (
-                <Link
-                  key={station.id}
-                  href={`/harita?station=${encodeURIComponent(station.id)}`}
-                  className="surface-card block p-6 transition hover:border-primary/30 hover:bg-surface-container-low"
-                >
-                  <p className="text-lg font-semibold text-on-surface">{station.name}</p>
-                  <p className="mt-2 text-sm text-on-surface-variant">
-                    {station.city} / {station.district}
-                  </p>
-                  <p className="mt-2 text-sm font-semibold text-primary">
-                    {station.availableSockets}/{station.totalSockets} soket müsait - {station.power}
                   </p>
                 </Link>
               ))}

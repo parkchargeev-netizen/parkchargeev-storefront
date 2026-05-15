@@ -226,7 +226,7 @@ export function StationForm({ station }: StationFormProps) {
           checked={form.isActive}
           onChange={(event) => updateField("isActive", event.target.checked)}
         />
-        Haritada aktif göster
+        Operasyonda aktif göster
       </label>
 
       {message ? (

@@ -29,7 +29,6 @@ export const siteConfig = {
     { href: "/karsilastir", label: "Karşılaştır" },
     { href: "/kurumsal-cozumler", label: "Kurumsal Çözümler" },
     { href: "/hizmetler", label: "Hizmetler" },
-    { href: "/harita", label: "Harita" },
     { href: "/blog", label: "Blog" },
     { href: "/iletisim", label: "İletişim" }
   ],
@@ -45,7 +44,6 @@ export const siteConfig = {
     { href: "/karsilastir", label: "Karşılaştır" },
     { href: "/magaza", label: "Mağaza" },
     { href: "/blog", label: "Blog" },
-    { href: "/harita", label: "Harita" },
     { href: "/iletisim", label: "İletişim" }
   ],
   legalNavigation: [

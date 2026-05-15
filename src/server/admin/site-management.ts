@@ -319,3 +319,44 @@ export async function upsertAdminSitePage(
   revalidateTag("site-pages");
   return created;
 }
+
+export async function deleteAdminSitePage(
+  id: string,
+  actor: AdminSessionPayload | null,
+  requestMeta?: { ipAddress?: string | null; userAgent?: string | null }
+) {
+  if (!hasDatabaseConfig()) {
+    return null;
+  }
+
+  const db = getDb();
+  const [before] = await db.select().from(sitePages).where(eq(sitePages.id, id)).limit(1);
+
+  if (!before) {
+    return null;
+  }
+
+  const pageHref = `/${before.slug}`;
+
+  await db.transaction(async (tx) => {
+    await tx.delete(sitePages).where(eq(sitePages.id, id));
+    await tx.delete(navigationItems).where(eq(navigationItems.href, pageHref));
+  });
+
+  await recordAuditLog({
+    db,
+    actor,
+    entityType: "site_page",
+    entityId: id,
+    action: "delete",
+    summary: `${before.title} sayfası silindi.`,
+    beforePayload: before,
+    afterPayload: { removedNavigationHref: pageHref },
+    ipAddress: requestMeta?.ipAddress,
+    userAgent: requestMeta?.userAgent
+  });
+
+  revalidateTag("site-pages");
+  revalidateTag("site-navigation");
+  return before;
+}

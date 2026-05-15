@@ -151,16 +151,15 @@ PowerShell üzerinde lokal Node ile aynı doğrulama:
 `verify:uiux` aşağıdaki kontrolleri yapar:
 
 - `docs/ui-ux` altındaki ParkChargeEV'e uyarlanmış UI/UX checklist ve prompt seti mevcut mu
-- Mağaza, ürün, sepet, ödeme, harita ve admin kritik rota dosyaları mevcut mu
+- Mağaza, ürün, sepet, ödeme ve admin kritik rota dosyaları mevcut mu
 - Saf `#` link, `javascript:` href ve boş event handler gibi bariz ölü kontrol kalıpları var mı
 
 `verify:e2e`, `verify:a11y` ve `verify:visual` Playwright ile gerçek tarayıcıda çalışır:
 
 - Admin login -> dashboard -> temel modül navigasyonu
 - Mağaza -> ürün -> sepet -> ödeme akışı
-- Harita -> istasyon filtresi -> istasyon seçimi
 - Kritik sayfalarda axe tabanlı accessibility smoke
-- Harita sayfası için desktop/mobil screenshot baseline
+- Visual smoke testleri tanımlıysa screenshot baseline
 
 ## Ortam Değişkenleri
 

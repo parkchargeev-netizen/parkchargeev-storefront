@@ -21,7 +21,7 @@ Mutlaka bakılacak akışlar:
 - Ana sayfa -> mağaza -> ürün detay -> sepet -> ödeme
 - Ürün seçici -> önerilen ürün/teklif
 - Karşılaştırma -> ürün veya teklif aksiyonu
-- Harita -> istasyon keşfi
+- Müşteri hesabı -> sipariş, adres ve destek aksiyonu
 - Blog/SEO landing -> ürün veya teklif geçişi
 - Admin login -> gösterge paneli -> ürün/sipariş/teklif/saha/istasyon/site yönetimi
 

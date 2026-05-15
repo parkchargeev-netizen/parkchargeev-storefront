@@ -1,10 +1,10 @@
 # Master UI/UX QA Checklist
 
-Bu checklist ParkChargeEV mağaza, teklif, harita ve admin operasyon akışlarını bütünsel olarak denetlemek için kullanılır.
+Bu checklist ParkChargeEV mağaza, teklif, ödeme ve admin operasyon akışlarını bütünsel olarak denetlemek için kullanılır.
 
 ## 1. Bilgi Mimarisi
 
-- [ ] Ana menü, mağaza, ürün seçici, karşılaştırma, harita, blog ve iletişim hedeflerini net ayırıyor mu?
+- [ ] Ana menü, mağaza, ürün seçici, karşılaştırma, blog ve iletişim hedeflerini net ayırıyor mu?
 - [ ] Admin sidebar görev odaklı mı: gösterge paneli, ürünler, siparişler, teklifler, saha, istasyonlar, site, audit?
 - [ ] Kullanıcı ilk bakışta alışveriş mi, teklif mi, kurulum bilgisi mi alacağını anlayabiliyor mu?
 - [ ] Sayfa başlıkları teknik değil, kullanıcı diliyle mi yazılmış?
@@ -46,7 +46,7 @@ Bu checklist ParkChargeEV mağaza, teklif, harita ve admin operasyon akışları
 - [ ] Form grup araları, kart iç boşlukları ve tablo satır yükseklikleri tutarlı mı?
 - [ ] Mobilde site "küçülmüş desktop" gibi görünmüyor mu?
 - [ ] Admin sidebar, üst arama ve içerik alanı farklı ekranlarda çakışmıyor mu?
-- [ ] Harita ve ürün galeri alanları stabil boyutlarla yerleşiyor mu?
+- [ ] Ürün galeri ve ödeme alanları stabil boyutlarla yerleşiyor mu?
 
 ## 7. Görsel Tutarlılık
 
@@ -57,14 +57,14 @@ Bu checklist ParkChargeEV mağaza, teklif, harita ve admin operasyon akışları
 
 ## 8. Responsive / Mobile
 
-- [ ] 390px genişlikte mağaza, ürün detay, sepet, ödeme ve harita kullanılabiliyor mu?
+- [ ] 390px genişlikte mağaza, ürün detay, sepet ve ödeme kullanılabiliyor mu?
 - [ ] Admin kritik aksiyonları mobilde erişilebilir mi?
 - [ ] Touch hedefleri en az 44px hissi veriyor mu?
 - [ ] Tablo/listeler mobilde yatay kaydırma veya kart görünümüyle kırılmadan duruyor mu?
 
 ## 9. SEO ve Güven
 
-- [ ] Ürün, blog, il landing, kurumsal çözüm ve harita sayfaları metadata ile uyumlu mu?
+- [ ] Ürün, blog, il landing ve kurumsal çözüm sayfaları metadata ile uyumlu mu?
 - [ ] FAQ, Product, Breadcrumb ve LocalBusiness schema akışı bozulmamış mı?
 - [ ] Güvenlik başlıkları admin ve site için noindex/no-store beklentisine uyuyor mu?
 - [ ] Kritik form ve ödeme hatalarında recovery yolu var mı?

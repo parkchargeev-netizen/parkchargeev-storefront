@@ -44,8 +44,7 @@ const requiredFiles = [
   "scripts/admin-smoke.mjs",
   "scripts/ui-ux-gate.mjs",
   "tests/e2e/store-checkout.spec.ts",
-  "tests/e2e/admin.spec.ts",
-  "tests/e2e/map.spec.ts"
+  "tests/e2e/admin.spec.ts"
 ];
 
 const requiredScripts = [

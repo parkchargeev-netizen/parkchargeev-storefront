@@ -33,17 +33,9 @@ export default async function AdminStationsPage({ searchParams }: AdminStationsP
   return (
     <div className="space-y-6">
       <AdminPageHeader
-        eyebrow="Harita ve istasyonlar"
+        eyebrow="İstasyonlar"
         title="Şarj istasyonu yönetimi"
-        description="Harita sayfasında görünen istasyonları, soket durumlarını, konum bilgilerini ve operatör notlarını yönetin."
-        action={
-          <Link
-            href="/harita"
-            className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-800 transition hover:border-blue-200 hover:bg-blue-50"
-          >
-            Haritayı Aç
-          </Link>
-        }
+        description="İstasyon kayıtlarını, soket durumlarını, konum bilgilerini ve operatör notlarını yönetin."
       />
 
       <section className="grid gap-4 md:grid-cols-3">
@@ -92,7 +84,7 @@ export default async function AdminStationsPage({ searchParams }: AdminStationsP
             <div>
               <h2 className="text-xl font-semibold text-slate-950">İstasyon listesi</h2>
               <p className="mt-1 text-sm text-slate-600">
-                Şehir, ilçe, soket ve harita görünürlüğü tek yerden izlenir.
+                Şehir, ilçe, soket ve operasyon görünürlüğü tek yerden izlenir.
               </p>
             </div>
             <form action="/admin/istasyonlar" className="flex gap-2">
@@ -157,7 +149,7 @@ export default async function AdminStationsPage({ searchParams }: AdminStationsP
               {selectedStation ? "Düzenle" : "Yeni istasyon"}
             </p>
             <h2 className="mt-2 text-xl font-semibold text-slate-950">
-              {selectedStation ? selectedStation.name : "Haritaya istasyon ekle"}
+              {selectedStation ? selectedStation.name : "Yeni istasyon ekle"}
             </h2>
           </div>
           <StationForm station={selectedStation} />

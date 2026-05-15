@@ -6,6 +6,9 @@ import { siteConfig } from "@/lib/site";
 import { getDb } from "@/server/db/client";
 import { navigationItems, sitePages } from "@/server/db/schema";
 
+const retiredPublicHrefs = new Set(["/harita"]);
+const retiredPublicSlugs = new Set(["harita"]);
+
 export type PublicNavigationItem = {
   id?: string;
   label: string;
@@ -22,10 +25,14 @@ export type PublicSiteNavigation = {
 
 function fallbackNavigation(): PublicSiteNavigation {
   return {
-    primary: [...siteConfig.primaryNavigation],
-    footer: [...siteConfig.footerNavigation],
-    legal: [...siteConfig.legalNavigation]
+    primary: filterRetiredNavigation(siteConfig.primaryNavigation),
+    footer: filterRetiredNavigation(siteConfig.footerNavigation),
+    legal: filterRetiredNavigation(siteConfig.legalNavigation)
   };
+}
+
+function filterRetiredNavigation<T extends PublicNavigationItem>(items: readonly T[]) {
+  return items.filter((item) => !retiredPublicHrefs.has(item.href));
 }
 
 export async function getPublicSiteNavigation(): Promise<PublicSiteNavigation> {
@@ -52,6 +59,10 @@ export async function getPublicSiteNavigation(): Promise<PublicSiteNavigation> {
     };
 
     for (const row of rows) {
+      if (retiredPublicHrefs.has(row.href)) {
+        continue;
+      }
+
       navigation[row.area].push({
         id: row.id,
         label: row.label,
@@ -80,6 +91,11 @@ export const getPublishedSitePageBySlug = unstable_cache(
 
     try {
       const normalizedSlug = slug.replace(/^\/+|\/+$/g, "");
+
+      if (retiredPublicSlugs.has(normalizedSlug)) {
+        return null;
+      }
+
       const db = getDb();
       const [page] = await db
         .select()
@@ -105,7 +121,7 @@ export const listPublishedSitePagesForSitemap = unstable_cache(
 
     try {
       const db = getDb();
-      return await db
+      const pages = await db
         .select({
           slug: sitePages.slug,
           updatedAt: sitePages.updatedAt,
@@ -121,6 +137,8 @@ export const listPublishedSitePagesForSitemap = unstable_cache(
           )
         )
         .orderBy(desc(sitePages.updatedAt));
+
+      return pages.filter((page) => !retiredPublicSlugs.has(page.slug));
     } catch (error) {
       console.warn("Published site pages for sitemap could not be loaded.", error);
       return [];
