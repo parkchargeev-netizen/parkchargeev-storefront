@@ -1,4 +1,4 @@
-import { createHmac, randomUUID } from "node:crypto";
+import { createHmac, randomUUID, timingSafeEqual } from "node:crypto";
 
 import { getPaytrConfig } from "@/lib/runtime-config";
 
@@ -7,6 +7,8 @@ export type PaytrCheckoutItem = {
   unitPrice: string;
   quantity: number;
 };
+
+export type PaytrCurrency = "TL" | "TRY" | "EUR" | "USD" | "GBP" | "RUB";
 
 export type PaytrIframeRequestInput = {
   email: string;
@@ -18,13 +20,14 @@ export type PaytrIframeRequestInput = {
   okUrl: string;
   failUrl: string;
   items: PaytrCheckoutItem[];
-  currency?: "TL" | "TRY" | "EUR" | "USD" | "GBP" | "RUB";
+  currency?: PaytrCurrency;
   noInstallment?: 0 | 1;
   maxInstallment?: number;
   testMode?: 0 | 1;
   debugOn?: 0 | 1;
   timeoutLimit?: number;
   iframeV2?: 0 | 1;
+  lang?: "tr" | "en";
   merchantOid?: string;
 };
 
@@ -51,13 +54,14 @@ export function encodeBasket(items: PaytrCheckoutItem[]) {
 }
 
 export function generateMerchantOid(prefix = "PCEV") {
-  return `${prefix}-${randomUUID()}`;
+  return `${prefix}${randomUUID().replaceAll("-", "").toUpperCase()}`;
 }
 
 export function buildPaytrIframePayload(input: PaytrIframeRequestInput) {
   const env = getPaytrConfig();
   const merchantOid = input.merchantOid ?? generateMerchantOid();
-  const currency = input.currency ?? (process.env.PAYTR_CURRENCY as "TL") ?? "TL";
+  const currency =
+    input.currency ?? ((process.env.PAYTR_CURRENCY as PaytrCurrency | undefined) ?? "TL");
   const noInstallment = input.noInstallment ?? 0;
   const maxInstallment = input.maxInstallment ?? 0;
   const testMode =
@@ -103,7 +107,8 @@ export function buildPaytrIframePayload(input: PaytrIframeRequestInput) {
     timeout_limit: String(timeoutLimit),
     currency,
     test_mode: String(testMode),
-    iframe_v2: String(input.iframeV2 ?? 1)
+    iframe_v2: String(input.iframeV2 ?? 1),
+    lang: input.lang ?? "tr"
   };
 }
 
@@ -118,5 +123,11 @@ export function verifyPaytrCallbackHash(payload: PaytrCallbackPayload) {
     )
     .digest("base64");
 
-  return computedHash === payload.hash;
+  const expectedHash = Buffer.from(computedHash);
+  const receivedHash = Buffer.from(payload.hash);
+
+  return (
+    expectedHash.length === receivedHash.length &&
+    timingSafeEqual(expectedHash, receivedHash)
+  );
 }

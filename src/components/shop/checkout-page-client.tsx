@@ -4,6 +4,11 @@ import Link from "next/link";
 import Script from "next/script";
 import { useEffect, useState } from "react";
 
+import { CheckoutEmptyCartPanel, CheckoutLoadingPanel } from "@/components/shop/checkout-empty-cart-panel";
+import { CheckoutOrderSummary } from "@/components/shop/checkout-order-summary";
+import { CheckoutResultPanel } from "@/components/shop/checkout-result-panel";
+import { CheckoutStatusSummary } from "@/components/shop/checkout-status-summary";
+import { PaytrIframePanel } from "@/components/shop/paytr-iframe-panel";
 import { useCart } from "@/components/providers/cart-provider";
 import {
   enrichCartItems,
@@ -11,7 +16,6 @@ import {
   getEnrichedCartTaxKurus,
   getEnrichedCartTotalKurus
 } from "@/lib/cart";
-import { formatPriceTRY } from "@/lib/format";
 
 type CheckoutPageClientProps = {
   initialStatus?: string;
@@ -265,51 +269,30 @@ export function CheckoutPageClient({
   }
 
   if (!isHydrated) {
+    return <CheckoutLoadingPanel />;
+  }
+
+  if (items.length === 0 && merchantOid) {
     return (
-      <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
-        <div className="surface-card p-8">
-          <p className="text-lg text-on-surface-variant">Ödeme adımı hazırlanıyor...</p>
-        </div>
-      </div>
+      <CheckoutResultPanel
+        merchantOid={merchantOid}
+        initialStatus={initialStatus}
+        orderStatus={orderStatus}
+        isCheckingStatus={isCheckingStatus}
+        error={error}
+      />
     );
   }
 
   if (items.length === 0) {
-    return (
-      <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
-        <div className="surface-card p-10 text-center lg:p-14">
-          <p className="text-sm font-semibold uppercase tracking-[0.34em] text-primary">
-            Ödeme için ürün gerekli
-          </p>
-          <h1 className="mt-4 text-5xl font-black tracking-[-0.08em] text-on-surface">
-            Sepetiniz boş olduğu için ödeme başlatılamıyor
-          </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-on-surface-variant">
-            Önce mağazadan ürün ekleyin, ardından bu sayfada müşteri bilgilerinizi tamamlayıp
-            PayTR iframe akışını başlatın.
-          </p>
-          <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
-            <Link
-              href="/magaza"
-              className="rounded-2xl bg-primary px-7 py-4 text-base font-semibold text-white"
-            >
-              Mağazaya Git
-            </Link>
-            <Link
-              href="/sepet"
-              className="rounded-2xl border border-outline-variant/40 bg-surface-container-low px-7 py-4 text-base font-semibold text-on-surface"
-            >
-              Sepete Dön
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
+    return <CheckoutEmptyCartPanel />;
   }
 
   return (
     <div className="mx-auto grid max-w-7xl gap-8 px-6 py-12 lg:grid-cols-[1fr_360px] lg:px-8">
-      <Script src="https://www.paytr.com/js/iframeResizer.min.js" strategy="afterInteractive" />
+      {iframeToken ? (
+        <Script src="https://www.paytr.com/js/iframeResizer.min.js" strategy="afterInteractive" />
+      ) : null}
 
       <section className="space-y-6">
         <header>
@@ -446,117 +429,21 @@ export function CheckoutPageClient({
           </div>
         </div>
 
-        <div className="surface-card p-8">
-          <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-            <div>
-              <h2 className="text-3xl font-bold tracking-[-0.05em] text-on-surface">
-                Sipariş durumu
-              </h2>
-              <p className="mt-3 max-w-3xl text-base leading-7 text-on-surface-variant">
-                Callback işlendikten sonra sipariş durumu burada güncellenir.
-              </p>
-            </div>
-            {isCheckingStatus ? (
-              <span className="rounded-full bg-surface-container-low px-4 py-3 text-sm font-semibold text-on-surface">
-                Durum güncelleniyor
-              </span>
-            ) : null}
-          </div>
-          <div className="mt-6 grid gap-4 md:grid-cols-3">
-            <div className="rounded-[24px] bg-surface-container-low p-5">
-              <p className="text-sm font-medium text-on-surface-variant">Merchant OID</p>
-              <p className="mt-2 text-lg font-semibold text-on-surface">
-                {merchantOid ?? "Henüz oluşturulmadı"}
-              </p>
-            </div>
-            <div className="rounded-[24px] bg-surface-container-low p-5">
-              <p className="text-sm font-medium text-on-surface-variant">Sipariş durumu</p>
-              <p className="mt-2 text-lg font-semibold text-on-surface">
-                {orderStatus?.orderStatus ?? "Hazırlanıyor"}
-              </p>
-            </div>
-            <div className="rounded-[24px] bg-surface-container-low p-5">
-              <p className="text-sm font-medium text-on-surface-variant">Ödeme durumu</p>
-              <p className="mt-2 text-lg font-semibold text-on-surface">
-                {orderStatus?.paymentStatus ?? "Bekleniyor"}
-              </p>
-            </div>
-          </div>
-        </div>
+        <CheckoutStatusSummary
+          merchantOid={merchantOid}
+          orderStatus={orderStatus}
+          isCheckingStatus={isCheckingStatus}
+        />
 
-        <div className="surface-card p-8">
-          <h2 className="text-3xl font-bold tracking-[-0.05em] text-on-surface">
-            PayTR iFrame alanı
-          </h2>
-          <p className="mt-4 max-w-3xl text-base leading-7 text-on-surface-variant">
-            Güvenli ödeme formu sadece başarılı iframe token alındıktan sonra yüklenir.
-          </p>
-          {iframeToken ? (
-            <div className="mt-8 overflow-hidden rounded-[28px] border border-outline-variant/35 bg-white">
-              <iframe
-                src={`https://www.paytr.com/odeme/guvenli/${iframeToken}`}
-                id="paytriframe"
-                frameBorder="0"
-                scrolling="no"
-                title="PayTR ödeme formu"
-                className="min-h-[640px] w-full"
-              />
-            </div>
-          ) : (
-            <div className="mt-8 rounded-[28px] border border-dashed border-primary/35 bg-linear-to-br from-primary/6 via-white to-secondary/8 p-10 text-center">
-              <p className="text-lg font-semibold text-on-surface">
-                Ödeme formu hazırlanmayı bekliyor
-              </p>
-              <p className="mt-3 text-sm text-on-surface-variant">
-                Bilgileri tamamlayıp “Ödemeyi Hazırla” butonuna bastığınızda güvenli iframe
-                bu alana yerleşir.
-              </p>
-            </div>
-          )}
-        </div>
+        <PaytrIframePanel iframeToken={iframeToken} />
       </section>
 
-      <aside className="surface-card h-fit p-8">
-        <h2 className="text-4xl font-black tracking-[-0.07em] text-on-surface">
-          Sipariş Özeti
-        </h2>
-        <div className="mt-6 space-y-4 text-base">
-          {items.map((item) => (
-            <div
-              key={`${item.product.id}-${item.cableOption}`}
-              className="rounded-[22px] bg-surface-container-low p-4"
-            >
-              <p className="font-semibold text-on-surface">{item.product.name}</p>
-              <p className="mt-1 text-sm text-on-surface-variant">
-                {item.cableOption} · {item.quantity} adet
-              </p>
-              <p className="mt-3 font-semibold text-primary">
-                {formatPriceTRY(item.lineTotalKurus)}
-              </p>
-            </div>
-          ))}
-          <div className="flex items-center justify-between text-on-surface-variant">
-            <span>Ara Toplam</span>
-            <span>{formatPriceTRY(subtotalKurus)}</span>
-          </div>
-          <div className="flex items-center justify-between text-on-surface-variant">
-            <span>Kargo Tutarı</span>
-            <span>₺0</span>
-          </div>
-          <div className="flex items-center justify-between text-on-surface-variant">
-            <span>KDV (%20)</span>
-            <span>{formatPriceTRY(taxKurus)}</span>
-          </div>
-        </div>
-        <div className="mt-6 border-t border-outline-variant/35 pt-6">
-          <div className="flex items-center justify-between">
-            <span className="text-2xl font-bold text-on-surface">Ödenecek Tutar</span>
-            <span className="text-4xl font-black tracking-[-0.06em] text-primary">
-              {formatPriceTRY(totalKurus)}
-            </span>
-          </div>
-        </div>
-      </aside>
+      <CheckoutOrderSummary
+        items={items}
+        subtotalKurus={subtotalKurus}
+        taxKurus={taxKurus}
+        totalKurus={totalKurus}
+      />
     </div>
   );
 }

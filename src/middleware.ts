@@ -182,6 +182,8 @@ export async function middleware(request: NextRequest) {
   const isAdminApi = pathname.startsWith("/api/admin");
   const isCustomerPage = pathname === "/giris" || pathname === "/hesabim";
   const isCustomerApi = pathname.startsWith("/api/customer");
+  const isCheckoutPage = pathname === "/odeme";
+  const isPaytrTokenApi = pathname === "/api/paytr/token";
   const acceptHeader = request.headers.get("accept") ?? "";
   const isMarkdownRequest = request.method === "GET" && acceptHeader.includes("text/markdown");
 
@@ -211,7 +213,19 @@ export async function middleware(request: NextRequest) {
     );
   }
 
-  if (isCustomerPage || isCustomerApi) {
+  if (isPaytrTokenApi && isUnsafeMethod(request.method) && !isSameOriginRequest(request)) {
+    return applyCustomerSecurityHeaders(
+      NextResponse.json(
+        {
+          ok: false,
+          message: "Güvenlik doğrulaması başarısız oldu."
+        },
+        { status: 403 }
+      )
+    );
+  }
+
+  if (isCustomerPage || isCustomerApi || isCheckoutPage || isPaytrTokenApi) {
     return applyCustomerSecurityHeaders(NextResponse.next());
   }
 
@@ -259,8 +273,10 @@ export const config = {
     "/admin/:path*",
     "/api/admin/:path*",
     "/api/customer/:path*",
+    "/api/paytr/token",
     "/giris",
     "/hesabim",
+    "/odeme",
     "/urun/:path*",
     "/blog/:path*"
   ]

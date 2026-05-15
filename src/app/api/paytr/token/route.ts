@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { buildPaytrIframePayload } from "@/lib/paytr";
+import { buildPaytrIframePayload, generateMerchantOid } from "@/lib/paytr";
 import {
   getRuntimeConfigErrorPayload,
   isRuntimeConfigError
@@ -18,17 +18,22 @@ import {
   orders,
   paytrTransactions
 } from "@/server/db/schema";
+import { requestPaytrIframeToken } from "@/server/paytr/client";
+import {
+  consumePaytrTokenAttempt,
+  getPaytrTokenRateLimitKey
+} from "@/server/paytr/rate-limit";
 
 const tokenRequestSchema = z.object({
-  email: z.string().email(),
-  userName: z.string().min(2),
-  userAddress: z.string().min(5),
-  userPhone: z.string().min(10),
+  email: z.string().trim().email().max(100),
+  userName: z.string().trim().min(2).max(60),
+  userAddress: z.string().trim().min(5).max(400),
+  userPhone: z.string().trim().min(10).max(20),
   paymentAmountKurus: z.number().int().positive(),
   items: z
     .array(
       z.object({
-        title: z.string().min(1),
+        title: z.string().trim().min(1).max(180),
         unitPrice: z.string().regex(/^\d+(\.\d{1,2})?$/),
         quantity: z.number().int().positive()
       })
@@ -55,6 +60,25 @@ export async function POST(request: Request) {
 
   try {
     const body = tokenRequestSchema.parse(await request.json());
+    const rateLimit = consumePaytrTokenAttempt(
+      getPaytrTokenRateLimitKey(request, body.email)
+    );
+
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        {
+          ok: false,
+          message: "Çok fazla ödeme hazırlama denemesi yapıldı. Lütfen biraz sonra tekrar deneyin."
+        },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": String(rateLimit.retryAfterSeconds)
+          }
+        }
+      );
+    }
+
     const db = getDb();
     const forwardedFor = request.headers.get("x-forwarded-for");
     const userIp =
@@ -69,70 +93,80 @@ export async function POST(request: Request) {
       0
     );
     const taxKurus = Math.max(body.paymentAmountKurus - subtotalKurus, 0);
-    const merchantOid = `PCEV-${randomUUID()}`;
+    const merchantOid = generateMerchantOid();
     createdMerchantOid = merchantOid;
 
-    const [customer] = await db
-      .insert(customers)
-      .values({
-        email: body.email,
-        firstName,
-        lastName,
-        phone: body.userPhone,
-        role: "guest"
-      })
-      .onConflictDoUpdate({
-        target: customers.email,
-        set: {
+    const { order } = await db.transaction(async (tx) => {
+      const [customer] = await tx
+        .insert(customers)
+        .values({
+          email: body.email,
           firstName,
           lastName,
-          phone: body.userPhone
-        }
-      })
-      .returning({
-        id: customers.id
-      });
+          phone: body.userPhone,
+          role: "guest"
+        })
+        .onConflictDoUpdate({
+          target: customers.email,
+          set: {
+            firstName,
+            lastName,
+            phone: body.userPhone
+          }
+        })
+        .returning({
+          id: customers.id
+        });
 
-    const [order] = await db
-      .insert(orders)
-      .values({
-        customerId: customer.id,
-        orderNumber: createOrderNumber(),
+      const [createdOrder] = await tx
+        .insert(orders)
+        .values({
+          customerId: customer.id,
+          orderNumber: createOrderNumber(),
+          merchantOid,
+          status: "pending_payment",
+          currency: "TRY",
+          subtotalKurus,
+          shippingKurus: 0,
+          taxKurus,
+          totalKurus: body.paymentAmountKurus,
+          paymentProvider: "paytr",
+          paymentStatus: "pending"
+        })
+        .returning({
+          id: orders.id
+        });
+
+      await tx.insert(orderItems).values(
+        body.items.map((item) => {
+          const unitPriceKurus = Math.round(Number(item.unitPrice) * 100);
+
+          return {
+            orderId: createdOrder.id,
+            productName: item.title,
+            quantity: item.quantity,
+            unitPriceKurus,
+            lineTotalKurus: unitPriceKurus * item.quantity
+          };
+        })
+      );
+
+      await tx.insert(paytrTransactions).values({
+        orderId: createdOrder.id,
         merchantOid,
-        status: "pending_payment",
-        currency: "TRY",
-        subtotalKurus,
-        shippingKurus: 0,
-        taxKurus,
-        totalKurus: body.paymentAmountKurus,
-        paymentProvider: "paytr",
-        paymentStatus: "pending"
-      })
-      .returning({
-        id: orders.id
+        paymentAmountKurus: body.paymentAmountKurus,
+        rawRequest: {
+          requestBody: {
+            email: body.email,
+            itemCount: body.items.length,
+            paymentAmountKurus: body.paymentAmountKurus
+          }
+        }
       });
 
-    await db.insert(orderItems).values(
-      body.items.map((item) => {
-        const unitPriceKurus = Math.round(Number(item.unitPrice) * 100);
-
-        return {
-          orderId: order.id,
-          productName: item.title,
-          quantity: item.quantity,
-          unitPriceKurus,
-          lineTotalKurus: unitPriceKurus * item.quantity
-        };
-      })
-    );
-
-    await db.insert(paytrTransactions).values({
-      orderId: order.id,
-      merchantOid,
-      paymentAmountKurus: body.paymentAmountKurus,
-      rawRequest: {
-        requestBody: body
-      }
+      return {
+        order: createdOrder
+      };
     });
 
     const payload = buildPaytrIframePayload({
@@ -148,20 +182,7 @@ export async function POST(request: Request) {
       merchantOid
     });
 
-    const formData = new URLSearchParams(payload);
-
-    const response = await fetch("https://www.paytr.com/odeme/api/get-token", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
-      body: formData.toString(),
-      cache: "no-store"
-    });
-
-    const result = (await response.json()) as
-      | { status: "success"; token: string }
-      | { status: "failed"; reason?: string };
+    const result = await requestPaytrIframeToken(payload);
 
     if (result.status !== "success") {
       await db
