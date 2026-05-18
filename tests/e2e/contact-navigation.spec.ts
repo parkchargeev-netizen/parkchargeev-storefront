@@ -1,22 +1,29 @@
 import { expect, test } from "@playwright/test";
 
-test.describe("@e2e iletişim ve mobil navigasyon", () => {
-  test("İletişim bilgilerini ve haritayı görüntüle", async ({ page }) => {
+test.describe("@e2e contact and mobile navigation", () => {
+  test("View contact details and map", async ({ page }) => {
     await page.goto("/iletisim");
 
     await expect(page.getByText("05514914320").first()).toBeVisible();
     await expect(page.getByText("info@parkchargeev.com").first()).toBeVisible();
     await expect(page.getByText(/Esentepe Mah/i).first()).toBeVisible();
-    await expect(page.locator('iframe[title*="haritası"], iframe[src*="maps"]').first()).toBeVisible();
+
+    const mapFrame = page
+      .locator('[data-testid="contact-map-iframe"], iframe[src*="google.com/maps/embed"]')
+      .first();
+
+    await expect(mapFrame).toBeVisible();
+    await expect(mapFrame).toHaveAttribute("loading", "lazy");
   });
 
-  test("Mobil menüden site bölümlerini aç", async ({ page }) => {
+  test("Open site sections from the mobile menu", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
 
-    const menuButton = page.getByRole("button", { name: /Menüyü aç|Menüyü kapat/i });
+    const menuButton = page.getByTestId("mobile-menu-toggle");
     await expect(menuButton).toBeVisible();
     await expect(menuButton).toHaveAttribute("aria-expanded", "false");
+    await expect(menuButton).toHaveAccessibleName(/open menu|menüyü aç/i);
 
     await menuButton.click();
 
@@ -24,7 +31,7 @@ test.describe("@e2e iletişim ve mobil navigasyon", () => {
     await expect(menuButton).toHaveAttribute("aria-expanded", "true");
     await expect(mobileMenu).toBeVisible();
 
-    await mobileMenu.getByRole("link", { name: /Mağaza/i }).click();
+    await mobileMenu.locator('a[href="/magaza"]').click();
     await expect(page).toHaveURL(/\/magaza/);
   });
 });

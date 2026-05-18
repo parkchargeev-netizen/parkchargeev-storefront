@@ -15,14 +15,16 @@ test("@e2e magaza -> urun -> sepet -> odeme akisi PayTR mock ile tamamlanir", as
     });
   });
 
-  await page.goto("/urun/homecharge-pro-11kw");
+  await page.goto("/urun/homecharge-pro-11kw", { waitUntil: "domcontentloaded" });
   await expect(page.locator("h1")).toBeVisible();
-  await page.getByRole("button", { name: /Sepete Ekle/i }).click();
+  const addToCartButton = page.getByRole("button", { name: /Sepete Ekle/i });
+  await expect(addToCartButton).toBeEnabled();
+  await addToCartButton.click();
   await expect(page.getByText(/sepete eklendi/i)).toBeVisible();
 
-  await page.goto("/sepet");
+  await page.goto("/sepet", { waitUntil: "domcontentloaded" });
   await expect(page.locator('a[href="/odeme"]').first()).toBeVisible();
-  await page.goto("/odeme");
+  await page.goto("/odeme", { waitUntil: "domcontentloaded" });
 
   await expect(page.locator('input[autocomplete="name"]')).toBeVisible();
   await page.locator('input[autocomplete="name"]').fill("ParkChargeEV Test");
@@ -87,9 +89,12 @@ test("@e2e PayTR Direkt API 3D Secure formu PayTR'a post eder", async ({ page })
     });
   });
 
-  await page.goto("/urun/homecharge-pro-11kw");
-  await page.getByRole("button", { name: /Sepete Ekle/i }).click();
-  await page.goto("/odeme");
+  await page.goto("/urun/homecharge-pro-11kw", { waitUntil: "domcontentloaded" });
+  const addToCartButton = page.getByRole("button", { name: /Sepete Ekle/i });
+  await expect(addToCartButton).toBeEnabled();
+  await addToCartButton.click();
+  await expect(page.getByText(/sepete eklendi/i)).toBeVisible();
+  await page.goto("/odeme", { waitUntil: "domcontentloaded" });
 
   await page.locator('input[autocomplete="name"]').fill("ParkChargeEV Test");
   await page.locator('input[autocomplete="email"]').fill("qa@parkchargeev.com");

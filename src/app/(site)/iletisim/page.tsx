@@ -17,6 +17,9 @@ const fallbackMetadata: Metadata = {
     "Keşif, teklif, kurulum, servis ve iş ortaklığı talepleri için ParkChargeEV ile iletişime geçin."
 };
 
+const parkChargeEvMapEmbedSrc =
+  "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d24183.475012350627!2d30.300722122192383!3d40.74146948542449!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14ccadf3b93b47db%3A0xaa82c42f614e5ca1!2sSakarya%20Teknokent%20A.%C5%9E.!5e0!3m2!1str!2str!4v1779100960628!5m2!1str!2str";
+
 function officeAddress() {
   return `${siteConfig.address.streetAddress}, ${siteConfig.address.addressLocality} / ${siteConfig.address.addressRegion}`;
 }
@@ -41,7 +44,6 @@ function ContactJsonLd() {
 
 function OfficeMapCard() {
   const address = officeAddress();
-  const mapSrc = `https://www.google.com/maps?q=${encodeURIComponent(address)}&output=embed`;
 
   return (
     <div className="surface-card overflow-hidden p-0">
@@ -53,11 +55,14 @@ function OfficeMapCard() {
         <p className="mt-3 text-sm leading-7 text-on-surface-variant">{address}</p>
       </div>
       <iframe
-        title="ParkChargeEV merkez ofis haritası"
-        src={mapSrc}
+        title="ParkChargeEV Sakarya Teknokent adres haritası"
+        src={parkChargeEvMapEmbedSrc}
+        width="600"
+        height="450"
         loading="lazy"
         referrerPolicy="no-referrer-when-downgrade"
         allowFullScreen
+        data-testid="contact-map-iframe"
         className="h-[320px] w-full border-0"
       />
     </div>

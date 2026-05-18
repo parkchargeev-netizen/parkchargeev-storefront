@@ -12,12 +12,13 @@ type ProductPurchasePanelProps = {
 };
 
 export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
-  const { addItem } = useCart();
+  const { addItem, isHydrated } = useCart();
   const [cableOption, setCableOption] = useState(product.cableOptions[0]);
   const [quantity, setQuantity] = useState(1);
   const [feedback, setFeedback] = useState<string | null>(null);
 
   const isOutOfStock = product.stockLabel === "Stokta Yok";
+  const isAddDisabled = isOutOfStock || !isHydrated;
   const estimatedLineTotal = product.priceKurus * quantity;
 
   function handleAddToCart() {
@@ -86,7 +87,8 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
           <button
             type="button"
             onClick={handleAddToCart}
-            disabled={isOutOfStock}
+            disabled={isAddDisabled}
+            aria-busy={!isHydrated}
             className="flex-1 rounded-2xl bg-linear-to-r from-primary to-secondary px-6 py-4 text-center text-base font-semibold text-white shadow-[0_18px_50px_rgba(0,68,211,0.22)] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isOutOfStock ? "Stokta Yok" : "Sepete Ekle"}
