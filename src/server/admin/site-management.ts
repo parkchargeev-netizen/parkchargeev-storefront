@@ -1,8 +1,9 @@
-import { revalidateTag, unstable_cache } from "next/cache";
+import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 import { and, desc, eq, ilike, lt, or } from "drizzle-orm";
 import { z } from "zod";
 
 import { hasDatabaseConfig } from "@/lib/runtime-config";
+import { logWarn } from "@/lib/server-logger";
 import { slugify } from "@/lib/slug";
 import { recordAuditLog } from "@/server/admin/audit";
 import type {
@@ -52,6 +53,18 @@ function isNavigationArea(value?: string): value is (typeof navigationAreas)[num
 
 function isSitePageStatus(value?: string): value is (typeof sitePageStatuses)[number] {
   return Boolean(value && sitePageStatuses.includes(value as (typeof sitePageStatuses)[number]));
+}
+
+function revalidateSiteManagementCaches(slug?: string) {
+  revalidateTag("site-pages");
+  revalidateTag("site-navigation");
+  revalidatePath("/admin");
+  revalidatePath("/admin/site");
+  revalidatePath("/sitemap.xml");
+
+  if (slug) {
+    revalidatePath(`/${slug}`);
+  }
 }
 
 async function loadAdminNavigationItems(input: ListQueryInput) {
@@ -159,7 +172,7 @@ export async function upsertAdminNavigationItem(
       userAgent: requestMeta?.userAgent
     });
 
-    revalidateTag("site-navigation");
+    revalidateSiteManagementCaches();
     return after;
   }
 
@@ -177,7 +190,7 @@ export async function upsertAdminNavigationItem(
     userAgent: requestMeta?.userAgent
   });
 
-  revalidateTag("site-navigation");
+  revalidateSiteManagementCaches();
   return created;
 }
 
@@ -298,7 +311,7 @@ export async function upsertAdminSitePage(
       userAgent: requestMeta?.userAgent
     });
 
-    revalidateTag("site-pages");
+    revalidateSiteManagementCaches(values.slug);
     return after;
   }
 
@@ -316,7 +329,7 @@ export async function upsertAdminSitePage(
     userAgent: requestMeta?.userAgent
   });
 
-  revalidateTag("site-pages");
+  revalidateSiteManagementCaches(created.slug);
   return created;
 }
 
@@ -333,6 +346,7 @@ export async function deleteAdminSitePage(
   const [before] = await db.select().from(sitePages).where(eq(sitePages.id, id)).limit(1);
 
   if (!before) {
+    revalidateSiteManagementCaches();
     return null;
   }
 
@@ -343,20 +357,28 @@ export async function deleteAdminSitePage(
     await tx.delete(navigationItems).where(eq(navigationItems.href, pageHref));
   });
 
-  await recordAuditLog({
-    db,
-    actor,
-    entityType: "site_page",
-    entityId: id,
-    action: "delete",
-    summary: `${before.title} sayfası silindi.`,
-    beforePayload: before,
-    afterPayload: { removedNavigationHref: pageHref },
-    ipAddress: requestMeta?.ipAddress,
-    userAgent: requestMeta?.userAgent
-  });
+  revalidateSiteManagementCaches(before.slug);
 
-  revalidateTag("site-pages");
-  revalidateTag("site-navigation");
+  try {
+    await recordAuditLog({
+      db,
+      actor,
+      entityType: "site_page",
+      entityId: id,
+      action: "delete",
+      summary: `${before.title} sayfası silindi.`,
+      beforePayload: before,
+      afterPayload: { removedNavigationHref: pageHref },
+      ipAddress: requestMeta?.ipAddress,
+      userAgent: requestMeta?.userAgent
+    });
+  } catch (error) {
+    logWarn("admin.site_page.delete_audit_failed", {
+      pageId: id,
+      slug: before.slug,
+      message: error instanceof Error ? error.message : "unknown"
+    });
+  }
+
   return before;
 }

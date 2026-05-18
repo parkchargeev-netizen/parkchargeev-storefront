@@ -77,7 +77,11 @@ export async function DELETE(request: Request) {
   const page = await deleteAdminSitePage(parsed.data.id, authenticatedAdmin.session, requestMeta);
 
   if (!page) {
-    return NextResponse.json({ ok: false, message: "Sayfa bulunamadı." }, { status: 404 });
+    return NextResponse.json({
+      ok: true,
+      alreadyDeleted: true,
+      message: "Sayfa zaten silinmiş veya bulunamadı."
+    });
   }
 
   return NextResponse.json({ ok: true, page });

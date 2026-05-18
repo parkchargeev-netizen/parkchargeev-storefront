@@ -13,6 +13,7 @@ type SitePageDeleteButtonProps = {
 type DeleteResponse = {
   ok: boolean;
   message?: string;
+  alreadyDeleted?: boolean;
 };
 
 export function SitePageDeleteButton({ id, title, returnHref }: SitePageDeleteButtonProps) {
@@ -43,7 +44,7 @@ export function SitePageDeleteButton({ id, title, returnHref }: SitePageDeleteBu
         return;
       }
 
-      router.push(returnHref);
+      router.replace(returnHref);
       router.refresh();
     } catch {
       setMessage("Sayfa silinirken bağlantı hatası oluştu.");
