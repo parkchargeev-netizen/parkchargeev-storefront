@@ -1,24 +1,81 @@
 import { eq } from "drizzle-orm";
 
-import { verifyPaytrCallbackHash } from "@/lib/paytr";
+import { type PaytrCallbackPayload, verifyPaytrCallbackHash } from "@/lib/paytr";
 import { durationSince, logError, logInfo, logWarn } from "@/lib/server-logger";
 import { getDb } from "@/server/db/client";
 import { orderStatusHistory, orders, paytrTransactions } from "@/server/db/schema";
 
+function parsePaytrKurus(value?: string) {
+  if (!value) {
+    return null;
+  }
+
+  const amount = Number(value);
+
+  if (!Number.isFinite(amount) || amount < 0) {
+    return null;
+  }
+
+  return Math.round(amount);
+}
+
+function normalizePaytrCurrency(value?: string | null) {
+  const currency = value?.trim().toUpperCase();
+
+  if (!currency) {
+    return null;
+  }
+
+  return currency === "TL" ? "TRY" : currency;
+}
+
+function isProcessedDuplicate({
+  orderPaymentStatus,
+  payloadStatus,
+  transactionStatus
+}: {
+  orderPaymentStatus: string;
+  payloadStatus: "success" | "failed";
+  transactionStatus?: string | null;
+}) {
+  if (transactionStatus === "callback_success") {
+    return true;
+  }
+
+  if (transactionStatus === "callback_failed" && payloadStatus === "failed") {
+    return true;
+  }
+
+  return orderPaymentStatus === "paid" && payloadStatus === "failed";
+}
+
 export async function POST(request: Request) {
   const startedAt = Date.now();
   const formData = await request.formData();
+  const rawStatus = String(formData.get("status") ?? "");
 
-  const payload = {
+  if (rawStatus !== "success" && rawStatus !== "failed") {
+    logWarn("paytr.callback.invalid_status", {
+      merchantOid: String(formData.get("merchant_oid") ?? ""),
+      status: rawStatus,
+      durationMs: durationSince(startedAt)
+    });
+    return new Response("PAYTR notification failed: invalid status", { status: 400 });
+  }
+
+  const status: PaytrCallbackPayload["status"] = rawStatus;
+  const payload: PaytrCallbackPayload = {
     merchant_oid: String(formData.get("merchant_oid") ?? ""),
-    status: String(formData.get("status") ?? "") as "success" | "failed",
+    status,
     total_amount: String(formData.get("total_amount") ?? ""),
     hash: String(formData.get("hash") ?? ""),
     payment_type: String(formData.get("payment_type") ?? ""),
     currency: String(formData.get("currency") ?? ""),
     payment_amount: String(formData.get("payment_amount") ?? ""),
     failed_reason_code: String(formData.get("failed_reason_code") ?? ""),
-    failed_reason_msg: String(formData.get("failed_reason_msg") ?? "")
+    failed_reason_msg: String(formData.get("failed_reason_msg") ?? ""),
+    installment_count: String(formData.get("installment_count") ?? ""),
+    test_mode: String(formData.get("test_mode") ?? "")
   };
 
   try {
@@ -36,6 +93,7 @@ export async function POST(request: Request) {
         id: orders.id,
         status: orders.status,
         paymentStatus: orders.paymentStatus,
+        currency: orders.currency,
         totalKurus: orders.totalKurus
       })
       .from(orders)
@@ -61,14 +119,20 @@ export async function POST(request: Request) {
     const nextTransactionStatus =
       payload.status === "success" ? ("callback_success" as const) : ("callback_failed" as const);
     const nextOrderStatus =
-      payload.status === "success" ? ("pending_confirmation" as const) : ("failed" as const);
+      payload.status === "success"
+        ? order.paymentStatus === "paid"
+          ? order.status
+          : ("pending_confirmation" as const)
+        : ("failed" as const);
     const nextPaymentStatus = payload.status === "success" ? "paid" : "failed";
-    const isDuplicate =
-      transaction?.status === nextTransactionStatus &&
-      order.status === nextOrderStatus &&
-      order.paymentStatus === nextPaymentStatus;
 
-    if (isDuplicate) {
+    if (
+      isProcessedDuplicate({
+        orderPaymentStatus: order.paymentStatus,
+        payloadStatus: payload.status,
+        transactionStatus: transaction?.status
+      })
+    ) {
       logInfo("paytr.callback.duplicate_ignored", {
         merchantOid: payload.merchant_oid,
         status: payload.status,
@@ -77,9 +141,47 @@ export async function POST(request: Request) {
       return new Response("OK");
     }
 
+    const paymentAmountKurus = parsePaytrKurus(payload.payment_amount);
+    const totalAmountKurus = parsePaytrKurus(payload.total_amount);
+
+    if (payload.status === "success") {
+      if (paymentAmountKurus === null || totalAmountKurus === null) {
+        logWarn("paytr.callback.invalid_amount", {
+          merchantOid: payload.merchant_oid,
+          paymentAmount: payload.payment_amount,
+          totalAmount: payload.total_amount,
+          durationMs: durationSince(startedAt)
+        });
+        return new Response("PAYTR notification failed: invalid amount", { status: 400 });
+      }
+
+      if (paymentAmountKurus !== order.totalKurus) {
+        logWarn("paytr.callback.amount_mismatch", {
+          merchantOid: payload.merchant_oid,
+          callbackPaymentAmountKurus: paymentAmountKurus,
+          orderTotalKurus: order.totalKurus,
+          durationMs: durationSince(startedAt)
+        });
+        return new Response("PAYTR notification failed: amount mismatch", { status: 400 });
+      }
+
+      const callbackCurrency = normalizePaytrCurrency(payload.currency);
+      const orderCurrency = normalizePaytrCurrency(order.currency);
+
+      if (!callbackCurrency || callbackCurrency !== orderCurrency) {
+        logWarn("paytr.callback.currency_mismatch", {
+          merchantOid: payload.merchant_oid,
+          callbackCurrency: payload.currency,
+          orderCurrency: order.currency,
+          durationMs: durationSince(startedAt)
+        });
+        return new Response("PAYTR notification failed: currency mismatch", { status: 400 });
+      }
+    }
+
     await db.transaction(async (tx) => {
       const transactionValues = {
-        totalAmountKurus: Number(payload.total_amount || payload.payment_amount || "0"),
+        totalAmountKurus: totalAmountKurus ?? paymentAmountKurus ?? 0,
         status: nextTransactionStatus,
         rawCallback: payload,
         updatedAt: new Date()
@@ -109,15 +211,17 @@ export async function POST(request: Request) {
         })
         .where(eq(orders.id, order.id));
 
-      await tx.insert(orderStatusHistory).values({
-        orderId: order.id,
-        fromStatus: order.status,
-        toStatus: nextOrderStatus,
-        note:
-          payload.status === "success"
-            ? "PayTR callback ile odeme onayi alindi."
-            : payload.failed_reason_msg || "PayTR callback odeme hatasi bildirdi."
-      });
+      if (order.status !== nextOrderStatus || order.paymentStatus !== nextPaymentStatus) {
+        await tx.insert(orderStatusHistory).values({
+          orderId: order.id,
+          fromStatus: order.status,
+          toStatus: nextOrderStatus,
+          note:
+            payload.status === "success"
+              ? "PayTR callback ile odeme onayi alindi."
+              : payload.failed_reason_msg || "PayTR callback odeme hatasi bildirdi."
+        });
+      }
     });
 
     logInfo("paytr.callback.processed", {

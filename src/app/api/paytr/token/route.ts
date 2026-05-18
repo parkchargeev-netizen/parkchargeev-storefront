@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
-import { buildPaytrIframePayload } from "@/lib/paytr";
+import { buildPaytrIframePayload, redactPaytrPayload } from "@/lib/paytr";
 import {
   getRuntimeConfigErrorPayload,
   isRuntimeConfigError
@@ -82,7 +82,7 @@ export async function POST(request: Request) {
         .set({
           rawRequest: {
             requestBody: body,
-            paytrPayload: payload,
+            paytrPayload: redactPaytrPayload(payload),
             paytrError: result
           },
           updatedAt: new Date()
@@ -112,7 +112,7 @@ export async function POST(request: Request) {
         status: "token_received",
         rawRequest: {
           requestBody: body,
-          paytrPayload: payload
+          paytrPayload: redactPaytrPayload(payload)
         },
         updatedAt: new Date()
       })

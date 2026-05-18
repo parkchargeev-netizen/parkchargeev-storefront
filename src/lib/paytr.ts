@@ -62,6 +62,8 @@ export type PaytrCallbackPayload = {
   payment_amount?: string;
   failed_reason_code?: string;
   failed_reason_msg?: string;
+  installment_count?: string;
+  test_mode?: string;
 };
 
 export const PAYTR_DIRECT_API_FORM_ACTION = "https://www.paytr.com/odeme";
@@ -84,6 +86,13 @@ export function encodeDirectApiBasket(items: PaytrCheckoutItem[]) {
 
 export function generateMerchantOid(prefix = "PCEV") {
   return `${prefix}${randomUUID().replaceAll("-", "").toUpperCase()}`;
+}
+
+export function redactPaytrPayload(payload: Record<string, string>) {
+  return {
+    ...payload,
+    paytr_token: "[redacted]"
+  };
 }
 
 function getPaytrRuntimeOptions(input: {

@@ -3,7 +3,8 @@ import { NextResponse } from "next/server";
 
 import {
   buildPaytrDirectApiPayload,
-  PAYTR_DIRECT_API_FORM_ACTION
+  PAYTR_DIRECT_API_FORM_ACTION,
+  redactPaytrPayload
 } from "@/lib/paytr";
 import {
   getRuntimeConfigErrorPayload,
@@ -79,7 +80,7 @@ export async function POST(request: Request) {
             itemCount: body.items.length,
             paymentAmountKurus: body.paymentAmountKurus
           },
-          paytrPayload: payload
+          paytrPayload: redactPaytrPayload(payload)
         },
         updatedAt: new Date()
       })
