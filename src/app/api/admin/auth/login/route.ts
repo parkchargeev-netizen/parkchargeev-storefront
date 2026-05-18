@@ -165,12 +165,33 @@ export async function POST(request: Request) {
       bootstrapConfig?.email === normalizedEmail && bootstrapConfig.password === loginPassword;
 
     if (bootstrapConfig && isBootstrapLogin) {
-      void ensureBootstrapAdmin({ forceRefresh: true }).catch((error) => {
+      const ensuredAdmin = await ensureBootstrapAdmin({ forceRefresh: true }).catch((error) => {
         logWarn("admin.login.bootstrap_sync_failed", {
           durationMs: Date.now() - startedAt,
           message: error instanceof Error ? error.message : String(error)
         });
+        return null;
       });
+
+      if (ensuredAdmin) {
+        const expiresAt = createSessionExpiresAt();
+        const tokenId = await createAdminSessionRecord({
+          adminUserId: ensuredAdmin.id,
+          expiresAt,
+          ipAddress: requestMeta.ipAddress,
+          userAgent: requestMeta.userAgent
+        });
+        const response = await createLoginResponse(ensuredAdmin, tokenId, expiresAt);
+
+        clearLoginFailures(payload.email, requestMeta.ipAddress);
+        logInfo("admin.login.succeeded", {
+          mode: "bootstrap-database",
+          role: ensuredAdmin.role,
+          ipAddress: requestMeta.ipAddress,
+          durationMs: Date.now() - startedAt
+        });
+        return response;
+      }
 
       const response = await createLoginResponse(bootstrapConfig, "bootstrap-session");
 

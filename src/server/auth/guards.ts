@@ -2,10 +2,15 @@ import { headers } from "next/headers";
 import { cache } from "react";
 
 import { hasDatabaseConfig } from "@/lib/runtime-config";
-import { getBootstrapAdmin } from "@/server/admin/auth-service";
+import { logWarn } from "@/lib/server-logger";
+import {
+  ensureBootstrapAdmin,
+  getAdminAuthRecord,
+  getBootstrapAdmin,
+  touchAdminSession
+} from "@/server/admin/auth-service";
 import { canAccessAdminPath, hasRequiredRole, type AdminRole } from "@/server/auth/authorization";
 import { getAdminSessionFromCookies } from "@/server/auth/session";
-import { getAdminAuthRecord, touchAdminSession } from "@/server/admin/auth-service";
 
 const sessionTouchThrottleMs = 5 * 60 * 1000;
 
@@ -49,7 +54,39 @@ export const getAuthenticatedAdmin = cache(async function getAuthenticatedAdmin(
   }
 
   if (session.sid === "bootstrap-session") {
-    return getBootstrapAuthenticatedAdmin(session);
+    const bootstrapAuth = getBootstrapAuthenticatedAdmin(session);
+
+    if (!bootstrapAuth) {
+      return null;
+    }
+
+    const syncedAdmin = await ensureBootstrapAdmin().catch((error) => {
+      logWarn("admin.auth.bootstrap_session_sync_failed", {
+        message: error instanceof Error ? error.message : String(error)
+      });
+      return null;
+    });
+
+    if (!syncedAdmin) {
+      return bootstrapAuth;
+    }
+
+    return {
+      session: {
+        ...session,
+        sub: syncedAdmin.id,
+        email: syncedAdmin.email,
+        name: syncedAdmin.fullName,
+        role: syncedAdmin.role
+      },
+      admin: {
+        id: syncedAdmin.id,
+        email: syncedAdmin.email,
+        fullName: syncedAdmin.fullName,
+        role: syncedAdmin.role,
+        status: syncedAdmin.status
+      }
+    };
   }
 
   const authRecord = await getAdminAuthRecord(session.sid, session.sub);
