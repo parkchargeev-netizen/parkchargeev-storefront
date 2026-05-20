@@ -13,26 +13,26 @@ export function renderProductMarkdown(product: ProductModel) {
     `- Kategori: ${product.category}`,
     `- Fiyat: ${(product.priceKurus / 100).toLocaleString("tr-TR")} TL`,
     `- Durum: ${product.stockLabel}`,
-    `- Guc: ${product.powerLabel}`,
+    `- Güç: ${product.powerLabel}`,
     product.badge ? `- Etiket: ${product.badge}` : null,
     "",
-    "## Ozet",
+    "## Özet",
     "",
     product.summary,
     "",
-    "## Aciklama",
+    "## Açıklama",
     "",
     product.description,
     "",
-    "## Teknik Ozellikler",
+    "## Teknik Özellikler",
     "",
     joinList(product.specs.map((spec) => `${spec.label}: ${spec.value}`)),
     "",
-    "## One Cikan Avantajlar",
+    "## Öne Çıkan Avantajlar",
     "",
     joinList(product.highlights),
     "",
-    "## Kullanim Senaryolari",
+    "## Kullanım Senaryoları",
     "",
     joinList(product.useCases),
     "",
@@ -40,7 +40,7 @@ export function renderProductMarkdown(product: ProductModel) {
     "",
     joinList(product.seoIntent),
     "",
-    "## Sikca Sorulan Sorular",
+    "## Sıkça Sorulan Sorular",
     "",
     product.faqs
       .map((item) => `### ${item.question}\n\n${item.answer}`)
@@ -56,10 +56,10 @@ export function renderArticleMarkdown(article: ArticleModel) {
     "",
     `- URL: ${absoluteUrl(`/blog/${article.slug}`)}`,
     `- Kategori: ${article.category}`,
-    `- Yayin Tarihi: ${article.publishedAt}`,
-    `- Okuma Suresi: ${article.readingMinutes} dakika`,
+    `- Yayın Tarihi: ${article.publishedAt}`,
+    `- Okuma Süresi: ${article.readingMinutes} dakika`,
     "",
-    "## Ozet",
+    "## Özet",
     "",
     article.excerpt,
     ""
@@ -78,7 +78,7 @@ export function renderArticleMarkdown(article: ArticleModel) {
   }
 
   if (article.faq?.length) {
-    lines.push("## Sikca Sorulan Sorular", "");
+    lines.push("## Sıkça Sorulan Sorular", "");
     lines.push(
       article.faq.map((item) => `### ${item.question}\n\n${item.answer}`).join("\n\n")
     );

@@ -1,17 +1,23 @@
 User-agent: *
 Allow: /
-
-User-agent: GPTBot
-Allow: /
-
-User-agent: PerplexityBot
-Allow: /
-
-User-agent: ClaudeBot
-Allow: /
-
-User-agent: Googlebot
-Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api/admin
+Disallow: /api/admin/
+Disallow: /api/customer
+Disallow: /api/customer/
+Disallow: /api/paytr
+Disallow: /api/paytr/
+Disallow: /api/cart-intent
+Disallow: /api/orders
+Disallow: /api/orders/
+Disallow: /api/lead
+Disallow: /sepet
+Disallow: /odeme
+Disallow: /giris
+Disallow: /hesabim
+Disallow: /sentry-example-page
+Disallow: /api/sentry-example-api
 
 Content-Signal: ai-train=no, search=yes, ai-input=yes
 Host: https://parkchargeev.com

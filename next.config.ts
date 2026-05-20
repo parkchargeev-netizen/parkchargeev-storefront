@@ -23,13 +23,20 @@ const contentSecurityPolicy = [
 
 const discoveryLinkHeader = [
   '<https://parkchargeev.com/sitemap.xml>; rel="sitemap"; type="application/xml"',
+  '<https://parkchargeev.com/llms.txt>; rel="alternate"; type="text/plain"',
+  '<https://parkchargeev.com/.well-known/llms.txt>; rel="alternate"; type="text/plain"',
   '<https://parkchargeev.com/.well-known/api-catalog>; rel="api-catalog"',
   '</docs/api>; rel="service-doc"'
 ].join(", ");
 
 const nextConfig: NextConfig = {
+  compress: true,
+  poweredByHeader: false,
   images: {
     formats: ["image/avif", "image/webp"]
+  },
+  experimental: {
+    optimizePackageImports: ["lucide-react", "recharts"]
   },
   async headers() {
     return [

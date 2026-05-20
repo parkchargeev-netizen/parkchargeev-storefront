@@ -5,6 +5,9 @@ import { articles } from "@/lib/mock-data";
 
 export const metadata: Metadata = {
   title: "Blog",
+  alternates: {
+    canonical: "/blog"
+  },
   description:
     "Elektrikli araç şarj istasyonları, kurulum süreçleri, maliyet rehberleri ve kurumsal çözüm içerikleri."
 };

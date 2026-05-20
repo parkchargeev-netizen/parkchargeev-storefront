@@ -1,6 +1,8 @@
 import { getArticleBySlug } from "@/lib/mock-data";
 import { renderArticleMarkdown } from "@/lib/markdown";
 
+export const revalidate = 3600;
+
 type ArticleMarkdownRouteProps = {
   params: Promise<{
     slug: string;
@@ -17,6 +19,7 @@ export async function GET(_request: Request, { params }: ArticleMarkdownRoutePro
 
   return new Response(renderArticleMarkdown(article), {
     headers: {
+      "Cache-Control": "public, max-age=300, s-maxage=3600",
       "Content-Type": "text/markdown; charset=utf-8"
     }
   });

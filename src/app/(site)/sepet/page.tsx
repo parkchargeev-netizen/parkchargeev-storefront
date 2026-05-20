@@ -4,7 +4,11 @@ import { CartPageClient } from "@/components/shop/cart-page-client";
 
 export const metadata: Metadata = {
   title: "Sepetim",
-  description: "Alışveriş sepetiniz ve sipariş özetiniz."
+  description: "Alışveriş sepetiniz ve sipariş özetiniz.",
+  robots: {
+    index: false,
+    follow: false
+  }
 };
 
 export default function CartPage() {

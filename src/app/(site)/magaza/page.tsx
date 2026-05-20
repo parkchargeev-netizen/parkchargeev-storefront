@@ -5,10 +5,30 @@ import { ProductCard } from "@/components/shop/product-card";
 import { formatPriceTRY } from "@/lib/format";
 import { products } from "@/lib/mock-data";
 import { absoluteUrl } from "@/lib/site";
-import { stringifyJsonLd } from "@/lib/structured-data";
+import {
+  getBreadcrumbJsonLd,
+  getProductImageUrl,
+  stringifyJsonLd
+} from "@/lib/structured-data";
 
 export const metadata: Metadata = {
   title: "Mağaza",
+  alternates: {
+    canonical: "/magaza"
+  },
+  openGraph: {
+    title: "ParkChargeEV Mağaza",
+    description:
+      "Elektrikli araç şarj cihazı, wallbox, kablo ve kurulum çözümlerini karşılaştırın.",
+    url: "/magaza",
+    type: "website"
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ParkChargeEV Mağaza",
+    description:
+      "Elektrikli araç şarj cihazı, wallbox, kablo ve kurulum çözümlerini karşılaştırın."
+  },
   description:
     "Ev tipi ve iş yeri tipi elektrikli araç şarj istasyonları, kablolar ve kurulum çözümlerini keşfedin."
 };
@@ -122,20 +142,41 @@ export default async function StorePage({ searchParams }: StorePageProps) {
   const itemListJsonLd = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    name: "ParkChargeEV urun listesi",
+    name: "ParkChargeEV ürün listesi",
     itemListElement: sortedProducts.map((product, index) => ({
       "@type": "ListItem",
       position: index + 1,
-      url: absoluteUrl(`/urun/${product.slug}`),
-      name: product.name
+      item: {
+        "@type": "Product",
+        name: product.name,
+        url: absoluteUrl(`/urun/${product.slug}`),
+        image: getProductImageUrl(product),
+        offers: {
+          "@type": "Offer",
+          priceCurrency: "TRY",
+          price: (product.priceKurus / 100).toFixed(2),
+          availability:
+            product.stockLabel === "Stokta Yok"
+              ? "https://schema.org/OutOfStock"
+              : "https://schema.org/InStock"
+        }
+      }
     }))
   };
+  const breadcrumbJsonLd = getBreadcrumbJsonLd([
+    { name: "Ana Sayfa", path: "/" },
+    { name: "Mağaza", path: "/magaza" }
+  ]);
 
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-12 px-6 py-12 lg:flex-row lg:px-8">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: stringifyJsonLd(itemListJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(breadcrumbJsonLd) }}
       />
       <aside className="w-full lg:sticky lg:top-28 lg:w-80">
         <form action="/magaza" className="surface-card p-6">

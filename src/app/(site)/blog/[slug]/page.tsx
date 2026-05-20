@@ -35,7 +35,32 @@ export async function generateMetadata({
 
   return {
     title: article.title,
-    description: article.seoDescription
+    description: article.seoDescription,
+    alternates: {
+      canonical: `/blog/${article.slug}`
+    },
+    openGraph: {
+      title: article.title,
+      description: article.seoDescription,
+      url: `/blog/${article.slug}`,
+      type: "article",
+      publishedTime: article.publishedAt,
+      authors: ["ParkChargeEV"],
+      images: [
+        {
+          url: "/api/og/product/homecharge-pro-11kw",
+          width: 1200,
+          height: 630,
+          alt: article.title
+        }
+      ]
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: article.title,
+      description: article.seoDescription,
+      images: ["/api/og/product/homecharge-pro-11kw"]
+    }
   };
 }
 

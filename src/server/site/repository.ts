@@ -35,7 +35,7 @@ function filterRetiredNavigation<T extends PublicNavigationItem>(items: readonly
   return items.filter((item) => !retiredPublicHrefs.has(item.href));
 }
 
-export async function getPublicSiteNavigation(): Promise<PublicSiteNavigation> {
+async function loadPublicSiteNavigation(): Promise<PublicSiteNavigation> {
   if (!hasDatabaseConfig()) {
     return fallbackNavigation();
   }
@@ -82,6 +82,12 @@ export async function getPublicSiteNavigation(): Promise<PublicSiteNavigation> {
     return fallbackNavigation();
   }
 }
+
+export const getPublicSiteNavigation = unstable_cache(
+  loadPublicSiteNavigation,
+  ["public-site-navigation"],
+  { revalidate: 300, tags: ["site-navigation"] }
+);
 
 export const getPublishedSitePageBySlug = unstable_cache(
   async (slug: string) => {

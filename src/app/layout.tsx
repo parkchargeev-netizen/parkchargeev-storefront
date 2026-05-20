@@ -2,35 +2,70 @@ import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
-import { siteConfig } from "@/lib/site";
+import { absoluteUrl, siteConfig } from "@/lib/site";
 
 import "@/app/globals.css";
 
 const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter"
+  subsets: ["latin", "latin-ext"],
+  variable: "--font-inter",
+  display: "swap"
 });
+
+const defaultTitle = `${siteConfig.name} | EV Şarj İstasyonu ve Kurulum Çözümleri`;
+const defaultOgImage = absoluteUrl("/api/og/product/homecharge-pro-11kw");
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
-    default: `${siteConfig.name} | EV Şarj İstasyonu ve Kurulum Çözümleri`,
+    default: defaultTitle,
     template: `%s | ${siteConfig.name}`
   },
   description: siteConfig.description,
   applicationName: siteConfig.name,
+  keywords: [
+    "elektrikli araç şarj istasyonu",
+    "EV şarj cihazı",
+    "wallbox",
+    "şarj istasyonu kurulumu",
+    "PayTR güvenli ödeme",
+    "ParkChargeEV"
+  ],
+  alternates: {
+    canonical: "/"
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1
+    }
+  },
   openGraph: {
-    title: `${siteConfig.name} | EV Şarj İstasyonu ve Kurulum Çözümleri`,
+    title: defaultTitle,
     description: siteConfig.description,
     url: siteConfig.url,
     siteName: siteConfig.name,
     locale: "tr_TR",
-    type: "website"
+    type: "website",
+    images: [
+      {
+        url: defaultOgImage,
+        width: 1200,
+        height: 630,
+        alt: defaultTitle
+      }
+    ]
   },
   twitter: {
     card: "summary_large_image",
-    title: `${siteConfig.name} | EV Şarj İstasyonu ve Kurulum Çözümleri`,
-    description: siteConfig.description
+    title: defaultTitle,
+    description: siteConfig.description,
+    images: [defaultOgImage]
   }
 };
 

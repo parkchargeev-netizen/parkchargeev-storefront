@@ -9,6 +9,10 @@ import { articles, products, solutionPages } from "@/lib/mock-data";
 
 export const metadata: Metadata = {
   title: "Arama",
+  robots: {
+    index: false,
+    follow: false
+  },
   description:
     "Ürün, çözüm, içerik ve lokasyon sayfaları arasında arama yapın."
 };
