@@ -22,7 +22,7 @@ export function SiteHeader({ navigation = siteConfig.primaryNavigation }: SiteHe
 
         <nav
           aria-label="Birincil navigasyon"
-          className="hidden items-center gap-5 text-sm font-medium text-on-surface-variant xl:flex"
+          className="hidden items-center gap-5 text-sm font-medium text-on-surface-variant 2xl:flex"
         >
           {navigation.map((item) => (
             <Link
@@ -37,7 +37,7 @@ export function SiteHeader({ navigation = siteConfig.primaryNavigation }: SiteHe
           ))}
         </nav>
 
-        <SiteHeaderActions className="hidden items-center gap-3 xl:flex" />
+        <SiteHeaderActions className="hidden items-center gap-3 2xl:flex" />
         <SiteMobileMenu navigation={navigation} />
       </div>
     </header>

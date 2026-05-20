@@ -18,8 +18,17 @@ test.describe("@e2e contact and mobile navigation", () => {
   });
 
   test("Open site sections from the mobile menu", async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 });
+    await page.setViewportSize({ width: 1280, height: 800 });
     await page.goto("/");
+
+    const commonMenuToggle = page
+      .locator(
+        '#mobile-menu-toggle, [data-testid="mobile-menu-toggle"], [data-menu-toggle="site"], .menu-toggle, .hamburger-menu'
+      )
+      .first();
+    await expect(commonMenuToggle).toBeVisible();
+
+    await page.setViewportSize({ width: 390, height: 844 });
 
     const menuButton = page.getByTestId("mobile-menu-toggle");
     await expect(menuButton).toBeVisible();

@@ -17,17 +17,20 @@ export function SiteMobileMenu({ navigation }: SiteMobileMenuProps) {
   const buttonLabel = isOpen ? "Menüyü kapat / Close menu" : "Menüyü aç / Open menu";
 
   return (
-    <div className="xl:hidden">
+    <div className="2xl:hidden">
       <button
+        id="mobile-menu-toggle"
         type="button"
         aria-label={buttonLabel}
         aria-controls="site-mobile-menu"
         aria-expanded={isOpen}
         aria-haspopup="menu"
+        data-cy="mobile-menu-toggle"
+        data-menu-toggle="site"
         data-testid="mobile-menu-toggle"
         title={buttonLabel}
         onClick={() => setIsOpen((current) => !current)}
-        className="site-mobile-menu-toggle hamburger-menu inline-flex h-11 w-11 items-center justify-center rounded-xl border border-outline-variant/45 bg-white text-on-surface transition hover:border-primary/35 hover:text-primary"
+        className="menu-toggle mobile-menu-toggle site-mobile-menu-toggle hamburger hamburger-menu inline-flex h-11 w-11 items-center justify-center rounded-xl border border-outline-variant/45 bg-white text-on-surface transition hover:border-primary/35 hover:text-primary"
       >
         <Icon className="h-5 w-5" aria-hidden="true" />
       </button>
@@ -35,6 +38,7 @@ export function SiteMobileMenu({ navigation }: SiteMobileMenuProps) {
       {isOpen ? (
         <div
           id="site-mobile-menu"
+          data-testid="site-mobile-menu"
           className="absolute left-0 top-full w-full border-b border-outline-variant/40 bg-white shadow-[0_18px_48px_rgba(15,23,42,0.12)]"
         >
           <div className="mx-auto grid max-w-7xl gap-4 px-6 py-5">
