@@ -8,7 +8,7 @@ const contentSecurityPolicy = [
   "base-uri 'self'",
   "form-action 'self' https://www.paytr.com",
   "frame-ancestors 'self'",
-  "frame-src 'self' https://www.paytr.com",
+  "frame-src 'self' https://www.paytr.com https://www.google.com https://maps.google.com",
   `connect-src 'self' https://www.paytr.com${isProduction ? "" : " ws: http: https:"}`,
   "img-src 'self' data: blob: https:",
   "font-src 'self' data: https://fonts.gstatic.com",

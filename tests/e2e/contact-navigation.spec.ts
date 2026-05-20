@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 test.describe("@e2e contact and mobile navigation", () => {
   test("View contact details and map", async ({ page }) => {
-    await page.goto("/iletisim");
+    const response = await page.goto("/iletisim");
 
     await expect(page.getByText("05514914320").first()).toBeVisible();
     await expect(page.getByText("info@parkchargeev.com").first()).toBeVisible();
@@ -14,6 +14,7 @@ test.describe("@e2e contact and mobile navigation", () => {
 
     await expect(mapFrame).toBeVisible();
     await expect(mapFrame).toHaveAttribute("loading", "lazy");
+    expect(response?.headers()["content-security-policy"]).toContain("https://www.google.com");
   });
 
   test("Open site sections from the mobile menu", async ({ page }) => {
