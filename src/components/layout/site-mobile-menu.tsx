@@ -2,6 +2,7 @@
 
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { SiteHeaderActions } from "@/components/layout/site-header-actions";
@@ -12,6 +13,7 @@ type SiteMobileMenuProps = {
 };
 
 export function SiteMobileMenu({ navigation }: SiteMobileMenuProps) {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const Icon = isOpen ? X : Menu;
   const buttonLabel = isOpen ? "Menüyü kapat / Close menu" : "Menüyü aç / Open menu";
@@ -49,6 +51,15 @@ export function SiteMobileMenu({ navigation }: SiteMobileMenuProps) {
                   href={item.href}
                   target={item.opensInNewTab ? "_blank" : undefined}
                   rel={item.rel ?? (item.opensInNewTab ? "noopener noreferrer" : undefined)}
+                  onClick={(event) => {
+                    if (item.opensInNewTab) {
+                      return;
+                    }
+
+                    event.preventDefault();
+                    setIsOpen(false);
+                    router.push(item.href);
+                  }}
                   className="rounded-2xl bg-surface-container-low px-4 py-3 text-sm font-semibold text-on-surface transition hover:text-primary"
                 >
                   {item.label}

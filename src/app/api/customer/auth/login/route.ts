@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 
 import {
+  clearCustomerSessionCookie,
   customerLoginSchema,
   loginCustomer,
   setCustomerSessionCookie
@@ -13,7 +14,9 @@ import {
 
 export async function POST(request: Request) {
   try {
+    await clearCustomerSessionCookie();
     const payload = customerLoginSchema.parse(await request.json());
+
     const rateLimit = consumeCustomerAuthAttempt(
       getCustomerAuthRateLimitKey(request, "login", payload.email)
     );

@@ -1,9 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Check, Plus } from "lucide-react";
 
+import {
+  normalizeCompareProductIds,
+  readStoredCompareProductIds,
+  writeStoredCompareProductIds
+} from "@/lib/compare-selection";
 import { formatPriceTRY } from "@/lib/format";
 import type { ProductModel } from "@/lib/mock-data";
 
@@ -53,12 +58,15 @@ function getSpec(product: ProductModel, labelIncludes: string[]) {
   return spec?.value ?? "-";
 }
 
-function getInitialProductIds(products: ProductModel[]) {
-  return products.slice(0, 3).map((product) => product.id);
-}
-
 export function ProductComparisonClient({ products }: ProductComparisonClientProps) {
-  const [selectedIds, setSelectedIds] = useState(() => getInitialProductIds(products));
+  const validProductIds = useMemo(() => products.map((product) => product.id), [products]);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  useEffect(() => {
+    setSelectedIds(readStoredCompareProductIds(validProductIds));
+    setIsHydrated(true);
+  }, [validProductIds]);
 
   const selectedProducts = useMemo(
     () =>
@@ -68,14 +76,19 @@ export function ProductComparisonClient({ products }: ProductComparisonClientPro
     [products, selectedIds]
   );
 
-  function toggleProduct(productId: string) {
-    setSelectedIds((current) => {
-      if (current.includes(productId)) {
-        return current.length === 1 ? current : current.filter((id) => id !== productId);
-      }
+  function commitSelection(productIds: readonly string[]) {
+    const nextIds = normalizeCompareProductIds([...productIds], validProductIds);
+    writeStoredCompareProductIds(nextIds);
+    setSelectedIds(nextIds);
+  }
 
-      return [...current.slice(-3), productId];
-    });
+  function toggleProduct(productId: string) {
+    if (selectedIds.includes(productId)) {
+      commitSelection(selectedIds.filter((id) => id !== productId));
+      return;
+    }
+
+    commitSelection([...selectedIds, productId]);
   }
 
   function applyPreset(preset: Preset) {
@@ -84,7 +97,7 @@ export function ProductComparisonClient({ products }: ProductComparisonClientPro
       .slice(0, 4)
       .map((product) => product.id);
 
-    setSelectedIds(matchedIds.length ? matchedIds : getInitialProductIds(products));
+    commitSelection(matchedIds);
   }
 
   const tableRows = [
@@ -138,12 +151,23 @@ export function ProductComparisonClient({ products }: ProductComparisonClientPro
           </h2>
         </div>
         <div className="flex flex-wrap gap-2">
+          {selectedIds.length > 0 ? (
+            <button
+              type="button"
+              onClick={() => commitSelection([])}
+              disabled={!isHydrated}
+              className="rounded-2xl border border-outline-variant/60 bg-surface-container-low px-4 py-3 text-sm font-semibold text-on-surface transition hover:border-primary hover:text-primary"
+            >
+              Seçimi temizle
+            </button>
+          ) : null}
           {comparisonPresets.map((preset) => (
             <button
               key={preset.label}
               type="button"
               onClick={() => applyPreset(preset)}
-              className="rounded-2xl border border-outline-variant/60 bg-white px-4 py-3 text-sm font-semibold text-on-surface transition hover:border-primary hover:text-primary"
+              disabled={!isHydrated}
+              className="rounded-2xl border border-outline-variant/60 bg-white px-4 py-3 text-sm font-semibold text-on-surface transition hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-60"
               title={preset.description}
             >
               {preset.label}
@@ -160,8 +184,10 @@ export function ProductComparisonClient({ products }: ProductComparisonClientPro
             <button
               key={product.id}
               type="button"
+              aria-pressed={isSelected}
               onClick={() => toggleProduct(product.id)}
-              className={`flex min-h-[132px] flex-col justify-between rounded-[24px] border p-5 text-left transition ${
+              disabled={!isHydrated}
+              className={`flex min-h-[148px] flex-col justify-between rounded-[24px] border p-5 text-left transition ${
                 isSelected
                   ? "border-primary bg-primary/5 shadow-sm"
                   : "border-outline-variant/50 bg-white hover:border-primary/50"
@@ -184,6 +210,12 @@ export function ProductComparisonClient({ products }: ProductComparisonClientPro
                   {isSelected ? <Check className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
                 </span>
               </span>
+              {isSelected ? (
+                <span className="mt-3 inline-flex w-fit items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                  <Check className="h-3 w-3" />
+                  Seçili
+                </span>
+              ) : null}
               <span className="mt-4 flex items-end justify-between gap-3">
                 <span className="text-sm font-semibold text-primary">{product.powerLabel}</span>
                 <span className="text-base font-black text-on-surface">
@@ -195,60 +227,75 @@ export function ProductComparisonClient({ products }: ProductComparisonClientPro
         })}
       </div>
 
-      <div className="overflow-hidden rounded-[28px] border border-outline-variant/50 bg-white">
-        <div className="overflow-x-auto">
-          <table className="min-w-[760px] w-full border-collapse text-left">
-            <thead>
-              <tr className="border-b border-outline-variant/50 bg-surface-container-low">
-                <th className="w-44 px-5 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-on-surface-variant">
-                  Kriter
-                </th>
-                {selectedProducts.map((product) => (
-                  <th key={product.id} className="min-w-56 px-5 py-4 align-top">
-                    <span className="block text-sm font-semibold text-primary">
-                      {product.powerLabel}
-                    </span>
-                    <span className="mt-1 block text-lg font-black tracking-[-0.03em] text-on-surface">
-                      {product.name}
-                    </span>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {tableRows.map((row) => (
-                <tr key={row.label} className="border-b border-outline-variant/40 last:border-0">
-                  <th className="px-5 py-4 text-sm font-semibold text-on-surface">
-                    {row.label}
+      {selectedProducts.length === 0 ? (
+        <div className="rounded-[28px] border border-dashed border-outline-variant/70 bg-white p-8 text-center">
+          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-primary">
+            Karşılaştırma boş
+          </p>
+          <h3 className="mt-3 text-3xl font-black tracking-[-0.05em] text-on-surface">
+            Karşılaştırmak için ürün seçin
+          </h3>
+          <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-on-surface-variant">
+            Ürün kartlarındaki artı düğmesine tıklayın. Seçimleriniz mağazaya döndüğünüzde
+            karşılaştırma etiketiyle korunur.
+          </p>
+        </div>
+      ) : (
+        <div className="overflow-hidden rounded-[28px] border border-outline-variant/50 bg-white">
+          <div className="overflow-x-auto">
+            <table className="min-w-[760px] w-full border-collapse text-left">
+              <thead>
+                <tr className="border-b border-outline-variant/50 bg-surface-container-low">
+                  <th className="w-44 px-5 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-on-surface-variant">
+                    Kriter
                   </th>
                   {selectedProducts.map((product) => (
-                    <td
-                      key={`${row.label}-${product.id}`}
-                      className="px-5 py-4 text-sm leading-6 text-on-surface-variant"
-                    >
-                      {row.value(product)}
+                    <th key={product.id} className="min-w-56 px-5 py-4 align-top">
+                      <span className="block text-sm font-semibold text-primary">
+                        {product.powerLabel}
+                      </span>
+                      <span className="mt-1 block text-lg font-black tracking-[-0.03em] text-on-surface">
+                        {product.name}
+                      </span>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {tableRows.map((row) => (
+                  <tr key={row.label} className="border-b border-outline-variant/40 last:border-0">
+                    <th className="px-5 py-4 text-sm font-semibold text-on-surface">
+                      {row.label}
+                    </th>
+                    {selectedProducts.map((product) => (
+                      <td
+                        key={`${row.label}-${product.id}`}
+                        className="px-5 py-4 text-sm leading-6 text-on-surface-variant"
+                      >
+                        {row.value(product)}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+                <tr>
+                  <th className="px-5 py-4 text-sm font-semibold text-on-surface">Aksiyon</th>
+                  {selectedProducts.map((product) => (
+                    <td key={`action-${product.id}`} className="px-5 py-4">
+                      <Link
+                        href={`/urun/${product.slug}`}
+                        className="inline-flex items-center gap-2 rounded-2xl bg-primary px-4 py-3 text-sm font-semibold text-white transition hover:bg-primary-container"
+                      >
+                        Ürünü incele
+                        <ArrowRight className="h-4 w-4" />
+                      </Link>
                     </td>
                   ))}
                 </tr>
-              ))}
-              <tr>
-                <th className="px-5 py-4 text-sm font-semibold text-on-surface">Aksiyon</th>
-                {selectedProducts.map((product) => (
-                  <td key={`action-${product.id}`} className="px-5 py-4">
-                    <Link
-                      href={`/urun/${product.slug}`}
-                      className="inline-flex items-center gap-2 rounded-2xl bg-primary px-4 py-3 text-sm font-semibold text-white transition hover:bg-primary-container"
-                    >
-                      Ürünü incele
-                      <ArrowRight className="h-4 w-4" />
-                    </Link>
-                  </td>
-                ))}
-              </tr>
-            </tbody>
-          </table>
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      )}
     </section>
   );
 }

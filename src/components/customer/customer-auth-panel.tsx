@@ -1,6 +1,6 @@
 "use client";
 
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, LogIn, UserPlus } from "lucide-react";
 
@@ -14,11 +14,20 @@ type AuthResponse = {
 export function CustomerAuthPanel() {
   const router = useRouter();
   const [mode, setMode] = useState<Mode>("login");
+  const [isHydrated, setIsHydrated] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (!isHydrated) {
+      return;
+    }
 
     const formData = new FormData(event.currentTarget);
     setIsSubmitting(true);
@@ -195,21 +204,26 @@ export function CustomerAuthPanel() {
           ) : null}
 
           {message ? (
-            <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <div
+              role="alert"
+              className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+            >
               {message}
             </div>
           ) : null}
 
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={!isHydrated || isSubmitting}
             className="inline-flex items-center justify-center gap-2 rounded-2xl bg-primary px-6 py-4 text-base font-semibold text-white transition hover:bg-primary-container disabled:cursor-not-allowed disabled:opacity-65"
           >
-            {isSubmitting
-              ? "İşleniyor..."
-              : mode === "login"
-                ? "Müşteri Paneline Gir"
-                : "Hesap Oluştur"}
+            {!isHydrated
+              ? "Hazırlanıyor..."
+              : isSubmitting
+                ? "İşleniyor..."
+                : mode === "login"
+                  ? "Müşteri Paneline Gir"
+                  : "Hesap Oluştur"}
             <ArrowRight className="h-4 w-4" />
           </button>
         </form>

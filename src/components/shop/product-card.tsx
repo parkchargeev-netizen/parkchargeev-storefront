@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { ProductCompareMarker } from "@/components/shop/product-compare-marker";
 import type { ProductModel } from "@/lib/mock-data";
 import { formatPriceTRY } from "@/lib/format";
 
@@ -23,6 +24,7 @@ export function ProductCard({ product }: ProductCardProps) {
             {product.badge}
           </span>
         ) : null}
+        <ProductCompareMarker productId={product.id} />
       </div>
 
       <h3 className="text-2xl font-bold tracking-[-0.03em] text-on-surface">

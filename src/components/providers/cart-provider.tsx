@@ -27,6 +27,14 @@ type CartContextValue = {
 
 const CartContext = createContext<CartContextValue | null>(null);
 
+function persistCartItems(items: CartItem[]) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(normalizeStoredCartItems(items)));
+}
+
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isHydrated, setIsHydrated] = useState(false);
@@ -50,8 +58,25 @@ export function CartProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+    persistCartItems(items);
   }, [isHydrated, items]);
+
+  useEffect(() => {
+    function handleStorage(event: StorageEvent) {
+      if (event.key !== CART_STORAGE_KEY) {
+        return;
+      }
+
+      try {
+        setItems(normalizeStoredCartItems(event.newValue ? JSON.parse(event.newValue) : []));
+      } catch {
+        setItems([]);
+      }
+    }
+
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
 
   const totalQuantity = getCartTotalQuantity(items);
 
@@ -70,10 +95,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
       );
 
       if (existingIndex === -1) {
-        return normalizeStoredCartItems([...currentItems, normalizedNextItem]);
+        const nextItems = normalizeStoredCartItems([...currentItems, normalizedNextItem]);
+        persistCartItems(nextItems);
+        return nextItems;
       }
 
-      return normalizeStoredCartItems(
+      const nextItems = normalizeStoredCartItems(
         currentItems.map((item, index) =>
           index === existingIndex
             ? {
@@ -83,12 +110,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
             : item
         )
       );
+      persistCartItems(nextItems);
+      return nextItems;
     });
   }
 
   function updateQuantity(productId: string, cableOption: string, quantity: number) {
-    setItems((currentItems) =>
-      normalizeStoredCartItems(
+    setItems((currentItems) => {
+      const nextItems = normalizeStoredCartItems(
         currentItems.reduce<CartItem[]>((nextItems, item) => {
           if (item.productId !== productId || item.cableOption !== cableOption) {
             nextItems.push(item);
@@ -104,19 +133,24 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
           return nextItems;
         }, [])
-      )
-    );
+      );
+      persistCartItems(nextItems);
+      return nextItems;
+    });
   }
 
   function removeItem(productId: string, cableOption: string) {
-    setItems((currentItems) =>
-      currentItems.filter(
+    setItems((currentItems) => {
+      const nextItems = currentItems.filter(
         (item) => item.productId !== productId || item.cableOption !== cableOption
-      )
-    );
+      );
+      persistCartItems(nextItems);
+      return nextItems;
+    });
   }
 
   function clearCart() {
+    persistCartItems([]);
     setItems([]);
   }
 
