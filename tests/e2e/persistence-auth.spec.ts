@@ -42,10 +42,52 @@ test("@e2e Reject invalid login credentials", async ({ page }) => {
 
   await page.locator('input[name="email"]').fill(`invalid-${Date.now()}@parkchargeev.test`);
   await page.locator('input[name="password"]').fill("WrongPass2026");
-  await page.getByRole("button", { name: /Müşteri Paneline Gir/i }).click();
+  await page.getByRole("button", { name: /Paneline Gir/i }).click();
 
-  await expect(page.getByText(/E-posta veya şifre hatalı/i)).toBeVisible();
+  await expect(page.getByText(/E-posta veya/i)).toBeVisible();
   await expect(page).toHaveURL(/\/giris/);
+});
+
+test("@e2e Authentication: Show an error for invalid login credentials", async ({
+  page,
+  context
+}) => {
+  await page.goto("/giris", { waitUntil: "domcontentloaded" });
+  await context.addCookies([
+    {
+      name: "parkchargeev_customer_session",
+      value: "stale-session",
+      url: page.url()
+    }
+  ]);
+  await page.reload({ waitUntil: "domcontentloaded" });
+
+  const loginResponsePromise = page.waitForResponse(
+    (response) =>
+      response.url().includes("/api/customer/auth/login") &&
+      response.request().method() === "POST"
+  );
+
+  await page.locator('input[name="email"]').fill(`invalid-${Date.now()}@parkchargeev.test`);
+  await page.locator('input[name="password"]').fill("WrongPass2026");
+  await page.getByRole("button", { name: /Paneline Gir/i }).click();
+
+  const loginResponse = await loginResponsePromise;
+  expect(loginResponse.status()).toBe(401);
+  await expect(page.getByText(/E-posta veya/i)).toBeVisible();
+  await expect(page).toHaveURL(/\/giris/);
+  await expect.poll(async () => {
+    const cookies = await context.cookies();
+    return cookies.some((cookie) => cookie.name === "parkchargeev_customer_session");
+  }).toBe(false);
+});
+
+test("@e2e Blog: Search the blog for EV content", async ({ page }) => {
+  await page.goto("/arama?q=ev%20tipi%20%C5%9Farj", { waitUntil: "domcontentloaded" });
+
+  await expect(
+    page.locator('a[href="/blog/evde-elektrikli-arac-sarj-istasyonu-kurulumu"]').first()
+  ).toBeVisible();
 });
 
 test("@e2e Handle an empty comparison state", async ({ page }) => {

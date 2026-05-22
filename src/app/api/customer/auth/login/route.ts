@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 
 import {
-  clearCustomerSessionCookie,
   customerLoginSchema,
+  expireCustomerSessionCookie,
   loginCustomer,
   setCustomerSessionCookie
 } from "@/server/customer/auth";
@@ -12,9 +12,23 @@ import {
   getCustomerAuthRateLimitKey
 } from "@/server/customer/auth-rate-limit";
 
+function failedLoginResponse(message: string, status: number, headers?: HeadersInit) {
+  return expireCustomerSessionCookie(
+    NextResponse.json(
+      {
+        ok: false,
+        message
+      },
+      {
+        status,
+        headers
+      }
+    )
+  );
+}
+
 export async function POST(request: Request) {
   try {
-    await clearCustomerSessionCookie();
     const payload = customerLoginSchema.parse(await request.json());
 
     const rateLimit = consumeCustomerAuthAttempt(
@@ -22,16 +36,11 @@ export async function POST(request: Request) {
     );
 
     if (!rateLimit.allowed) {
-      return NextResponse.json(
+      return failedLoginResponse(
+        "Çok fazla giriş denemesi yapıldı. Lütfen biraz sonra tekrar deneyin.",
+        429,
         {
-          ok: false,
-          message: "Çok fazla giriş denemesi yapıldı. Lütfen biraz sonra tekrar deneyin."
-        },
-        {
-          status: 429,
-          headers: {
-            "Retry-After": String(rateLimit.retryAfterSeconds)
-          }
+          "Retry-After": String(rateLimit.retryAfterSeconds)
         }
       );
     }
@@ -39,13 +48,7 @@ export async function POST(request: Request) {
     const customer = await loginCustomer(payload);
 
     if (!customer) {
-      return NextResponse.json(
-        {
-          ok: false,
-          message: "E-posta veya şifre hatalı."
-        },
-        { status: 401 }
-      );
+      return failedLoginResponse("E-posta veya şifre hatalı.", 401);
     }
 
     await setCustomerSessionCookie({
@@ -65,21 +68,9 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     if (error instanceof ZodError) {
-      return NextResponse.json(
-        {
-          ok: false,
-          message: "Lütfen e-posta ve şifre alanlarını kontrol edin."
-        },
-        { status: 400 }
-      );
+      return failedLoginResponse("Lütfen e-posta ve şifre alanlarını kontrol edin.", 400);
     }
 
-    return NextResponse.json(
-      {
-        ok: false,
-        message: "Müşteri girişi sırasında beklenmeyen bir hata oluştu."
-      },
-      { status: 500 }
-    );
+    return failedLoginResponse("Müşteri girişi sırasında beklenmeyen bir hata oluştu.", 500);
   }
 }

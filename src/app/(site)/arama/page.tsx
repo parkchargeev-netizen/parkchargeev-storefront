@@ -6,6 +6,7 @@ import { ProductCard } from "@/components/shop/product-card";
 import { SolutionCard } from "@/components/solutions/solution-card";
 import { locationPages } from "@/lib/location-pages";
 import { articles, products, solutionPages } from "@/lib/mock-data";
+import { matchesSearchQuery } from "@/lib/search-normalization";
 
 export const metadata: Metadata = {
   title: "Arama",
@@ -23,30 +24,77 @@ type SearchPageProps = {
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
   const { q = "" } = await searchParams;
-  const query = q.trim().toLocaleLowerCase("tr-TR");
+  const query = q.trim();
 
   const matchedProducts = query
     ? products.filter((product) =>
-        `${product.name} ${product.summary} ${product.category}`.toLocaleLowerCase("tr-TR").includes(query)
+        matchesSearchQuery(
+          [
+            product.name,
+            product.slug,
+            product.summary,
+            product.description,
+            product.category,
+            product.powerLabel,
+            product.highlights,
+            product.useCases,
+            product.seoIntent,
+            product.specs.map((spec) => `${spec.label} ${spec.value}`),
+            product.faqs.map((faq) => `${faq.question} ${faq.answer}`)
+          ],
+          query
+        )
       )
     : [];
 
   const matchedArticles = query
     ? articles.filter((article) =>
-        `${article.title} ${article.excerpt} ${article.category}`.toLocaleLowerCase("tr-TR").includes(query)
+        matchesSearchQuery(
+          [
+            article.title,
+            article.slug,
+            article.category,
+            article.excerpt,
+            article.seoDescription,
+            article.coverKicker,
+            article.sections.map((section) =>
+              [
+                section.heading,
+                ...section.paragraphs,
+                ...(section.bullets ?? [])
+              ].join(" ")
+            ),
+            article.faq?.map((faq) => `${faq.question} ${faq.answer}`) ?? []
+          ],
+          query
+        )
       )
     : [];
 
   const matchedSolutions = query
     ? solutionPages.filter((solution) =>
-        `${solution.title} ${solution.summary} ${solution.segment}`.toLocaleLowerCase("tr-TR").includes(query)
+        matchesSearchQuery(
+          [
+            solution.title,
+            solution.slug,
+            solution.summary,
+            solution.segment,
+            solution.introduction,
+            solution.features,
+            solution.outcomes,
+            solution.useCases,
+            solution.faq.map((faq) => `${faq.question} ${faq.answer}`)
+          ],
+          query
+        )
       )
     : [];
   const matchedLocations = query
     ? locationPages.filter((page) =>
-        `${page.city} ${page.region} ${page.summary} ${page.districts.join(" ")} ${page.useCases.join(" ")}`
-          .toLocaleLowerCase("tr-TR")
-          .includes(query)
+        matchesSearchQuery(
+          [page.city, page.slug, page.region, page.summary, page.districts, page.useCases],
+          query
+        )
       )
     : [];
   const totalResults =

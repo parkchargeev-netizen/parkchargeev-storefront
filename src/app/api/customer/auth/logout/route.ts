@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
 
-import { clearCustomerSessionCookie } from "@/server/customer/auth";
+import {
+  clearCustomerSessionCookie,
+  expireCustomerSessionCookie
+} from "@/server/customer/auth";
 
 export async function POST() {
   await clearCustomerSessionCookie();
 
-  return NextResponse.json({ ok: true });
+  return expireCustomerSessionCookie(NextResponse.json({ ok: true }));
 }

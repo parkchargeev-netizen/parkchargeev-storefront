@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
+import type { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getCustomerAuthConfig, hasDatabaseConfig } from "@/lib/runtime-config";
@@ -67,6 +68,21 @@ export async function clearCustomerSessionCookie() {
   const { cookieName } = getCustomerAuthConfig();
 
   cookieStore.delete(cookieName);
+}
+
+export function expireCustomerSessionCookie(response: NextResponse) {
+  const { cookieName } = getCustomerAuthConfig();
+
+  response.cookies.set(cookieName, "", {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    expires: new Date(0),
+    maxAge: 0
+  });
+
+  return response;
 }
 
 export async function getCustomerSessionFromCookies() {
