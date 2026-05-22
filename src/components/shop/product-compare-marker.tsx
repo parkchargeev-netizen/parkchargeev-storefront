@@ -1,6 +1,7 @@
 "use client";
 
 import { Check } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import {
@@ -13,6 +14,7 @@ type ProductCompareMarkerProps = {
 };
 
 export function ProductCompareMarker({ productId }: ProductCompareMarkerProps) {
+  const pathname = usePathname();
   const [isSelected, setIsSelected] = useState(false);
 
   useEffect(() => {
@@ -22,13 +24,17 @@ export function ProductCompareMarker({ productId }: ProductCompareMarkerProps) {
 
     syncSelection();
     window.addEventListener("storage", syncSelection);
+    window.addEventListener("focus", syncSelection);
+    window.addEventListener("pageshow", syncSelection);
     window.addEventListener(COMPARE_SELECTION_EVENT, syncSelection);
 
     return () => {
       window.removeEventListener("storage", syncSelection);
+      window.removeEventListener("focus", syncSelection);
+      window.removeEventListener("pageshow", syncSelection);
       window.removeEventListener(COMPARE_SELECTION_EVENT, syncSelection);
     };
-  }, [productId]);
+  }, [pathname, productId]);
 
   if (!isSelected) {
     return null;

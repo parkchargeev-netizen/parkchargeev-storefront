@@ -19,6 +19,9 @@ test.beforeEach(async ({ page, context }) => {
 });
 
 test("@e2e Return from comparison to shopping", async ({ page }) => {
+  await page.goto("/magaza", { waitUntil: "domcontentloaded" });
+  await expect(page.getByText("Seçili")).toHaveCount(0);
+
   await page.goto("/karsilastir", { waitUntil: "domcontentloaded" });
   await expect(page.getByText("Karşılaştırmak için ürün seçin")).toBeVisible();
 
@@ -27,7 +30,7 @@ test("@e2e Return from comparison to shopping", async ({ page }) => {
     "Seçili"
   );
 
-  await page.goto("/magaza", { waitUntil: "domcontentloaded" });
+  await page.goBack({ waitUntil: "domcontentloaded" });
   await expect(page.getByText("Seçili").first()).toBeVisible();
   await expect(page.locator("article", { hasText: "HomeCharge Pro 11kW" })).toContainText(
     "Seçili"
