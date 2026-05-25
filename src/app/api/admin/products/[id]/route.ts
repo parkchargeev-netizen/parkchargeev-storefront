@@ -5,6 +5,7 @@ import {
   getProductLookupOptions,
   upsertAdminProduct
 } from "@/server/admin/repository";
+import { isValidationError, validationErrorResponse } from "@/server/admin/http";
 import { adminProductSchema } from "@/server/admin/validators";
 import { getRequestMeta, requireAdminRole } from "@/server/auth/guards";
 
@@ -39,17 +40,25 @@ export async function PATCH(request: Request, { params }: ProductRouteProps) {
     return NextResponse.json({ ok: false, message: "Yetkisiz erisim." }, { status: 401 });
   }
 
-  const { id } = await params;
-  const payload = adminProductSchema.parse({
-    ...(await request.json()),
-    id
-  });
-  const requestMeta = await getRequestMeta();
-  const product = await upsertAdminProduct(payload, authenticatedAdmin.session, requestMeta);
+  try {
+    const { id } = await params;
+    const payload = adminProductSchema.parse({
+      ...(await request.json()),
+      id
+    });
+    const requestMeta = await getRequestMeta();
+    const product = await upsertAdminProduct(payload, authenticatedAdmin.session, requestMeta);
 
-  if (!product) {
-    return NextResponse.json({ ok: false, message: "Urun bulunamadi." }, { status: 404 });
+    if (!product) {
+      return NextResponse.json({ ok: false, message: "Ürün bulunamadı." }, { status: 404 });
+    }
+
+    return NextResponse.json({ ok: true, product });
+  } catch (error) {
+    if (isValidationError(error)) {
+      return validationErrorResponse(error);
+    }
+
+    throw error;
   }
-
-  return NextResponse.json({ ok: true, product });
 }

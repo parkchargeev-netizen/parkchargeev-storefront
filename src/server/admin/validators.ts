@@ -108,7 +108,7 @@ export const productDetailContentSchema = z
 export const adminProductSchema = z.object({
   id: z.string().uuid().optional(),
   name: z.string().trim().min(3).max(180),
-  slug: z.string().trim().min(3).max(220),
+  slug: z.string().trim().max(220).optional().or(z.literal("")),
   status: z.enum(productStatusEnum.enumValues),
   brandId: z.string().uuid().nullable().optional().or(z.literal("")),
   shortDescription: z.string().trim().min(10),

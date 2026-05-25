@@ -6,6 +6,7 @@ import {
   listAdminProducts,
   upsertAdminProduct
 } from "@/server/admin/repository";
+import { isValidationError, validationErrorResponse } from "@/server/admin/http";
 import { adminListQuerySchema, adminProductSchema } from "@/server/admin/validators";
 import { getRequestMeta, requireAdminRole } from "@/server/auth/guards";
 
@@ -56,16 +57,24 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, message: "Yetkisiz erisim." }, { status: 401 });
   }
 
-  const payload = adminProductSchema.parse(await request.json());
-  const requestMeta = await getRequestMeta();
-  const product = await upsertAdminProduct(payload, authenticatedAdmin.session, requestMeta);
+  try {
+    const payload = adminProductSchema.parse(await request.json());
+    const requestMeta = await getRequestMeta();
+    const product = await upsertAdminProduct(payload, authenticatedAdmin.session, requestMeta);
 
-  if (!product) {
-    return NextResponse.json(
-      { ok: false, message: "Ürün oluşturulamadı." },
-      { status: 500 }
-    );
+    if (!product) {
+      return NextResponse.json(
+        { ok: false, message: "Ürün oluşturulamadı." },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ ok: true, product }, { status: 201 });
+  } catch (error) {
+    if (isValidationError(error)) {
+      return validationErrorResponse(error);
+    }
+
+    throw error;
   }
-
-  return NextResponse.json({ ok: true, product }, { status: 201 });
 }

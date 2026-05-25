@@ -14,6 +14,7 @@ import {
   vehicleBrandOptions
 } from "@/server/admin/constants";
 import { defaultProductDetailContent } from "@/lib/product-detail-content";
+import { slugify } from "@/lib/slug";
 import { adminProductSchema } from "@/server/admin/validators";
 
 type ProductFormValues = z.input<typeof adminProductSchema>;
@@ -36,6 +37,18 @@ const RichTextEditor = dynamic(
 type ProductLookupOption = {
   id: string;
   name: string;
+};
+
+type ProductMutationResponse = {
+  ok: boolean;
+  message?: string;
+  issues?: Array<{
+    path: string;
+    message: string;
+  }>;
+  product?: {
+    id: string;
+  };
 };
 
 type ProductFormProps = {
@@ -178,7 +191,7 @@ export function ProductForm({
     control,
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isSubmitted },
     reset,
     setValue,
     watch
@@ -193,39 +206,48 @@ export function ProductForm({
 
   const mediaFields = useFieldArray({
     control,
-    name: "media"
+    name: "media",
+    keyName: "fieldId"
   });
 
   const variantFields = useFieldArray({
     control,
-    name: "variants"
+    name: "variants",
+    keyName: "fieldId"
   });
 
   const specFields = useFieldArray({
     control,
-    name: "specs"
+    name: "specs",
+    keyName: "fieldId"
   });
 
   const readinessFields = useFieldArray({
     control,
-    name: "detailContent.purchaseReadiness"
+    name: "detailContent.purchaseReadiness",
+    keyName: "fieldId"
   });
 
   const policyFields = useFieldArray({
     control,
-    name: "detailContent.policyDetails"
+    name: "detailContent.policyDetails",
+    keyName: "fieldId"
   });
 
   const faqFields = useFieldArray({
     control,
-    name: "detailContent.faqs"
+    name: "detailContent.faqs",
+    keyName: "fieldId"
   });
 
   const selectedCategories = watch("categories") ?? [];
   const selectedTags = watch("tags") ?? [];
   const selectedVehicles = watch("vehicleBrands") ?? [];
   const selectedKeywords = watch("searchKeywords") ?? [];
+  const currentName = watch("name");
+  const currentSlug = watch("slug");
   const detailContent = (watch("detailContent") ?? detailContentDefaults) as ProductDetailFormValues;
+  const hasValidationErrors = isSubmitted && Object.keys(errors).length > 0;
   const categoryOptions =
     catalogOptions?.categories.length
       ? catalogOptions.categories.map((category) => ({
@@ -249,6 +271,17 @@ export function ProductForm({
     setValue(field, [...current, value], {
       shouldValidate: true
     });
+  }
+
+  function fillSlugFromName() {
+    const nextSlug = slugify(currentSlug || currentName || "");
+
+    if (nextSlug) {
+      setValue("slug", nextSlug, {
+        shouldDirty: true,
+        shouldValidate: true
+      });
+    }
   }
 
   async function uploadMediaFile(file: File, targetIndex?: number) {
@@ -325,10 +358,16 @@ export function ProductForm({
       body: JSON.stringify(payload)
     });
 
-    const data = (await response.json()) as { ok: boolean; message?: string; product?: { id: string } };
+    const data = (await response.json()) as ProductMutationResponse;
 
     if (!response.ok || !data.ok) {
-      setErrorMessage(data.message ?? "Kayıt işlemi başarısız.");
+      const issueText = data.issues?.length
+        ? ` ${data.issues
+            .slice(0, 4)
+            .map((issue) => issue.message)
+            .join(" ")}`
+        : "";
+      setErrorMessage(`${data.message ?? "Kayıt işlemi başarısız."}${issueText}`);
       return;
     }
 
@@ -365,8 +404,17 @@ export function ProductForm({
             <label className="mb-2 block text-sm font-medium text-slate-700">Slug</label>
             <input
               className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
-              {...register("slug")}
+              {...register("slug", {
+                onBlur: fillSlugFromName
+              })}
             />
+            <button
+              type="button"
+              onClick={fillSlugFromName}
+              className="mt-2 rounded-full border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
+            >
+              Slug oluştur
+            </button>
           </div>
 
           <div>
@@ -518,7 +566,7 @@ export function ProductForm({
         </div>
         <div className="space-y-4">
           {variantFields.fields.map((field, index) => (
-            <div key={field.id} className="grid gap-4 rounded-3xl border border-slate-200 bg-slate-50 p-4 xl:grid-cols-6">
+            <div key={field.fieldId} className="grid gap-4 rounded-3xl border border-slate-200 bg-slate-50 p-4 xl:grid-cols-6">
               <input
                 className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
                 placeholder="SKU"
@@ -718,7 +766,7 @@ export function ProductForm({
         ) : null}
         <div className="space-y-4">
           {mediaFields.fields.map((field, index) => (
-            <div key={field.id} className="grid gap-4 rounded-3xl border border-slate-200 bg-slate-50 p-4 lg:grid-cols-[1fr_240px_auto]">
+            <div key={field.fieldId} className="grid gap-4 rounded-3xl border border-slate-200 bg-slate-50 p-4 lg:grid-cols-[1fr_240px_auto]">
               <input
                 className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
                 placeholder="https://..."
@@ -772,7 +820,7 @@ export function ProductForm({
         </div>
         <div className="space-y-4">
           {specFields.fields.map((field, index) => (
-            <div key={field.id} className="grid gap-4 rounded-3xl border border-slate-200 bg-slate-50 p-4 lg:grid-cols-[180px_1fr_1fr_auto]">
+            <div key={field.fieldId} className="grid gap-4 rounded-3xl border border-slate-200 bg-slate-50 p-4 lg:grid-cols-[180px_1fr_1fr_auto]">
               <input className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="Grup" {...register(`specs.${index}.groupName`)} />
               <input className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="Başlık" {...register(`specs.${index}.label`)} />
               <input className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="Değer" {...register(`specs.${index}.value`)} />
@@ -961,7 +1009,7 @@ export function ProductForm({
           <div className="space-y-3">
             {readinessFields.fields.map((field, index) => (
               <div
-                key={field.id}
+                key={field.fieldId}
                 className="grid gap-3 rounded-3xl border border-slate-200 bg-slate-50 p-4 md:grid-cols-[240px_1fr_auto]"
               >
                 <input
@@ -1026,7 +1074,7 @@ export function ProductForm({
           <div className="space-y-3">
             {policyFields.fields.map((field, index) => (
               <div
-                key={field.id}
+                key={field.fieldId}
                 className="grid gap-3 rounded-3xl border border-slate-200 bg-slate-50 p-4 md:grid-cols-[240px_1fr_auto]"
               >
                 <input
@@ -1066,7 +1114,7 @@ export function ProductForm({
           <div className="space-y-3">
             {faqFields.fields.map((field, index) => (
               <div
-                key={field.id}
+                key={field.fieldId}
                 className="grid gap-3 rounded-3xl border border-slate-200 bg-slate-50 p-4 md:grid-cols-[280px_1fr_auto]"
               >
                 <input
@@ -1185,6 +1233,13 @@ export function ProductForm({
       {errorMessage ? (
         <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {errorMessage}
+        </div>
+      ) : null}
+
+      {hasValidationErrors ? (
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          Formda eksik veya hatalı alanlar var. Ürün adı, açıklama, SKU, fiyat,
+          stok, kategori ve SEO alanlarını kontrol edin.
         </div>
       ) : null}
 
