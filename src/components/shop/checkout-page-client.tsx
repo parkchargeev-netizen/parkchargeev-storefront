@@ -123,7 +123,7 @@ export function CheckoutPageClient({
           totalKurus,
           items: items.map((item) => ({
             title: `${item.product.name} - ${item.cableOption}`,
-            unitPrice: (item.product.priceKurus / 100).toFixed(2),
+            unitPrice: (item.unitPriceKurus / 100).toFixed(2),
             quantity: item.quantity
           }))
         })
@@ -236,7 +236,7 @@ export function CheckoutPageClient({
       paymentAmountKurus: totalKurus,
       items: items.map((item) => ({
         title: `${item.product.name} - ${item.cableOption}`,
-        unitPrice: (item.product.priceKurus / 100).toFixed(2),
+        unitPrice: (item.unitPriceKurus / 100).toFixed(2),
         quantity: item.quantity
       }))
     };

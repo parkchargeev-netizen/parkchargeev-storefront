@@ -1,25 +1,49 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { useCart } from "@/components/providers/cart-provider";
 import { formatPriceTRY } from "@/lib/format";
 import type { ProductModel } from "@/lib/mock-data";
+import {
+  getProductCableOptions,
+  getProductSelectedCableOption
+} from "@/lib/product-options";
 
 type ProductPurchasePanelProps = {
   product: ProductModel;
+  benefits?: string[];
 };
 
-export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
+const defaultBenefits = [
+  "Ücretsiz kargo ve hızlı gönderim",
+  "2 yıl garanti ve kurulum desteği",
+  "PayTR ile güvenli ödeme altyapısı"
+];
+
+export function ProductPurchasePanel({
+  product,
+  benefits = defaultBenefits
+}: ProductPurchasePanelProps) {
   const { addItem, isHydrated } = useCart();
-  const [cableOption, setCableOption] = useState(product.cableOptions[0]);
+  const cableOptions = getProductCableOptions(product);
+  const [cableOption, setCableOption] = useState(cableOptions[0]?.label ?? "");
+  const cableOptionRef = useRef(cableOptions[0]?.label ?? "");
   const [quantity, setQuantity] = useState(1);
   const [feedback, setFeedback] = useState<string | null>(null);
 
+  const selectedOption = getProductSelectedCableOption(product, cableOption);
   const isOutOfStock = product.stockLabel === "Stokta Yok";
   const isAddDisabled = isOutOfStock || !isHydrated;
-  const estimatedLineTotal = product.priceKurus * quantity;
+  const estimatedLineTotal = selectedOption.priceKurus * quantity;
+  const discountPercent = selectedOption.compareAtKurus
+    ? Math.round(
+        ((selectedOption.compareAtKurus - selectedOption.priceKurus) /
+          selectedOption.compareAtKurus) *
+          100
+      )
+    : null;
 
   function handleAddToCart() {
     if (isOutOfStock) {
@@ -28,14 +52,39 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
 
     addItem({
       productId: product.id,
-      cableOption,
-      quantity
+      cableOption: cableOptionRef.current,
+      quantity,
+      productSnapshot: product
     });
     setFeedback(`${quantity} adet ürün sepete eklendi.`);
   }
 
+  function selectCableOption(nextCableOption: string) {
+    cableOptionRef.current = nextCableOption;
+    setCableOption(nextCableOption);
+  }
+
   return (
-    <div className="mt-8 rounded-[24px] bg-surface-container-low p-6">
+    <>
+      <div className="mt-8 flex flex-wrap items-end gap-4">
+        <p className="text-5xl font-black tracking-[-0.08em] text-primary">
+          {formatPriceTRY(selectedOption.priceKurus)}
+        </p>
+        {selectedOption.compareAtKurus ? (
+          <div className="pb-1">
+            <p className="text-lg font-semibold text-on-surface-variant line-through">
+              {formatPriceTRY(selectedOption.compareAtKurus)}
+            </p>
+            {discountPercent ? (
+              <p className="mt-1 text-sm font-semibold text-secondary">
+                %{discountPercent} avantaj
+              </p>
+            ) : null}
+          </div>
+        ) : null}
+      </div>
+
+      <div className="mt-8 rounded-[24px] bg-surface-container-low p-6">
       <p className="text-sm font-semibold uppercase tracking-[0.3em] text-on-surface-variant">
         Sipariş detayları
       </p>
@@ -43,18 +92,25 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
       <div className="mt-5">
         <p className="text-sm font-medium text-on-surface-variant">Kablo uzunluğu</p>
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
-          {product.cableOptions.map((option) => (
+          {cableOptions.map((option) => (
             <button
-              key={option}
+              key={option.label}
               type="button"
-              onClick={() => setCableOption(option)}
+              aria-pressed={option.label === cableOption}
+              disabled={!isHydrated}
+              onClick={() => selectCableOption(option.label)}
               className={`rounded-2xl border px-4 py-3 text-sm font-medium transition ${
-                option === cableOption
+                option.label === cableOption
                   ? "border-primary bg-white text-primary"
                   : "border-outline-variant/40 bg-surface text-on-surface hover:border-primary/20"
-              }`}
+              } disabled:cursor-not-allowed disabled:opacity-60`}
             >
-              {option}
+              <span>{option.label}</span>
+              {option.priceDeltaKurus > 0 ? (
+                <span className="mt-1 block text-xs text-on-surface-variant">
+                  {formatPriceTRY(option.priceKurus)}
+                </span>
+              ) : null}
             </button>
           ))}
         </div>
@@ -121,10 +177,11 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
       </div>
 
       <div className="mt-6 space-y-3 text-sm text-on-surface-variant">
-        <p>Ücretsiz kargo ve hızlı gönderim</p>
-        <p>2 yıl garanti ve kurulum desteği</p>
-        <p>PayTR ile güvenli ödeme altyapısı</p>
+        {benefits.map((benefit) => (
+          <p key={benefit}>{benefit}</p>
+        ))}
       </div>
-    </div>
+      </div>
+    </>
   );
 }

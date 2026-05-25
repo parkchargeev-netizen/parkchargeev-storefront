@@ -5,9 +5,16 @@ import { useState } from "react";
 type ProductGalleryProps = {
   productName: string;
   items: string[];
+  featureLabels?: string[];
+  deviceCaption?: string;
 };
 
-export function ProductGallery({ productName, items }: ProductGalleryProps) {
+export function ProductGallery({
+  productName,
+  items,
+  featureLabels = ["IP koruma", "Type 2", "Kurulum"],
+  deviceCaption = "Ölçekli cihaz temsili"
+}: ProductGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const activeItem = items[activeIndex] ?? items[0];
 
@@ -25,7 +32,7 @@ export function ProductGallery({ productName, items }: ProductGalleryProps) {
               </p>
             </div>
             <div className="grid max-w-md gap-3 sm:grid-cols-3">
-              {["IP koruma", "Type 2", "Kurulum"].map((label) => (
+              {featureLabels.map((label) => (
                 <div
                   key={label}
                   className="rounded-2xl border border-white/10 bg-white/8 px-3 py-3"
@@ -49,7 +56,7 @@ export function ProductGallery({ productName, items }: ProductGalleryProps) {
               <div className="absolute -right-8 bottom-8 h-24 w-24 rounded-full border-[12px] border-secondary/80 border-l-transparent border-t-transparent" />
             </div>
             <div className="absolute bottom-2 right-2 rounded-2xl bg-white/10 px-3 py-2 text-xs font-semibold text-white/80">
-              Olcekli cihaz temsili
+              {deviceCaption}
             </div>
           </div>
 

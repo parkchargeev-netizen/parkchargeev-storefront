@@ -1,6 +1,20 @@
+import type { ProductDetailContentInput } from "@/lib/product-detail-content";
+
 export type ProductSpec = {
   label: string;
   value: string;
+};
+
+export type ProductVariantModel = {
+  sku: string;
+  title: string;
+  powerLabel?: string;
+  cableLength?: string;
+  connectorType?: string;
+  stockQuantity: number;
+  priceKurus: number;
+  compareAtKurus?: number;
+  isDefault?: boolean;
 };
 
 export type FaqItem = {
@@ -21,6 +35,9 @@ export type ProductModel = {
   stockLabel: "Stokta" | "Az Stok" | "Stokta Yok";
   powerLabel: string;
   cableOptions: string[];
+  variants?: ProductVariantModel[];
+  galleryItems?: string[];
+  detailContent?: ProductDetailContentInput;
   specs: ProductSpec[];
   highlights: string[];
   useCases: string[];
@@ -145,6 +162,30 @@ export const products: ProductModel[] = [
     stockLabel: "Stokta",
     powerLabel: "11kW AC",
     cableOptions: ["5 Metre", "7.5 Metre (+800 TL)"],
+    galleryItems: ["Ön görünüm", "Yan profil", "Montaj görünümü", "Video"],
+    variants: [
+      {
+        sku: "SKU-HOMECHARGE-PRO-11KW-5M",
+        title: "5 Metre kablo",
+        powerLabel: "11kW AC",
+        cableLength: "5 Metre",
+        connectorType: "Type 2",
+        stockQuantity: 12,
+        priceKurus: 1249000,
+        compareAtKurus: 1399000,
+        isDefault: true
+      },
+      {
+        sku: "SKU-HOMECHARGE-PRO-11KW-75M",
+        title: "7.5 Metre kablo",
+        powerLabel: "11kW AC",
+        cableLength: "7.5 Metre (+800 TL)",
+        connectorType: "Type 2",
+        stockQuantity: 8,
+        priceKurus: 1329000,
+        compareAtKurus: 1479000
+      }
+    ],
     specs: [
       { label: "Maksimum Güç", value: "11 kW (3-Faz)" },
       { label: "Bağlantı Tipi", value: "Type 2" },

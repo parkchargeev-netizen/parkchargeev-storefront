@@ -47,6 +47,64 @@ export const productVariantSchema = z.object({
   isDefault: z.boolean().default(false)
 });
 
+const productDetailStringListSchema = z.array(z.string().trim().min(1).max(240)).default([]);
+
+const productDetailTextPairSchema = z.object({
+  label: z.string().trim().min(2).max(120),
+  value: z.string().trim().min(2).max(320)
+});
+
+const productPolicyDetailSchema = z.object({
+  title: z.string().trim().min(2).max(140),
+  body: z.string().trim().min(10).max(1200)
+});
+
+const productDetailFaqSchema = z.object({
+  question: z.string().trim().min(3).max(180),
+  answer: z.string().trim().min(10).max(1200)
+});
+
+export const productDetailContentSchema = z
+  .object({
+    galleryItems: productDetailStringListSchema,
+    galleryFeatureLabels: productDetailStringListSchema,
+    galleryDeviceCaption: z.string().trim().max(120).optional().or(z.literal("")),
+    specsHeading: z.string().trim().max(120).optional().or(z.literal("")),
+    intentHeading: z.string().trim().max(120).optional().or(z.literal("")),
+    intentBody: z.string().trim().max(500).optional().or(z.literal("")),
+    seoIntents: productDetailStringListSchema,
+    useCasesHeading: z.string().trim().max(120).optional().or(z.literal("")),
+    useCases: productDetailStringListSchema,
+    highlightsHeading: z.string().trim().max(120).optional().or(z.literal("")),
+    highlights: productDetailStringListSchema,
+    purchaseBenefits: productDetailStringListSchema,
+    purchaseReadiness: z.array(productDetailTextPairSchema).default([]),
+    decisionChecks: productDetailStringListSchema,
+    support: z
+      .object({
+        title: z.string().trim().max(120).optional().or(z.literal("")),
+        body: z.string().trim().max(700).optional().or(z.literal("")),
+        ctaLabel: z.string().trim().max(80).optional().or(z.literal("")),
+        href: z
+          .string()
+          .trim()
+          .max(500)
+          .refine(
+            (value) => value === "" || value.startsWith("/") || value.startsWith("https://"),
+            "Link / ile veya https:// ile başlamalıdır."
+          )
+          .optional()
+          .or(z.literal(""))
+      })
+      .default({}),
+    policyDetails: z.array(productPolicyDetailSchema).default([]),
+    faqHeading: z.string().trim().max(120).optional().or(z.literal("")),
+    faqs: z.array(productDetailFaqSchema).default([]),
+    relatedEyebrow: z.string().trim().max(120).optional().or(z.literal("")),
+    relatedHeading: z.string().trim().max(160).optional().or(z.literal(""))
+  })
+  .default({});
+
 export const adminProductSchema = z.object({
   id: z.string().uuid().optional(),
   name: z.string().trim().min(3).max(180),
@@ -85,6 +143,7 @@ export const adminProductSchema = z.object({
   variants: z.array(productVariantSchema).default([]),
   media: z.array(productMediaSchema).default([]),
   specs: z.array(productSpecSchema).default([]),
+  detailContent: productDetailContentSchema,
   seoTitle: z.string().trim().max(255).optional().or(z.literal("")),
   seoDescription: z.string().trim().max(320).optional().or(z.literal("")),
   canonicalUrl: z.string().trim().url().optional().or(z.literal("")),

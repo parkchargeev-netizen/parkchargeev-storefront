@@ -3,13 +3,13 @@ import Link from "next/link";
 
 import { ProductCard } from "@/components/shop/product-card";
 import { formatPriceTRY } from "@/lib/format";
-import { products } from "@/lib/mock-data";
 import { absoluteUrl } from "@/lib/site";
 import {
   getBreadcrumbJsonLd,
   getProductImageUrl,
   stringifyJsonLd
 } from "@/lib/structured-data";
+import { listPublicProducts } from "@/server/admin/repository";
 
 export const metadata: Metadata = {
   title: "Mağaza",
@@ -32,8 +32,6 @@ export const metadata: Metadata = {
   description:
     "Ev tipi ve iş yeri tipi elektrikli araç şarj istasyonları, kablolar ve kurulum çözümlerini keşfedin."
 };
-
-const categoryLabels = [...new Set(products.map((product) => product.category))];
 
 const sortOptions = [
   { value: "recommended", label: "Önerilenler" },
@@ -82,7 +80,9 @@ function buildStoreHref({
 }
 
 export default async function StorePage({ searchParams }: StorePageProps) {
+  const products = await listPublicProducts();
   const params = await searchParams;
+  const categoryLabels = [...new Set(products.map((product) => product.category))];
   const query = params.q?.trim() ?? "";
   const normalizedQuery = query.toLocaleLowerCase("tr-TR");
   const selectedCategory = categoryLabels.includes(params.category ?? "")

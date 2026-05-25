@@ -13,9 +13,13 @@ import {
   productTagOptions,
   vehicleBrandOptions
 } from "@/server/admin/constants";
+import { defaultProductDetailContent } from "@/lib/product-detail-content";
 import { adminProductSchema } from "@/server/admin/validators";
 
 type ProductFormValues = z.input<typeof adminProductSchema>;
+type ProductDetailFormValues = NonNullable<ProductFormValues["detailContent"]>;
+
+const detailContentDefaults = defaultProductDetailContent as ProductDetailFormValues;
 
 const RichTextEditor = dynamic(
   () => import("@/components/admin/rich-text-editor").then((module) => module.RichTextEditor),
@@ -85,6 +89,7 @@ const emptyValues: ProductFormValues = {
   variants: [],
   media: [],
   specs: [],
+  detailContent: detailContentDefaults,
   seoTitle: "",
   seoDescription: "",
   canonicalUrl: "",
@@ -93,6 +98,13 @@ const emptyValues: ProductFormValues = {
   searchKeywords: [],
   adminNotes: ""
 };
+
+function splitLines(value: string) {
+  return value
+    .split("\n")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
 
 export function ProductForm({
   mode,
@@ -120,6 +132,43 @@ export function ProductForm({
       variants: initialValues?.variants ?? emptyValues.variants,
       media: initialValues?.media ?? emptyValues.media,
       specs: initialValues?.specs ?? emptyValues.specs,
+      detailContent: {
+        ...detailContentDefaults,
+        ...initialValues?.detailContent,
+        galleryItems:
+          initialValues?.detailContent?.galleryItems ?? detailContentDefaults.galleryItems,
+        galleryFeatureLabels:
+          initialValues?.detailContent?.galleryFeatureLabels ??
+          detailContentDefaults.galleryFeatureLabels,
+        purchaseBenefits:
+          initialValues?.detailContent?.purchaseBenefits ??
+          detailContentDefaults.purchaseBenefits,
+        seoIntents:
+          initialValues?.detailContent?.seoIntents ??
+          detailContentDefaults.seoIntents,
+        useCases:
+          initialValues?.detailContent?.useCases ??
+          detailContentDefaults.useCases,
+        highlights:
+          initialValues?.detailContent?.highlights ??
+          detailContentDefaults.highlights,
+        purchaseReadiness:
+          initialValues?.detailContent?.purchaseReadiness ??
+          detailContentDefaults.purchaseReadiness,
+        decisionChecks:
+          initialValues?.detailContent?.decisionChecks ??
+          detailContentDefaults.decisionChecks,
+        support: {
+          ...detailContentDefaults.support,
+          ...initialValues?.detailContent?.support
+        },
+        policyDetails:
+          initialValues?.detailContent?.policyDetails ??
+          detailContentDefaults.policyDetails,
+        faqs:
+          initialValues?.detailContent?.faqs ??
+          detailContentDefaults.faqs
+      },
       searchKeywords: initialValues?.searchKeywords ?? emptyValues.searchKeywords
     }),
     [initialValues]
@@ -152,10 +201,26 @@ export function ProductForm({
     name: "specs"
   });
 
+  const readinessFields = useFieldArray({
+    control,
+    name: "detailContent.purchaseReadiness"
+  });
+
+  const policyFields = useFieldArray({
+    control,
+    name: "detailContent.policyDetails"
+  });
+
+  const faqFields = useFieldArray({
+    control,
+    name: "detailContent.faqs"
+  });
+
   const selectedCategories = watch("categories") ?? [];
   const selectedTags = watch("tags") ?? [];
   const selectedVehicles = watch("vehicleBrands") ?? [];
   const selectedKeywords = watch("searchKeywords") ?? [];
+  const detailContent = (watch("detailContent") ?? detailContentDefaults) as ProductDetailFormValues;
   const categoryOptions =
     catalogOptions?.categories.length
       ? catalogOptions.categories.map((category) => ({
@@ -374,6 +439,24 @@ export function ProductForm({
             />
           </div>
           <div>
+            <label className="mb-2 block text-sm font-medium text-slate-700">Kampanyalı fiyat</label>
+            <input
+              type="number"
+              className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+              {...register("discountedPriceKurus", {
+                setValueAs: (value) => (value === "" ? null : Number(value))
+              })}
+            />
+          </div>
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-700">Kampanya bitişi</label>
+            <input
+              type="datetime-local"
+              className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+              {...register("discountEndsAt")}
+            />
+          </div>
+          <div>
             <label className="mb-2 block text-sm font-medium text-slate-700">Stok</label>
             <input
               type="number"
@@ -516,7 +599,7 @@ export function ProductForm({
           </div>
 
           <div>
-            <p className="mb-3 text-sm font-semibold text-slate-800">Etiketler</p>
+            <p className="mb-3 text-sm font-semibold text-slate-800">Vitrin rozetleri</p>
             <div className="space-y-2">
               {productTagOptions.map((option) => (
                 <label key={option.value} className="flex items-center gap-3 rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-700">
@@ -594,7 +677,7 @@ export function ProductForm({
           <div>
             <h2 className="text-xl font-semibold text-slate-950">Görseller</h2>
             <p className="mt-1 text-sm text-slate-600">
-              Supabase Storage alanına dosya yükleyebilir veya dış görsel URL değeri girebilirsiniz.
+              Ürün detay galerisindeki görsel URL ve başlıkları buradan yönetilir.
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
@@ -693,6 +776,315 @@ export function ProductForm({
               </button>
             </div>
           ))}
+        </div>
+      </section>
+
+      <section className="surface-card border border-slate-200 bg-white/95 p-6">
+        <div className="mb-6">
+          <h2 className="text-xl font-semibold text-slate-950">Ürün detay sayfası</h2>
+          <p className="mt-1 text-sm text-slate-600">
+            Ürün sayfasındaki galeri etiketleri, karar kutuları, destek alanı ve güven metinleri
+            ürün kaydıyla birlikte yönetilir.
+          </p>
+        </div>
+
+        <div className="grid gap-5 md:grid-cols-2">
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-700">
+              Galeri sekmeleri
+            </label>
+            <textarea
+              rows={4}
+              className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+              value={detailContent.galleryItems?.join("\n") ?? ""}
+              onChange={(event) =>
+                setValue("detailContent.galleryItems", splitLines(event.target.value), {
+                  shouldValidate: true
+                })
+              }
+            />
+          </div>
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-700">
+              Galeri özellik rozetleri
+            </label>
+            <textarea
+              rows={4}
+              className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+              value={detailContent.galleryFeatureLabels?.join("\n") ?? ""}
+              onChange={(event) =>
+                setValue("detailContent.galleryFeatureLabels", splitLines(event.target.value), {
+                  shouldValidate: true
+                })
+              }
+            />
+          </div>
+          <input
+            className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+            placeholder="Galeri cihaz notu"
+            {...register("detailContent.galleryDeviceCaption")}
+          />
+          <input
+            className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+            placeholder="Teknik özellikler başlığı"
+            {...register("detailContent.specsHeading")}
+          />
+          <input
+            className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+            placeholder="Satın alma niyetleri başlığı"
+            {...register("detailContent.intentHeading")}
+          />
+          <input
+            className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+            placeholder="Kullanım senaryoları başlığı"
+            {...register("detailContent.useCasesHeading")}
+          />
+          <textarea
+            rows={3}
+            className="rounded-2xl border border-slate-300 px-4 py-3 text-sm md:col-span-2"
+            placeholder="Satın alma niyetleri açıklaması"
+            {...register("detailContent.intentBody")}
+          />
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-700">
+              Satın alma niyeti etiketleri
+            </label>
+            <textarea
+              rows={4}
+              className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+              value={detailContent.seoIntents?.join("\n") ?? ""}
+              onChange={(event) =>
+                setValue("detailContent.seoIntents", splitLines(event.target.value), {
+                  shouldValidate: true
+                })
+              }
+            />
+          </div>
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-700">
+              Kullanım senaryoları
+            </label>
+            <textarea
+              rows={4}
+              className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+              value={detailContent.useCases?.join("\n") ?? ""}
+              onChange={(event) =>
+                setValue("detailContent.useCases", splitLines(event.target.value), {
+                  shouldValidate: true
+                })
+              }
+            />
+          </div>
+          <input
+            className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+            placeholder="Öne çıkan avantajlar başlığı"
+            {...register("detailContent.highlightsHeading")}
+          />
+          <input
+            className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+            placeholder="SSS başlığı"
+            {...register("detailContent.faqHeading")}
+          />
+          <input
+            className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+            placeholder="İlgili ürünler üst başlığı"
+            {...register("detailContent.relatedEyebrow")}
+          />
+          <input
+            className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+            placeholder="İlgili ürünler başlığı"
+            {...register("detailContent.relatedHeading")}
+          />
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-700">
+              Öne çıkan avantaj maddeleri
+            </label>
+            <textarea
+              rows={4}
+              className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+              value={detailContent.highlights?.join("\n") ?? ""}
+              onChange={(event) =>
+                setValue("detailContent.highlights", splitLines(event.target.value), {
+                  shouldValidate: true
+                })
+              }
+            />
+          </div>
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-700">
+              Satın alma güven maddeleri
+            </label>
+            <textarea
+              rows={4}
+              className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+              value={detailContent.purchaseBenefits?.join("\n") ?? ""}
+              onChange={(event) =>
+                setValue("detailContent.purchaseBenefits", splitLines(event.target.value), {
+                  shouldValidate: true
+                })
+              }
+            />
+          </div>
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-700">
+              Karar bilgilendirme kutuları
+            </label>
+            <textarea
+              rows={4}
+              className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+              value={detailContent.decisionChecks?.join("\n") ?? ""}
+              onChange={(event) =>
+                setValue("detailContent.decisionChecks", splitLines(event.target.value), {
+                  shouldValidate: true
+                })
+              }
+            />
+          </div>
+        </div>
+
+        <div className="mt-8">
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="text-base font-semibold text-slate-900">Satın alma hazırlığı</h3>
+            <button
+              type="button"
+              onClick={() => readinessFields.append({ label: "", value: "" })}
+              className="rounded-full border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700"
+            >
+              Kart ekle
+            </button>
+          </div>
+          <div className="space-y-3">
+            {readinessFields.fields.map((field, index) => (
+              <div
+                key={field.id}
+                className="grid gap-3 rounded-3xl border border-slate-200 bg-slate-50 p-4 md:grid-cols-[240px_1fr_auto]"
+              >
+                <input
+                  className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+                  placeholder="Başlık"
+                  {...register(`detailContent.purchaseReadiness.${index}.label`)}
+                />
+                <input
+                  className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+                  placeholder="Değer"
+                  {...register(`detailContent.purchaseReadiness.${index}.value`)}
+                />
+                <button
+                  type="button"
+                  onClick={() => readinessFields.remove(index)}
+                  className="rounded-full border border-red-200 px-3 py-2 text-sm text-red-700"
+                >
+                  Sil
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-8 grid gap-5 md:grid-cols-2">
+          <input
+            className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+            placeholder="Destek kutusu başlığı"
+            {...register("detailContent.support.title")}
+          />
+          <input
+            className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+            placeholder="Destek buton metni"
+            {...register("detailContent.support.ctaLabel")}
+          />
+          <input
+            className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+            placeholder="Destek buton linki"
+            {...register("detailContent.support.href")}
+          />
+          <textarea
+            rows={3}
+            className="rounded-2xl border border-slate-300 px-4 py-3 text-sm md:col-span-2"
+            placeholder="Destek kutusu açıklaması"
+            {...register("detailContent.support.body")}
+          />
+        </div>
+
+        <div className="mt-8">
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="text-base font-semibold text-slate-900">
+              Teslimat, iade ve garanti akordiyonları
+            </h3>
+            <button
+              type="button"
+              onClick={() => policyFields.append({ title: "", body: "" })}
+              className="rounded-full border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700"
+            >
+              Akordiyon ekle
+            </button>
+          </div>
+          <div className="space-y-3">
+            {policyFields.fields.map((field, index) => (
+              <div
+                key={field.id}
+                className="grid gap-3 rounded-3xl border border-slate-200 bg-slate-50 p-4 md:grid-cols-[240px_1fr_auto]"
+              >
+                <input
+                  className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+                  placeholder="Başlık"
+                  {...register(`detailContent.policyDetails.${index}.title`)}
+                />
+                <textarea
+                  rows={2}
+                  className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+                  placeholder="Açıklama"
+                  {...register(`detailContent.policyDetails.${index}.body`)}
+                />
+                <button
+                  type="button"
+                  onClick={() => policyFields.remove(index)}
+                  className="rounded-full border border-red-200 px-3 py-2 text-sm text-red-700"
+                >
+                  Sil
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-8">
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="text-base font-semibold text-slate-900">Sık sorulan sorular</h3>
+            <button
+              type="button"
+              onClick={() => faqFields.append({ question: "", answer: "" })}
+              className="rounded-full border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700"
+            >
+              Soru ekle
+            </button>
+          </div>
+          <div className="space-y-3">
+            {faqFields.fields.map((field, index) => (
+              <div
+                key={field.id}
+                className="grid gap-3 rounded-3xl border border-slate-200 bg-slate-50 p-4 md:grid-cols-[280px_1fr_auto]"
+              >
+                <input
+                  className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+                  placeholder="Soru"
+                  {...register(`detailContent.faqs.${index}.question`)}
+                />
+                <textarea
+                  rows={2}
+                  className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+                  placeholder="Yanıt"
+                  {...register(`detailContent.faqs.${index}.answer`)}
+                />
+                <button
+                  type="button"
+                  onClick={() => faqFields.remove(index)}
+                  className="rounded-full border border-red-200 px-3 py-2 text-sm text-red-700"
+                >
+                  Sil
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

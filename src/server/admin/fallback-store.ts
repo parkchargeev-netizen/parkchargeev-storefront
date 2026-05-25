@@ -3,6 +3,12 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { products as marketingProducts } from "@/lib/mock-data";
+import {
+  getProductDetailContent,
+  getProductDetailContentFromSchemaJsonLd,
+  withProductDetailContentSchemaJsonLd,
+  type ProductDetailContentInput
+} from "@/lib/product-detail-content";
 import { slugify } from "@/lib/slug";
 import {
   fallbackAssignableAdminSeeds,
@@ -499,12 +505,12 @@ function createSeedProducts(): FallbackProductRecord[] {
       canonicalUrl: `https://parkchargeev.local/urun/${source.slug}`,
       ogImageUrl: `https://placehold.co/1200x900/png?text=${encodeURIComponent(source.name)}`,
       aiSummary: source.summary.slice(0, 180),
-      schemaJsonLd: {
+      schemaJsonLd: withProductDetailContentSchemaJsonLd({
         "@context": "https://schema.org",
         "@type": "Product",
         name: source.name,
         sku: `SKU-${source.slug.toUpperCase().replace(/[^A-Z0-9]/g, "-")}`
-      },
+      }, getProductDetailContent(source)),
       defaultPriceKurus: source.priceKurus,
       discountedPriceKurus: null,
       discountEndsAt: null,
@@ -1076,6 +1082,7 @@ function buildPageResult<T extends { id: string; updatedAt: string }>(
 function hydrateProduct(record: FallbackProductRecord) {
   return {
     ...record,
+    detailContent: getProductDetailContentFromSchemaJsonLd(record.schemaJsonLd),
     createdAt: new Date(record.createdAt),
     updatedAt: new Date(record.updatedAt),
     discountEndsAt: record.discountEndsAt ? new Date(record.discountEndsAt) : null,
@@ -1155,7 +1162,15 @@ function normalizeProductRecord(
     canonicalUrl: input.canonicalUrl || null,
     ogImageUrl: input.ogImageUrl || null,
     aiSummary: input.aiSummary || null,
-    schemaJsonLd: existing?.schemaJsonLd ?? null,
+    schemaJsonLd: withProductDetailContentSchemaJsonLd(
+      existing?.schemaJsonLd ?? {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        name: input.name,
+        sku: input.sku
+      },
+      input.detailContent as ProductDetailContentInput
+    ),
     defaultPriceKurus: input.priceKurus,
     discountedPriceKurus: input.discountedPriceKurus ?? null,
     discountEndsAt: input.discountEndsAt ? new Date(input.discountEndsAt).toISOString() : null,

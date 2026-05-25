@@ -7,37 +7,48 @@ import {
   normalizeCartQuantity,
   normalizeStoredCartItems
 } from "@/lib/cart-core";
+import {
+  getProductCableOptionLabels,
+  getProductSelectedCableOption
+} from "@/lib/product-options";
 
 export { CART_STORAGE_KEY, CART_TAX_RATE, getCartTotalQuantity };
 export type { CartItem };
 
 export type EnrichedCartItem = CartItem & {
   product: ProductModel;
+  unitPriceKurus: number;
   lineTotalKurus: number;
 };
 
-function findProduct(productId: string) {
-  return products.find((product) => product.id === productId);
+function findProduct(item: Pick<CartItem, "productId" | "productSnapshot">) {
+  if (item.productSnapshot?.id === item.productId) {
+    return item.productSnapshot;
+  }
+
+  return products.find((product) => product.id === item.productId);
 }
 
 export function normalizeCartItems(items: CartItem[]) {
   return normalizeStoredCartItems(items)
     .map((item) => {
-      const product = findProduct(item.productId);
+      const product = findProduct(item);
 
       if (!product) {
         return null;
       }
 
       const quantity = normalizeCartQuantity(item.quantity);
-      const cableOption = product.cableOptions.includes(item.cableOption)
+      const cableOptionLabels = getProductCableOptionLabels(product);
+      const cableOption = cableOptionLabels.includes(item.cableOption)
         ? item.cableOption
-        : product.cableOptions[0];
+        : cableOptionLabels[0] ?? "";
 
       return {
         productId: product.id,
         quantity,
-        cableOption
+        cableOption,
+        ...(item.productSnapshot ? { productSnapshot: item.productSnapshot } : {})
       } satisfies CartItem;
     })
     .filter((item): item is CartItem => item !== null);
@@ -46,16 +57,18 @@ export function normalizeCartItems(items: CartItem[]) {
 export function enrichCartItems(items: CartItem[]) {
   return normalizeCartItems(items)
     .map((item) => {
-      const product = findProduct(item.productId);
+      const product = findProduct(item);
 
       if (!product) {
         return null;
       }
+      const selectedOption = getProductSelectedCableOption(product, item.cableOption);
 
       return {
         ...item,
         product,
-        lineTotalKurus: product.priceKurus * item.quantity
+        unitPriceKurus: selectedOption.priceKurus,
+        lineTotalKurus: selectedOption.priceKurus * item.quantity
       } satisfies EnrichedCartItem;
     })
     .filter((item): item is EnrichedCartItem => item !== null);
@@ -88,7 +101,7 @@ export function getCartTotalKurus(items: CartItem[]) {
 export function getCheckoutItems(items: CartItem[]) {
   return enrichCartItems(items).map((item) => ({
     title: `${item.product.name} - ${item.cableOption}`,
-    unitPrice: (item.product.priceKurus / 100).toFixed(2),
+    unitPrice: (item.unitPriceKurus / 100).toFixed(2),
     quantity: item.quantity
   }));
 }

@@ -115,6 +115,7 @@ export default async function EditAdminProductPage({ params }: EditProductPagePr
             label: item.label,
             value: item.value
           })),
+          detailContent: product.detailContent,
           seoTitle: product.seoTitle ?? "",
           seoDescription: product.seoDescription ?? "",
           canonicalUrl: product.canonicalUrl ?? "",

@@ -5,12 +5,7 @@ import { notFound } from "next/navigation";
 import { ProductGallery } from "@/components/shop/product-gallery";
 import { ProductCard } from "@/components/shop/product-card";
 import { ProductPurchasePanel } from "@/components/shop/product-purchase-panel";
-import { formatPriceTRY } from "@/lib/format";
-import {
-  getProductBySlug,
-  getRelatedProducts,
-  products
-} from "@/lib/mock-data";
+import { getProductDetailContent } from "@/lib/product-detail-content";
 import {
   getBreadcrumbJsonLd,
   getFaqJsonLd,
@@ -18,20 +13,26 @@ import {
   getProductJsonLd,
   stringifyJsonLd
 } from "@/lib/structured-data";
+import {
+  getPublicProductBySlug,
+  getPublicRelatedProducts,
+  listPublicProducts
+} from "@/server/admin/repository";
 
 type ProductDetailPageProps = {
   params: Promise<{ slug: string }>;
 };
 
 export async function generateStaticParams() {
-  return products.map((product) => ({ slug: product.slug }));
+  const publicProducts = await listPublicProducts();
+  return publicProducts.map((product) => ({ slug: product.slug }));
 }
 
 export async function generateMetadata({
   params
 }: ProductDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await getPublicProductBySlug(slug);
 
   if (!product) {
     return {
@@ -71,70 +72,22 @@ export default async function ProductDetailPage({
   params
 }: ProductDetailPageProps) {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await getPublicProductBySlug(slug);
 
   if (!product) {
     notFound();
   }
 
-  const relatedProducts = getRelatedProducts(product);
+  const relatedProducts = await getPublicRelatedProducts(product);
   const productJsonLd = getProductJsonLd(product);
-  const mediaItems = ["Ön görünüm", "Yan profil", "Montaj görünümü", "Video"];
+  const detailContent = getProductDetailContent(product);
+  const mediaItems = detailContent.galleryItems;
   const breadcrumbJsonLd = getBreadcrumbJsonLd([
     { name: "Ana Sayfa", path: "/" },
     { name: "Mağaza", path: "/magaza" },
     { name: product.name, path: `/urun/${product.slug}` }
   ]);
-  const faqJsonLd = getFaqJsonLd(product.faqs);
-  const discountPercent = product.compareAtKurus
-    ? Math.round(((product.compareAtKurus - product.priceKurus) / product.compareAtKurus) * 100)
-    : null;
-  const decisionChecks = [
-    "Kargo, KDV ve kurulum kapsamı karar öncesinde ayrı ayrı gösterilir.",
-    "Keşif talebiyle pano kapasitesi ve kablo hattı netleştirilebilir.",
-    "PayTR iFrame akışı kart verisini site sunucusuna taşımaz."
-  ];
-  const purchaseReadiness = [
-    {
-      label: "Kurulum dahil mi?",
-      value:
-        product.category === "Aksesuar"
-          ? "Kurulum gerektirmez"
-          : "Keşif sonrası kurulum teklifi eklenebilir"
-    },
-    {
-      label: "Keşif gerekiyor mu?",
-      value:
-        product.powerLabel.toLocaleLowerCase("tr-TR").includes("dc") ||
-        product.powerLabel.includes("22")
-          ? "Önerilir"
-          : "Altyapı bilinmiyorsa önerilir"
-    },
-    {
-      label: "Uyumlu araçlar",
-      value:
-        product.category === "Aksesuar"
-          ? "Type 2 AC soketli araçlar"
-          : "Type 2 AC veya CCS2 desteğine göre seçilir"
-    }
-  ];
-  const policyDetails = [
-    {
-      title: "Teslimat ve kurulum",
-      body:
-        "Stoktaki ürünlerde standart sevkiyat 2-5 iş günü olarak planlanır. Kurulum talebi varsa saha keşfi sonrası randevu ve kapsam ayrıca netleştirilir."
-    },
-    {
-      title: "İade ve değişim",
-      body:
-        "Kullanılmamış ürünlerde 14 gün içinde iade talebi alınabilir. Saha montajı yapılan projelerde keşif ve kurulum kapsamı ayrı değerlendirilir."
-    },
-    {
-      title: "Garanti ve servis",
-      body:
-        "Ürünler için 2 yıl garanti ve kurulum sonrası teknik destek süreci sunulur. Kurumsal projelerde bakım periyodu teklif kapsamına eklenebilir."
-    }
-  ];
+  const faqJsonLd = getFaqJsonLd(detailContent.faqs);
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-10 lg:px-8">
@@ -167,12 +120,17 @@ export default async function ProductDetailPage({
 
       <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
         <section>
-          <ProductGallery productName={product.name} items={mediaItems} />
+          <ProductGallery
+            productName={product.name}
+            items={mediaItems}
+            featureLabels={detailContent.galleryFeatureLabels}
+            deviceCaption={detailContent.galleryDeviceCaption}
+          />
 
           <div className="mt-8 grid gap-6 lg:grid-cols-2">
             <div className="surface-card p-8">
               <h2 className="text-3xl font-bold tracking-[-0.05em] text-on-surface">
-                Teknik özellikler
+                {detailContent.specsHeading}
               </h2>
               <div className="mt-6 space-y-4">
                 {product.specs.map((spec) => (
@@ -191,13 +149,13 @@ export default async function ProductDetailPage({
 
             <div className="overflow-hidden rounded-[28px] bg-linear-to-br from-primary to-primary-container p-8 text-white shadow-[0_24px_80px_rgba(0,68,211,0.26)]">
               <h2 className="text-3xl font-bold tracking-[-0.05em]">
-                Satın alma niyetleri
+                {detailContent.intentHeading}
               </h2>
               <p className="mt-4 text-base leading-7 text-white/80">
-                Bu ürün kullanıcıların en çok aşağıdaki karar sorularında öne çıkar.
+                {detailContent.intentBody}
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
-                {product.seoIntent.map((intent) => (
+                {detailContent.seoIntents.map((intent) => (
                   <span
                     key={intent}
                     className="rounded-full bg-white/12 px-4 py-3 text-sm font-semibold text-white"
@@ -212,10 +170,10 @@ export default async function ProductDetailPage({
           <div className="mt-8 grid gap-6 lg:grid-cols-2">
             <div className="surface-card p-8">
               <h2 className="text-3xl font-bold tracking-[-0.05em] text-on-surface">
-                Kullanım senaryoları
+                {detailContent.useCasesHeading}
               </h2>
               <div className="mt-6 flex flex-wrap gap-3">
-                {product.useCases.map((useCase) => (
+                {detailContent.useCases.map((useCase) => (
                   <span
                     key={useCase}
                     className="rounded-full bg-surface-container-low px-4 py-3 text-sm font-semibold text-on-surface"
@@ -228,10 +186,10 @@ export default async function ProductDetailPage({
 
             <div className="surface-card p-8">
               <h2 className="text-3xl font-bold tracking-[-0.05em] text-on-surface">
-                Öne çıkan avantajlar
+                {detailContent.highlightsHeading}
               </h2>
               <ul className="mt-4 space-y-3 text-sm leading-7 text-on-surface-variant">
-                {product.highlights.map((highlight) => (
+                {detailContent.highlights.map((highlight) => (
                   <li key={highlight}>{highlight}</li>
                 ))}
               </ul>
@@ -258,28 +216,13 @@ export default async function ProductDetailPage({
             {product.description}
           </p>
 
-          <div className="mt-8 flex items-end gap-4">
-            <p className="text-5xl font-black tracking-[-0.08em] text-primary">
-              {formatPriceTRY(product.priceKurus)}
-            </p>
-            {product.compareAtKurus ? (
-              <div className="pb-1">
-                <p className="text-lg font-semibold text-on-surface-variant line-through">
-                  {formatPriceTRY(product.compareAtKurus)}
-                </p>
-                {discountPercent ? (
-                  <p className="mt-1 text-sm font-semibold text-secondary">
-                    %{discountPercent} avantaj
-                  </p>
-                ) : null}
-              </div>
-            ) : null}
-          </div>
-
-          <ProductPurchasePanel product={product} />
+          <ProductPurchasePanel
+            product={product}
+            benefits={detailContent.purchaseBenefits}
+          />
 
           <div className="mt-6 grid gap-3">
-            {purchaseReadiness.map((item) => (
+            {detailContent.purchaseReadiness.map((item) => (
               <div
                 key={item.label}
                 className="rounded-2xl border border-primary/15 bg-primary/5 px-4 py-3"
@@ -295,7 +238,7 @@ export default async function ProductDetailPage({
           </div>
 
           <div className="mt-6 grid gap-3">
-            {decisionChecks.map((item) => (
+            {detailContent.decisionChecks.map((item) => (
               <div
                 key={item}
                 className="rounded-2xl border border-outline-variant/35 bg-white px-4 py-3 text-sm leading-6 text-on-surface-variant"
@@ -307,22 +250,21 @@ export default async function ProductDetailPage({
 
           <div className="mt-8 rounded-[24px] border border-outline-variant/40 bg-white p-6">
             <h2 className="text-2xl font-bold tracking-[-0.05em] text-on-surface">
-              Satın alma öncesi destek
+              {detailContent.support.title}
             </h2>
             <p className="mt-4 text-sm leading-7 text-on-surface-variant">
-              Ürünün saha uygunluğunu netleştirmek için teknik keşif ve kurulum danışmanlığı
-              talebinizi iletebilirsiniz.
+              {detailContent.support.body}
             </p>
             <Link
-              href="/iletisim"
+              href={detailContent.support.href}
               className="mt-6 inline-block rounded-2xl bg-surface-container-high px-5 py-4 text-sm font-semibold text-primary"
             >
-              Teknik Değerlendirme İste
+              {detailContent.support.ctaLabel}
             </Link>
           </div>
 
           <div className="mt-6 overflow-hidden rounded-[24px] border border-outline-variant/40 bg-white">
-            {policyDetails.map((detail, index) => (
+            {detailContent.policyDetails.map((detail, index) => (
               <details
                 key={detail.title}
                 className={index > 0 ? "border-t border-outline-variant/30" : undefined}
@@ -343,10 +285,10 @@ export default async function ProductDetailPage({
       <section className="mt-12">
         <div className="surface-card p-8">
           <h2 className="text-3xl font-bold tracking-[-0.05em] text-on-surface">
-            Sık sorulan sorular
+            {detailContent.faqHeading}
           </h2>
           <div className="mt-6 grid gap-4">
-            {product.faqs.map((faq) => (
+            {detailContent.faqs.map((faq) => (
               <article key={faq.question} className="rounded-[24px] bg-surface-container-low p-5">
                 <h3 className="text-lg font-semibold text-on-surface">{faq.question}</h3>
                 <p className="mt-3 text-sm leading-7 text-on-surface-variant">
@@ -362,10 +304,10 @@ export default async function ProductDetailPage({
         <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.34em] text-primary">
-              İlgili ürünler
+              {detailContent.relatedEyebrow}
             </p>
             <h2 className="mt-3 text-4xl font-black tracking-[-0.07em] text-on-surface">
-              Karşılaştırılabilecek alternatifler
+              {detailContent.relatedHeading}
             </h2>
           </div>
         </div>

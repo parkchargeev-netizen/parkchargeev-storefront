@@ -10,10 +10,22 @@ import {
   or,
   sql
 } from "drizzle-orm";
-import { revalidateTag, unstable_cache } from "next/cache";
+import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 import { z } from "zod";
 
 import { hasDatabaseConfig } from "@/lib/runtime-config";
+import {
+  products as marketingProducts,
+  type ProductModel
+} from "@/lib/mock-data";
+import {
+  getDefaultProductDetailContent,
+  getProductDetailContent,
+  getProductDetailContentFromSchemaJsonLd,
+  mergeProductDetailContent,
+  withProductDetailContentSchemaJsonLd
+} from "@/lib/product-detail-content";
+import { parseCableOptionPriceDeltaKurus } from "@/lib/product-options";
 import { slugify } from "@/lib/slug";
 import { getDb } from "@/server/db/client";
 import type { AdminSessionPayload } from "@/server/auth/session";
@@ -114,7 +126,7 @@ function parseFilterDate(value?: string, endOfDay = false) {
 }
 
 function buildProductSchemaJsonLd(input: ProductInput) {
-  return {
+  return withProductDetailContentSchemaJsonLd({
     "@context": "https://schema.org",
     "@type": "Product",
     name: input.name,
@@ -131,8 +143,494 @@ function buildProductSchemaJsonLd(input: ProductInput) {
           ? "https://schema.org/InStock"
           : "https://schema.org/OutOfStock"
     }
+  }, input.detailContent);
+}
+
+function revalidateProductSurfaces(slug: string) {
+  revalidateTag("admin-product-lookup");
+  revalidateTag("public-products");
+  revalidatePath("/magaza");
+  revalidatePath(`/urun/${slug}`);
+  revalidatePath("/sitemap.xml");
+}
+
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function getMarketingProductCategorySlug(product: ProductModel) {
+  switch (product.category) {
+    case "Ev Tipi":
+      return "ev-tipi";
+    case "İş Yeri Tipi":
+      return "is-yeri-tipi";
+    case "DC Hızlı Şarj":
+      return "dc-hizli-sarj";
+    case "Aksesuar":
+      return "aksesuar";
+    default:
+      return slugify(product.category);
+  }
+}
+
+function getMarketingProductTags(product: ProductModel) {
+  const tags = new Set<string>();
+
+  if (product.badge === "Çok Satan") {
+    tags.add("best_seller");
+  }
+
+  if (product.badge === "Yeni" || product.badge === "Yeni Nesil") {
+    tags.add("new");
+  }
+
+  if (product.badge === "Kurumsal") {
+    tags.add("corporate");
+  }
+
+  if (product.compareAtKurus && product.compareAtKurus > product.priceKurus) {
+    tags.add("discounted");
+  }
+
+  return [...tags];
+}
+
+function getMarketingStockQuantity(product: ProductModel) {
+  if (product.stockLabel === "Stokta Yok") {
+    return 0;
+  }
+
+  return product.stockLabel === "Az Stok" ? 3 : 12;
+}
+
+function getMarketingPowerKw(product: ProductModel) {
+  return product.powerLabel.match(/[\d.]+/)?.[0] ?? null;
+}
+
+function getMarketingChargeType(product: ProductModel) {
+  return product.powerLabel.toLocaleLowerCase("tr-TR").includes("dc") ? "dc" : "ac";
+}
+
+function getMarketingPhaseType(product: ProductModel) {
+  return product.powerLabel.includes("11") || product.powerLabel.includes("22")
+    ? "three_phase"
+    : "single_phase";
+}
+
+function getMarketingConnectorType(product: ProductModel) {
+  const values = product.specs.map((spec) => `${spec.label} ${spec.value}`).join(" ");
+
+  if (values.includes("CCS2")) {
+    return "CCS2";
+  }
+
+  return values.includes("Type 2") || product.category !== "DC Hızlı Şarj" ? "Type 2" : "CCS2";
+}
+
+function getMarketingIpClass(product: ProductModel) {
+  return product.specs.find((spec) => spec.value.toUpperCase().includes("IP"))?.value ?? null;
+}
+
+function getMarketingVariantSku(product: ProductModel, index: number) {
+  const suffix = index === 0 ? "STD" : `OPT-${index + 1}`;
+  return `SKU-${product.slug.toUpperCase().replace(/[^A-Z0-9]/g, "-")}-${suffix}`.slice(0, 120);
+}
+
+async function ensureMarketingProductVariants(productId: string, product: ProductModel) {
+  const db = getDb();
+  const existingVariants = await db
+    .select({
+      sku: productVariants.sku,
+      cableLength: productVariants.cableLength
+    })
+    .from(productVariants)
+    .where(eq(productVariants.productId, productId));
+  const existingCableLengths = new Set(
+    existingVariants.map((variant) => variant.cableLength).filter(Boolean)
+  );
+  const connectorType = getMarketingConnectorType(product);
+  const stockQuantity = getMarketingStockQuantity(product);
+  const values = product.cableOptions
+    .filter((option) => !existingCableLengths.has(option))
+    .map((option, index) => {
+      const absoluteIndex = existingVariants.length + index;
+      const deltaKurus = parseCableOptionPriceDeltaKurus(option);
+      const cleanOption = option.replace(/\s*\([^)]*\)\s*/g, "").trim();
+
+      return {
+        productId,
+        sku: getMarketingVariantSku(product, absoluteIndex),
+        title: cleanOption || option,
+        powerLabel: product.powerLabel,
+        cableLength: option,
+        connectorType,
+        stockQuantity,
+        priceKurus: product.priceKurus + deltaKurus,
+        compareAtKurus: product.compareAtKurus ? product.compareAtKurus + deltaKurus : null,
+        isDefault: existingVariants.length === 0 && index === 0
+      };
+    });
+
+  if (values.length > 0) {
+    await db.insert(productVariants).values(values).onConflictDoNothing();
+  }
+}
+
+let marketingProductsSeedPromise: Promise<void> | null = null;
+
+async function seedMarketingProductsForAdmin() {
+  const db = getDb();
+  await ensureDefaultCategories();
+
+  const existingProducts = await db
+    .select({
+      id: products.id,
+      slug: products.slug
+    })
+    .from(products)
+    .where(inArray(products.slug, marketingProducts.map((product) => product.slug)));
+  const productIdBySlug = new Map(existingProducts.map((product) => [product.slug, product.id]));
+
+  for (const marketingProduct of marketingProducts) {
+    let productId = productIdBySlug.get(marketingProduct.slug);
+
+    if (!productId) {
+      const categorySlug = getMarketingProductCategorySlug(marketingProduct);
+      const categoryRows = await resolveCategoryIds([categorySlug]);
+      const primaryCategoryId = categoryRows[0]?.id ?? null;
+      const connectorType = getMarketingConnectorType(marketingProduct);
+      const stockQuantity = getMarketingStockQuantity(marketingProduct);
+      const [createdProduct] = await db
+        .insert(products)
+        .values({
+          name: marketingProduct.name,
+          slug: marketingProduct.slug,
+          status: "active",
+          categoryId: primaryCategoryId,
+          brandId: null,
+          shortDescription: marketingProduct.summary,
+          description: `<p>${escapeHtml(marketingProduct.description)}</p>`,
+          useCase: marketingProduct.useCases[0] ?? null,
+          seoTitle: `${marketingProduct.name} | ParkChargeEV`,
+          seoDescription: marketingProduct.summary.slice(0, 320),
+          canonicalUrl: `https://parkcharge.com/urun/${marketingProduct.slug}`,
+          ogImageUrl: `https://placehold.co/1200x900/png?text=${encodeURIComponent(marketingProduct.name)}`,
+          aiSummary: marketingProduct.summary.slice(0, 180),
+          schemaJsonLd: withProductDetailContentSchemaJsonLd({
+            "@context": "https://schema.org",
+            "@type": "Product",
+            name: marketingProduct.name,
+            sku: getMarketingVariantSku(marketingProduct, 0)
+          }, getProductDetailContent(marketingProduct)),
+          defaultPriceKurus: marketingProduct.priceKurus,
+          discountedPriceKurus: null,
+          discountEndsAt: null,
+          isVatIncluded: true,
+          minimumStockThreshold: marketingProduct.stockLabel === "Az Stok" ? 2 : 3,
+          inventoryTrackingEnabled: true,
+          powerKw: getMarketingPowerKw(marketingProduct),
+          chargeType: getMarketingChargeType(marketingProduct),
+          connectorType,
+          phaseType: getMarketingPhaseType(marketingProduct),
+          ipClass: getMarketingIpClass(marketingProduct),
+          hasWifi: marketingProduct.summary.toLocaleLowerCase("tr-TR").includes("uygulama"),
+          hasRfid: marketingProduct.summary.toLocaleLowerCase("tr-TR").includes("rfid"),
+          has4g: false,
+          installRequired: marketingProduct.category !== "Aksesuar",
+          searchKeywords: marketingProduct.seoIntent,
+          adminNotes: "Mağaza vitrininden otomatik oluşturulan yönetilebilir katalog kaydı."
+        })
+        .onConflictDoNothing()
+        .returning({ id: products.id });
+
+      productId = createdProduct?.id;
+
+      if (!productId) {
+        const [existingProduct] = await db
+          .select({ id: products.id })
+          .from(products)
+          .where(eq(products.slug, marketingProduct.slug))
+          .limit(1);
+        productId = existingProduct?.id;
+      }
+
+      if (productId) {
+        const targetProductId = productId;
+
+        if (primaryCategoryId) {
+          await db
+            .insert(productCategoryAssignments)
+            .values({ productId: targetProductId, categoryId: primaryCategoryId })
+            .onConflictDoNothing();
+        }
+
+        const tags = getMarketingProductTags(marketingProduct);
+        if (tags.length > 0) {
+          await db
+            .insert(productTagAssignments)
+            .values(tags.map((tag) => ({ productId: targetProductId, tag })))
+            .onConflictDoNothing();
+        }
+
+        await db
+          .insert(productMedia)
+          .values(
+            (marketingProduct.galleryItems?.length
+              ? marketingProduct.galleryItems
+              : ["Ön görünüm", "Yan profil", "Montaj görünümü", "Video"]
+            ).map((item, index) => ({
+              productId: targetProductId,
+              url: `https://placehold.co/1200x900/png?text=${encodeURIComponent(`${marketingProduct.name} ${item}`)}`,
+              altText: item,
+              sortOrder: index,
+              isPrimary: index === 0
+            }))
+          )
+          .onConflictDoNothing();
+
+        if (marketingProduct.specs.length > 0) {
+          await db
+            .insert(productSpecs)
+            .values(
+              marketingProduct.specs.map((spec, index) => ({
+                productId: targetProductId,
+                groupName: "general",
+                label: spec.label,
+                value: spec.value,
+                sortOrder: index
+              }))
+            )
+            .onConflictDoNothing();
+        }
+      }
+    }
+
+    if (productId) {
+      await ensureMarketingProductVariants(productId, marketingProduct);
+    }
+  }
+}
+
+async function ensureMarketingProductsVisibleInAdmin() {
+  if (!hasDatabaseConfig()) {
+    return;
+  }
+
+  marketingProductsSeedPromise ??= seedMarketingProductsForAdmin().catch((error) => {
+    marketingProductsSeedPromise = null;
+    console.warn("Marketing product catalog could not be seeded for admin.", error);
+  });
+
+  await marketingProductsSeedPromise;
+}
+
+type ProductRow = typeof products.$inferSelect;
+type ProductCollections = Awaited<ReturnType<typeof hydrateProductCollections>>;
+
+function stripHtml(value: string) {
+  return value
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, "\"")
+    .replace(/&#39;/g, "'")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function getPublicCategoryLabel(categorySlugs: string[], base?: ProductModel) {
+  const primarySlug = categorySlugs[0];
+  const option = productCategoryOptions.find((item) => item.slug === primarySlug);
+
+  return option?.label ?? base?.category ?? primarySlug ?? "Şarj Çözümleri";
+}
+
+function getPublicProductBadge(tags: string[], base?: ProductModel) {
+  const values = new Set(tags);
+
+  if (values.has("best_seller")) {
+    return "Çok Satan";
+  }
+
+  if (values.has("new")) {
+    return "Yeni";
+  }
+
+  if (values.has("corporate")) {
+    return "Kurumsal";
+  }
+
+  if (values.has("discounted")) {
+    return "İndirimli";
+  }
+
+  return base?.badge;
+}
+
+function getPublicStockLabel(stockQuantity: number): ProductModel["stockLabel"] {
+  if (stockQuantity <= 0) {
+    return "Stokta Yok";
+  }
+
+  return stockQuantity <= 3 ? "Az Stok" : "Stokta";
+}
+
+function getPublicPowerLabel(
+  row: ProductRow,
+  defaultVariant: (typeof productVariants.$inferSelect) | undefined,
+  base?: ProductModel
+) {
+  if (defaultVariant?.powerLabel) {
+    return defaultVariant.powerLabel;
+  }
+
+  if (row.powerKw) {
+    return `${row.powerKw}kW ${row.chargeType?.toUpperCase() ?? "AC"}`;
+  }
+
+  return base?.powerLabel ?? "AC";
+}
+
+function mapAdminProductToPublicProduct(
+  row: ProductRow,
+  collections: ProductCollections
+): ProductModel {
+  const base = marketingProducts.find((item) => item.slug === row.slug);
+  const variants = collections.variants.get(row.id) ?? [];
+  const defaultVariant = variants.find((variant) => variant.isDefault) ?? variants[0];
+  const tags = collections.tags.get(row.id) ?? [];
+  const categorySlugs = collections.categories.get(row.id) ?? [];
+  const specRows = collections.specs.get(row.id) ?? [];
+  const mediaRows = collections.media.get(row.id) ?? [];
+  const priceKurus = defaultVariant?.priceKurus ?? row.defaultPriceKurus;
+  const compareAtKurus =
+    defaultVariant?.compareAtKurus ??
+    row.discountedPriceKurus ??
+    base?.compareAtKurus;
+  const cableOptions = [
+    ...new Set(
+      variants
+        .map((variant) => variant.cableLength)
+        .filter((value): value is string => Boolean(value))
+    )
+  ];
+  const specs =
+    specRows.length > 0
+      ? specRows.map((spec) => ({ label: spec.label, value: spec.value }))
+      : base?.specs ?? [];
+  const publicBase: ProductModel = {
+    id: base?.id ?? row.id,
+    slug: row.slug,
+    name: row.name,
+    category: getPublicCategoryLabel(categorySlugs, base),
+    badge: getPublicProductBadge(tags, base),
+    summary: row.shortDescription || base?.summary || row.name,
+    description: stripHtml(row.description) || base?.description || row.shortDescription,
+    priceKurus,
+    compareAtKurus: compareAtKurus && compareAtKurus > priceKurus ? compareAtKurus : undefined,
+    stockLabel: getPublicStockLabel(defaultVariant?.stockQuantity ?? 0),
+    powerLabel: getPublicPowerLabel(row, defaultVariant, base),
+    cableOptions: cableOptions.length > 0 ? cableOptions : base?.cableOptions ?? ["Standart"],
+    variants: variants.length
+      ? variants.map((variant) => ({
+          sku: variant.sku,
+          title: variant.title,
+          powerLabel: variant.powerLabel ?? undefined,
+          cableLength: variant.cableLength ?? undefined,
+          connectorType: variant.connectorType ?? undefined,
+          stockQuantity: variant.stockQuantity,
+          priceKurus: variant.priceKurus,
+          compareAtKurus: variant.compareAtKurus ?? undefined,
+          isDefault: variant.isDefault
+        }))
+      : base?.variants,
+    galleryItems: mediaRows.length
+      ? mediaRows.map((item) => item.altText)
+      : base?.galleryItems,
+    specs,
+    highlights: base?.highlights ?? [],
+    useCases: row.useCase ? [row.useCase] : base?.useCases ?? [],
+    seoIntent: row.searchKeywords?.length ? row.searchKeywords : base?.seoIntent ?? [],
+    faqs: base?.faqs ?? []
+  };
+  const detailContent = mergeProductDetailContent(
+    getDefaultProductDetailContent(publicBase),
+    getProductDetailContentFromSchemaJsonLd(row.schemaJsonLd)
+  );
+
+  return {
+    ...publicBase,
+    galleryItems: detailContent.galleryItems,
+    detailContent,
+    highlights: detailContent.highlights,
+    useCases: detailContent.useCases,
+    seoIntent: detailContent.seoIntents,
+    faqs: detailContent.faqs
   };
 }
+
+async function loadPublicProducts() {
+  if (!hasDatabaseConfig()) {
+    return marketingProducts;
+  }
+
+  const db = getDb();
+  const rows = await db
+    .select()
+    .from(products)
+    .where(eq(products.status, "active"))
+    .orderBy(desc(products.updatedAt), desc(products.id));
+
+  if (rows.length === 0) {
+    return marketingProducts;
+  }
+
+  const collections = await hydrateProductCollections(rows.map((row) => row.id));
+  const mappedProducts = rows.map((row) => mapAdminProductToPublicProduct(row, collections));
+  const mappedSlugs = new Set(mappedProducts.map((product) => product.slug));
+
+  return [
+    ...mappedProducts,
+    ...marketingProducts.filter((product) => !mappedSlugs.has(product.slug))
+  ];
+}
+
+export const listPublicProducts = unstable_cache(
+  loadPublicProducts,
+  ["public-products"],
+  {
+    revalidate: 300,
+    tags: ["public-products"]
+  }
+);
+
+export async function getPublicProductBySlug(slug: string) {
+  const publicProducts = await listPublicProducts();
+  return publicProducts.find((product) => product.slug === slug);
+}
+
+export async function getPublicRelatedProducts(product: ProductModel, limit = 3) {
+  const publicProducts = await listPublicProducts();
+
+  return publicProducts
+    .filter((candidate) => candidate.id !== product.id)
+    .map((candidate) => {
+      const score =
+        (candidate.category === product.category ? 4 : 0) +
+        candidate.seoIntent.filter((intent) => product.seoIntent.includes(intent)).length +
+        candidate.useCases.filter((useCase) => product.useCases.includes(useCase)).length;
+
+      return { product: candidate, score };
+    })
+    .sort((left, right) => right.score - left.score)
+    .slice(0, limit)
+    .map((item) => item.product);
+}
+
 function normalizeProductVariants(input: ProductInput) {
   const variants =
     input.variants.length > 0
@@ -473,6 +971,8 @@ export async function listAdminProducts(input: ListQueryInput) {
     return listFallbackAdminProducts(input);
   }
 
+  await ensureMarketingProductsVisibleInAdmin();
+
   const db = getDb();
   const cursor = decodeCursor(input.cursor);
   const conditions = [];
@@ -563,6 +1063,7 @@ export async function getAdminProductById(id: string) {
 
   return {
     ...product,
+    detailContent: getProductDetailContentFromSchemaJsonLd(product.schemaJsonLd),
     defaultVariant,
     variants,
     media: collections.media.get(id) ?? [],
@@ -664,7 +1165,7 @@ export async function upsertAdminProduct(
       userAgent: requestMeta?.userAgent
     });
 
-    revalidateTag("admin-product-lookup");
+    revalidateProductSurfaces(slug);
 
     return after;
   }
@@ -697,7 +1198,7 @@ export async function upsertAdminProduct(
     userAgent: requestMeta?.userAgent
   });
 
-  revalidateTag("admin-product-lookup");
+  revalidateProductSurfaces(slug);
 
   return after;
 }
@@ -706,6 +1207,8 @@ async function loadProductLookupOptions() {
   if (!hasDatabaseConfig()) {
     return getFallbackProductLookupOptions();
   }
+
+  await ensureMarketingProductsVisibleInAdmin();
 
   const db = getDb();
   return db

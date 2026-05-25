@@ -1,12 +1,16 @@
 import type { MetadataRoute } from "next";
 
 import { locationPages } from "@/lib/location-pages";
-import { articles, products, solutionPages } from "@/lib/mock-data";
+import { articles, solutionPages } from "@/lib/mock-data";
 import { absoluteUrl } from "@/lib/site";
+import { listPublicProducts } from "@/server/admin/repository";
 import { listPublishedSitePagesForSitemap } from "@/server/site/repository";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const managedPages = await listPublishedSitePagesForSitemap();
+  const [managedPages, products] = await Promise.all([
+    listPublishedSitePagesForSitemap(),
+    listPublicProducts()
+  ]);
   const managedRouteSet = new Set(managedPages.map((page) => `/${page.slug}`));
   const staticRoutes = [
     "/",

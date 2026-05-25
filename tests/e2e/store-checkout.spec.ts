@@ -38,6 +38,23 @@ test("@e2e magaza -> urun -> sepet -> odeme akisi PayTR mock ile tamamlanir", as
   await expect(page.getByText("PCEV-E2E-ORDER")).toBeVisible();
 });
 
+test("@e2e kablo uzunlugu fiyat ve sepet tutarini gunceller", async ({ page }) => {
+  await page.goto("/urun/homecharge-pro-11kw", { waitUntil: "domcontentloaded" });
+
+  await expect(page.getByText(/12\.490/).first()).toBeVisible();
+  const extendedCableButton = page.getByRole("button", { name: /7\.5 Metre/i });
+  await extendedCableButton.click();
+  await expect(extendedCableButton).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByText(/13\.290/).first()).toBeVisible();
+
+  await page.getByRole("button", { name: /Sepete Ekle/i }).click();
+  await expect(page.getByText(/sepete eklendi/i)).toBeVisible();
+
+  await page.goto("/sepet", { waitUntil: "domcontentloaded" });
+  await expect(page.getByText("7.5 Metre (+800 TL)")).toBeVisible();
+  await expect(page.getByText(/13\.290/).first()).toBeVisible();
+});
+
 test("@e2e PayTR Direkt API 3D Secure formu PayTR'a post eder", async ({ page }) => {
   let directApiRequestBody = "";
   let paytrPostBody = "";

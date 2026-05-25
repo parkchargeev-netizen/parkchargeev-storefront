@@ -1,12 +1,14 @@
 import { locationPages } from "@/lib/location-pages";
-import { articles, products, solutionPages } from "@/lib/mock-data";
+import { articles, solutionPages } from "@/lib/mock-data";
 import { absoluteUrl, siteConfig } from "@/lib/site";
+import { listPublicProducts } from "@/server/admin/repository";
 
 function lineList(items: string[]) {
   return items.map((item) => `- ${item}`).join("\n");
 }
 
-export function generateLlmsText() {
+export async function generateLlmsText() {
+  const products = await listPublicProducts();
   const canonicalPages = [
     `${absoluteUrl("/")} - Ana sayfa ve ParkChargeEV hizmet özeti`,
     `${absoluteUrl("/magaza")} - EV şarj cihazı ve aksesuar kataloğu`,

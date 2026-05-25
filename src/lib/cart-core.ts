@@ -1,3 +1,5 @@
+import type { ProductModel } from "@/lib/mock-data";
+
 export const CART_STORAGE_KEY = "parkchargeev-cart-v1";
 export const CART_TAX_RATE = 0.2;
 
@@ -5,6 +7,7 @@ export type CartItem = {
   productId: string;
   quantity: number;
   cableOption: string;
+  productSnapshot?: ProductModel;
 };
 
 export function normalizeCartQuantity(quantity: unknown) {
@@ -35,10 +38,16 @@ export function normalizeStoredCartItems(items: unknown) {
         return null;
       }
 
+      const productSnapshot =
+        candidate.productSnapshot && typeof candidate.productSnapshot === "object"
+          ? candidate.productSnapshot
+          : undefined;
+
       return {
         productId,
         cableOption,
-        quantity: normalizeCartQuantity(candidate.quantity)
+        quantity: normalizeCartQuantity(candidate.quantity),
+        ...(productSnapshot ? { productSnapshot } : {})
       } satisfies CartItem;
     })
     .filter((item): item is CartItem => item !== null);
