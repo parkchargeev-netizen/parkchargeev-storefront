@@ -16,7 +16,7 @@ import {
 import {
   getPublicProductBySlug,
   getPublicRelatedProducts,
-  listPublicProducts
+  listPublicProductSlugs
 } from "@/server/admin/repository";
 
 type ProductDetailPageProps = {
@@ -24,8 +24,8 @@ type ProductDetailPageProps = {
 };
 
 export async function generateStaticParams() {
-  const publicProducts = await listPublicProducts();
-  return publicProducts.map((product) => ({ slug: product.slug }));
+  const productSlugs = await listPublicProductSlugs();
+  return productSlugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({

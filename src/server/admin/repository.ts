@@ -431,6 +431,10 @@ async function ensureMarketingProductsVisibleInAdmin() {
 type ProductRow = typeof products.$inferSelect;
 type ProductCollections = Awaited<ReturnType<typeof hydrateProductCollections>>;
 
+type ProductCollectionOptions = {
+  includeSpecs?: boolean;
+};
+
 function stripHtml(value: string) {
   return value
     .replace(/<[^>]*>/g, " ")
@@ -589,7 +593,9 @@ async function loadPublicProducts() {
     return marketingProducts;
   }
 
-  const collections = await hydrateProductCollections(rows.map((row) => row.id));
+  const collections = await hydrateProductCollections(rows.map((row) => row.id), {
+    includeSpecs: false
+  });
   const mappedProducts = rows.map((row) => mapAdminProductToPublicProduct(row, collections));
   const mappedSlugs = new Set(mappedProducts.map((product) => product.slug));
 
@@ -608,10 +614,68 @@ export const listPublicProducts = unstable_cache(
   }
 );
 
-export async function getPublicProductBySlug(slug: string) {
-  const publicProducts = await listPublicProducts();
-  return publicProducts.find((product) => product.slug === slug);
+async function loadPublicProductSlugs() {
+  const fallbackSlugs = marketingProducts.map((product) => product.slug);
+
+  if (!hasDatabaseConfig()) {
+    return fallbackSlugs;
+  }
+
+  const db = getDb();
+  const rows = await db
+    .select({ slug: products.slug })
+    .from(products)
+    .where(eq(products.status, "active"))
+    .orderBy(desc(products.updatedAt), desc(products.id));
+  const slugs = new Set(rows.map((row) => row.slug));
+
+  for (const slug of fallbackSlugs) {
+    slugs.add(slug);
+  }
+
+  return [...slugs];
 }
+
+export const listPublicProductSlugs = unstable_cache(
+  loadPublicProductSlugs,
+  ["public-product-slugs"],
+  {
+    revalidate: 300,
+    tags: ["public-products"]
+  }
+);
+
+async function loadPublicProductBySlug(slug: string) {
+  const fallbackProduct = marketingProducts.find((product) => product.slug === slug);
+
+  if (!hasDatabaseConfig()) {
+    return fallbackProduct;
+  }
+
+  const db = getDb();
+  const [row] = await db
+    .select()
+    .from(products)
+    .where(and(eq(products.slug, slug), eq(products.status, "active")))
+    .limit(1);
+
+  if (!row) {
+    return fallbackProduct;
+  }
+
+  const collections = await hydrateProductCollections([row.id]);
+
+  return mapAdminProductToPublicProduct(row, collections);
+}
+
+export const getPublicProductBySlug = unstable_cache(
+  loadPublicProductBySlug,
+  ["public-product-by-slug"],
+  {
+    revalidate: 300,
+    tags: ["public-products"]
+  }
+);
 
 export async function getPublicRelatedProducts(product: ProductModel, limit = 3) {
   const publicProducts = await listPublicProducts();
@@ -755,8 +819,12 @@ async function resolveCategoryIds(categorySlugs: string[]) {
   return rows;
 }
 
-async function hydrateProductCollections(productIds: string[]) {
+async function hydrateProductCollections(
+  productIds: string[],
+  options: ProductCollectionOptions = {}
+) {
   const db = getDb();
+  const includeSpecs = options.includeSpecs ?? true;
 
   if (productIds.length === 0) {
     return {
@@ -770,6 +838,12 @@ async function hydrateProductCollections(productIds: string[]) {
     };
   }
 
+  const specRowsPromise: Promise<(typeof productSpecs.$inferSelect)[]> = includeSpecs
+    ? db
+        .select()
+        .from(productSpecs)
+        .where(inArray(productSpecs.productId, productIds))
+    : Promise.resolve([]);
   const [variantsRows, mediaRows, specRows, tagRows, categoryRows, vehicleRows, relationRows] =
     await Promise.all([
       db
@@ -780,10 +854,7 @@ async function hydrateProductCollections(productIds: string[]) {
         .select()
         .from(productMedia)
         .where(inArray(productMedia.productId, productIds)),
-      db
-        .select()
-        .from(productSpecs)
-        .where(inArray(productSpecs.productId, productIds)),
+      specRowsPromise,
       db
         .select()
         .from(productTagAssignments)
