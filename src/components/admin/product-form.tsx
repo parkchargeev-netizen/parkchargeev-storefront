@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import type { z } from "zod";
 
@@ -179,12 +179,17 @@ export function ProductForm({
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
+    reset,
     setValue,
     watch
   } = useForm<ProductFormValues>({
     resolver: zodResolver(adminProductSchema),
     defaultValues: mergedDefaults
   });
+
+  useEffect(() => {
+    reset(mergedDefaults);
+  }, [mergedDefaults, reset]);
 
   const mediaFields = useFieldArray({
     control,

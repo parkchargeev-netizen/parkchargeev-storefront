@@ -60,5 +60,12 @@ export async function POST(request: Request) {
   const requestMeta = await getRequestMeta();
   const product = await upsertAdminProduct(payload, authenticatedAdmin.session, requestMeta);
 
+  if (!product) {
+    return NextResponse.json(
+      { ok: false, message: "Ürün oluşturulamadı." },
+      { status: 500 }
+    );
+  }
+
   return NextResponse.json({ ok: true, product }, { status: 201 });
 }

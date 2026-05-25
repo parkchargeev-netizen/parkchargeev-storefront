@@ -1090,7 +1090,9 @@ export async function listAdminProducts(input: ListQueryInput) {
 
   const hasMore = rows.length > input.limit;
   const items = hasMore ? rows.slice(0, input.limit) : rows;
-  const collections = await hydrateProductCollections(items.map((item) => item.id));
+  const collections = await hydrateProductCollections(items.map((item) => item.id), {
+    includeSpecs: false
+  });
 
   return {
     items: items.map((item) => {
@@ -1210,6 +1212,10 @@ export async function upsertAdminProduct(
   if (input.id) {
     const before = await getAdminProductById(input.id);
 
+    if (!before) {
+      return null;
+    }
+
     await db.update(products).set(baseProductValues).where(eq(products.id, input.id));
 
     await writeProductCollections(
@@ -1237,6 +1243,10 @@ export async function upsertAdminProduct(
     });
 
     revalidateProductSurfaces(slug);
+
+    if (before.slug !== slug) {
+      revalidatePath(`/urun/${before.slug}`);
+    }
 
     return after;
   }

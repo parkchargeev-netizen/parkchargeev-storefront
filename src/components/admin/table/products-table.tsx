@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import Link from "next/link";
 import type { ColumnDef } from "@tanstack/react-table";
 
@@ -22,7 +23,7 @@ type ProductRow = {
 
 type ProductsTableProps = {
   items: ProductRow[];
-  footer?: React.ReactNode;
+  footer?: ReactNode;
 };
 
 function getProductTone(status: ProductRow["status"]) {
@@ -106,12 +107,24 @@ const columns: Array<ColumnDef<ProductRow>> = [
     header: "Aksiyon",
     enableSorting: false,
     cell: ({ row }) => (
-      <Link
-        href={`/admin/urunler/${row.original.id}`}
-        className="inline-flex rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
-      >
-        İncele
-      </Link>
+      <div className="flex flex-wrap items-center gap-2">
+        <Link
+          href={`/admin/urunler/${row.original.id}`}
+          className="inline-flex rounded-full border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 transition hover:border-blue-300 hover:bg-blue-100"
+        >
+          Düzenle
+        </Link>
+        {row.original.status === "active" ? (
+          <Link
+            href={`/urun/${row.original.slug}`}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-white"
+          >
+            Sitede gör
+          </Link>
+        ) : null}
+      </div>
     )
   }
 ];

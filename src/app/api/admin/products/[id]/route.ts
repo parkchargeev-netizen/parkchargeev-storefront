@@ -25,7 +25,7 @@ export async function GET(_request: Request, { params }: ProductRouteProps) {
   const product = await getAdminProductById(id);
 
   if (!product) {
-    return NextResponse.json({ ok: false, message: "Urun bulunamadi." }, { status: 404 });
+    return NextResponse.json({ ok: false, message: "Ürün bulunamadı." }, { status: 404 });
   }
 
   const lookupOptions = await getProductLookupOptions();
@@ -46,6 +46,10 @@ export async function PATCH(request: Request, { params }: ProductRouteProps) {
   });
   const requestMeta = await getRequestMeta();
   const product = await upsertAdminProduct(payload, authenticatedAdmin.session, requestMeta);
+
+  if (!product) {
+    return NextResponse.json({ ok: false, message: "Urun bulunamadi." }, { status: 404 });
+  }
 
   return NextResponse.json({ ok: true, product });
 }
