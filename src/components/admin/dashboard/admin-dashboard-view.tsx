@@ -247,8 +247,6 @@ export function AdminDashboardView({
   const visibleQuickActions = role
     ? quickActions.filter((action) => action.roles.includes(role))
     : [];
-  const canManageStations =
-    role === "superadmin" || role === "operations" || role === "technician";
   const openQueueTotal =
     snapshot.kpis.pendingOrders +
     snapshot.kpis.pendingQuotes +
@@ -445,14 +443,6 @@ export function AdminDashboardView({
               Öncelikli operasyon masası
             </h2>
           </div>
-          {canManageStations ? (
-            <AdminPrefetchLink
-              href="/admin/istasyonlar"
-              className="rounded-2xl border border-slate-300 bg-white px-5 py-3 text-center text-sm font-semibold text-slate-800 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
-            >
-              İstasyonları yönet
-            </AdminPrefetchLink>
-          ) : null}
         </div>
         <div className="mt-5 grid gap-3 md:grid-cols-3">
           {(todayActions.length > 0

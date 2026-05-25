@@ -30,7 +30,7 @@ export const metadata: Metadata = {
       "Elektrikli araç şarj cihazı, wallbox, kablo ve kurulum çözümlerini karşılaştırın."
   },
   description:
-    "Ev tipi ve iş yeri tipi elektrikli araç şarj istasyonları, kablolar ve kurulum çözümlerini keşfedin."
+    "Ev tipi ve iş yeri tipi elektrikli araç şarj cihazları, kablolar ve kurulum çözümlerini keşfedin."
 };
 
 const sortOptions = [

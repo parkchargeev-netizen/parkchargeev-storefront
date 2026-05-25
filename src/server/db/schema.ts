@@ -1,7 +1,6 @@
 import {
   type AnyPgColumn,
   boolean,
-  doublePrecision,
   index,
   integer,
   jsonb,
@@ -165,48 +164,6 @@ export const navigationItems = pgTable(
   (table) => ({
     areaIndex: index("navigation_items_area_idx").on(table.area, table.sortOrder),
     areaHrefIndex: uniqueIndex("navigation_items_area_href_idx").on(table.area, table.href)
-  })
-);
-
-export const chargingStations = pgTable(
-  "charging_stations",
-  {
-    id: uuid("id").defaultRandom().primaryKey(),
-    externalId: varchar("external_id", { length: 140 }).notNull(),
-    name: varchar("name", { length: 180 }).notNull(),
-    status: varchar("status", { length: 80 }).default("Aktif").notNull(),
-    power: varchar("power", { length: 80 }).notNull(),
-    connectorTypes: jsonb("connector_types").$type<string[]>().default([]).notNull(),
-    pricePerKwh: varchar("price_per_kwh", { length: 80 }).notNull(),
-    city: varchar("city", { length: 80 }).notNull(),
-    district: varchar("district", { length: 80 }).notNull(),
-    address: text("address").notNull(),
-    latitude: doublePrecision("latitude").notNull(),
-    longitude: doublePrecision("longitude").notNull(),
-    availableSockets: integer("available_sockets").default(0).notNull(),
-    totalSockets: integer("total_sockets").default(0).notNull(),
-    hours: varchar("hours", { length: 120 }).notNull(),
-    operator: varchar("operator", { length: 120 }).notNull(),
-    amenities: jsonb("amenities").$type<string[]>().default([]).notNull(),
-    isActive: boolean("is_active").default(true).notNull(),
-    sortOrder: integer("sort_order").default(0).notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .defaultNow()
-      .notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true })
-      .defaultNow()
-      .notNull()
-  },
-  (table) => ({
-    externalIdIndex: uniqueIndex("charging_stations_external_id_idx").on(table.externalId),
-    cityDistrictIndex: index("charging_stations_city_district_idx").on(
-      table.city,
-      table.district
-    ),
-    activeSortIndex: index("charging_stations_active_sort_idx").on(
-      table.isActive,
-      table.sortOrder
-    )
   })
 );
 

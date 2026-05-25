@@ -22,7 +22,7 @@ export function SiteFooter({
               {siteConfig.name}
             </p>
             <p className="mt-4 max-w-xl text-sm leading-7 text-on-surface-variant">
-              Elektrikli araç şarj istasyonu ürünleri, kurulum hizmetleri ve
+              Elektrikli araç şarj cihazı ürünleri, kurulum hizmetleri ve
               teknik destek süreçlerini tek platformda buluşturan premium EV
               commerce deneyimi.
             </p>
@@ -92,7 +92,7 @@ export function SiteFooter({
         </div>
 
         <div className="mt-10 border-t border-outline-variant/35 pt-6 text-sm text-on-surface-variant">
-          © 2026 {siteConfig.name}. Hız, performans, güvenlik ve SEO odaklı EV commerce altyapısı.
+          Â© 2026 {siteConfig.name}. Hız, performans, güvenlik ve SEO odaklı EV commerce altyapısı.
         </div>
       </div>
     </footer>

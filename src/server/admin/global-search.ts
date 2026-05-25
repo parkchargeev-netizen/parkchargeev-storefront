@@ -1,21 +1,10 @@
 import { desc, ilike, or } from "drizzle-orm";
 
 import { hasDatabaseConfig } from "@/lib/runtime-config";
-import {
-  articles,
-  products as fallbackProducts,
-  stations as fallbackStations
-} from "@/lib/mock-data";
+import { articles, products as fallbackProducts } from "@/lib/mock-data";
 import { canAccessAdminPath, type AdminRole } from "@/server/auth/authorization";
 import { getDb } from "@/server/db/client";
-import {
-  chargingStations,
-  orders,
-  products,
-  quoteRequests,
-  serviceLeads,
-  sitePages
-} from "@/server/db/schema";
+import { orders, products, quoteRequests, serviceLeads, sitePages } from "@/server/db/schema";
 
 export type AdminGlobalSearchResult = {
   href: string;
@@ -44,17 +33,6 @@ function fallbackSearch(query: string, role: AdminRole): AdminGlobalSearchResult
       detail: `${product.category} - ${product.powerLabel}`,
       group: "Ürünler"
     }));
-  const stationResults = fallbackStations
-    .filter((station) =>
-      matchesQuery(query, `${station.name} ${station.city} ${station.district} ${station.address}`)
-    )
-    .slice(0, 5)
-    .map((station) => ({
-      href: "/admin/istasyonlar",
-      label: station.name,
-      detail: `${station.city} / ${station.district} - ${station.availableSockets}/${station.totalSockets} soket`,
-      group: "İstasyonlar"
-    }));
   const contentResults = articles
     .filter((article) => matchesQuery(query, `${article.title} ${article.category} ${article.excerpt}`))
     .slice(0, 4)
@@ -65,7 +43,7 @@ function fallbackSearch(query: string, role: AdminRole): AdminGlobalSearchResult
       group: "İçerik"
     }));
 
-  return [...productResults, ...stationResults, ...contentResults].filter((result) =>
+  return [...productResults, ...contentResults].filter((result) =>
     allowed(role, result)
   );
 }
@@ -86,14 +64,7 @@ export async function searchAdminWorkspace(query: string, role: AdminRole) {
   try {
     const db = getDb();
     const pattern = `%${normalizedQuery}%`;
-    const [
-      productRows,
-      orderRows,
-      quoteRows,
-      serviceRows,
-      pageRows,
-      stationRows
-    ] = await Promise.all([
+    const [productRows, orderRows, quoteRows, serviceRows, pageRows] = await Promise.all([
       db
         .select({
           id: products.id,
@@ -170,27 +141,6 @@ export async function searchAdminWorkspace(query: string, role: AdminRole) {
         .from(sitePages)
         .where(or(ilike(sitePages.title, pattern), ilike(sitePages.slug, pattern)))
         .orderBy(desc(sitePages.updatedAt))
-        .limit(5),
-      db
-        .select({
-          id: chargingStations.id,
-          name: chargingStations.name,
-          city: chargingStations.city,
-          district: chargingStations.district,
-          availableSockets: chargingStations.availableSockets,
-          totalSockets: chargingStations.totalSockets
-        })
-        .from(chargingStations)
-        .where(
-          or(
-            ilike(chargingStations.name, pattern),
-            ilike(chargingStations.externalId, pattern),
-            ilike(chargingStations.city, pattern),
-            ilike(chargingStations.district, pattern),
-            ilike(chargingStations.address, pattern)
-          )
-        )
-        .orderBy(desc(chargingStations.updatedAt))
         .limit(5)
     ]);
 
@@ -224,12 +174,6 @@ export async function searchAdminWorkspace(query: string, role: AdminRole) {
         label: page.title,
         detail: `${page.slug} - ${page.status}`,
         group: "Site"
-      })),
-      ...stationRows.map((station) => ({
-        href: `/admin/istasyonlar?edit=${station.id}`,
-        label: station.name,
-        detail: `${station.city} / ${station.district} - ${station.availableSockets}/${station.totalSockets} soket`,
-        group: "İstasyonlar"
       }))
     ];
 

@@ -86,7 +86,7 @@ test("@e2e Blog: Search the blog for EV content", async ({ page }) => {
   await page.goto("/arama?q=ev%20tipi%20%C5%9Farj", { waitUntil: "domcontentloaded" });
 
   await expect(
-    page.locator('a[href="/blog/evde-elektrikli-arac-sarj-istasyonu-kurulumu"]').first()
+    page.locator('a[href="/blog/evde-elektrikli-arac-sarj-cihazi-kurulumu"]').first()
   ).toBeVisible();
 });
 

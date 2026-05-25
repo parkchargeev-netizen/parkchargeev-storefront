@@ -224,28 +224,6 @@ export const adminCategorySchema = z.object({
   parentId: z.string().uuid().nullable().optional()
 });
 
-export const adminStationSchema = z.object({
-  id: z.string().uuid().optional(),
-  externalId: z.string().trim().min(3).max(140),
-  name: z.string().trim().min(3).max(180),
-  status: z.string().trim().min(2).max(80).default("Aktif"),
-  power: z.string().trim().min(2).max(80),
-  connectorTypes: z.array(z.string().trim().min(1)).min(1),
-  pricePerKwh: z.string().trim().min(1).max(80),
-  city: z.string().trim().min(2).max(80),
-  district: z.string().trim().min(2).max(80),
-  address: z.string().trim().min(5),
-  latitude: z.coerce.number().min(-90).max(90),
-  longitude: z.coerce.number().min(-180).max(180),
-  availableSockets: z.coerce.number().int().min(0),
-  totalSockets: z.coerce.number().int().min(1),
-  hours: z.string().trim().min(2).max(120),
-  operator: z.string().trim().min(2).max(120),
-  amenities: z.array(z.string().trim().min(1)).default([]),
-  isActive: z.boolean().default(true),
-  sortOrder: z.coerce.number().int().min(0).max(9999).default(0)
-});
-
 export const adminPaytrOperationSchema = z.object({
   action: z.enum(["reconcile", "mark_refunded"]),
   note: z.string().trim().max(2000).optional().or(z.literal(""))

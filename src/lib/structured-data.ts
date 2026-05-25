@@ -80,7 +80,7 @@ export function getLocalBusinessJsonLd() {
     name: siteConfig.name,
     url: siteConfig.url,
     description:
-      "Elektrikli araç şarj istasyonu satışı, keşif, kurulum ve teknik destek hizmeti.",
+      "Elektrikli araç şarj cihazı satışı, keşif, kurulum ve teknik destek hizmeti.",
     image: defaultImageUrl,
     email: siteConfig.email,
     telephone: siteConfig.phone,

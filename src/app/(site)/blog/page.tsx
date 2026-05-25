@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     canonical: "/blog"
   },
   description:
-    "Elektrikli araç şarj istasyonları, kurulum süreçleri, maliyet rehberleri ve kurumsal çözüm içerikleri."
+    "Elektrikli araç şarj cihazları, kurulum süreçleri, maliyet rehberleri ve kurumsal çözüm içerikleri."
 };
 
 export default function BlogPage() {

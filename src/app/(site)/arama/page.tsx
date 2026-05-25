@@ -4,7 +4,6 @@ import Link from "next/link";
 import { ArticleCard } from "@/components/content/article-card";
 import { ProductCard } from "@/components/shop/product-card";
 import { SolutionCard } from "@/components/solutions/solution-card";
-import { locationPages } from "@/lib/location-pages";
 import { articles, products, solutionPages } from "@/lib/mock-data";
 import { matchesSearchQuery } from "@/lib/search-normalization";
 
@@ -15,7 +14,7 @@ export const metadata: Metadata = {
     follow: false
   },
   description:
-    "Ürün, çözüm, içerik ve lokasyon sayfaları arasında arama yapın."
+    "Ürün, çözüm ve içerik sayfaları arasında arama yapın."
 };
 
 type SearchPageProps = {
@@ -89,19 +88,10 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         )
       )
     : [];
-  const matchedLocations = query
-    ? locationPages.filter((page) =>
-        matchesSearchQuery(
-          [page.city, page.slug, page.region, page.summary, page.districts, page.useCases],
-          query
-        )
-      )
-    : [];
   const totalResults =
     matchedProducts.length +
     matchedArticles.length +
-    matchedSolutions.length +
-    matchedLocations.length;
+    matchedSolutions.length;
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
@@ -128,7 +118,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       {!query ? (
         <section className="mt-10 surface-card p-8">
           <p className="text-lg leading-8 text-on-surface-variant">
-            Ürün, çözüm, blog ve lokasyon sayfaları arasında arama yapmak için bir ifade girin.
+            Ürün, çözüm ve blog sayfaları arasında arama yapmak için bir ifade girin.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             {["ev tipi şarj", "22 kW", "İstanbul kurulum", "apartman çözümü"].map((item) => (
@@ -186,27 +176,6 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             </div>
           </section>
 
-          <section className="mt-12">
-            <h2 className="text-3xl font-bold tracking-[-0.05em] text-on-surface">
-              Lokasyon sayfaları ({matchedLocations.length})
-            </h2>
-            <div className="mt-6 grid gap-4 lg:grid-cols-3">
-              {matchedLocations.map((page) => (
-                <Link
-                  key={page.slug}
-                  href={`/elektrikli-arac-sarj-istasyonu-kurulumu/${page.slug}`}
-                  className="surface-card block p-6 transition hover:border-primary/30 hover:bg-surface-container-low"
-                >
-                  <p className="text-lg font-semibold text-on-surface">
-                    {page.city} şarj istasyonu kurulumu
-                  </p>
-                  <p className="mt-2 text-sm leading-6 text-on-surface-variant">
-                    {page.summary}
-                  </p>
-                </Link>
-              ))}
-            </div>
-          </section>
 
           <section className="mt-12">
             <h2 className="text-3xl font-bold tracking-[-0.05em] text-on-surface">

@@ -1,4 +1,3 @@
-import { locationPages } from "@/lib/location-pages";
 import { articles, solutionPages } from "@/lib/mock-data";
 import { absoluteUrl, siteConfig } from "@/lib/site";
 import { listPublicProducts } from "@/server/admin/repository";
@@ -37,10 +36,6 @@ export async function generateLlmsText() {
       `${absoluteUrl(`/api/markdown/blog/${article.slug}`)} - ${article.title} markdown özeti`
   );
 
-  const locationLandingPages = locationPages.map(
-    (page) =>
-      `${absoluteUrl(`/elektrikli-arac-sarj-istasyonu-kurulumu/${page.slug}`)} - ${page.city} EV şarj istasyonu kurulumu`
-  );
 
   const solutionLandingPages = solutionPages.map(
     (solution) =>
@@ -79,10 +74,6 @@ export async function generateLlmsText() {
     "## Blog Markdown Özetleri",
     "",
     lineList(articleMarkdownPages),
-    "",
-    "## Lokasyon Landing Sayfaları",
-    "",
-    lineList(locationLandingPages),
     "",
     "## Kurumsal Çözüm Sayfaları",
     "",

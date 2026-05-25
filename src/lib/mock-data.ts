@@ -53,26 +53,6 @@ export type ServiceModel = {
   href: string;
 };
 
-export type StationModel = {
-  id: string;
-  name: string;
-  distance: string;
-  status: string;
-  power: string;
-  connectorTypes: string[];
-  pricePerKwh: string;
-  city: string;
-  district: string;
-  address: string;
-  latitude: number;
-  longitude: number;
-  availableSockets: number;
-  totalSockets: number;
-  hours: string;
-  operator: string;
-  amenities: string[];
-};
-
 export type SolutionModel = {
   id: string;
   slug: string;
@@ -200,7 +180,7 @@ export const products: ProductModel[] = [
     ],
     useCases: ["Müstakil ev", "Kapalı otopark", "Yazlık / ikinci konut"],
     seoIntent: [
-      "ev tipi şarj istasyonu",
+      "ev tipi şarj cihazı",
       "11 kW wallbox fiyatı",
       "evde elektrikli araç şarj cihazı"
     ],
@@ -245,7 +225,7 @@ export const products: ProductModel[] = [
     ],
     useCases: ["Ofis otoparkı", "Otel", "AVM otoparkı"],
     seoIntent: [
-      "22 kW şarj istasyonu",
+      "22 kW şarj cihazı",
       "iş yeri şarj cihazı",
       "RFID şarj ünitesi"
     ],
@@ -316,7 +296,7 @@ export const products: ProductModel[] = [
     summary:
       "Hızlı devirli ticari lokasyonlar için geliştirilen, yüksek görünürlük ve hızlı servis sunan DC çözüm.",
     description:
-      "Akaryakıt istasyonu, otopark ve filo merkezleri için uygun DC Fast 60kW; gelir odaklı ticari kullanım senaryolarında hızlı şarj erişimi sağlar.",
+      "Akaryakıt sahası, otopark ve filo merkezleri için uygun DC Fast 60kW; gelir odaklı ticari kullanım senaryolarında hızlı şarj erişimi sağlar.",
     priceKurus: 12990000,
     stockLabel: "Stokta",
     powerLabel: "60kW DC",
@@ -334,7 +314,7 @@ export const products: ProductModel[] = [
       "Filo ve halka açık kullanım senaryolarına uygun"
     ],
     useCases: ["Benzinlik", "AVM", "Halka açık otopark"],
-    seoIntent: ["DC hızlı şarj cihazı", "60 kW DC ünite", "ticari şarj istasyonu"],
+    seoIntent: ["DC hızlı şarj cihazı", "60 kW DC ünite", "ticari şarj cihazı"],
     faqs: [
       {
         question: "DC hızlı şarj cihazı kimler için uygundur?",
@@ -356,7 +336,7 @@ export const products: ProductModel[] = [
     summary:
       "32A destekli, dayanıklı dış kaplamaya sahip günlük kullanım ve yedek taşıma için uygun şarj kablosu.",
     description:
-      "Ev, iş yeri ve istasyon kullanımına uygun Type-2 şarj kablosu; taşıma çantası ve sağlam bağlantı uçlarıyla güvenli bir yedek ekipman çözümüdür.",
+      "Ev, iş yeri ve cihaz kullanımına uygun Type-2 şarj kablosu; taşıma çantası ve sağlam bağlantı uçlarıyla güvenli bir yedek ekipman çözümüdür.",
     priceKurus: 425000,
     stockLabel: "Stokta",
     powerLabel: "32A",
@@ -379,7 +359,7 @@ export const products: ProductModel[] = [
       {
         question: "Type 2 kablo hangi araçlarla uyumludur?",
         answer:
-          "Type 2 AC soket kullanan araç ve istasyonlarla uyumludur. Satın almadan önce araç giriş tipinin doğrulanması gerekir."
+          "Type 2 AC soket kullanan araç ve AC şarj cihazlarıyla uyumludur. Satın almadan önce araç giriş tipinin doğrulanması gerekir."
       },
       {
         question: "Yedek kablo kullanmak neden avantaj sağlar?",
@@ -451,7 +431,7 @@ export const solutionPages: SolutionModel[] = [
     useCases: ["Site yönetimi", "Rezidans", "Yeni konut projeleri"],
     faq: [
       {
-        question: "Apartman otoparkına şarj istasyonu kurmak için ne gerekir?",
+        question: "Apartman otoparkına şarj cihazı kurmak için ne gerekir?",
         answer:
           "Elektrik kapasitesi, kablo güzergahı, ortak alan onayı ve kullanıcı yönetim modeli birlikte değerlendirilmelidir."
       },
@@ -539,8 +519,8 @@ export const solutionPages: SolutionModel[] = [
 export const articles: ArticleModel[] = [
   {
     id: "art_home_installation",
-    slug: "evde-elektrikli-arac-sarj-istasyonu-kurulumu",
-    title: "Evde Elektrikli Araç Şarj İstasyonu Kurulumu Nasıl Planlanır?",
+    slug: "evde-elektrikli-arac-sarj-cihazi-kurulumu",
+    title: "Evde Elektrikli Araç Şarj Cihazı Kurulumu Nasıl Planlanır?",
     category: "Kurulum Rehberi",
     excerpt:
       "Ev tipi wallbox kurulumu öncesinde pano kapasitesi, hat uzunluğu, koruma ekipmanları ve cihaz gücü nasıl değerlendirilir sorusunu netleştiren temel rehber.",
@@ -548,7 +528,7 @@ export const articles: ArticleModel[] = [
     publishedAt: "2026-04-21",
     readingMinutes: 8,
     seoDescription:
-      "Evde elektrikli araç şarj istasyonu kurulumu için cihaz seçimi, altyapı kontrolü ve güvenli kurulum adımlarını öğrenin.",
+      "Evde elektrikli araç şarj cihazı kurulumu için cihaz seçimi, altyapı kontrolü ve güvenli kurulum adımlarını öğrenin.",
     sections: [
       {
         heading: "1. Doğru güç seçimi neden ilk adımdır?",
@@ -635,8 +615,8 @@ export const articles: ArticleModel[] = [
   },
   {
     id: "art_apartment_installation",
-    slug: "apartman-otoparkina-sarj-istasyonu-kurulumu",
-    title: "Apartman Otoparkına Şarj İstasyonu Kurulumu İçin Yol Haritası",
+    slug: "apartman-otoparkina-sarj-cihazi-kurulumu",
+    title: "Apartman Otoparkına Şarj Cihazı Kurulumu İçin Yol Haritası",
     category: "Kurumsal Çözüm",
     excerpt:
       "Apartman ve site projelerinde teknik uygunluk, kullanıcı modeli ve yönetim kararı birlikte ele alınmalıdır.",
@@ -644,7 +624,7 @@ export const articles: ArticleModel[] = [
     publishedAt: "2026-04-21",
     readingMinutes: 9,
     seoDescription:
-      "Apartman otoparkına şarj istasyonu kurulumu için teknik keşif, yönetim planı, maliyet ve kullanıcı yönetimi modelini öğrenin.",
+      "Apartman otoparkına şarj cihazı kurulumu için teknik keşif, yönetim planı, maliyet ve kullanıcı yönetimi modelini öğrenin.",
     sections: [
       {
         heading: "1. Ortak alan gerçeğini doğru ele alın",
@@ -703,237 +683,6 @@ export const testimonials: TestimonialModel[] = [
     company: "Şehir Lojistik",
     quote:
       "DC ve AC karmasını doğru planlamak, vardiya düzenimizi korumamıza yardımcı oldu. Servis yaklaşımı en az cihaz kadar önemliydi."
-  }
-];
-
-export const stations: StationModel[] = [
-  {
-    id: "station_zorlu",
-    name: "Zorlu Center Şarj Noktası",
-    distance: "1.2 km",
-    status: "3 müsait",
-    power: "180 kW",
-    connectorTypes: ["CCS2", "Type 2"],
-    pricePerKwh: "7.45 ₺ / kWh",
-    city: "İstanbul",
-    district: "Beşiktaş",
-    address: "Zorlu Center, Levazım Mahallesi, Koru Sokağı",
-    latitude: 41.0668,
-    longitude: 29.0169,
-    availableSockets: 3,
-    totalSockets: 6,
-    hours: "7/24",
-    operator: "ParkChargeEV",
-    amenities: ["AVM", "Kapalı otopark", "Yeme-içme"]
-  },
-  {
-    id: "station_kanyon",
-    name: "Kanyon AVM Otopark",
-    distance: "2.5 km",
-    status: "Dolu",
-    power: "50 kW",
-    connectorTypes: ["CCS2"],
-    pricePerKwh: "8.10 ₺ / kWh",
-    city: "İstanbul",
-    district: "Levent",
-    address: "Kanyon AVM, Büyükdere Caddesi",
-    latitude: 41.0784,
-    longitude: 29.0106,
-    availableSockets: 0,
-    totalSockets: 4,
-    hours: "10:00 - 22:00",
-    operator: "ParkChargeEV",
-    amenities: ["AVM", "Kapalı otopark"]
-  },
-  {
-    id: "station_istinye",
-    name: "İstinyePark -3. Kat",
-    distance: "4.1 km",
-    status: "1 müsait",
-    power: "300 kW",
-    connectorTypes: ["CCS2", "CHAdeMO"],
-    pricePerKwh: "9.40 ₺ / kWh",
-    city: "İstanbul",
-    district: "Sarıyer",
-    address: "İstinyePark AVM, Pınar Mahallesi",
-    latitude: 41.1094,
-    longitude: 29.032,
-    availableSockets: 1,
-    totalSockets: 4,
-    hours: "7/24",
-    operator: "ParkChargeEV",
-    amenities: ["AVM", "Vale", "Hızlı şarj"]
-  },
-  {
-    id: "station_akasya",
-    name: "Akasya AVM E-Şarj Alanı",
-    distance: "8.6 km",
-    status: "4 müsait",
-    power: "120 kW",
-    connectorTypes: ["CCS2", "Type 2"],
-    pricePerKwh: "7.90 ₺ / kWh",
-    city: "İstanbul",
-    district: "Üsküdar",
-    address: "Akasya AVM, Acıbadem Mahallesi",
-    latitude: 40.9967,
-    longitude: 29.0544,
-    availableSockets: 4,
-    totalSockets: 8,
-    hours: "7/24",
-    operator: "ParkChargeEV",
-    amenities: ["AVM", "Açık otopark", "Kafe"]
-  },
-  {
-    id: "station_mall_of_istanbul",
-    name: "Mall of İstanbul DC Hub",
-    distance: "18.4 km",
-    status: "2 müsait",
-    power: "240 kW",
-    connectorTypes: ["CCS2"],
-    pricePerKwh: "8.75 ₺ / kWh",
-    city: "İstanbul",
-    district: "Başakşehir",
-    address: "Mall of İstanbul, Süleyman Demirel Bulvarı",
-    latitude: 41.0636,
-    longitude: 28.8069,
-    availableSockets: 2,
-    totalSockets: 6,
-    hours: "7/24",
-    operator: "ParkChargeEV",
-    amenities: ["AVM", "Hızlı şarj", "Aile alanı"]
-  },
-  {
-    id: "station_istanbul_airport",
-    name: "İstanbul Havalimanı Şarj Alanı",
-    distance: "36.0 km",
-    status: "5 müsait",
-    power: "300 kW",
-    connectorTypes: ["CCS2", "CHAdeMO", "Type 2"],
-    pricePerKwh: "9.25 ₺ / kWh",
-    city: "İstanbul",
-    district: "Arnavutköy",
-    address: "İstanbul Havalimanı otopark alanı",
-    latitude: 41.262,
-    longitude: 28.742,
-    availableSockets: 5,
-    totalSockets: 10,
-    hours: "7/24",
-    operator: "ParkChargeEV",
-    amenities: ["Havalimanı", "Uzun süreli park", "Hızlı şarj"]
-  },
-  {
-    id: "station_ankara_armada",
-    name: "Armada Ankara Şarj Noktası",
-    distance: "443 km",
-    status: "2 müsait",
-    power: "180 kW",
-    connectorTypes: ["CCS2", "Type 2"],
-    pricePerKwh: "7.65 ₺ / kWh",
-    city: "Ankara",
-    district: "Söğütözü",
-    address: "Armada AVM, Eskişehir Yolu",
-    latitude: 39.9135,
-    longitude: 32.809,
-    availableSockets: 2,
-    totalSockets: 6,
-    hours: "7/24",
-    operator: "ParkChargeEV",
-    amenities: ["AVM", "Kapalı otopark", "Restoran"]
-  },
-  {
-    id: "station_ankamall",
-    name: "Ankamall Otopark Şarj",
-    distance: "450 km",
-    status: "Bakımda",
-    power: "60 kW",
-    connectorTypes: ["CCS2"],
-    pricePerKwh: "7.20 ₺ / kWh",
-    city: "Ankara",
-    district: "Yenimahalle",
-    address: "Ankamall AVM, Akköprü",
-    latitude: 39.9506,
-    longitude: 32.8338,
-    availableSockets: 0,
-    totalSockets: 4,
-    hours: "Geçici bakım",
-    operator: "ParkChargeEV",
-    amenities: ["AVM", "Servis alanı"]
-  },
-  {
-    id: "station_izmir_istinye",
-    name: "İstinyePark İzmir Hızlı Şarj",
-    distance: "480 km",
-    status: "3 müsait",
-    power: "180 kW",
-    connectorTypes: ["CCS2", "Type 2"],
-    pricePerKwh: "8.35 ₺ / kWh",
-    city: "İzmir",
-    district: "Balçova",
-    address: "İstinyePark İzmir, Balçova",
-    latitude: 38.4019,
-    longitude: 27.0788,
-    availableSockets: 3,
-    totalSockets: 6,
-    hours: "10:00 - 22:00",
-    operator: "ParkChargeEV",
-    amenities: ["AVM", "Kafe", "Açık otopark"]
-  },
-  {
-    id: "station_bursa_marka",
-    name: "Bursa Marka AVM Şarj",
-    distance: "156 km",
-    status: "1 müsait",
-    power: "120 kW",
-    connectorTypes: ["CCS2"],
-    pricePerKwh: "7.95 ₺ / kWh",
-    city: "Bursa",
-    district: "Nilüfer",
-    address: "Sur Yapı Marka AVM, Odunluk Mahallesi",
-    latitude: 40.211,
-    longitude: 28.999,
-    availableSockets: 1,
-    totalSockets: 4,
-    hours: "7/24",
-    operator: "ParkChargeEV",
-    amenities: ["AVM", "Kapalı otopark"]
-  },
-  {
-    id: "station_kocaeli_symbol",
-    name: "Kocaeli Symbol DC Şarj",
-    distance: "102 km",
-    status: "2 müsait",
-    power: "150 kW",
-    connectorTypes: ["CCS2", "CHAdeMO"],
-    pricePerKwh: "8.05 ₺ / kWh",
-    city: "Kocaeli",
-    district: "İzmit",
-    address: "Symbol Kocaeli AVM, Ovacık Mahallesi",
-    latitude: 40.766,
-    longitude: 29.946,
-    availableSockets: 2,
-    totalSockets: 5,
-    hours: "7/24",
-    operator: "ParkChargeEV",
-    amenities: ["AVM", "Otoyol erişimi", "Hızlı şarj"]
-  },
-  {
-    id: "station_antalya_migros",
-    name: "Antalya Migros Şarj İstasyonu",
-    distance: "698 km",
-    status: "4 müsait",
-    power: "180 kW",
-    connectorTypes: ["CCS2", "Type 2"],
-    pricePerKwh: "8.55 ₺ / kWh",
-    city: "Antalya",
-    district: "Konyaaltı",
-    address: "5M Migros AVM, Arapsuyu Mahallesi",
-    latitude: 36.884,
-    longitude: 30.66,
-    availableSockets: 4,
-    totalSockets: 8,
-    hours: "7/24",
-    operator: "ParkChargeEV",
-    amenities: ["AVM", "Sahil erişimi", "Açık otopark"]
   }
 ];
 

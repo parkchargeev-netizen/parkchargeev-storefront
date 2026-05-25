@@ -12,7 +12,7 @@ const inter = Inter({
   display: "swap"
 });
 
-const defaultTitle = `${siteConfig.name} | EV Şarj İstasyonu ve Kurulum Çözümleri`;
+const defaultTitle = `${siteConfig.name} | EV Şarj Cihazı ve Kurulum Çözümleri`;
 const defaultOgImage = absoluteUrl("/api/og/product/homecharge-pro-11kw");
 
 export const metadata: Metadata = {
@@ -24,10 +24,10 @@ export const metadata: Metadata = {
   description: siteConfig.description,
   applicationName: siteConfig.name,
   keywords: [
-    "elektrikli araç şarj istasyonu",
+    "elektrikli araç şarj cihazı",
     "EV şarj cihazı",
     "wallbox",
-    "şarj istasyonu kurulumu",
+    "şarj cihazı kurulumu",
     "PayTR güvenli ödeme",
     "ParkChargeEV"
   ],

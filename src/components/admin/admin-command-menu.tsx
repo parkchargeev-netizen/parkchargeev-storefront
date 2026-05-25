@@ -152,7 +152,7 @@ export function AdminCommandMenu({
                   autoFocus
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
-                  placeholder="Sipariş, müşteri, teklif, ürün, istasyon..."
+                  placeholder="Sipariş, müşteri, teklif, ürün..."
                   className="min-w-0 flex-1 bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400"
                 />
                 <button

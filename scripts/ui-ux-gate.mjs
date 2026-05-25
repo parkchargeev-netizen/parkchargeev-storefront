@@ -24,7 +24,6 @@ const requiredRoutes = [
   "src/app/(site)/sepet/page.tsx",
   "src/app/(site)/odeme/page.tsx",
   "src/app/admin/(panel)/page.tsx",
-  "src/app/admin/(panel)/istasyonlar/page.tsx",
   "src/app/admin/(panel)/site/page.tsx",
   "playwright.config.ts",
   "tests/e2e/store-checkout.spec.ts",

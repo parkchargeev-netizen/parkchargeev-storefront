@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { Children, type ReactNode } from "react";
 import { useState } from "react";
 import {
   type ColumnDef,
@@ -45,6 +45,7 @@ export function AdminDataTable<TData>({
   });
 
   const columnCount = table.getVisibleLeafColumns().length;
+  const footerItems = footer ? Children.toArray(footer) : [];
 
   return (
     <section className="surface-card overflow-hidden border border-slate-200 bg-white/95">
@@ -138,12 +139,12 @@ export function AdminDataTable<TData>({
         </table>
       </div>
 
-      {footer ? (
+      {footerItems.length > 0 ? (
         <div className="flex items-center justify-between gap-3 border-t border-slate-200 bg-slate-50/70 px-6 py-4">
           <p className="text-sm text-slate-500">
             Bu görünümde {table.getRowModel().rows.length} kayıt listeleniyor.
           </p>
-          {footer}
+          {footerItems}
         </div>
       ) : null}
     </section>

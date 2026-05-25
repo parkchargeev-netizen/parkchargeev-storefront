@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "ParkChargeEV",
     short_name: "ParkChargeEV",
     description:
-      "Elektrikli araç şarj istasyonu ürünleri, kurulum hizmetleri ve teknik destek süreçlerini tek platformda buluşturan premium EV commerce deneyimi.",
+      "Elektrikli araç şarj cihazı ürünleri, kurulum hizmetleri ve teknik destek süreçlerini tek platformda buluşturan premium EV commerce deneyimi.",
     start_url: "/",
     display: "standalone",
     background_color: "#faf8ff",
