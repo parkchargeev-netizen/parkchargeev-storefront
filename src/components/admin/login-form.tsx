@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 
@@ -12,6 +12,7 @@ type LoginValues = z.infer<typeof adminLoginSchema>;
 
 export function LoginForm() {
   const router = useRouter();
+  const [isHydrated, setIsHydrated] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const {
     register,
@@ -25,7 +26,15 @@ export function LoginForm() {
     }
   });
 
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
   const onSubmit = handleSubmit(async (values) => {
+    if (!isHydrated) {
+      return;
+    }
+
     setErrorMessage(null);
 
     const response = await fetch("/api/admin/auth/login", {
@@ -48,7 +57,7 @@ export function LoginForm() {
   });
 
   return (
-    <form className="space-y-5" onSubmit={onSubmit}>
+    <form className="space-y-5" onSubmit={onSubmit} noValidate>
       <div>
         <label className="mb-2 block text-sm font-medium text-slate-700" htmlFor="email">
           E-posta
@@ -90,9 +99,9 @@ export function LoginForm() {
       <button
         type="submit"
         className="w-full rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
-        disabled={isSubmitting}
+        disabled={!isHydrated || isSubmitting}
       >
-        {isSubmitting ? "Giriş yapılıyor..." : "Admin Girişi"}
+        {!isHydrated ? "Hazırlanıyor..." : isSubmitting ? "Giriş yapılıyor..." : "Admin Girişi"}
       </button>
     </form>
   );

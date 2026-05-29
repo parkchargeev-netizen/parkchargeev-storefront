@@ -133,7 +133,7 @@ export function CustomerAuthPanel() {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="mt-8 grid gap-5">
+        <form onSubmit={handleSubmit} className="mt-8 grid gap-5" noValidate>
           {mode === "register" ? (
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="grid gap-2">

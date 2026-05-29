@@ -132,6 +132,7 @@ export function ProductForm({
   catalogOptions
 }: ProductFormProps) {
   const router = useRouter();
+  const [isHydrated, setIsHydrated] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [uploadMessage, setUploadMessage] = useState<string | null>(null);
@@ -260,6 +261,10 @@ export function ProductForm({
           label: category.name
         }))
       : productCategoryOptions;
+
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   function toggleArrayValue(field: "categories" | "tags" | "vehicleBrands", value: string) {
     const current = watch(field) ?? [];
@@ -1264,10 +1269,16 @@ export function ProductForm({
         </button>
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={!isHydrated || isSubmitting}
           className="rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white disabled:opacity-70"
         >
-          {isSubmitting ? "Kaydediliyor..." : mode === "create" ? "Ürün oluştur" : "Değişiklikleri kaydet"}
+          {!isHydrated
+            ? "Hazırlanıyor..."
+            : isSubmitting
+              ? "Kaydediliyor..."
+              : mode === "create"
+                ? "Ürün oluştur"
+                : "Değişiklikleri kaydet"}
         </button>
       </div>
     </form>
