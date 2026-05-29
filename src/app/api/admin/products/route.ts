@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { normalizeAdminProductPayload } from "@/lib/admin-product-payload";
 import { csvResponse } from "@/server/admin/csv";
 import {
   getProductLookupOptions,
@@ -14,7 +15,7 @@ export async function GET(request: Request) {
   const authenticatedAdmin = await requireAdminRole(["superadmin", "sales"]);
 
   if (!authenticatedAdmin) {
-    return NextResponse.json({ ok: false, message: "Yetkisiz erisim." }, { status: 401 });
+    return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });
   }
 
   const { searchParams } = new URL(request.url);
@@ -33,13 +34,13 @@ export async function GET(request: Request) {
 
   if (query.format === "csv") {
     return csvResponse("products.csv", result.items, [
-      { header: "Urun", value: (item) => item.name },
+      { header: "Ürün", value: (item) => item.name },
       { header: "Slug", value: (item) => item.slug },
       { header: "Durum", value: (item) => item.status },
       { header: "Fiyat", value: (item) => item.defaultVariant?.priceKurus ?? item.defaultPriceKurus },
       { header: "Stok", value: (item) => item.defaultVariant?.stockQuantity ?? 0 },
       { header: "Kategoriler", value: (item) => item.categories.join(", ") },
-      { header: "Guncelleme", value: (item) => item.updatedAt }
+      { header: "Güncelleme", value: (item) => item.updatedAt }
     ]);
   }
 
@@ -54,11 +55,13 @@ export async function POST(request: Request) {
   const authenticatedAdmin = await requireAdminRole(["superadmin", "sales"]);
 
   if (!authenticatedAdmin) {
-    return NextResponse.json({ ok: false, message: "Yetkisiz erisim." }, { status: 401 });
+    return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });
   }
 
   try {
-    const payload = adminProductSchema.parse(await request.json());
+    const payload = adminProductSchema.parse(
+      normalizeAdminProductPayload(await request.json())
+    );
     const requestMeta = await getRequestMeta();
     const product = await upsertAdminProduct(payload, authenticatedAdmin.session, requestMeta);
 

@@ -10,15 +10,7 @@ const adminPassword = process.env.ADMIN_BOOTSTRAP_PASSWORD;
 
 test.skip(!adminEmail || !adminPassword, "Admin bootstrap env degiskenleri yok.");
 
-async function goToAdminSection(page: Page, href: string, urlPattern: RegExp) {
-  const link = page.locator(`aside nav a[href="${href}"]`).first();
-
-  await expect(link).toBeVisible();
-  await link.click();
-  await expect(page).toHaveURL(urlPattern, { timeout: 30_000 });
-}
-
-test("@e2e admin login -> dashboard -> temel modul navigasyonu", async ({ page }) => {
+async function loginAsAdmin(page: Page) {
   await page.goto("/admin/login");
   await page.getByLabel(/E-posta/i).fill(adminEmail ?? "");
   await page.locator("#password").fill(adminPassword ?? "");
@@ -29,7 +21,20 @@ test("@e2e admin login -> dashboard -> temel modul navigasyonu", async ({ page }
     { timeout: 30_000 }
   );
   await page.locator('button[type="submit"]').click();
-  const loginResponse = await loginResponsePromise;
+
+  return loginResponsePromise;
+}
+
+async function goToAdminSection(page: Page, href: string, urlPattern: RegExp) {
+  const link = page.locator(`aside nav a[href="${href}"]`).first();
+
+  await expect(link).toBeVisible();
+  await link.click();
+  await expect(page).toHaveURL(urlPattern, { timeout: 30_000 });
+}
+
+test("@e2e admin login -> dashboard -> temel modul navigasyonu", async ({ page }) => {
+  const loginResponse = await loginAsAdmin(page);
 
   expect(loginResponse.ok()).toBeTruthy();
   await expect(page).toHaveURL(/\/admin$/, { timeout: 30_000 });
@@ -40,6 +45,30 @@ test("@e2e admin login -> dashboard -> temel modul navigasyonu", async ({ page }
   await goToAdminSection(page, "/admin/siparisler", /\/admin\/siparisler/);
 
   await goToAdminSection(page, "/admin/teklifler", /\/admin\/teklifler/);
+});
+
+test("@e2e admin urun formu dinamik alanlari kilitlemez", async ({ page }) => {
+  const loginResponse = await loginAsAdmin(page);
+
+  expect(loginResponse.ok()).toBeTruthy();
+  await expect(page).toHaveURL(/\/admin$/, { timeout: 30_000 });
+
+  await page.goto("/admin/urunler/yeni", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { name: /Katalog kaydı oluştur/i })).toBeVisible();
+
+  for (const buttonName of [
+    "Varyant ekle",
+    "URL ekle",
+    "Özellik ekle",
+    "Kart ekle",
+    "Akordiyon ekle",
+    "Soru ekle"
+  ]) {
+    await page.getByRole("button", { name: buttonName }).click();
+  }
+
+  await expect(page.getByRole("button", { name: /Ürün oluştur/i })).toBeEnabled();
+  await expect(page.getByText(/Application error|Unhandled Runtime/i)).toHaveCount(0);
 });
 
 test("@a11y admin login ekrani accessibility smoke temiz", async ({ page }) => {

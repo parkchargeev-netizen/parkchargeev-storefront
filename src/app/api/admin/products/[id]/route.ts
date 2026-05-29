@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { normalizeAdminProductPayload } from "@/lib/admin-product-payload";
 import {
   getAdminProductById,
   getProductLookupOptions,
@@ -19,7 +20,7 @@ export async function GET(_request: Request, { params }: ProductRouteProps) {
   const authenticatedAdmin = await requireAdminRole(["superadmin", "sales"]);
 
   if (!authenticatedAdmin) {
-    return NextResponse.json({ ok: false, message: "Yetkisiz erisim." }, { status: 401 });
+    return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });
   }
 
   const { id } = await params;
@@ -37,13 +38,13 @@ export async function PATCH(request: Request, { params }: ProductRouteProps) {
   const authenticatedAdmin = await requireAdminRole(["superadmin", "sales"]);
 
   if (!authenticatedAdmin) {
-    return NextResponse.json({ ok: false, message: "Yetkisiz erisim." }, { status: 401 });
+    return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });
   }
 
   try {
     const { id } = await params;
     const payload = adminProductSchema.parse({
-      ...(await request.json()),
+      ...normalizeAdminProductPayload(await request.json()),
       id
     });
     const requestMeta = await getRequestMeta();

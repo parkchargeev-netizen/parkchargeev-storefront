@@ -4,9 +4,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { Controller, type Resolver, useFieldArray, useForm } from "react-hook-form";
 import type { z } from "zod";
 
+import { normalizeAdminProductPayload } from "@/lib/admin-product-payload";
 import {
   productCategoryOptions,
   productStatusOptions,
@@ -50,6 +51,10 @@ type ProductMutationResponse = {
     id: string;
   };
 };
+
+const baseProductFormResolver = zodResolver(adminProductSchema) as unknown as Resolver<ProductFormValues>;
+const productFormResolver: Resolver<ProductFormValues> = (values, context, options) =>
+  baseProductFormResolver(normalizeAdminProductPayload(values), context, options);
 
 type ProductFormProps = {
   mode: "create" | "edit";
@@ -196,7 +201,7 @@ export function ProductForm({
     setValue,
     watch
   } = useForm<ProductFormValues>({
-    resolver: zodResolver(adminProductSchema),
+    resolver: productFormResolver,
     defaultValues: mergedDefaults
   });
 
