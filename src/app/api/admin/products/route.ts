@@ -8,8 +8,16 @@ import {
   upsertAdminProduct
 } from "@/server/admin/repository";
 import { isValidationError, validationErrorResponse } from "@/server/admin/http";
+import {
+  getAdminProductDatabaseConflictMessage,
+  isAdminProductConflictError
+} from "@/server/admin/product-errors";
 import { adminListQuerySchema, adminProductSchema } from "@/server/admin/validators";
 import { getRequestMeta, requireAdminRole } from "@/server/auth/guards";
+
+function productConflictResponse(message: string) {
+  return NextResponse.json({ ok: false, message }, { status: 409 });
+}
 
 export async function GET(request: Request) {
   const authenticatedAdmin = await requireAdminRole(["superadmin", "sales"]);
@@ -76,6 +84,16 @@ export async function POST(request: Request) {
   } catch (error) {
     if (isValidationError(error)) {
       return validationErrorResponse(error);
+    }
+
+    if (isAdminProductConflictError(error)) {
+      return productConflictResponse(error.message);
+    }
+
+    const conflictMessage = getAdminProductDatabaseConflictMessage(error);
+
+    if (conflictMessage) {
+      return productConflictResponse(conflictMessage);
     }
 
     throw error;

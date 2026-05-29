@@ -198,17 +198,12 @@ export function ProductForm({
     register,
     handleSubmit,
     formState: { errors, isSubmitting, isSubmitted },
-    reset,
     setValue,
     watch
   } = useForm<ProductFormValues>({
     resolver: productFormResolver,
     defaultValues: mergedDefaults
   });
-
-  useEffect(() => {
-    reset(mergedDefaults);
-  }, [mergedDefaults, reset]);
 
   const mediaFields = useFieldArray({
     control,
@@ -391,7 +386,11 @@ export function ProductForm({
   });
 
   return (
-    <form className="space-y-8" onSubmit={onSubmit}>
+    <form className="space-y-8" onSubmit={onSubmit} noValidate aria-busy={!isHydrated || isSubmitting}>
+      <fieldset
+        disabled={!isHydrated || isSubmitting}
+        className="space-y-8 disabled:cursor-wait disabled:opacity-75"
+      >
       <section className="surface-card border border-slate-200 bg-white/95 p-6">
         <div className="mb-6">
           <h2 className="text-xl font-semibold text-slate-950">Temel Bilgiler</h2>
@@ -1279,8 +1278,9 @@ export function ProductForm({
               : mode === "create"
                 ? "Ürün oluştur"
                 : "Değişiklikleri kaydet"}
-        </button>
-      </div>
+          </button>
+        </div>
+      </fieldset>
     </form>
   );
 }

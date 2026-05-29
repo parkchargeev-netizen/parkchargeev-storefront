@@ -55,6 +55,7 @@ const columns: Array<ColumnDef<ProductRow>> = [
       <div className="min-w-[260px]">
         <Link
           href={`/admin/urunler/${row.original.id}`}
+          prefetch={false}
           className="text-sm font-semibold text-slate-950 transition hover:text-blue-700"
         >
           {row.original.name}
@@ -110,6 +111,7 @@ const columns: Array<ColumnDef<ProductRow>> = [
       <div className="flex flex-wrap items-center gap-2">
         <Link
           href={`/admin/urunler/${row.original.id}`}
+          prefetch={false}
           className="inline-flex rounded-full border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 transition hover:border-blue-300 hover:bg-blue-100"
         >
           Düzenle
@@ -117,6 +119,7 @@ const columns: Array<ColumnDef<ProductRow>> = [
         {row.original.status === "active" ? (
           <Link
             href={`/urun/${row.original.slug}`}
+            prefetch={false}
             target="_blank"
             rel="noreferrer"
             className="inline-flex rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-white"

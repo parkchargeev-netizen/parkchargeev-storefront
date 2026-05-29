@@ -45,6 +45,7 @@ export default async function EditAdminProductPage({ params }: EditProductPagePr
       </section>
 
       <ProductForm
+        key={product.id}
         mode="edit"
         productId={product.id}
         lookupOptions={lookupOptions.filter((item) => item.id !== product.id)}

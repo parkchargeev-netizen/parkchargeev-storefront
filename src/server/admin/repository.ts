@@ -32,6 +32,7 @@ import type { AdminSessionPayload } from "@/server/auth/session";
 import { hashPassword } from "@/server/auth/password";
 import { recordAuditLog } from "@/server/admin/audit";
 import { productCategoryOptions } from "@/server/admin/constants";
+import { AdminProductConflictError } from "@/server/admin/product-errors";
 import {
   getFallbackAdminProductById,
   getFallbackAdminQuoteById,
@@ -415,7 +416,7 @@ async function seedMarketingProductsForAdmin() {
   }
 }
 
-async function ensureMarketingProductsVisibleInAdmin() {
+export async function ensureMarketingProductsVisibleInAdmin() {
   if (!hasDatabaseConfig()) {
     return;
   }
@@ -730,15 +731,84 @@ function normalizeProductVariants(input: ProductInput) {
   });
 }
 
-async function writeProductVariants(productId: string, input: ProductInput) {
+type NormalizedProductVariant = ReturnType<typeof normalizeProductVariants>[number];
+
+function findDuplicateValue(values: string[]) {
+  const seen = new Set<string>();
+
+  for (const value of values) {
+    if (seen.has(value)) {
+      return value;
+    }
+
+    seen.add(value);
+  }
+
+  return null;
+}
+
+async function assertProductWriteIsUnique(
+  db: ReturnType<typeof getDb>,
+  productId: string | undefined,
+  slug: string,
+  variants: NormalizedProductVariant[]
+) {
+  const duplicateSku = findDuplicateValue(variants.map((variant) => variant.sku));
+
+  if (duplicateSku) {
+    throw new AdminProductConflictError(
+      `${duplicateSku} SKU değeri form içinde birden fazla kez kullanılmış.`
+    );
+  }
+
+  const [slugConflict] = await db
+    .select({ id: products.id })
+    .from(products)
+    .where(eq(products.slug, slug))
+    .limit(1);
+
+  if (slugConflict && slugConflict.id !== productId) {
+    throw new AdminProductConflictError(
+      "Bu slug ile kayıtlı başka bir ürün var. Lütfen benzersiz bir slug kullanın."
+    );
+  }
+
+  const skus = variants.map((variant) => variant.sku);
+
+  if (skus.length === 0) {
+    return;
+  }
+
+  const skuConflicts = await db
+    .select({
+      sku: productVariants.sku,
+      productId: productVariants.productId
+    })
+    .from(productVariants)
+    .where(inArray(productVariants.sku, skus));
+  const conflictingSku = skuConflicts.find((variant) => variant.productId !== productId);
+
+  if (conflictingSku) {
+    throw new AdminProductConflictError(
+      `${conflictingSku.sku} SKU değeri başka bir üründe kullanılıyor.`
+    );
+  }
+}
+
+async function writeProductVariants(
+  productId: string,
+  input: ProductInput,
+  normalizedVariants?: NormalizedProductVariant[]
+) {
   const db = getDb();
-  const variants = normalizeProductVariants(input);
+  const variants = normalizedVariants ?? normalizeProductVariants(input);
   const existing = await db
-    .select({ id: productVariants.id })
+    .select({ id: productVariants.id, sku: productVariants.sku })
     .from(productVariants)
     .where(eq(productVariants.productId, productId));
   const existingIds = new Set(existing.map((variant) => variant.id));
-  const incomingIds = new Set(variants.map((variant) => variant.id).filter(Boolean));
+  const existingIdBySku = new Map(existing.map((variant) => [variant.sku, variant.id]));
+  const retainedExistingIds = new Set<string>();
 
   for (const variant of variants) {
     const values = {
@@ -753,12 +823,17 @@ async function writeProductVariants(productId: string, input: ProductInput) {
       compareAtKurus: variant.compareAtKurus ?? null,
       isDefault: variant.isDefault
     };
+    const targetVariantId =
+      variant.id && existingIds.has(variant.id)
+        ? variant.id
+        : existingIdBySku.get(variant.sku);
 
-    if (variant.id && existingIds.has(variant.id)) {
+    if (targetVariantId) {
       await db
         .update(productVariants)
         .set(values)
-        .where(and(eq(productVariants.id, variant.id), eq(productVariants.productId, productId)));
+        .where(and(eq(productVariants.id, targetVariantId), eq(productVariants.productId, productId)));
+      retainedExistingIds.add(targetVariantId);
       continue;
     }
 
@@ -767,7 +842,7 @@ async function writeProductVariants(productId: string, input: ProductInput) {
 
   const removableIds = existing
     .map((variant) => variant.id)
-    .filter((id) => !incomingIds.has(id));
+    .filter((id) => !retainedExistingIds.has(id));
 
   for (const id of removableIds) {
     const [orderReference] = await db
@@ -1042,8 +1117,6 @@ export async function listAdminProducts(input: ListQueryInput) {
     return listFallbackAdminProducts(input);
   }
 
-  await ensureMarketingProductsVisibleInAdmin();
-
   const db = getDb();
   const cursor = decodeCursor(input.cursor);
   const conditions = [];
@@ -1173,6 +1246,8 @@ export async function upsertAdminProduct(
   const categoryRows = await resolveCategoryIds(input.categories);
   const primaryCategoryId = categoryRows[0]?.id ?? null;
   const slug = slugify(input.slug || input.name);
+  const normalizedVariants = normalizeProductVariants(input);
+  await assertProductWriteIsUnique(db, input.id, slug, normalizedVariants);
   const schemaJsonLd = buildProductSchemaJsonLd({ ...input, slug });
   const baseProductValues = {
     name: input.name,
@@ -1225,7 +1300,7 @@ export async function upsertAdminProduct(
       requestMeta?.ipAddress,
       requestMeta?.userAgent
     );
-    await writeProductVariants(input.id, input);
+    await writeProductVariants(input.id, input, normalizedVariants);
 
     const after = await getAdminProductById(input.id);
 
@@ -1263,7 +1338,7 @@ export async function upsertAdminProduct(
     requestMeta?.ipAddress,
     requestMeta?.userAgent
   );
-  await writeProductVariants(createdProduct.id, input);
+  await writeProductVariants(createdProduct.id, input, normalizedVariants);
 
   const after = await getAdminProductById(createdProduct.id);
 
@@ -1288,8 +1363,6 @@ async function loadProductLookupOptions() {
   if (!hasDatabaseConfig()) {
     return getFallbackProductLookupOptions();
   }
-
-  await ensureMarketingProductsVisibleInAdmin();
 
   const db = getDb();
   return db

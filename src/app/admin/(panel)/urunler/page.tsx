@@ -58,6 +58,7 @@ export default async function AdminProductsPage({ searchParams }: ProductListPag
             </a>
             <Link
               href="/admin/urunler/yeni"
+              prefetch={false}
               className="inline-flex rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
             >
               Yeni Ürün
@@ -118,6 +119,7 @@ export default async function AdminProductsPage({ searchParams }: ProductListPag
           result.nextCursor ? (
             <Link
               href={buildHref("/admin/urunler", query, { cursor: result.nextCursor })}
+              prefetch={false}
               className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-white"
             >
               Sonraki sayfa
