@@ -42,8 +42,15 @@ test("@e2e Reject invalid login credentials", async ({ page }) => {
 
   await page.locator('input[name="email"]').fill(`invalid-${Date.now()}@parkchargeev.test`);
   await page.locator('input[name="password"]').fill("WrongPass2026");
+  const loginResponsePromise = page.waitForResponse(
+    (response) =>
+      response.url().includes("/api/customer/auth/login") &&
+      response.request().method() === "POST"
+  );
   await page.getByRole("button", { name: /Paneline Gir/i }).click();
+  const loginResponse = await loginResponsePromise;
 
+  expect(loginResponse.status()).toBe(401);
   await expect(page.getByText(/E-posta veya/i)).toBeVisible();
   await expect(page).toHaveURL(/\/giris/);
 });

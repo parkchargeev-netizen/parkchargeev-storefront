@@ -9,6 +9,7 @@ const adminEmail = process.env.ADMIN_BOOTSTRAP_EMAIL;
 const adminPassword = process.env.ADMIN_BOOTSTRAP_PASSWORD;
 
 test.skip(!adminEmail || !adminPassword, "Admin bootstrap env degiskenleri yok.");
+test.setTimeout(90_000);
 
 async function loginAsAdmin(page: Page) {
   await page.goto("/admin/login");

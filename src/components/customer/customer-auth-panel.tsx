@@ -107,11 +107,12 @@ export function CustomerAuthPanel() {
         <div className="grid grid-cols-2 gap-2 rounded-2xl bg-surface-container-low p-1">
           <button
             type="button"
+            disabled={!isHydrated}
             onClick={() => {
               setMode("login");
               setMessage(null);
             }}
-            className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition ${
+            className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-65 ${
               mode === "login" ? "bg-white text-primary shadow-sm" : "text-on-surface-variant"
             }`}
           >
@@ -120,11 +121,12 @@ export function CustomerAuthPanel() {
           </button>
           <button
             type="button"
+            disabled={!isHydrated}
             onClick={() => {
               setMode("register");
               setMessage(null);
             }}
-            className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition ${
+            className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-65 ${
               mode === "register" ? "bg-white text-primary shadow-sm" : "text-on-surface-variant"
             }`}
           >
@@ -143,6 +145,7 @@ export function CustomerAuthPanel() {
                   required
                   minLength={2}
                   autoComplete="given-name"
+                  disabled={!isHydrated || isSubmitting}
                   className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary"
                 />
               </label>
@@ -153,6 +156,7 @@ export function CustomerAuthPanel() {
                   required
                   minLength={2}
                   autoComplete="family-name"
+                  disabled={!isHydrated || isSubmitting}
                   className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary"
                 />
               </label>
@@ -167,6 +171,7 @@ export function CustomerAuthPanel() {
               required
               autoComplete="email"
               placeholder="ornek@sirket.com"
+              disabled={!isHydrated || isSubmitting}
               className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary"
             />
           </label>
@@ -181,6 +186,7 @@ export function CustomerAuthPanel() {
                 autoComplete="tel"
                 inputMode="tel"
                 placeholder="0555 555 55 55"
+                disabled={!isHydrated || isSubmitting}
                 className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary"
               />
             </label>
@@ -194,13 +200,19 @@ export function CustomerAuthPanel() {
               required
               minLength={8}
               autoComplete={mode === "login" ? "current-password" : "new-password"}
+              disabled={!isHydrated || isSubmitting}
               className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary"
             />
           </label>
 
           {mode === "register" ? (
             <label className="flex items-start gap-3 text-sm leading-6 text-on-surface-variant">
-              <input name="marketingConsent" type="checkbox" className="mt-1 rounded border-outline-variant" />
+              <input
+                name="marketingConsent"
+                type="checkbox"
+                disabled={!isHydrated || isSubmitting}
+                className="mt-1 rounded border-outline-variant"
+              />
               Kampanya, bakım ve kurulum hatırlatmaları için iletişim izni veriyorum.
             </label>
           ) : null}
