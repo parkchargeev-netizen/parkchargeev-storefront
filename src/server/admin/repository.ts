@@ -433,7 +433,11 @@ type ProductRow = typeof products.$inferSelect;
 type ProductCollections = Awaited<ReturnType<typeof hydrateProductCollections>>;
 
 type ProductCollectionOptions = {
+  includeMedia?: boolean;
   includeSpecs?: boolean;
+  includeTags?: boolean;
+  includeVehicles?: boolean;
+  includeRelations?: boolean;
 };
 
 function stripHtml(value: string) {
@@ -899,7 +903,11 @@ async function hydrateProductCollections(
   options: ProductCollectionOptions = {}
 ) {
   const db = getDb();
+  const includeMedia = options.includeMedia ?? true;
   const includeSpecs = options.includeSpecs ?? true;
+  const includeTags = options.includeTags ?? true;
+  const includeVehicles = options.includeVehicles ?? true;
+  const includeRelations = options.includeRelations ?? true;
 
   if (productIds.length === 0) {
     return {
@@ -919,21 +927,40 @@ async function hydrateProductCollections(
         .from(productSpecs)
         .where(inArray(productSpecs.productId, productIds))
     : Promise.resolve([]);
+  const mediaRowsPromise: Promise<(typeof productMedia.$inferSelect)[]> = includeMedia
+    ? db
+        .select()
+        .from(productMedia)
+        .where(inArray(productMedia.productId, productIds))
+    : Promise.resolve([]);
+  const tagRowsPromise: Promise<(typeof productTagAssignments.$inferSelect)[]> = includeTags
+    ? db
+        .select()
+        .from(productTagAssignments)
+        .where(inArray(productTagAssignments.productId, productIds))
+    : Promise.resolve([]);
+  const vehicleRowsPromise: Promise<(typeof productVehicleCompatibilities.$inferSelect)[]> =
+    includeVehicles
+      ? db
+          .select()
+          .from(productVehicleCompatibilities)
+          .where(inArray(productVehicleCompatibilities.productId, productIds))
+      : Promise.resolve([]);
+  const relationRowsPromise: Promise<(typeof productRelations.$inferSelect)[]> = includeRelations
+    ? db
+        .select()
+        .from(productRelations)
+        .where(inArray(productRelations.productId, productIds))
+    : Promise.resolve([]);
   const [variantsRows, mediaRows, specRows, tagRows, categoryRows, vehicleRows, relationRows] =
     await Promise.all([
       db
         .select()
         .from(productVariants)
         .where(inArray(productVariants.productId, productIds)),
-      db
-        .select()
-        .from(productMedia)
-        .where(inArray(productMedia.productId, productIds)),
+      mediaRowsPromise,
       specRowsPromise,
-      db
-        .select()
-        .from(productTagAssignments)
-        .where(inArray(productTagAssignments.productId, productIds)),
+      tagRowsPromise,
       db
         .select({
           productId: productCategoryAssignments.productId,
@@ -942,14 +969,8 @@ async function hydrateProductCollections(
         .from(productCategoryAssignments)
         .innerJoin(categories, eq(categories.id, productCategoryAssignments.categoryId))
         .where(inArray(productCategoryAssignments.productId, productIds)),
-      db
-        .select()
-        .from(productVehicleCompatibilities)
-        .where(inArray(productVehicleCompatibilities.productId, productIds)),
-      db
-        .select()
-        .from(productRelations)
-        .where(inArray(productRelations.productId, productIds))
+      vehicleRowsPromise,
+      relationRowsPromise
     ]);
 
   const variants = new Map<string, (typeof productVariants.$inferSelect)[]>();
@@ -1155,7 +1176,15 @@ export async function listAdminProducts(input: ListQueryInput) {
   }
 
   const rows = await db
-    .select()
+    .select({
+      id: products.id,
+      slug: products.slug,
+      name: products.name,
+      shortDescription: products.shortDescription,
+      status: products.status,
+      defaultPriceKurus: products.defaultPriceKurus,
+      updatedAt: products.updatedAt
+    })
     .from(products)
     .where(conditions.length > 0 ? and(...conditions) : undefined)
     .orderBy(desc(products.updatedAt), desc(products.id))
@@ -1164,7 +1193,11 @@ export async function listAdminProducts(input: ListQueryInput) {
   const hasMore = rows.length > input.limit;
   const items = hasMore ? rows.slice(0, input.limit) : rows;
   const collections = await hydrateProductCollections(items.map((item) => item.id), {
-    includeSpecs: false
+    includeMedia: false,
+    includeSpecs: false,
+    includeTags: false,
+    includeVehicles: false,
+    includeRelations: false
   });
 
   return {
@@ -2081,7 +2114,6 @@ async function loadAdminCatalog() {
     return { brands: [], categories: [] };
   }
 
-  await ensureDefaultCategories();
   const db = getDb();
   const [brandRows, categoryRows] = await Promise.all([
     db.select().from(brands).orderBy(brands.name),

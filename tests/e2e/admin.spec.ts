@@ -48,6 +48,20 @@ test("@e2e admin login -> dashboard -> temel modul navigasyonu", async ({ page }
   await goToAdminSection(page, "/admin/teklifler", /\/admin\/teklifler/);
 });
 
+test("@e2e admin urun ekleme linki form ekranini acar", async ({ page }) => {
+  const loginResponse = await loginAsAdmin(page);
+
+  expect(loginResponse.ok()).toBeTruthy();
+  await expect(page).toHaveURL(/\/admin$/, { timeout: 30_000 });
+
+  await goToAdminSection(page, "/admin/urunler", /\/admin\/urunler/);
+  await page.locator('a[href="/admin/urunler/yeni"]').first().click();
+
+  await expect(page).toHaveURL(/\/admin\/urunler\/yeni/, { timeout: 30_000 });
+  await expect(page.locator('form button[type="submit"]')).toBeEnabled({ timeout: 15_000 });
+  await expect(page.getByText(/Application error|Unhandled Runtime/i)).toHaveCount(0);
+});
+
 test("@e2e admin urun formu dinamik alanlari kilitlemez", async ({ page }) => {
   const loginResponse = await loginAsAdmin(page);
 

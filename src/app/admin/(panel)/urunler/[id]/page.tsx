@@ -1,11 +1,8 @@
 import { notFound } from "next/navigation";
 
 import { ProductForm } from "@/components/admin/product-form";
-import {
-  getAdminProductById,
-  getProductLookupOptions,
-  listAdminCatalog
-} from "@/server/admin/repository";
+import { getAdminProductFormOptions } from "@/server/admin/product-form-options";
+import { getAdminProductById } from "@/server/admin/repository";
 
 type EditProductPageProps = {
   params: Promise<{
@@ -15,10 +12,9 @@ type EditProductPageProps = {
 
 export default async function EditAdminProductPage({ params }: EditProductPageProps) {
   const { id } = await params;
-  const [product, lookupOptions, catalog] = await Promise.all([
+  const [product, formOptions] = await Promise.all([
     getAdminProductById(id),
-    getProductLookupOptions(),
-    listAdminCatalog()
+    getAdminProductFormOptions({ excludeProductId: id })
   ]);
 
   if (!product) {
@@ -48,14 +44,8 @@ export default async function EditAdminProductPage({ params }: EditProductPagePr
         key={product.id}
         mode="edit"
         productId={product.id}
-        lookupOptions={lookupOptions.filter((item) => item.id !== product.id)}
-        catalogOptions={{
-          brands: catalog.brands,
-          categories: catalog.categories.map((category) => ({
-            slug: category.slug,
-            name: category.name
-          }))
-        }}
+        lookupOptions={formOptions.lookupOptions}
+        catalogOptions={formOptions.catalogOptions}
         initialValues={{
           id: product.id,
           name: product.name,
