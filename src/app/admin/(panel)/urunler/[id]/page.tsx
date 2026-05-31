@@ -77,7 +77,7 @@ export default async function EditAdminProductPage({ params }: EditProductPagePr
           hasRfid: product.hasRfid,
           has4g: product.has4g,
           installRequired: product.installRequired,
-          categories: product.categories,
+          categories: product.categories.length > 0 ? product.categories : ["ev-tipi"],
           tags: product.tags,
           vehicleBrands: product.vehicles,
           relatedProductIds: product.relatedProductIds,

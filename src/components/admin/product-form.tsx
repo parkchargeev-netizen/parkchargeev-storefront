@@ -124,6 +124,10 @@ function splitLines(value: string) {
     .filter(Boolean);
 }
 
+function ExampleHint({ children }: { children: string }) {
+  return <p className="mt-2 text-xs leading-5 text-slate-500">{children}</p>;
+}
+
 export function ProductForm({
   mode,
   productId,
@@ -406,6 +410,7 @@ export function ProductForm({
               className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
               {...register("name")}
             />
+            <ExampleHint>Örnek: HomeCharge Pro 11kW</ExampleHint>
             {errors.name ? <p className="mt-2 text-sm text-red-600">{errors.name.message}</p> : null}
           </div>
 
@@ -417,6 +422,7 @@ export function ProductForm({
                 onBlur: fillSlugFromName
               })}
             />
+            <ExampleHint>Örnek: homecharge-pro-11kw. Boş bırakırsanız ürün adından üretilebilir.</ExampleHint>
             <button
               type="button"
               onClick={fillSlugFromName}
@@ -435,6 +441,7 @@ export function ProductForm({
                 </option>
               ))}
             </select>
+            <ExampleHint>Taslak siteye çıkmaz; Aktif seçilirse mağazada görünür.</ExampleHint>
           </div>
 
           <div>
@@ -447,6 +454,7 @@ export function ProductForm({
                 </option>
               ))}
             </select>
+            <ExampleHint>Marka yoksa boş bırakın; markaları Katalog ekranından ekleyebilirsiniz.</ExampleHint>
           </div>
 
           <div className="md:col-span-2">
@@ -456,6 +464,7 @@ export function ProductForm({
               className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
               {...register("shortDescription")}
             />
+            <ExampleHint>Örnek: Ev kullanıcıları için 11kW AC şarj, zamanlama ve enerji takibi sunar.</ExampleHint>
           </div>
 
           <div className="md:col-span-2">
@@ -467,6 +476,7 @@ export function ProductForm({
                 <RichTextEditor value={field.value} onChange={field.onChange} />
               )}
             />
+            <ExampleHint>Örnek: Kurulum, uyumlu araçlar, garanti ve teslimat bilgisini kısa paragraflarla yazın.</ExampleHint>
           </div>
         </div>
       </section>
@@ -476,6 +486,7 @@ export function ProductForm({
           <div>
             <label className="mb-2 block text-sm font-medium text-slate-700">SKU</label>
             <input className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm" {...register("sku")} />
+            <ExampleHint>Örnek: HCP-11KW-5M</ExampleHint>
           </div>
           <div>
             <label className="mb-2 block text-sm font-medium text-slate-700">Varyant başlığı</label>
@@ -483,6 +494,7 @@ export function ProductForm({
               className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
               {...register("variantTitle")}
             />
+            <ExampleHint>Örnek: 5 Metre Kablo</ExampleHint>
           </div>
           <div>
             <label className="mb-2 block text-sm font-medium text-slate-700">Fiyat (kurus)</label>
@@ -491,6 +503,7 @@ export function ProductForm({
               className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
               {...register("priceKurus", { valueAsNumber: true })}
             />
+            <ExampleHint>Örnek: 12.490 TL için 1249000 girin.</ExampleHint>
           </div>
           <div>
             <label className="mb-2 block text-sm font-medium text-slate-700">Karşılaştırma fiyatı</label>
@@ -499,6 +512,7 @@ export function ProductForm({
               className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
               {...register("compareAtKurus", { valueAsNumber: true })}
             />
+            <ExampleHint>Örnek: Eski fiyat 13.990 TL ise 1399000 girin.</ExampleHint>
           </div>
           <div>
             <label className="mb-2 block text-sm font-medium text-slate-700">Kampanyalı fiyat</label>
@@ -509,6 +523,7 @@ export function ProductForm({
                 setValueAs: (value) => (value === "" ? null : Number(value))
               })}
             />
+            <ExampleHint>Örnek: Kampanya fiyatı 11.990 TL ise 1199000 girin.</ExampleHint>
           </div>
           <div>
             <label className="mb-2 block text-sm font-medium text-slate-700">Kampanya bitişi</label>
@@ -517,6 +532,7 @@ export function ProductForm({
               className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
               {...register("discountEndsAt")}
             />
+            <ExampleHint>Örnek: Kampanya yoksa boş bırakın.</ExampleHint>
           </div>
           <div>
             <label className="mb-2 block text-sm font-medium text-slate-700">Stok</label>
@@ -525,6 +541,7 @@ export function ProductForm({
               className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
               {...register("stockQuantity", { valueAsNumber: true })}
             />
+            <ExampleHint>Örnek: 24</ExampleHint>
           </div>
           <div>
             <label className="mb-2 block text-sm font-medium text-slate-700">Min stok eşiği</label>
@@ -533,6 +550,7 @@ export function ProductForm({
               className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
               {...register("minimumStockThreshold", { valueAsNumber: true })}
             />
+            <ExampleHint>Örnek: 3; stok bu seviyeye inince takip kolaylaşır.</ExampleHint>
           </div>
           <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
             <input type="checkbox" className="h-4 w-4" {...register("inventoryTrackingEnabled")} />
@@ -552,6 +570,7 @@ export function ProductForm({
             <p className="mt-1 text-sm text-slate-600">
               Fiyat, stok, kablo ve konnektör bilgisini varyant bazında yönetin.
             </p>
+            <ExampleHint>Örnek varyantlar: 5 Metre - 12.490 TL, 7.5 Metre - 13.290 TL.</ExampleHint>
           </div>
           <button
             type="button"
@@ -646,6 +665,7 @@ export function ProductForm({
         <div className="grid gap-6 lg:grid-cols-3">
           <div>
             <p className="mb-3 text-sm font-semibold text-slate-800">Kategoriler</p>
+            <ExampleHint>Örnek: Ev tipi cihazlar için Ev Tipi kategorisini işaretleyin.</ExampleHint>
             <div className="space-y-2">
               {categoryOptions.map((option) => (
                 <label key={option.slug} className="flex items-center gap-3 rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-700">
@@ -662,6 +682,7 @@ export function ProductForm({
 
           <div>
             <p className="mb-3 text-sm font-semibold text-slate-800">Vitrin rozetleri</p>
+            <ExampleHint>Örnek: Çok satan veya stokta rozetleri ürün kartında görünür.</ExampleHint>
             <div className="space-y-2">
               {productTagOptions.map((option) => (
                 <label key={option.value} className="flex items-center gap-3 rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-700">
@@ -697,6 +718,7 @@ export function ProductForm({
       <section className="surface-card border border-slate-200 bg-white/95 p-6">
         <div className="mb-6">
           <h2 className="text-xl font-semibold text-slate-950">Teknik Alanlar</h2>
+          <ExampleHint>Örnek: Güç 11, konnektör Type 2, IP sınıfı IP54, kablo uzunluğu 5 Metre.</ExampleHint>
         </div>
 
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
@@ -741,6 +763,7 @@ export function ProductForm({
             <p className="mt-1 text-sm text-slate-600">
               Ürün detay galerisindeki görsel URL ve başlıkları buradan yönetilir.
             </p>
+            <ExampleHint>Örnek URL: https://site.com/homecharge-pro.jpg; alt text: HomeCharge Pro 11kW ön görünüm.</ExampleHint>
           </div>
           <div className="flex flex-wrap gap-3">
             <label className="inline-flex cursor-pointer rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-medium text-blue-700">
@@ -818,7 +841,10 @@ export function ProductForm({
 
       <section className="surface-card border border-slate-200 bg-white/95 p-6">
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-slate-950">Teknik özellikler</h2>
+          <div>
+            <h2 className="text-xl font-semibold text-slate-950">Teknik özellikler</h2>
+            <ExampleHint>Örnek satır: Grup general, başlık Koruma sınıfı, değer IP54.</ExampleHint>
+          </div>
           <button
             type="button"
             onClick={() => specFields.append({ groupName: "general", label: "", value: "" })}
@@ -851,6 +877,9 @@ export function ProductForm({
         </div>
 
         <div className="grid gap-5 md:grid-cols-2">
+          <div className="md:col-span-2">
+            <ExampleHint>Çok satırlı alanlarda her satır ayrı madde olur. Örnek: Ön görünüm, Yan profil, Montaj görünümü.</ExampleHint>
+          </div>
           <div>
             <label className="mb-2 block text-sm font-medium text-slate-700">
               Galeri sekmeleri
@@ -1153,6 +1182,7 @@ export function ProductForm({
       <section className="surface-card border border-slate-200 bg-white/95 p-6">
         <div className="mb-6">
           <h2 className="text-xl font-semibold text-slate-950">SEO + AIEO</h2>
+          <ExampleHint>Örnek meta başlık: HomeCharge Pro 11kW EV Şarj Cihazı. AI özeti tek cümle, satış odaklı olmalı.</ExampleHint>
         </div>
         <div className="grid gap-5 md:grid-cols-2">
           <input className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="Meta başlık" {...register("seoTitle")} />

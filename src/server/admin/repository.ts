@@ -438,7 +438,60 @@ type ProductCollectionOptions = {
   includeTags?: boolean;
   includeVehicles?: boolean;
   includeRelations?: boolean;
+  toleratePartial?: boolean;
 };
+
+const productCollectionReadTimeoutMs = 3500;
+
+function createEmptyProductCollections() {
+  return {
+    variants: new Map<string, (typeof productVariants.$inferSelect)[]>(),
+    media: new Map<string, (typeof productMedia.$inferSelect)[]>(),
+    specs: new Map<string, (typeof productSpecs.$inferSelect)[]>(),
+    tags: new Map<string, string[]>(),
+    categories: new Map<string, string[]>(),
+    vehicles: new Map<string, string[]>(),
+    relations: new Map<string, Array<{ id: string; type: string }>>()
+  };
+}
+
+async function withCollectionReadFallback<T>(label: string, promise: Promise<T>, fallback: T) {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+  const guardedPromise = promise.catch((error) => {
+    console.warn(
+      `Admin product ${label} collection could not be loaded.`,
+      error instanceof Error ? error.message : error
+    );
+    return fallback;
+  });
+
+  const timeoutPromise = new Promise<T>((resolve) => {
+    timeoutId = setTimeout(() => {
+      console.warn(`Admin product ${label} collection read timed out.`);
+      resolve(fallback);
+    }, productCollectionReadTimeoutMs);
+  });
+
+  try {
+    return await Promise.race([guardedPromise, timeoutPromise]);
+  } finally {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+  }
+}
+
+function collectionRead<T>(
+  label: string,
+  promise: Promise<T>,
+  fallback: T,
+  toleratePartial: boolean
+) {
+  return toleratePartial
+    ? withCollectionReadFallback(label, promise, fallback)
+    : promise;
+}
 
 function stripHtml(value: string) {
   return value
@@ -908,67 +961,95 @@ async function hydrateProductCollections(
   const includeTags = options.includeTags ?? true;
   const includeVehicles = options.includeVehicles ?? true;
   const includeRelations = options.includeRelations ?? true;
+  const toleratePartial = options.toleratePartial ?? false;
 
   if (productIds.length === 0) {
-    return {
-      variants: new Map<string, (typeof productVariants.$inferSelect)[]>(),
-      media: new Map<string, (typeof productMedia.$inferSelect)[]>(),
-      specs: new Map<string, (typeof productSpecs.$inferSelect)[]>(),
-      tags: new Map<string, string[]>(),
-      categories: new Map<string, string[]>(),
-      vehicles: new Map<string, string[]>(),
-      relations: new Map<string, Array<{ id: string; type: string }>>()
-    };
+    return createEmptyProductCollections();
   }
 
   const specRowsPromise: Promise<(typeof productSpecs.$inferSelect)[]> = includeSpecs
-    ? db
-        .select()
-        .from(productSpecs)
-        .where(inArray(productSpecs.productId, productIds))
+    ? collectionRead(
+        "specs",
+        db
+          .select()
+          .from(productSpecs)
+          .where(inArray(productSpecs.productId, productIds)),
+        [],
+        toleratePartial
+      )
     : Promise.resolve([]);
   const mediaRowsPromise: Promise<(typeof productMedia.$inferSelect)[]> = includeMedia
-    ? db
-        .select()
-        .from(productMedia)
-        .where(inArray(productMedia.productId, productIds))
+    ? collectionRead(
+        "media",
+        db
+          .select()
+          .from(productMedia)
+          .where(inArray(productMedia.productId, productIds)),
+        [],
+        toleratePartial
+      )
     : Promise.resolve([]);
   const tagRowsPromise: Promise<(typeof productTagAssignments.$inferSelect)[]> = includeTags
-    ? db
-        .select()
-        .from(productTagAssignments)
-        .where(inArray(productTagAssignments.productId, productIds))
+    ? collectionRead(
+        "tags",
+        db
+          .select()
+          .from(productTagAssignments)
+          .where(inArray(productTagAssignments.productId, productIds)),
+        [],
+        toleratePartial
+      )
     : Promise.resolve([]);
   const vehicleRowsPromise: Promise<(typeof productVehicleCompatibilities.$inferSelect)[]> =
     includeVehicles
-      ? db
-          .select()
-          .from(productVehicleCompatibilities)
-          .where(inArray(productVehicleCompatibilities.productId, productIds))
+      ? collectionRead(
+          "vehicles",
+          db
+            .select()
+            .from(productVehicleCompatibilities)
+            .where(inArray(productVehicleCompatibilities.productId, productIds)),
+          [],
+          toleratePartial
+        )
       : Promise.resolve([]);
   const relationRowsPromise: Promise<(typeof productRelations.$inferSelect)[]> = includeRelations
-    ? db
-        .select()
-        .from(productRelations)
-        .where(inArray(productRelations.productId, productIds))
+    ? collectionRead(
+        "relations",
+        db
+          .select()
+          .from(productRelations)
+          .where(inArray(productRelations.productId, productIds)),
+        [],
+        toleratePartial
+      )
     : Promise.resolve([]);
   const [variantsRows, mediaRows, specRows, tagRows, categoryRows, vehicleRows, relationRows] =
     await Promise.all([
-      db
-        .select()
-        .from(productVariants)
-        .where(inArray(productVariants.productId, productIds)),
+      collectionRead(
+        "variants",
+        db
+          .select()
+          .from(productVariants)
+          .where(inArray(productVariants.productId, productIds)),
+        [],
+        toleratePartial
+      ),
       mediaRowsPromise,
       specRowsPromise,
       tagRowsPromise,
-      db
-        .select({
-          productId: productCategoryAssignments.productId,
-          slug: categories.slug
-        })
-        .from(productCategoryAssignments)
-        .innerJoin(categories, eq(categories.id, productCategoryAssignments.categoryId))
-        .where(inArray(productCategoryAssignments.productId, productIds)),
+      collectionRead(
+        "categories",
+        db
+          .select({
+            productId: productCategoryAssignments.productId,
+            slug: categories.slug
+          })
+          .from(productCategoryAssignments)
+          .innerJoin(categories, eq(categories.id, productCategoryAssignments.categoryId))
+          .where(inArray(productCategoryAssignments.productId, productIds)),
+        [],
+        toleratePartial
+      ),
       vehicleRowsPromise,
       relationRowsPromise
     ]);
@@ -1197,7 +1278,8 @@ export async function listAdminProducts(input: ListQueryInput) {
     includeSpecs: false,
     includeTags: false,
     includeVehicles: false,
-    includeRelations: false
+    includeRelations: false,
+    toleratePartial: true
   });
 
   return {
@@ -1236,7 +1318,9 @@ export async function getAdminProductById(id: string) {
     return null;
   }
 
-  const collections = await hydrateProductCollections([id]);
+  const collections = await hydrateProductCollections([id], {
+    toleratePartial: true
+  });
   const variants = collections.variants.get(id) ?? [];
   const defaultVariant = variants.find((variant) => variant.isDefault) ?? variants[0];
 

@@ -62,6 +62,26 @@ test("@e2e admin urun ekleme linki form ekranini acar", async ({ page }) => {
   await expect(page.getByText(/Application error|Unhandled Runtime/i)).toHaveCount(0);
 });
 
+test("@e2e admin urun duzenleme linki form ekranini acar", async ({ page }) => {
+  const loginResponse = await loginAsAdmin(page);
+
+  expect(loginResponse.ok()).toBeTruthy();
+  await expect(page).toHaveURL(/\/admin$/, { timeout: 30_000 });
+
+  await goToAdminSection(page, "/admin/urunler", /\/admin\/urunler/);
+  const editLink = page
+    .locator('a[href^="/admin/urunler/"]')
+    .filter({ hasNotText: /yeni/i })
+    .first();
+
+  await expect(editLink).toBeVisible({ timeout: 30_000 });
+  await editLink.click();
+
+  await expect(page).toHaveURL(/\/admin\/urunler\/[0-9a-f-]+/, { timeout: 30_000 });
+  await expect(page.locator('form button[type="submit"]')).toBeEnabled({ timeout: 15_000 });
+  await expect(page.getByText(/Application error|Unhandled Runtime/i)).toHaveCount(0);
+});
+
 test("@e2e admin urun formu dinamik alanlari kilitlemez", async ({ page }) => {
   const loginResponse = await loginAsAdmin(page);
 
