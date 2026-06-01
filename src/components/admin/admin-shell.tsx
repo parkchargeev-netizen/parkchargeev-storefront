@@ -128,8 +128,61 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
     <div className="min-h-screen bg-[#f6f7fb]">
       <AdminSessionGuard />
       <div className="mx-auto max-w-[1680px] px-4 py-5 lg:px-6">
+        <div className="mb-5 space-y-4 xl:hidden">
+          <section className="surface-card border border-slate-200 bg-white/95 p-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+                  ParkChargeEV Admin
+                </p>
+                <h1 className="mt-2 text-xl font-semibold text-slate-950">
+                  Operasyon Kontrol Merkezi
+                </h1>
+                <p className="mt-2 text-sm text-slate-600">{admin.fullName}</p>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="inline-flex rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
+                  {adminRoleLabels[admin.role]}
+                </span>
+                <span
+                  className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${
+                    databaseEnabled
+                      ? "bg-emerald-50 text-emerald-700"
+                      : "bg-amber-50 text-amber-700"
+                  }`}
+                >
+                  <Database className="h-3.5 w-3.5" />
+                  {databaseEnabled ? "Canli veri" : "Yerel veri"}
+                </span>
+              </div>
+            </div>
+            <div className="mt-4">
+              <AdminLogoutButton />
+            </div>
+          </section>
+
+          <nav
+            className="surface-card grid gap-2 border border-slate-200 bg-white/95 p-4 sm:grid-cols-2"
+            aria-label="Admin mobil modulleri"
+          >
+            {items.map((item) => {
+              const Icon =
+                navigationIconMap[item.href as keyof typeof navigationIconMap] ??
+                LayoutDashboard;
+
+              return (
+                <AdminNavLink
+                  key={item.href}
+                  href={item.href}
+                  icon={<Icon className="h-4 w-4" />}
+                  label={item.label}
+                />
+              );
+            })}
+          </nav>
+        </div>
         <div className="grid gap-6 xl:grid-cols-[310px_minmax(0,1fr)]">
-          <aside className="surface-card sticky top-5 h-fit overflow-hidden border border-slate-200 bg-white/95 p-6">
+          <aside className="surface-card sticky top-5 hidden h-fit overflow-hidden border border-slate-200 bg-white/95 p-6 xl:block">
             <div className="rounded-[28px] border border-blue-100 bg-[linear-gradient(135deg,rgba(0,68,211,0.08),rgba(0,110,47,0.05))] p-5">
               <p className="text-sm font-semibold uppercase tracking-[0.24em] text-blue-700">
                 ParkChargeEV Admin

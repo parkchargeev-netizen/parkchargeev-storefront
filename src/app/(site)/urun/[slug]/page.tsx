@@ -82,6 +82,7 @@ export default async function ProductDetailPage({
   const productJsonLd = getProductJsonLd(product);
   const detailContent = getProductDetailContent(product);
   const mediaItems = detailContent.galleryItems;
+  const productImageUrl = product.imageUrl ?? `/api/og/product/${product.slug}`;
   const breadcrumbJsonLd = getBreadcrumbJsonLd([
     { name: "Ana Sayfa", path: "/" },
     { name: "Mağaza", path: "/magaza" },
@@ -123,6 +124,7 @@ export default async function ProductDetailPage({
           <ProductGallery
             productName={product.name}
             items={mediaItems}
+            imageUrl={productImageUrl}
             featureLabels={detailContent.galleryFeatureLabels}
             deviceCaption={detailContent.galleryDeviceCaption}
           />

@@ -34,19 +34,26 @@ export function OrderStatusForm({
   const onSubmit = handleSubmit(async (values) => {
     setFeedback(null);
 
-    const response = await fetch(`/api/admin/orders/${orderId}`, {
+    try {
+      const response = await fetch(`/api/admin/orders/${orderId}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify(values)
-    });
+      });
 
-    const data = (await response.json()) as { ok: boolean; message?: string };
+      const data = (await response.json().catch(() => ({
+        ok: false,
+        message: "Sunucu yaniti okunamadi."
+      }))) as { ok: boolean; message?: string };
     setFeedback(data.ok ? "Sipariş güncellendi." : data.message ?? "İşlem başarısız.");
 
     if (data.ok) {
       router.refresh();
+    }
+    } catch {
+      setFeedback("Sunucuya ulasilamadi. Lutfen tekrar deneyin.");
     }
   });
 

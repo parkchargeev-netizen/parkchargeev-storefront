@@ -54,7 +54,8 @@ export function QuoteStatusForm({
   const onSubmit = handleSubmit(async (values) => {
     setFeedback(null);
 
-    const response = await fetch(`/api/admin/quotes/${quoteId}`, {
+    try {
+      const response = await fetch(`/api/admin/quotes/${quoteId}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json"
@@ -63,13 +64,19 @@ export function QuoteStatusForm({
         ...values,
         assignedAdminId: values.assignedAdminId || null
       })
-    });
+      });
 
-    const data = (await response.json()) as { ok: boolean; message?: string };
+      const data = (await response.json().catch(() => ({
+        ok: false,
+        message: "Sunucu yaniti okunamadi."
+      }))) as { ok: boolean; message?: string };
     setFeedback(data.ok ? "Teklif güncellendi." : data.message ?? "İşlem başarısız.");
 
     if (data.ok) {
       router.refresh();
+    }
+    } catch {
+      setFeedback("Sunucuya ulasilamadi. Lutfen tekrar deneyin.");
     }
   });
 

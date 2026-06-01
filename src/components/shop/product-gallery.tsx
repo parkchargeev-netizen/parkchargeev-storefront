@@ -1,10 +1,12 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 
 type ProductGalleryProps = {
   productName: string;
   items: string[];
+  imageUrl?: string;
   featureLabels?: string[];
   deviceCaption?: string;
 };
@@ -12,6 +14,7 @@ type ProductGalleryProps = {
 export function ProductGallery({
   productName,
   items,
+  imageUrl,
   featureLabels = ["IP koruma", "Type 2", "Kurulum"],
   deviceCaption = "Ölçekli cihaz temsili"
 }: ProductGalleryProps) {
@@ -44,17 +47,30 @@ export function ProductGallery({
           </div>
 
           <div className="relative z-10 mt-8 flex items-center justify-center md:mt-0">
-            <div className="relative h-72 w-48 rounded-[34px] border border-white/20 bg-white p-5 shadow-[0_30px_80px_rgba(0,0,0,0.35)]">
-              <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full border-[14px] border-primary bg-primary/10">
-                <span className="h-8 w-8 rounded-full bg-secondary" />
+            {imageUrl ? (
+              <div className="relative aspect-[4/3] w-full max-w-sm overflow-hidden rounded-[24px] border border-white/15 bg-white shadow-[0_30px_80px_rgba(0,0,0,0.35)]">
+                <Image
+                  src={imageUrl}
+                  alt={productName}
+                  fill
+                  unoptimized
+                  sizes="(min-width: 1024px) 360px, 90vw"
+                  className="h-full w-full object-cover"
+                />
               </div>
-              <div className="mt-8 space-y-3">
-                <span className="block h-3 rounded-full bg-slate-200" />
-                <span className="block h-3 w-2/3 rounded-full bg-slate-200" />
-                <span className="block h-3 w-1/2 rounded-full bg-slate-200" />
+            ) : (
+              <div className="relative h-72 w-48 rounded-[34px] border border-white/20 bg-white p-5 shadow-[0_30px_80px_rgba(0,0,0,0.35)]">
+                <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full border-[14px] border-primary bg-primary/10">
+                  <span className="h-8 w-8 rounded-full bg-secondary" />
+                </div>
+                <div className="mt-8 space-y-3">
+                  <span className="block h-3 rounded-full bg-slate-200" />
+                  <span className="block h-3 w-2/3 rounded-full bg-slate-200" />
+                  <span className="block h-3 w-1/2 rounded-full bg-slate-200" />
+                </div>
+                <div className="absolute -right-8 bottom-8 h-24 w-24 rounded-full border-[12px] border-secondary/80 border-l-transparent border-t-transparent" />
               </div>
-              <div className="absolute -right-8 bottom-8 h-24 w-24 rounded-full border-[12px] border-secondary/80 border-l-transparent border-t-transparent" />
-            </div>
+            )}
             <div className="absolute bottom-2 right-2 rounded-2xl bg-white/10 px-3 py-2 text-xs font-semibold text-white/80">
               {deviceCaption}
             </div>

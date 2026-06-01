@@ -22,7 +22,15 @@ export function stringifyJsonLd(payload: unknown) {
   return JSON.stringify(payload).replace(/</g, "\\u003c");
 }
 
+function toAbsoluteMediaUrl(url: string) {
+  return /^https?:\/\//i.test(url) ? url : absoluteUrl(url);
+}
+
 export function getProductImageUrl(product: ProductModel) {
+  if (product.imageUrl) {
+    return toAbsoluteMediaUrl(product.imageUrl);
+  }
+
   return absoluteUrl(`/api/og/product/${product.slug}`);
 }
 

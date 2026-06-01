@@ -37,15 +37,19 @@ export function LoginForm() {
 
     setErrorMessage(null);
 
-    const response = await fetch("/api/admin/auth/login", {
+    try {
+      const response = await fetch("/api/admin/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify(values)
-    });
+      });
 
-    const data = (await response.json()) as { ok: boolean; message?: string };
+      const data = (await response.json().catch(() => ({
+        ok: false,
+        message: "Sunucu yaniti okunamadi."
+      }))) as { ok: boolean; message?: string };
 
     if (!response.ok || !data.ok) {
       setErrorMessage(data.message ?? "Giriş başarısız.");
@@ -54,6 +58,9 @@ export function LoginForm() {
 
     router.push("/admin");
     router.refresh();
+    } catch {
+      setErrorMessage("Sunucuya ulasilamadi. Lutfen tekrar deneyin.");
+    }
   });
 
   return (

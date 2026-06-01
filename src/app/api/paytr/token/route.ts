@@ -1,5 +1,6 @@
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
+import { ZodError } from "zod";
 
 import { buildPaytrIframePayload, redactPaytrPayload } from "@/lib/paytr";
 import {
@@ -13,6 +14,7 @@ import { orders, paytrTransactions } from "@/server/db/schema";
 import { requestPaytrIframeToken } from "@/server/paytr/client";
 import {
   createPaytrCheckoutOrder,
+  isPaytrCheckoutPricingError,
   paytrCheckoutRequestSchema
 } from "@/server/paytr/checkout-order";
 import {
@@ -45,23 +47,24 @@ export async function POST(request: Request) {
       );
     }
 
-    const { db, merchantOid, order, userIp } = await createPaytrCheckoutOrder({
-      body,
-      flow: "iframe",
-      request
-    });
+    const { db, items, merchantOid, order, paymentAmountKurus, userIp } =
+      await createPaytrCheckoutOrder({
+        body,
+        flow: "iframe",
+        request
+      });
     createdMerchantOid = merchantOid;
 
     const payload = buildPaytrIframePayload({
       email: body.email,
-      paymentAmountKurus: body.paymentAmountKurus,
+      paymentAmountKurus,
       userIp,
       userName: body.userName,
       userAddress: body.userAddress,
       userPhone: body.userPhone,
       okUrl: absoluteUrl(`/odeme?status=success&oid=${merchantOid}`),
       failUrl: absoluteUrl(`/odeme?status=failed&oid=${merchantOid}`),
-      items: body.items,
+      items,
       merchantOid
     });
 
@@ -121,8 +124,8 @@ export async function POST(request: Request) {
     logInfo("paytr.token.created", {
       merchantOid,
       orderId: order.id,
-      itemCount: body.items.length,
-      totalKurus: body.paymentAmountKurus,
+      itemCount: items.length,
+      totalKurus: paymentAmountKurus,
       durationMs: durationSince(startedAt)
     });
 
@@ -160,6 +163,27 @@ export async function POST(request: Request) {
       return NextResponse.json(getRuntimeConfigErrorPayload(error), {
         status: 503
       });
+    }
+
+    if (error instanceof ZodError) {
+      return NextResponse.json(
+        {
+          ok: false,
+          message: "Odeme bilgileri eksik veya gecersiz.",
+          issues: error.flatten()
+        },
+        { status: 400 }
+      );
+    }
+
+    if (isPaytrCheckoutPricingError(error)) {
+      return NextResponse.json(
+        {
+          ok: false,
+          message: error.message
+        },
+        { status: 400 }
+      );
     }
 
     logError("paytr.token.failed", error, {

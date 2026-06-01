@@ -1,5 +1,6 @@
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
+import { ZodError } from "zod";
 
 import {
   buildPaytrDirectApiPayload,
@@ -16,6 +17,7 @@ import { getDb } from "@/server/db/client";
 import { orders, paytrTransactions } from "@/server/db/schema";
 import {
   createPaytrCheckoutOrder,
+  isPaytrCheckoutPricingError,
   paytrCheckoutRequestSchema
 } from "@/server/paytr/checkout-order";
 import {
@@ -48,23 +50,24 @@ export async function POST(request: Request) {
       );
     }
 
-    const { db, merchantOid, order, userIp } = await createPaytrCheckoutOrder({
-      body,
-      flow: "direct_api",
-      request
-    });
+    const { db, items, merchantOid, order, paymentAmountKurus, userIp } =
+      await createPaytrCheckoutOrder({
+        body,
+        flow: "direct_api",
+        request
+      });
     createdMerchantOid = merchantOid;
 
     const payload = buildPaytrDirectApiPayload({
       email: body.email,
-      paymentAmountKurus: body.paymentAmountKurus,
+      paymentAmountKurus,
       userIp,
       userName: body.userName,
       userAddress: body.userAddress,
       userPhone: body.userPhone,
       okUrl: absoluteUrl(`/odeme?status=success&oid=${merchantOid}`),
       failUrl: absoluteUrl(`/odeme?status=failed&oid=${merchantOid}`),
-      items: body.items,
+      items,
       merchantOid,
       installmentCount: 0,
       non3d: 0
@@ -78,7 +81,8 @@ export async function POST(request: Request) {
             email: body.email,
             flow: "direct_api",
             itemCount: body.items.length,
-            paymentAmountKurus: body.paymentAmountKurus
+            paymentAmountKurus,
+            serverPriced: true
           },
           paytrPayload: redactPaytrPayload(payload)
         },
@@ -89,8 +93,8 @@ export async function POST(request: Request) {
     logInfo("paytr.direct_form.created", {
       merchantOid,
       orderId: order.id,
-      itemCount: body.items.length,
-      totalKurus: body.paymentAmountKurus,
+      itemCount: items.length,
+      totalKurus: paymentAmountKurus,
       durationMs: durationSince(startedAt)
     });
 
@@ -129,6 +133,27 @@ export async function POST(request: Request) {
       return NextResponse.json(getRuntimeConfigErrorPayload(error), {
         status: 503
       });
+    }
+
+    if (error instanceof ZodError) {
+      return NextResponse.json(
+        {
+          ok: false,
+          message: "Odeme bilgileri eksik veya gecersiz.",
+          issues: error.flatten()
+        },
+        { status: 400 }
+      );
+    }
+
+    if (isPaytrCheckoutPricingError(error)) {
+      return NextResponse.json(
+        {
+          ok: false,
+          message: error.message
+        },
+        { status: 400 }
+      );
     }
 
     logError("paytr.direct_form.failed", error, {

@@ -20,7 +20,8 @@ export function PaytrOperationForm({ transactionId }: PaytrOperationFormProps) {
     setIsSubmitting(true);
     setFeedback(null);
 
-    const response = await fetch(`/api/admin/paytr/${transactionId}`, {
+    try {
+      const response = await fetch(`/api/admin/paytr/${transactionId}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json"
@@ -29,15 +30,21 @@ export function PaytrOperationForm({ transactionId }: PaytrOperationFormProps) {
         action,
         note
       })
-    });
-    const data = (await response.json()) as { ok: boolean; message?: string };
+      });
+      const data = (await response.json().catch(() => ({
+        ok: false,
+        message: "Sunucu yaniti okunamadi."
+      }))) as { ok: boolean; message?: string };
 
     setFeedback(data.ok ? "PayTR operasyonu uygulandı." : data.message ?? "İşlem başarısız.");
-    setIsSubmitting(false);
-
-    if (data.ok) {
+    if (response.ok && data.ok) {
       setNote("");
       router.refresh();
+    }
+    } catch {
+      setFeedback("Sunucuya ulasilamadi. Lutfen tekrar deneyin.");
+    } finally {
+      setIsSubmitting(false);
     }
   }
 

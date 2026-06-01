@@ -3,7 +3,11 @@ import { expect, test } from "@playwright/test";
 import { expectNoCriticalA11yViolations } from "./support/a11y";
 
 test("@e2e magaza -> urun -> sepet -> odeme akisi PayTR mock ile tamamlanir", async ({ page }) => {
+  let tokenRequestBody = "";
+
   await page.route("**/api/paytr/token", async (route) => {
+    tokenRequestBody = route.request().postData() ?? "";
+
     await route.fulfill({
       status: 200,
       contentType: "application/json",
@@ -36,6 +40,9 @@ test("@e2e magaza -> urun -> sepet -> odeme akisi PayTR mock ile tamamlanir", as
 
   await expect(page.locator("#paytriframe")).toBeVisible();
   await expect(page.getByText("PCEV-E2E-ORDER")).toBeVisible();
+  expect(tokenRequestBody).toContain("productId");
+  expect(tokenRequestBody).not.toContain("paymentAmountKurus");
+  expect(tokenRequestBody).not.toContain("unitPrice");
 });
 
 test("@e2e kablo uzunlugu fiyat ve sepet tutarini gunceller", async ({ page }) => {
@@ -130,6 +137,9 @@ test("@e2e PayTR Direkt API 3D Secure formu PayTR'a post eder", async ({ page })
 
   expect(directApiRequestBody).not.toContain("4355084355084358");
   expect(directApiRequestBody).not.toContain("000");
+  expect(directApiRequestBody).toContain("productId");
+  expect(directApiRequestBody).not.toContain("paymentAmountKurus");
+  expect(directApiRequestBody).not.toContain("unitPrice");
 
   const paytrFields = new URLSearchParams(paytrPostBody);
   expect(paytrFields.get("merchant_oid")).toBe("PCEV-DIRECT-E2E");

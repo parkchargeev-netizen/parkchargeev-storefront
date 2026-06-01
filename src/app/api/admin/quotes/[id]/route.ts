@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { isValidationError, validationErrorResponse } from "@/server/admin/http";
 import { getAdminQuoteById, updateAdminQuote } from "@/server/admin/repository";
 import { adminQuoteUpdateSchema } from "@/server/admin/validators";
 import { getRequestMeta, requireAdminRole } from "@/server/auth/guards";
@@ -35,13 +36,21 @@ export async function PATCH(request: Request, { params }: QuoteRouteProps) {
   }
 
   const { id } = await params;
-  const payload = adminQuoteUpdateSchema.parse(await request.json());
-  const requestMeta = await getRequestMeta();
-  const quote = await updateAdminQuote(id, payload, authenticatedAdmin.session, requestMeta);
+  try {
+    const payload = adminQuoteUpdateSchema.parse(await request.json());
+    const requestMeta = await getRequestMeta();
+    const quote = await updateAdminQuote(id, payload, authenticatedAdmin.session, requestMeta);
 
-  if (!quote) {
-    return NextResponse.json({ ok: false, message: "Teklif kaydi bulunamadi." }, { status: 404 });
+    if (!quote) {
+      return NextResponse.json({ ok: false, message: "Teklif kaydi bulunamadi." }, { status: 404 });
+    }
+
+    return NextResponse.json({ ok: true, quote });
+  } catch (error) {
+    if (isValidationError(error)) {
+      return validationErrorResponse(error);
+    }
+
+    throw error;
   }
-
-  return NextResponse.json({ ok: true, quote });
 }

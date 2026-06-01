@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, Command, Search, X } from "lucide-react";
 
 import { AdminPrefetchLink } from "@/components/admin/admin-prefetch-link";
+import { normalizeSearchText } from "@/lib/search-normalization";
 
 export type AdminCommandItem = {
   href: string;
@@ -45,19 +46,22 @@ export function AdminCommandMenu({
   }, []);
 
   const filteredItems = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase();
+    const normalizedQuery = normalizeSearchText(query);
 
     if (!normalizedQuery) {
       return items;
     }
 
     return items.filter((item) =>
-      `${item.label} ${item.detail} ${item.group}`.toLowerCase().includes(normalizedQuery)
+      normalizeSearchText(`${item.label} ${item.detail} ${item.group}`).includes(
+        normalizedQuery
+      )
     );
   }, [items, query]);
 
   useEffect(() => {
-    const normalizedQuery = query.trim();
+    const normalizedQuery = normalizeSearchText(query);
+    const trimmedQuery = query.trim();
 
     if (!isOpen || normalizedQuery.length < 2) {
       setLiveItems([]);
@@ -70,7 +74,7 @@ export function AdminCommandMenu({
       setIsSearching(true);
 
       try {
-        const response = await fetch(`/api/admin/search?q=${encodeURIComponent(normalizedQuery)}`, {
+        const response = await fetch(`/api/admin/search?q=${encodeURIComponent(trimmedQuery)}`, {
           signal: controller.signal
         });
         const data = (await response.json()) as {

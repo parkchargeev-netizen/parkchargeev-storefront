@@ -19,7 +19,7 @@ export function SiteMobileMenu({ navigation }: SiteMobileMenuProps) {
   const buttonLabel = isOpen ? "Menüyü kapat / Close menu" : "Menüyü aç / Open menu";
 
   return (
-    <div className="2xl:hidden">
+    <div className="xl:hidden">
       <button
         id="mobile-menu-toggle"
         type="button"

@@ -2,6 +2,7 @@ import { desc, ilike, or } from "drizzle-orm";
 
 import { hasDatabaseConfig } from "@/lib/runtime-config";
 import { articles, products as fallbackProducts } from "@/lib/mock-data";
+import { normalizeSearchText } from "@/lib/search-normalization";
 import { canAccessAdminPath, type AdminRole } from "@/server/auth/authorization";
 import { getDb } from "@/server/db/client";
 import { orders, products, quoteRequests, serviceLeads, sitePages } from "@/server/db/schema";
@@ -14,7 +15,7 @@ export type AdminGlobalSearchResult = {
 };
 
 function matchesQuery(query: string, text: string) {
-  return text.toLocaleLowerCase("tr-TR").includes(query);
+  return normalizeSearchText(text).includes(query);
 }
 
 function allowed(role: AdminRole, result: AdminGlobalSearchResult) {
@@ -49,21 +50,20 @@ function fallbackSearch(query: string, role: AdminRole): AdminGlobalSearchResult
 }
 
 export async function searchAdminWorkspace(query: string, role: AdminRole) {
-  const normalizedQuery = query.trim();
+  const rawQuery = query.trim();
+  const normalizedQuery = normalizeSearchText(query);
 
   if (normalizedQuery.length < 2) {
     return [];
   }
 
-  const normalized = normalizedQuery.toLocaleLowerCase("tr-TR");
-
   if (!hasDatabaseConfig()) {
-    return fallbackSearch(normalized, role);
+    return fallbackSearch(normalizedQuery, role);
   }
 
   try {
     const db = getDb();
-    const pattern = `%${normalizedQuery}%`;
+    const pattern = `%${rawQuery}%`;
     const [productRows, orderRows, quoteRows, serviceRows, pageRows] = await Promise.all([
       db
         .select({
@@ -180,6 +180,6 @@ export async function searchAdminWorkspace(query: string, role: AdminRole) {
     return results.filter((result) => allowed(role, result));
   } catch (error) {
     console.warn("Admin global search could not be loaded.", error);
-    return fallbackSearch(normalized, role);
+    return fallbackSearch(normalizedQuery, role);
   }
 }

@@ -36,6 +36,7 @@ export type ProductModel = {
   powerLabel: string;
   cableOptions: string[];
   variants?: ProductVariantModel[];
+  imageUrl?: string;
   galleryItems?: string[];
   detailContent?: ProductDetailContentInput;
   specs: ProductSpec[];

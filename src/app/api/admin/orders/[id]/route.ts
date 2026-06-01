@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { isValidationError, validationErrorResponse } from "@/server/admin/http";
 import { getAdminOrderById, updateAdminOrder } from "@/server/admin/order-repository";
 import { adminOrderUpdateSchema } from "@/server/admin/validators";
 import { getRequestMeta, requireAdminRole } from "@/server/auth/guards";
@@ -35,13 +36,21 @@ export async function PATCH(request: Request, { params }: OrderRouteProps) {
   }
 
   const { id } = await params;
-  const payload = adminOrderUpdateSchema.parse(await request.json());
-  const requestMeta = await getRequestMeta();
-  const order = await updateAdminOrder(id, payload, authenticatedAdmin.session, requestMeta);
+  try {
+    const payload = adminOrderUpdateSchema.parse(await request.json());
+    const requestMeta = await getRequestMeta();
+    const order = await updateAdminOrder(id, payload, authenticatedAdmin.session, requestMeta);
 
-  if (!order) {
-    return NextResponse.json({ ok: false, message: "Siparis bulunamadi." }, { status: 404 });
+    if (!order) {
+      return NextResponse.json({ ok: false, message: "Siparis bulunamadi." }, { status: 404 });
+    }
+
+    return NextResponse.json({ ok: true, order });
+  } catch (error) {
+    if (isValidationError(error)) {
+      return validationErrorResponse(error);
+    }
+
+    throw error;
   }
-
-  return NextResponse.json({ ok: true, order });
 }

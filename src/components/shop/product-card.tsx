@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import { ProductCompareMarker } from "@/components/shop/product-compare-marker";
@@ -9,10 +10,21 @@ type ProductCardProps = {
 };
 
 export function ProductCard({ product }: ProductCardProps) {
+  const imageUrl = product.imageUrl ?? `/api/og/product/${product.slug}`;
+
   return (
     <article className="surface-card flex h-full flex-col p-5">
-      <div className="mb-5 rounded-[22px] bg-linear-to-br from-surface-container to-surface-container-high p-5">
-        <div className="aspect-[4/3] rounded-[18px] bg-linear-to-br from-primary/12 via-white to-secondary/10" />
+      <div className="mb-5 overflow-hidden rounded-[22px] bg-surface-container">
+        <Image
+          src={imageUrl}
+          alt={product.name}
+          width={640}
+          height={480}
+          loading="lazy"
+          unoptimized
+          sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+          className="aspect-[4/3] w-full object-cover"
+        />
       </div>
 
       <div className="mb-2 flex items-center gap-2">

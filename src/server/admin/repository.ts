@@ -584,6 +584,7 @@ function mapAdminProductToPublicProduct(
     specRows.length > 0
       ? specRows.map((spec) => ({ label: spec.label, value: spec.value }))
       : base?.specs ?? [];
+  const primaryMedia = mediaRows.find((item) => item.isPrimary) ?? mediaRows[0];
   const publicBase: ProductModel = {
     id: base?.id ?? row.id,
     slug: row.slug,
@@ -610,6 +611,7 @@ function mapAdminProductToPublicProduct(
           isDefault: variant.isDefault
         }))
       : base?.variants,
+    imageUrl: primaryMedia?.url ?? base?.imageUrl,
     galleryItems: mediaRows.length
       ? mediaRows.map((item) => item.altText)
       : base?.galleryItems,

@@ -2,7 +2,11 @@ import { randomUUID } from "node:crypto";
 
 import { z } from "zod";
 
+import { CART_TAX_RATE } from "@/lib/cart-core";
 import { generateMerchantOid } from "@/lib/paytr";
+import type { PaytrCheckoutItem } from "@/lib/paytr";
+import { getProductCableOptions } from "@/lib/product-options";
+import { listPublicProducts } from "@/server/admin/repository";
 import { getDb } from "@/server/db/client";
 import { customers, orderItems, orders, paytrTransactions } from "@/server/db/schema";
 
@@ -11,20 +15,43 @@ export const paytrCheckoutRequestSchema = z.object({
   userName: z.string().trim().min(2).max(60),
   userAddress: z.string().trim().min(5).max(400),
   userPhone: z.string().trim().min(10).max(20),
-  paymentAmountKurus: z.number().int().positive(),
   items: z
     .array(
       z.object({
-        title: z.string().trim().min(1).max(180),
-        unitPrice: z.string().regex(/^\d+(\.\d{1,2})?$/),
-        quantity: z.number().int().positive()
+        productId: z.string().trim().min(1).max(160),
+        cableOption: z.string().trim().min(1).max(180),
+        quantity: z.number().int().positive().max(99)
       })
     )
     .min(1)
+    .max(50)
 });
 
 export type PaytrCheckoutRequest = z.infer<typeof paytrCheckoutRequestSchema>;
 export type PaytrCheckoutFlow = "iframe" | "direct_api";
+
+type PricedCheckoutItem = {
+  productId: string;
+  productName: string;
+  variantName: string;
+  title: string;
+  quantity: number;
+  unitPriceKurus: number;
+  lineTotalKurus: number;
+};
+
+export class PaytrCheckoutPricingError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "PaytrCheckoutPricingError";
+  }
+}
+
+export function isPaytrCheckoutPricingError(
+  error: unknown
+): error is PaytrCheckoutPricingError {
+  return error instanceof PaytrCheckoutPricingError;
+}
 
 function splitFullName(fullName: string) {
   const parts = fullName.trim().split(/\s+/).filter(Boolean);
@@ -51,6 +78,90 @@ export function getPaytrUserIp(request: Request) {
   );
 }
 
+function formatPaytrUnitPrice(unitPriceKurus: number) {
+  return (unitPriceKurus / 100).toFixed(2);
+}
+
+function limitText(value: string, maxLength: number) {
+  return value.length > maxLength ? value.slice(0, maxLength) : value;
+}
+
+async function priceCheckoutItems(items: PaytrCheckoutRequest["items"]) {
+  const publicProducts = await listPublicProducts();
+  const pricedItems = items.map((item): PricedCheckoutItem => {
+    const product = publicProducts.find((candidate) => candidate.id === item.productId);
+
+    if (!product) {
+      throw new PaytrCheckoutPricingError(
+        "Sepetteki bir urun artik satis listesinde bulunamadi. Lutfen sepetinizi guncelleyin."
+      );
+    }
+
+    if (product.stockLabel === "Stokta Yok") {
+      throw new PaytrCheckoutPricingError(
+        `${product.name} urunu su anda stokta degil. Lutfen sepetinizi guncelleyin.`
+      );
+    }
+
+    const selectedOption = getProductCableOptions(product).find(
+      (option) => option.label === item.cableOption
+    );
+
+    if (!selectedOption) {
+      throw new PaytrCheckoutPricingError(
+        `${product.name} icin secilen kablo varyanti artik kullanilamiyor. Lutfen sepetinizi guncelleyin.`
+      );
+    }
+
+    const selectedVariant = product.variants?.find(
+      (variant) => variant.cableLength === selectedOption.label
+    );
+
+    if (selectedVariant && selectedVariant.stockQuantity <= 0) {
+      throw new PaytrCheckoutPricingError(
+        `${product.name} - ${selectedOption.label} varyanti stokta degil. Lutfen sepetinizi guncelleyin.`
+      );
+    }
+
+    if (selectedOption.priceKurus <= 0) {
+      throw new PaytrCheckoutPricingError(
+        `${product.name} icin gecerli bir fiyat bulunamadi. Lutfen sepetinizi guncelleyin.`
+      );
+    }
+
+    const lineTotalKurus = selectedOption.priceKurus * item.quantity;
+
+    return {
+      productId: product.id,
+      productName: product.name,
+      variantName: selectedOption.label,
+      title: limitText(`${product.name} - ${selectedOption.label}`, 180),
+      quantity: item.quantity,
+      unitPriceKurus: selectedOption.priceKurus,
+      lineTotalKurus
+    };
+  });
+  const subtotalKurus = pricedItems.reduce(
+    (total, item) => total + item.lineTotalKurus,
+    0
+  );
+  const taxKurus = Math.round(subtotalKurus * CART_TAX_RATE);
+  const paymentAmountKurus = subtotalKurus + taxKurus;
+  const paytrItems: PaytrCheckoutItem[] = pricedItems.map((item) => ({
+    title: item.title,
+    unitPrice: formatPaytrUnitPrice(item.unitPriceKurus),
+    quantity: item.quantity
+  }));
+
+  return {
+    pricedItems,
+    subtotalKurus,
+    taxKurus,
+    paymentAmountKurus,
+    paytrItems
+  };
+}
+
 export async function createPaytrCheckoutOrder({
   body,
   flow,
@@ -63,12 +174,13 @@ export async function createPaytrCheckoutOrder({
   const db = getDb();
   const userIp = getPaytrUserIp(request);
   const { firstName, lastName } = splitFullName(body.userName);
-  const subtotalKurus = body.items.reduce(
-    (total, item) =>
-      total + Math.round(Number(item.unitPrice) * 100) * item.quantity,
-    0
-  );
-  const taxKurus = Math.max(body.paymentAmountKurus - subtotalKurus, 0);
+  const {
+    pricedItems,
+    subtotalKurus,
+    taxKurus,
+    paymentAmountKurus,
+    paytrItems
+  } = await priceCheckoutItems(body.items);
   const merchantOid = generateMerchantOid();
 
   const { order } = await db.transaction(async (tx) => {
@@ -104,7 +216,7 @@ export async function createPaytrCheckoutOrder({
         subtotalKurus,
         shippingKurus: 0,
         taxKurus,
-        totalKurus: body.paymentAmountKurus,
+        totalKurus: paymentAmountKurus,
         paymentProvider: "paytr",
         paymentStatus: "pending",
         customerName: body.userName,
@@ -113,32 +225,30 @@ export async function createPaytrCheckoutOrder({
       })
       .returning({
         id: orders.id
-      });
+    });
 
     await tx.insert(orderItems).values(
-      body.items.map((item) => {
-        const unitPriceKurus = Math.round(Number(item.unitPrice) * 100);
-
-        return {
-          orderId: createdOrder.id,
-          productName: item.title,
-          quantity: item.quantity,
-          unitPriceKurus,
-          lineTotalKurus: unitPriceKurus * item.quantity
-        };
-      })
+      pricedItems.map((item) => ({
+        orderId: createdOrder.id,
+        productName: limitText(item.productName, 180),
+        variantName: limitText(item.variantName, 180),
+        quantity: item.quantity,
+        unitPriceKurus: item.unitPriceKurus,
+        lineTotalKurus: item.lineTotalKurus
+      }))
     );
 
     await tx.insert(paytrTransactions).values({
       orderId: createdOrder.id,
       merchantOid,
-      paymentAmountKurus: body.paymentAmountKurus,
+      paymentAmountKurus,
       rawRequest: {
         requestBody: {
           email: body.email,
           flow,
           itemCount: body.items.length,
-          paymentAmountKurus: body.paymentAmountKurus
+          paymentAmountKurus,
+          serverPriced: true
         }
       }
     });
@@ -152,6 +262,8 @@ export async function createPaytrCheckoutOrder({
     db,
     order,
     merchantOid,
-    userIp
+    userIp,
+    paymentAmountKurus,
+    items: paytrItems
   };
 }

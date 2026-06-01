@@ -233,10 +233,9 @@ export function CheckoutPageClient({
       userName: draft.fullName,
       userAddress: `${draft.address}, ${draft.city}`,
       userPhone: draft.phone,
-      paymentAmountKurus: totalKurus,
       items: items.map((item) => ({
-        title: `${item.product.name} - ${item.cableOption}`,
-        unitPrice: (item.unitPriceKurus / 100).toFixed(2),
+        productId: item.productId,
+        cableOption: item.cableOption,
         quantity: item.quantity
       }))
     };

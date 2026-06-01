@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { isValidationError, validationErrorResponse } from "@/server/admin/http";
 import { runAdminPaytrOperation } from "@/server/admin/order-repository";
 import { adminPaytrOperationSchema } from "@/server/admin/validators";
 import { getRequestMeta, requireAdminRole } from "@/server/auth/guards";
@@ -18,13 +19,21 @@ export async function PATCH(request: Request, { params }: PaytrRouteProps) {
   }
 
   const { id } = await params;
-  const payload = adminPaytrOperationSchema.parse(await request.json());
-  const requestMeta = await getRequestMeta();
-  const order = await runAdminPaytrOperation(id, payload, authenticatedAdmin.session, requestMeta);
+  try {
+    const payload = adminPaytrOperationSchema.parse(await request.json());
+    const requestMeta = await getRequestMeta();
+    const order = await runAdminPaytrOperation(id, payload, authenticatedAdmin.session, requestMeta);
 
-  if (!order) {
-    return NextResponse.json({ ok: false, message: "PayTR kaydi bulunamadi." }, { status: 404 });
+    if (!order) {
+      return NextResponse.json({ ok: false, message: "PayTR kaydi bulunamadi." }, { status: 404 });
+    }
+
+    return NextResponse.json({ ok: true, order });
+  } catch (error) {
+    if (isValidationError(error)) {
+      return validationErrorResponse(error);
+    }
+
+    throw error;
   }
-
-  return NextResponse.json({ ok: true, order });
 }

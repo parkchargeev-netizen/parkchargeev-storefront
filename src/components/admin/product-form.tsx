@@ -117,6 +117,19 @@ const emptyValues: ProductFormValues = {
   adminNotes: ""
 };
 
+const productFormSections = [
+  { id: "temel-bilgiler", label: "Temel" },
+  { id: "fiyat-stok", label: "Fiyat/Stok" },
+  { id: "varyantlar", label: "Varyantlar" },
+  { id: "katalog", label: "Katalog" },
+  { id: "teknik", label: "Teknik" },
+  { id: "gorseller", label: "Gorseller" },
+  { id: "ozellikler", label: "Ozellikler" },
+  { id: "detay", label: "Detay" },
+  { id: "seo", label: "SEO" },
+  { id: "iliskiler", label: "Iliskiler" }
+];
+
 function splitLines(value: string) {
   return value
     .split("\n")
@@ -300,30 +313,37 @@ export function ProductForm({
     const formData = new FormData();
     formData.append("file", file);
 
-    const response = await fetch("/api/admin/media/upload", {
-      method: "POST",
-      body: formData
-    });
-    const data = (await response.json()) as { ok: boolean; url?: string; message?: string };
-
-    setIsUploading(false);
-
-    if (!response.ok || !data.ok || !data.url) {
-      setUploadMessage(data.message ?? "Görsel yüklenemedi.");
-      return;
-    }
-
-    if (typeof targetIndex === "number") {
-      setValue(`media.${targetIndex}.url`, data.url, { shouldValidate: true });
-    } else {
-      mediaFields.append({
-        url: data.url,
-        altText: watch("name") || "Ürün görseli",
-        isPrimary: mediaFields.fields.length === 0
+    try {
+      const response = await fetch("/api/admin/media/upload", {
+        method: "POST",
+        body: formData
       });
-    }
+      const data = (await response.json().catch(() => ({
+        ok: false,
+        message: "Sunucu yaniti okunamadi."
+      }))) as { ok: boolean; url?: string; message?: string };
 
-    setUploadMessage("Görsel yüklendi.");
+      if (!response.ok || !data.ok || !data.url) {
+        setUploadMessage(data.message ?? "Gorsel yuklenemedi.");
+        return;
+      }
+
+      if (typeof targetIndex === "number") {
+        setValue(`media.${targetIndex}.url`, data.url, { shouldValidate: true });
+      } else {
+        mediaFields.append({
+          url: data.url,
+          altText: watch("name") || "Urun gorseli",
+          isPrimary: mediaFields.fields.length === 0
+        });
+      }
+
+      setUploadMessage("Gorsel yuklendi.");
+    } catch {
+      setUploadMessage("Gorsel yuklenirken sunucuya ulasilamadi.");
+    } finally {
+      setIsUploading(false);
+    }
   }
 
   const onSubmit = handleSubmit(async (values) => {
@@ -359,43 +379,78 @@ export function ProductForm({
       searchKeywords: (values.searchKeywords ?? []).filter(Boolean)
     };
 
-    const response = await fetch(endpoint, {
-      method,
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload)
-    });
+    try {
+      const response = await fetch(endpoint, {
+        method,
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
 
-    const data = (await response.json()) as ProductMutationResponse;
+      const data = (await response.json().catch(() => ({
+        ok: false,
+        message: "Sunucu yaniti okunamadi."
+      }))) as ProductMutationResponse;
 
-    if (!response.ok || !data.ok) {
-      const issueText = data.issues?.length
-        ? ` ${data.issues
-            .slice(0, 4)
-            .map((issue) => issue.message)
-            .join(" ")}`
-        : "";
-      setErrorMessage(`${data.message ?? "Kayıt işlemi başarısız."}${issueText}`);
-      return;
-    }
+      if (!response.ok || !data.ok) {
+        const issueText = data.issues?.length
+          ? ` ${data.issues
+              .slice(0, 4)
+              .map((issue) => issue.message)
+              .join(" ")}`
+          : "";
+        setErrorMessage(`${data.message ?? "Kayit islemi basarisiz."}${issueText}`);
+        return;
+      }
 
-    setSuccessMessage(mode === "create" ? "Ürün oluşturuldu." : "Ürün güncellendi.");
+      setSuccessMessage(mode === "create" ? "Urun olusturuldu." : "Urun guncellendi.");
 
-    if (mode === "create" && data.product?.id) {
-      router.push(`/admin/urunler/${data.product.id}`);
-    } else {
-      router.refresh();
+      if (mode === "create" && data.product?.id) {
+        router.push(`/admin/urunler/${data.product.id}`);
+      } else {
+        router.refresh();
+      }
+    } catch {
+      setErrorMessage("Sunucuya ulasilamadi. Lutfen tekrar deneyin.");
     }
   });
 
   return (
     <form className="space-y-8" onSubmit={onSubmit} noValidate aria-busy={!isHydrated || isSubmitting}>
+      <div className="sticky top-4 z-20 rounded-3xl border border-slate-200 bg-white/95 p-4 shadow-sm backdrop-blur">
+        <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+          <div>
+            <p className="text-sm font-semibold text-slate-950">Form bolumleri</p>
+            <p className="text-xs text-slate-500">
+              {hasValidationErrors ? "Eksik alanlar var; bolumlerden hizlica kontrol edin." : "Urun kaydinda hizli gezinme."}
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {productFormSections.map((section) => (
+              <a
+                key={section.id}
+                href={`#${section.id}`}
+                className="rounded-full border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
+              >
+                {section.label}
+              </a>
+            ))}
+          </div>
+          <button
+            type="submit"
+            disabled={!isHydrated || isSubmitting}
+            className="rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white disabled:opacity-70"
+          >
+            {isSubmitting ? "Kaydediliyor..." : "Kaydet"}
+          </button>
+        </div>
+      </div>
       <fieldset
         disabled={!isHydrated || isSubmitting}
         className="space-y-8 disabled:cursor-wait disabled:opacity-75"
       >
-      <section className="surface-card border border-slate-200 bg-white/95 p-6">
+      <section id="temel-bilgiler" className="surface-card scroll-mt-28 border border-slate-200 bg-white/95 p-6">
         <div className="mb-6">
           <h2 className="text-xl font-semibold text-slate-950">Temel Bilgiler</h2>
           <p className="mt-1 text-sm text-slate-600">
@@ -481,7 +536,7 @@ export function ProductForm({
         </div>
       </section>
 
-      <section className="surface-card border border-slate-200 bg-white/95 p-6">
+      <section id="fiyat-stok" className="surface-card scroll-mt-28 border border-slate-200 bg-white/95 p-6">
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           <div>
             <label className="mb-2 block text-sm font-medium text-slate-700">SKU</label>
@@ -563,7 +618,7 @@ export function ProductForm({
         </div>
       </section>
 
-      <section className="surface-card border border-slate-200 bg-white/95 p-6">
+      <section id="varyantlar" className="surface-card scroll-mt-28 border border-slate-200 bg-white/95 p-6">
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-xl font-semibold text-slate-950">Varyantlar</h2>
@@ -661,7 +716,7 @@ export function ProductForm({
         </div>
       </section>
 
-      <section className="surface-card border border-slate-200 bg-white/95 p-6">
+      <section id="katalog" className="surface-card scroll-mt-28 border border-slate-200 bg-white/95 p-6">
         <div className="grid gap-6 lg:grid-cols-3">
           <div>
             <p className="mb-3 text-sm font-semibold text-slate-800">Kategoriler</p>
@@ -715,7 +770,7 @@ export function ProductForm({
         </div>
       </section>
 
-      <section className="surface-card border border-slate-200 bg-white/95 p-6">
+      <section id="teknik" className="surface-card scroll-mt-28 border border-slate-200 bg-white/95 p-6">
         <div className="mb-6">
           <h2 className="text-xl font-semibold text-slate-950">Teknik Alanlar</h2>
           <ExampleHint>Örnek: Güç 11, konnektör Type 2, IP sınıfı IP54, kablo uzunluğu 5 Metre.</ExampleHint>
@@ -756,7 +811,7 @@ export function ProductForm({
         </div>
       </section>
 
-      <section className="surface-card border border-slate-200 bg-white/95 p-6">
+      <section id="gorseller" className="surface-card scroll-mt-28 border border-slate-200 bg-white/95 p-6">
         <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h2 className="text-xl font-semibold text-slate-950">Görseller</h2>
@@ -839,7 +894,7 @@ export function ProductForm({
         </div>
       </section>
 
-      <section className="surface-card border border-slate-200 bg-white/95 p-6">
+      <section id="ozellikler" className="surface-card scroll-mt-28 border border-slate-200 bg-white/95 p-6">
         <div className="mb-6 flex items-center justify-between">
           <div>
             <h2 className="text-xl font-semibold text-slate-950">Teknik özellikler</h2>
@@ -867,7 +922,7 @@ export function ProductForm({
         </div>
       </section>
 
-      <section className="surface-card border border-slate-200 bg-white/95 p-6">
+      <section id="detay" className="surface-card scroll-mt-28 border border-slate-200 bg-white/95 p-6">
         <div className="mb-6">
           <h2 className="text-xl font-semibold text-slate-950">Ürün detay sayfası</h2>
           <p className="mt-1 text-sm text-slate-600">
@@ -1179,7 +1234,7 @@ export function ProductForm({
         </div>
       </section>
 
-      <section className="surface-card border border-slate-200 bg-white/95 p-6">
+      <section id="seo" className="surface-card scroll-mt-28 border border-slate-200 bg-white/95 p-6">
         <div className="mb-6">
           <h2 className="text-xl font-semibold text-slate-950">SEO + AIEO</h2>
           <ExampleHint>Örnek meta başlık: HomeCharge Pro 11kW EV Şarj Cihazı. AI özeti tek cümle, satış odaklı olmalı.</ExampleHint>
@@ -1211,7 +1266,7 @@ export function ProductForm({
         </div>
       </section>
 
-      <section className="surface-card border border-slate-200 bg-white/95 p-6">
+      <section id="iliskiler" className="surface-card scroll-mt-28 border border-slate-200 bg-white/95 p-6">
         <div className="mb-6 grid gap-5 lg:grid-cols-2">
           <div>
             <label className="mb-2 block text-sm font-medium text-slate-700">İlgili ürünler</label>

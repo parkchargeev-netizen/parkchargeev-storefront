@@ -3,8 +3,8 @@
 import { useMemo, useState } from "react";
 
 type PaytrDirectPaymentItem = {
-  title: string;
-  unitPrice: string;
+  productId: string;
+  cableOption: string;
   quantity: number;
 };
 
@@ -13,7 +13,6 @@ type PaytrDirectPaymentCustomer = {
   userName: string;
   userAddress: string;
   userPhone: string;
-  paymentAmountKurus: number;
   items: PaytrDirectPaymentItem[];
 };
 
