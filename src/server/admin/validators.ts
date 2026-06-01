@@ -194,7 +194,7 @@ export const adminPasswordResetSchema = z.object({
 export const adminBlogPostSchema = z.object({
   id: z.string().uuid().optional(),
   title: z.string().trim().min(3).max(180),
-  slug: z.string().trim().min(3).max(220),
+  slug: z.string().trim().max(220).optional().or(z.literal("")),
   excerpt: z.string().trim().min(10),
   body: z.string().trim().min(20),
   seoTitle: z.string().trim().max(255).optional().or(z.literal("")),

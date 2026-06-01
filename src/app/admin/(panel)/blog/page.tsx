@@ -32,6 +32,8 @@ function buildExportHref(query: Record<string, string | undefined>) {
 export default async function AdminBlogPage({ searchParams }: AdminBlogPageProps) {
   const query = (await searchParams) ?? {};
   const result = await listAdminBlogPosts({ ...query, limit: 12 });
+  const publishedCount = result.items.filter((post) => post.publishedAt).length;
+  const draftCount = result.items.length - publishedCount;
 
   return (
     <div className="space-y-6">
@@ -50,9 +52,17 @@ export default async function AdminBlogPage({ searchParams }: AdminBlogPageProps
           </>
         }
         meta={
-          <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
-            {result.items.length} kayıt
-          </span>
+          <div className="flex flex-wrap gap-2">
+            <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
+              {result.items.length} kayıt
+            </span>
+            <span className="inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+              {publishedCount} yayında
+            </span>
+            <span className="inline-flex rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">
+              {draftCount} taslak
+            </span>
+          </div>
         }
       />
 
@@ -82,6 +92,14 @@ export default async function AdminBlogPage({ searchParams }: AdminBlogPageProps
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
+              {result.items.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="px-3 py-10 text-center text-sm text-slate-500">
+                    Blog ve rehber içerikleri henüz listelenmedi. İlk kayıtlar otomatik
+                    senkronize edilecek; filtreleri temizleyip tekrar kontrol edin.
+                  </td>
+                </tr>
+              ) : null}
               {result.items.map((post) => (
                 <tr key={post.id}>
                   <td className="px-3 py-4">
@@ -96,9 +114,16 @@ export default async function AdminBlogPage({ searchParams }: AdminBlogPageProps
                   </td>
                   <td className="px-3 py-4 text-slate-600">{new Date(post.updatedAt).toLocaleDateString("tr-TR")}</td>
                   <td className="px-3 py-4">
-                    <Link href={`/admin/blog/${post.id}`} className="rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700">
-                      Düzenle
-                    </Link>
+                    <div className="flex flex-wrap gap-2">
+                      <Link href={`/admin/blog/${post.id}`} className="rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700">
+                        Düzenle
+                      </Link>
+                      {post.publishedAt ? (
+                        <Link href={`/blog/${post.slug}`} target="_blank" className="rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700">
+                          Canlı gör
+                        </Link>
+                      ) : null}
+                    </div>
                   </td>
                 </tr>
               ))}

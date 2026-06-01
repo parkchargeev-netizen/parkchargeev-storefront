@@ -1,13 +1,17 @@
-import { articles, solutionPages } from "@/lib/mock-data";
+import { solutionPages } from "@/lib/mock-data";
 import { absoluteUrl, siteConfig } from "@/lib/site";
 import { listPublicProducts } from "@/server/admin/repository";
+import { listPublicBlogArticles } from "@/server/blog/repository";
 
 function lineList(items: string[]) {
   return items.map((item) => `- ${item}`).join("\n");
 }
 
 export async function generateLlmsText() {
-  const products = await listPublicProducts();
+  const [products, articles] = await Promise.all([
+    listPublicProducts(),
+    listPublicBlogArticles()
+  ]);
   const canonicalPages = [
     `${absoluteUrl("/")} - Ana sayfa ve ParkChargeEV hizmet özeti`,
     `${absoluteUrl("/magaza")} - EV şarj cihazı ve aksesuar kataloğu`,

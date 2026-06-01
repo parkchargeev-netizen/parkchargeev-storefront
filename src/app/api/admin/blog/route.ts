@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { csvResponse } from "@/server/admin/csv";
+import { isValidationError, validationErrorResponse } from "@/server/admin/http";
 import { listAdminBlogPosts, upsertAdminBlogPost } from "@/server/admin/repository";
 import { adminBlogPostSchema, adminListQuerySchema } from "@/server/admin/validators";
 import { getRequestMeta, requireAdminRole } from "@/server/auth/guards";
@@ -26,7 +27,18 @@ export async function GET(request: Request) {
     return NextResponse.json({ ok: false, message: "Yetkisiz erisim." }, { status: 401 });
   }
 
-  const query = parseListQuery(request);
+  let query: ReturnType<typeof parseListQuery>;
+
+  try {
+    query = parseListQuery(request);
+  } catch (error) {
+    if (isValidationError(error)) {
+      return validationErrorResponse(error);
+    }
+
+    throw error;
+  }
+
   const result = await listAdminBlogPosts(query);
 
   if (query.format === "csv") {
@@ -48,9 +60,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, message: "Yetkisiz erisim." }, { status: 401 });
   }
 
-  const payload = adminBlogPostSchema.parse(await request.json());
-  const requestMeta = await getRequestMeta();
-  const post = await upsertAdminBlogPost(payload, authenticatedAdmin.session, requestMeta);
+  try {
+    const payload = adminBlogPostSchema.parse(await request.json());
+    const requestMeta = await getRequestMeta();
+    const post = await upsertAdminBlogPost(payload, authenticatedAdmin.session, requestMeta);
 
-  return NextResponse.json({ ok: true, post }, { status: 201 });
+    return NextResponse.json({ ok: true, post }, { status: 201 });
+  } catch (error) {
+    if (isValidationError(error)) {
+      return validationErrorResponse(error);
+    }
+
+    throw error;
+  }
 }

@@ -62,6 +62,23 @@ test("@e2e admin urun ekleme linki form ekranini acar", async ({ page }) => {
   await expect(page.getByText(/Application error|Unhandled Runtime/i)).toHaveCount(0);
 });
 
+test("@e2e admin blog rehberleri listeler", async ({ page }) => {
+  const loginResponse = await loginAsAdmin(page);
+
+  expect(loginResponse.ok()).toBeTruthy();
+  await expect(page).toHaveURL(/\/admin$/, { timeout: 30_000 });
+
+  await page.goto("/admin/blog", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { name: /Blog ve rehber/i })).toBeVisible();
+  await expect(
+    page.getByText(
+      /evde-elektrikli-arac-sarj-cihazi-kurulumu|11kw-ve-22kw-sarj-cihazi-farki|apartman-otoparkina-sarj-cihazi-kurulumu/i
+    ).first()
+  ).toBeVisible({ timeout: 30_000 });
+  await expect(page.locator('a[href^="/admin/blog/"]').first()).toBeVisible();
+  await expect(page.getByText(/Application error|Unhandled Runtime/i)).toHaveCount(0);
+});
+
 test("@e2e admin urun duzenleme linki form ekranini acar", async ({ page }) => {
   const loginResponse = await loginAsAdmin(page);
 

@@ -4,30 +4,31 @@ import { notFound } from "next/navigation";
 
 import { ArticleCard } from "@/components/content/article-card";
 import {
-  articles,
-  getArticleBySlug,
-  getRelatedArticles
-} from "@/lib/mock-data";
-import {
   getArticleJsonLd,
   getBreadcrumbJsonLd,
   getFaqJsonLd,
   stringifyJsonLd
 } from "@/lib/structured-data";
+import {
+  getPublicBlogArticleBySlug,
+  getRelatedPublicBlogArticles,
+  listPublicBlogSlugs
+} from "@/server/blog/repository";
 
 type ArticleDetailPageProps = {
   params: Promise<{ slug: string }>;
 };
 
 export async function generateStaticParams() {
-  return articles.map((article) => ({ slug: article.slug }));
+  const articleSlugs = await listPublicBlogSlugs();
+  return articleSlugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({
   params
 }: ArticleDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const article = getArticleBySlug(slug);
+  const article = await getPublicBlogArticleBySlug(slug);
 
   if (!article) {
     return { title: "Yazı bulunamadı" };
@@ -68,13 +69,13 @@ export default async function ArticleDetailPage({
   params
 }: ArticleDetailPageProps) {
   const { slug } = await params;
-  const article = getArticleBySlug(slug);
+  const article = await getPublicBlogArticleBySlug(slug);
 
   if (!article) {
     notFound();
   }
 
-  const relatedArticles = getRelatedArticles(article);
+  const relatedArticles = await getRelatedPublicBlogArticles(article);
   const articleJsonLd = getArticleJsonLd(article);
   const breadcrumbJsonLd = getBreadcrumbJsonLd([
     { name: "Ana Sayfa", path: "/" },
@@ -92,7 +93,7 @@ export default async function ArticleDetailPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: stringifyJsonLd(breadcrumbJsonLd) }}
       />
-      {article.faq ? (
+      {article.faq?.length ? (
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: stringifyJsonLd(getFaqJsonLd(article.faq)) }}
@@ -128,29 +129,14 @@ export default async function ArticleDetailPage({
         </p>
 
         <div className="mt-10 space-y-10">
-          {article.sections.map((section) => (
-            <section key={section.heading}>
-              <h2 className="text-3xl font-bold tracking-[-0.05em] text-on-surface">
-                {section.heading}
-              </h2>
-              <div className="mt-5 space-y-5 text-base leading-8 text-on-surface-variant">
-                {section.paragraphs.map((paragraph) => (
-                  <p key={paragraph}>{paragraph}</p>
-                ))}
-              </div>
-              {section.bullets ? (
-                <ul className="mt-6 space-y-3 text-base leading-8 text-on-surface-variant">
-                  {section.bullets.map((bullet) => (
-                    <li key={bullet}>{bullet}</li>
-                  ))}
-                </ul>
-              ) : null}
-            </section>
-          ))}
+          <div
+            className="space-y-10 text-base leading-8 text-on-surface-variant [&_h2]:text-3xl [&_h2]:font-bold [&_h2]:tracking-[-0.05em] [&_h2]:text-on-surface [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:text-on-surface [&_li]:ml-5 [&_li]:list-disc [&_p+ul]:mt-4 [&_section]:space-y-5"
+            dangerouslySetInnerHTML={{ __html: article.bodyHtml }}
+          />
         </div>
       </article>
 
-      {article.faq ? (
+      {article.faq?.length ? (
         <section className="mt-10 surface-card p-8">
           <h2 className="text-3xl font-bold tracking-[-0.05em] text-on-surface">
             Sık sorulan sorular

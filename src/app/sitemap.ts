@@ -1,14 +1,16 @@
 import type { MetadataRoute } from "next";
 
-import { articles, solutionPages } from "@/lib/mock-data";
+import { solutionPages } from "@/lib/mock-data";
 import { absoluteUrl } from "@/lib/site";
 import { listPublicProducts } from "@/server/admin/repository";
+import { listPublicBlogArticles } from "@/server/blog/repository";
 import { listPublishedSitePagesForSitemap } from "@/server/site/repository";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [managedPages, products] = await Promise.all([
+  const [managedPages, products, blogArticles] = await Promise.all([
     listPublishedSitePagesForSitemap(),
-    listPublicProducts()
+    listPublicProducts(),
+    listPublicBlogArticles()
   ]);
   const managedRouteSet = new Set(managedPages.map((page) => `/${page.slug}`));
   const staticRoutes = [
@@ -40,8 +42,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly" as const,
       priority: 0.7
     })),
-    ...articles.map((article) => ({
+    ...blogArticles.map((article) => ({
       url: absoluteUrl(`/blog/${article.slug}`),
+      lastModified: new Date(article.publishedAt),
       changeFrequency: "monthly" as const,
       priority: 0.72
     })),

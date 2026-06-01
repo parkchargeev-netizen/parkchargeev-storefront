@@ -4,8 +4,16 @@ import { hasDatabaseConfig } from "@/lib/runtime-config";
 import { articles, products as fallbackProducts } from "@/lib/mock-data";
 import { normalizeSearchText } from "@/lib/search-normalization";
 import { canAccessAdminPath, type AdminRole } from "@/server/auth/authorization";
+import { getMarketingBlogSeedPosts } from "@/server/blog/repository";
 import { getDb } from "@/server/db/client";
-import { orders, products, quoteRequests, serviceLeads, sitePages } from "@/server/db/schema";
+import {
+  blogPosts,
+  orders,
+  products,
+  quoteRequests,
+  serviceLeads,
+  sitePages
+} from "@/server/db/schema";
 
 export type AdminGlobalSearchResult = {
   href: string;
@@ -64,7 +72,13 @@ export async function searchAdminWorkspace(query: string, role: AdminRole) {
   try {
     const db = getDb();
     const pattern = `%${rawQuery}%`;
-    const [productRows, orderRows, quoteRows, serviceRows, pageRows] = await Promise.all([
+    const seedPosts = getMarketingBlogSeedPosts();
+
+    if (seedPosts.length > 0) {
+      await db.insert(blogPosts).values(seedPosts).onConflictDoNothing();
+    }
+
+    const [productRows, orderRows, quoteRows, serviceRows, pageRows, blogRows] = await Promise.all([
       db
         .select({
           id: products.id,
@@ -141,6 +155,17 @@ export async function searchAdminWorkspace(query: string, role: AdminRole) {
         .from(sitePages)
         .where(or(ilike(sitePages.title, pattern), ilike(sitePages.slug, pattern)))
         .orderBy(desc(sitePages.updatedAt))
+        .limit(5),
+      db
+        .select({
+          id: blogPosts.id,
+          title: blogPosts.title,
+          slug: blogPosts.slug,
+          publishedAt: blogPosts.publishedAt
+        })
+        .from(blogPosts)
+        .where(or(ilike(blogPosts.title, pattern), ilike(blogPosts.slug, pattern)))
+        .orderBy(desc(blogPosts.updatedAt))
         .limit(5)
     ]);
 
@@ -174,6 +199,12 @@ export async function searchAdminWorkspace(query: string, role: AdminRole) {
         label: page.title,
         detail: `${page.slug} - ${page.status}`,
         group: "Site"
+      })),
+      ...blogRows.map((post) => ({
+        href: `/admin/blog/${post.id}`,
+        label: post.title,
+        detail: `${post.slug} - ${post.publishedAt ? "Yayında" : "Taslak"}`,
+        group: "İçerik"
       }))
     ];
 

@@ -1,4 +1,5 @@
 import type { ArticleModel, ProductModel } from "@/lib/mock-data";
+import { stripHtml } from "@/lib/blog-content";
 import { absoluteUrl } from "@/lib/site";
 
 function joinList(items: string[]) {
@@ -50,7 +51,7 @@ export function renderProductMarkdown(product: ProductModel) {
   return lines.filter(Boolean).join("\n");
 }
 
-export function renderArticleMarkdown(article: ArticleModel) {
+export function renderArticleMarkdown(article: ArticleModel & { bodyHtml?: string }) {
   const lines = [
     `# ${article.title}`,
     "",
@@ -64,6 +65,10 @@ export function renderArticleMarkdown(article: ArticleModel) {
     article.excerpt,
     ""
   ];
+
+  if (article.bodyHtml && article.sections.length === 0) {
+    lines.push("## İçerik", "", stripHtml(article.bodyHtml), "");
+  }
 
   for (const section of article.sections) {
     lines.push(`## ${section.heading}`, "");

@@ -4,17 +4,17 @@ import { ArticleCard } from "@/components/content/article-card";
 import { ProductCard } from "@/components/shop/product-card";
 import { SolutionCard } from "@/components/solutions/solution-card";
 import {
-  articles,
   products,
   services,
   solutionPages,
   testimonials,
   trustMetrics
 } from "@/lib/mock-data";
+import { listPublicBlogArticles } from "@/server/blog/repository";
 
-export default function HomePage() {
+export default async function HomePage() {
   const featuredProducts = products.slice(0, 4);
-  const featuredArticles = articles.slice(0, 3);
+  const featuredArticles = (await listPublicBlogArticles()).slice(0, 3);
 
   return (
     <div>

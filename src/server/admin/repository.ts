@@ -33,6 +33,7 @@ import { hashPassword } from "@/server/auth/password";
 import { recordAuditLog } from "@/server/admin/audit";
 import { productCategoryOptions } from "@/server/admin/constants";
 import { AdminProductConflictError } from "@/server/admin/product-errors";
+import { getMarketingBlogSeedPosts } from "@/server/blog/repository";
 import {
   getFallbackAdminProductById,
   getFallbackAdminQuoteById,
@@ -153,6 +154,19 @@ function revalidateProductSurfaces(slug: string) {
   revalidatePath("/magaza");
   revalidatePath(`/urun/${slug}`);
   revalidatePath("/sitemap.xml");
+}
+
+function revalidateBlogSurfaces(slug?: string) {
+  revalidateTag("public-blog");
+  revalidatePath("/");
+  revalidatePath("/blog");
+  revalidatePath("/arama");
+  revalidatePath("/llms.txt");
+  revalidatePath("/sitemap.xml");
+
+  if (slug) {
+    revalidatePath(`/blog/${slug}`);
+  }
 }
 
 function escapeHtml(value: string) {
@@ -2070,6 +2084,7 @@ export async function listAdminBlogPosts(input: ListQueryInput) {
   }
 
   const db = getDb();
+  await ensureMarketingBlogPosts(db);
   const cursor = decodeCursor(input.cursor);
   const conditions = [];
 
@@ -2130,8 +2145,19 @@ export async function getAdminBlogPostById(id: string) {
   }
 
   const db = getDb();
+  await ensureMarketingBlogPosts(db);
   const [post] = await db.select().from(blogPosts).where(eq(blogPosts.id, id)).limit(1);
   return post ?? null;
+}
+
+async function ensureMarketingBlogPosts(db = getDb()) {
+  const seedPosts = getMarketingBlogSeedPosts();
+
+  if (seedPosts.length === 0) {
+    return;
+  }
+
+  await db.insert(blogPosts).values(seedPosts).onConflictDoNothing();
 }
 
 export async function upsertAdminBlogPost(
@@ -2175,6 +2201,7 @@ export async function upsertAdminBlogPost(
       userAgent: requestMeta?.userAgent
     });
 
+    revalidateBlogSurfaces(after?.slug ?? slug);
     return after;
   }
 
@@ -2192,6 +2219,7 @@ export async function upsertAdminBlogPost(
     userAgent: requestMeta?.userAgent
   });
 
+  revalidateBlogSurfaces(created.slug);
   return created;
 }
 

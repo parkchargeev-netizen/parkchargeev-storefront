@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import { ArticleCard } from "@/components/content/article-card";
-import { articles } from "@/lib/mock-data";
+import { listPublicBlogArticles } from "@/server/blog/repository";
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -12,7 +12,9 @@ export const metadata: Metadata = {
     "Elektrikli araç şarj cihazları, kurulum süreçleri, maliyet rehberleri ve kurumsal çözüm içerikleri."
 };
 
-export default function BlogPage() {
+export default async function BlogPage() {
+  const articles = await listPublicBlogArticles();
+
   return (
     <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
       <section className="mx-auto max-w-4xl text-center">

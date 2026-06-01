@@ -4,8 +4,10 @@ import Link from "next/link";
 import { ArticleCard } from "@/components/content/article-card";
 import { ProductCard } from "@/components/shop/product-card";
 import { SolutionCard } from "@/components/solutions/solution-card";
-import { articles, products, solutionPages } from "@/lib/mock-data";
+import { products, solutionPages } from "@/lib/mock-data";
 import { matchesSearchQuery } from "@/lib/search-normalization";
+import { stripHtml } from "@/lib/blog-content";
+import { listPublicBlogArticles } from "@/server/blog/repository";
 
 export const metadata: Metadata = {
   title: "Arama",
@@ -24,6 +26,7 @@ type SearchPageProps = {
 export default async function SearchPage({ searchParams }: SearchPageProps) {
   const { q = "" } = await searchParams;
   const query = q.trim();
+  const publicArticles = await listPublicBlogArticles();
 
   const matchedProducts = query
     ? products.filter((product) =>
@@ -47,7 +50,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     : [];
 
   const matchedArticles = query
-    ? articles.filter((article) =>
+    ? publicArticles.filter((article) =>
         matchesSearchQuery(
           [
             article.title,
@@ -56,6 +59,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             article.excerpt,
             article.seoDescription,
             article.coverKicker,
+            stripHtml(article.bodyHtml),
             article.sections.map((section) =>
               [
                 section.heading,
