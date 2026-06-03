@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ProductCompareMarker } from "@/components/shop/product-compare-marker";
 import type { ProductModel } from "@/lib/mock-data";
 import { formatPriceTRY } from "@/lib/format";
+import { getProductStoreProfile } from "@/lib/shop-merchandising";
 
 type ProductCardProps = {
   product: ProductModel;
@@ -11,6 +12,7 @@ type ProductCardProps = {
 
 export function ProductCard({ product }: ProductCardProps) {
   const imageUrl = product.imageUrl ?? `/api/og/product/${product.slug}`;
+  const profile = getProductStoreProfile(product);
 
   return (
     <article className="surface-card flex h-full flex-col p-5">
@@ -42,6 +44,20 @@ export function ProductCard({ product }: ProductCardProps) {
       <h3 className="text-2xl font-bold tracking-[-0.03em] text-on-surface">
         {product.name}
       </h3>
+      <div className="mt-4 grid grid-cols-3 gap-2">
+        {[
+          ["Güç", profile.powerTier],
+          ["Uyum", profile.connectorHint],
+          ["Kurulum", profile.installationMode]
+        ].map(([label, value]) => (
+          <div key={label} className="rounded-2xl bg-surface-container-low px-3 py-2">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-on-surface-variant">
+              {label}
+            </p>
+            <p className="mt-1 text-xs font-bold leading-5 text-on-surface">{value}</p>
+          </div>
+        ))}
+      </div>
       <p className="mt-3 flex-1 text-sm leading-6 text-on-surface-variant">
         {product.summary}
       </p>
@@ -55,7 +71,11 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
         <div className="flex items-center justify-between rounded-2xl bg-surface-container-low px-3 py-2">
           <span>Kargo</span>
-          <span className="text-secondary">Ucretsiz</span>
+          <span className="text-secondary">Ücretsiz</span>
+        </div>
+        <div className="flex items-center justify-between rounded-2xl bg-surface-container-low px-3 py-2">
+          <span>Seçim</span>
+          <span className="text-primary">{profile.decisionBadge}</span>
         </div>
       </div>
 

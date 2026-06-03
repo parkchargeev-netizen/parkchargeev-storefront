@@ -6,6 +6,7 @@ import { ProductGallery } from "@/components/shop/product-gallery";
 import { ProductCard } from "@/components/shop/product-card";
 import { ProductPurchasePanel } from "@/components/shop/product-purchase-panel";
 import { getProductDetailContent } from "@/lib/product-detail-content";
+import { getProductStoreProfile } from "@/lib/shop-merchandising";
 import {
   getBreadcrumbJsonLd,
   getFaqJsonLd,
@@ -81,6 +82,7 @@ export default async function ProductDetailPage({
   const relatedProducts = await getPublicRelatedProducts(product);
   const productJsonLd = getProductJsonLd(product);
   const detailContent = getProductDetailContent(product);
+  const storeProfile = getProductStoreProfile(product);
   const mediaItems = detailContent.galleryItems;
   const productImageUrl = product.imageUrl ?? `/api/og/product/${product.slug}`;
   const breadcrumbJsonLd = getBreadcrumbJsonLd([
@@ -197,6 +199,52 @@ export default async function ProductDetailPage({
               </ul>
             </div>
           </div>
+
+          <div className="mt-8 surface-card p-8">
+            <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.3em] text-primary">
+                  Satın alma kontrolü
+                </p>
+                <h2 className="mt-3 text-3xl font-bold tracking-[-0.05em] text-on-surface">
+                  Kurulum ve altyapı kararı
+                </h2>
+              </div>
+              <Link href="/urun-secici" className="text-sm font-semibold text-primary">
+                Akıllı seçiciye git
+              </Link>
+            </div>
+            <div className="mt-6 grid gap-4 md:grid-cols-3">
+              {[
+                ["Güç sınıfı", storeProfile.powerTier, storeProfile.chargeSpeedHint],
+                ["Elektrik altyapısı", storeProfile.phaseHint, storeProfile.installationHint],
+                ["Araç uyumu", storeProfile.connectorHint, storeProfile.primaryFit]
+              ].map(([label, value, detail]) => (
+                <div
+                  key={label}
+                  className="rounded-[22px] border border-outline-variant/35 bg-surface-container-low p-5"
+                >
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-on-surface-variant">
+                    {label}
+                  </p>
+                  <p className="mt-3 text-xl font-bold text-on-surface">{value}</p>
+                  <p className="mt-2 text-sm leading-6 text-on-surface-variant">
+                    {detail}
+                  </p>
+                </div>
+              ))}
+            </div>
+            <div className="mt-5 rounded-[22px] border border-primary/15 bg-primary/5 p-5">
+              <p className="text-sm font-semibold text-primary">
+                Satış öncesi not
+              </p>
+              <p className="mt-2 text-sm leading-7 text-on-surface-variant">
+                22 kW ve DC ürünlerde saha keşfi, pano kapasitesi ve kablo güzergahı
+                netleşmeden kurulum kapsamı kesinleştirilmez. Bu yapı, ürün seçimini
+                hızlandırırken yanlış altyapı satın alımını azaltır.
+              </p>
+            </div>
+          </div>
         </section>
 
         <aside className="surface-card h-fit p-8">
@@ -217,6 +265,21 @@ export default async function ProductDetailPage({
           <p className="mt-4 text-lg leading-8 text-on-surface-variant">
             {product.description}
           </p>
+
+          <div className="mt-6 grid gap-3 sm:grid-cols-3">
+            {[
+              ["Güç", storeProfile.powerTier],
+              ["Kurulum", storeProfile.installationMode],
+              ["Uyum", storeProfile.connectorHint]
+            ].map(([label, value]) => (
+              <div key={label} className="rounded-2xl bg-surface-container-low px-4 py-3">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-on-surface-variant">
+                  {label}
+                </p>
+                <p className="mt-1 text-sm font-bold leading-5 text-on-surface">{value}</p>
+              </div>
+            ))}
+          </div>
 
           <ProductPurchasePanel
             product={product}

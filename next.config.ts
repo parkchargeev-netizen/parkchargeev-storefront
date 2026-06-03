@@ -2,6 +2,7 @@ import { withSentryConfig } from "@sentry/nextjs";
 import type { NextConfig } from "next";
 
 const isProduction = process.env.NODE_ENV === "production";
+const sentryIngestOrigin = "https://o4511393003077632.ingest.de.sentry.io";
 
 const contentSecurityPolicy = [
   "default-src 'self'",
@@ -9,7 +10,7 @@ const contentSecurityPolicy = [
   "form-action 'self' https://www.paytr.com",
   "frame-ancestors 'self'",
   "frame-src 'self' https://www.paytr.com https://www.google.com https://maps.google.com",
-  `connect-src 'self' https://www.paytr.com${isProduction ? "" : " ws: http: https:"}`,
+  `connect-src 'self' https://www.paytr.com ${sentryIngestOrigin}${isProduction ? "" : " ws: http: https:"}`,
   "img-src 'self' data: blob: https:",
   "font-src 'self' data: https://fonts.gstatic.com",
   "style-src 'self' 'unsafe-inline'",
