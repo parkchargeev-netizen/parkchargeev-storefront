@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { ProductGallery } from "@/components/shop/product-gallery";
 import { ProductCard } from "@/components/shop/product-card";
 import { ProductPurchasePanel } from "@/components/shop/product-purchase-panel";
+import { getDisplayProductImageUrl } from "@/lib/product-media";
 import { getProductDetailContent } from "@/lib/product-detail-content";
 import { getProductStoreProfile } from "@/lib/shop-merchandising";
 import {
@@ -84,7 +85,7 @@ export default async function ProductDetailPage({
   const detailContent = getProductDetailContent(product);
   const storeProfile = getProductStoreProfile(product);
   const mediaItems = detailContent.galleryItems;
-  const productImageUrl = product.imageUrl ?? `/api/og/product/${product.slug}`;
+  const productImageUrl = getDisplayProductImageUrl(product.imageUrl);
   const breadcrumbJsonLd = getBreadcrumbJsonLd([
     { name: "Ana Sayfa", path: "/" },
     { name: "Mağaza", path: "/magaza" },

@@ -16,10 +16,10 @@ export function SiteMobileMenu({ navigation }: SiteMobileMenuProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const Icon = isOpen ? X : Menu;
-  const buttonLabel = isOpen ? "Menüyü kapat / Close menu" : "Menüyü aç / Open menu";
+  const buttonLabel = isOpen ? "Menüyü kapat" : "Menüyü aç";
 
   return (
-    <div className="xl:hidden">
+    <div className="lg:hidden">
       <button
         id="mobile-menu-toggle"
         type="button"
@@ -32,7 +32,7 @@ export function SiteMobileMenu({ navigation }: SiteMobileMenuProps) {
         data-testid="mobile-menu-toggle"
         title={buttonLabel}
         onClick={() => setIsOpen((current) => !current)}
-        className="menu-toggle mobile-menu-toggle site-mobile-menu-toggle hamburger hamburger-menu inline-flex h-11 w-11 items-center justify-center rounded-xl border border-outline-variant/45 bg-white text-on-surface transition hover:border-primary/35 hover:text-primary"
+        className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-outline-variant/45 bg-white text-on-surface transition hover:border-primary/35 hover:text-primary"
       >
         <Icon className="h-5 w-5" aria-hidden="true" />
       </button>
@@ -41,10 +41,10 @@ export function SiteMobileMenu({ navigation }: SiteMobileMenuProps) {
         <div
           id="site-mobile-menu"
           data-testid="site-mobile-menu"
-          className="absolute left-0 top-full w-full border-b border-outline-variant/40 bg-white shadow-[0_18px_48px_rgba(15,23,42,0.12)]"
+          className="absolute left-0 top-full w-full border-b border-white/20 bg-slate-950/94 text-white shadow-[0_22px_60px_rgba(15,23,42,0.22)] backdrop-blur-2xl"
         >
-          <div className="mx-auto grid max-w-7xl gap-4 px-6 py-5">
-            <nav aria-label="Mobil site menüsü" className="grid gap-2">
+          <div className="mx-auto grid max-w-7xl gap-5 px-4 py-5 sm:px-6">
+            <nav aria-label="Mobil site menüsü" className="grid grid-cols-2 gap-2">
               {navigation.map((item) => (
                 <Link
                   key={item.href}
@@ -60,13 +60,13 @@ export function SiteMobileMenu({ navigation }: SiteMobileMenuProps) {
                     setIsOpen(false);
                     router.push(item.href);
                   }}
-                  className="rounded-2xl bg-surface-container-low px-4 py-3 text-sm font-semibold text-on-surface transition hover:text-primary"
+                  className="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm font-black text-white/80 transition hover:border-primary/35 hover:text-white"
                 >
                   {item.label}
                 </Link>
               ))}
             </nav>
-            <SiteHeaderActions className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-3" />
+            <SiteHeaderActions className="grid grid-cols-5 gap-2" />
           </div>
         </div>
       ) : null}

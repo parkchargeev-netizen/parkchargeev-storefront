@@ -47,6 +47,11 @@ export function ProductPurchasePanel({
           100
       )
     : null;
+  const purchaseTrustSignals = [
+    { label: "Uyum", detail: storeProfile.connectorHint },
+    { label: "Kurulum", detail: storeProfile.installationMode },
+    { label: "Güven", detail: "PayTR + garanti" }
+  ];
 
   function handleAddToCart() {
     if (isOutOfStock) {
@@ -70,7 +75,7 @@ export function ProductPurchasePanel({
   return (
     <>
       <div className="mt-8 flex flex-wrap items-end gap-4">
-        <p className="text-5xl font-black tracking-[-0.08em] text-primary">
+        <p className="text-5xl font-black text-primary">
           {formatPriceTRY(selectedOption.priceKurus)}
         </p>
         {selectedOption.compareAtKurus ? (
@@ -87,8 +92,22 @@ export function ProductPurchasePanel({
         ) : null}
       </div>
 
+      <div className="mt-5 grid gap-2 sm:grid-cols-3">
+        {purchaseTrustSignals.map((signal) => (
+          <div key={signal.label} className="rounded-2xl border border-outline-variant/35 bg-white px-4 py-3">
+            <p className="text-[10px] font-semibold uppercase text-on-surface-variant">
+              {signal.label}
+            </p>
+            <p className="mt-1 text-sm font-bold leading-5 text-on-surface">{signal.detail}</p>
+          </div>
+        ))}
+      </div>
+      <p className="mt-3 rounded-2xl bg-surface-container-low px-4 py-3 text-xs leading-5 text-on-surface-variant">
+        Pano, faz, kablo hattı ve koruma ekipmanı keşifte kontrol edilir; emin değilseniz ürün + keşif akışıyla ilerleyin.
+      </p>
+
       <div className="mt-8 rounded-[24px] bg-surface-container-low p-6">
-        <p className="text-sm font-semibold uppercase tracking-[0.3em] text-on-surface-variant">
+        <p className="text-sm font-semibold uppercase text-on-surface-variant">
           Sipariş detayları
         </p>
 

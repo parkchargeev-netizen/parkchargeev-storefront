@@ -2,8 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { ProductCompareMarker } from "@/components/shop/product-compare-marker";
-import type { ProductModel } from "@/lib/mock-data";
+import { ProductDevicePreview } from "@/components/shop/product-device-preview";
 import { formatPriceTRY } from "@/lib/format";
+import type { ProductModel } from "@/lib/mock-data";
+import { getDisplayProductImageUrl } from "@/lib/product-media";
 import { getProductStoreProfile } from "@/lib/shop-merchandising";
 
 type ProductCardProps = {
@@ -11,39 +13,47 @@ type ProductCardProps = {
 };
 
 export function ProductCard({ product }: ProductCardProps) {
-  const imageUrl = product.imageUrl ?? `/api/og/product/${product.slug}`;
   const profile = getProductStoreProfile(product);
+  const isOutOfStock = product.stockLabel === "Stokta Yok";
+  const imageUrl = getDisplayProductImageUrl(product.imageUrl);
 
   return (
-    <article className="surface-card flex h-full flex-col p-5">
-      <div className="mb-5 overflow-hidden rounded-[22px] bg-surface-container">
-        <Image
-          src={imageUrl}
-          alt={product.name}
-          width={640}
-          height={480}
-          loading="lazy"
-          unoptimized
-          sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-          className="aspect-[4/3] w-full object-cover"
-        />
+    <article className="surface-card group flex h-full flex-col p-4 transition hover:-translate-y-0.5 hover:border-primary/30">
+      <div className="relative mb-4 overflow-hidden rounded-[20px] bg-surface-container">
+        {imageUrl ? (
+          <Image
+            src={imageUrl}
+            alt={product.name}
+            width={640}
+            height={480}
+            loading="lazy"
+            unoptimized
+            sizes="(min-width: 1280px) 25vw, (min-width: 768px) 50vw, 100vw"
+            className="aspect-[4/3] w-full object-cover transition duration-300 group-hover:scale-[1.02]"
+          />
+        ) : (
+          <ProductDevicePreview
+            productName={product.name}
+            powerLabel={product.powerLabel}
+            className="transition duration-300 group-hover:scale-[1.02]"
+          />
+        )}
+        <div className="absolute left-3 top-3 flex items-center gap-2">
+          {product.badge ? (
+            <span className="rounded-full bg-secondary-container px-3 py-1 text-xs font-black text-secondary">
+              {product.badge}
+            </span>
+          ) : null}
+          <ProductCompareMarker productId={product.id} />
+        </div>
       </div>
 
-      <div className="mb-2 flex items-center gap-2">
-        <span className="text-xs font-semibold uppercase tracking-[0.22em] text-on-surface-variant">
-          {product.category}
-        </span>
-        {product.badge ? (
-          <span className="rounded-full bg-secondary-container px-2 py-1 text-[11px] font-semibold text-secondary">
-            {product.badge}
-          </span>
-        ) : null}
-        <ProductCompareMarker productId={product.id} />
-      </div>
+      <p className="text-xs font-black uppercase text-on-surface-variant">{product.category}</p>
+      <h3 className="mt-2 text-xl font-black leading-tight text-on-surface">{product.name}</h3>
+      <p className="mt-3 line-clamp-2 flex-1 text-sm leading-6 text-on-surface-variant">
+        {product.summary}
+      </p>
 
-      <h3 className="text-2xl font-bold tracking-[-0.03em] text-on-surface">
-        {product.name}
-      </h3>
       <div className="mt-4 grid grid-cols-3 gap-2">
         {[
           ["Güç", profile.powerTier],
@@ -51,49 +61,37 @@ export function ProductCard({ product }: ProductCardProps) {
           ["Kurulum", profile.installationMode]
         ].map(([label, value]) => (
           <div key={label} className="rounded-2xl bg-surface-container-low px-3 py-2">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-on-surface-variant">
-              {label}
-            </p>
-            <p className="mt-1 text-xs font-bold leading-5 text-on-surface">{value}</p>
+            <p className="text-[10px] font-black uppercase text-on-surface-variant">{label}</p>
+            <p className="mt-1 text-xs font-black leading-5 text-on-surface">{value}</p>
           </div>
         ))}
       </div>
-      <p className="mt-3 flex-1 text-sm leading-6 text-on-surface-variant">
-        {product.summary}
-      </p>
 
-      <div className="mt-5 grid gap-2 text-xs font-semibold text-on-surface-variant">
-        <div className="flex items-center justify-between rounded-2xl bg-surface-container-low px-3 py-2">
-          <span>Stok</span>
-          <span className={product.stockLabel === "Stokta Yok" ? "text-red-600" : "text-secondary"}>
-            {product.stockLabel}
-          </span>
-        </div>
-        <div className="flex items-center justify-between rounded-2xl bg-surface-container-low px-3 py-2">
-          <span>Kargo</span>
-          <span className="text-secondary">Ücretsiz</span>
-        </div>
-        <div className="flex items-center justify-between rounded-2xl bg-surface-container-low px-3 py-2">
-          <span>Seçim</span>
-          <span className="text-primary">{profile.decisionBadge}</span>
-        </div>
+      <div className="mt-4 flex flex-wrap items-center gap-2 text-xs font-black">
+        <span className={isOutOfStock ? "text-red-600" : "text-secondary"}>
+          {product.stockLabel}
+        </span>
+        <span className="text-on-surface-variant">Ücretsiz kargo</span>
+        <span className="text-primary">{profile.decisionBadge}</span>
       </div>
 
-      <div className="mt-6 flex items-end justify-between gap-4">
-        <div>
-          <p className="text-3xl font-black tracking-[-0.04em] text-primary">
-            {formatPriceTRY(product.priceKurus)}
-          </p>
-          <p className="mt-1 text-xs uppercase tracking-[0.24em] text-on-surface-variant">
-            {product.powerLabel}
-          </p>
-        </div>
+      <div className="mt-5">
+        <p className="text-3xl font-black text-primary">{formatPriceTRY(product.priceKurus)}</p>
+        <p className="mt-1 text-xs font-bold uppercase text-on-surface-variant">{product.powerLabel}</p>
+      </div>
 
+      <div className="mt-4 grid gap-2 sm:grid-cols-[1fr_auto]">
         <Link
           href={`/urun/${product.slug}`}
-          className="rounded-2xl bg-primary px-4 py-3 text-sm font-semibold text-white transition hover:bg-primary-container"
+          className="inline-flex min-h-11 items-center justify-center rounded-2xl bg-primary px-4 py-3 text-sm font-black text-white transition hover:bg-primary-container"
         >
-          İncele
+          Ürünü İncele
+        </Link>
+        <Link
+          href={`/iletisim?reason=${encodeURIComponent(`${product.name} kurulum keşfi`)}`}
+          className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-primary/20 bg-white px-4 py-3 text-sm font-black text-primary transition hover:border-primary/45"
+        >
+          Keşif
         </Link>
       </div>
     </article>

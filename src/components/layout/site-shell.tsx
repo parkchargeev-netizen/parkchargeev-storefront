@@ -11,9 +11,15 @@ type SiteShellProps = {
 
 export function SiteShell({ children, navigation }: SiteShellProps) {
   return (
-    <>
+    <div className="site-experience-shell">
+      <div className="site-ambient-background" aria-hidden>
+        <span className="site-ambient-background__line site-ambient-background__line--one" />
+        <span className="site-ambient-background__line site-ambient-background__line--two" />
+        <span className="site-ambient-background__pulse site-ambient-background__pulse--one" />
+        <span className="site-ambient-background__pulse site-ambient-background__pulse--two" />
+      </div>
       <SiteHeader navigation={navigation?.primary} />
-      <main>{children}</main>
+      <main className="relative z-10">{children}</main>
       <SiteFooter
         navigation={
           navigation
@@ -24,6 +30,6 @@ export function SiteShell({ children, navigation }: SiteShellProps) {
             : undefined
         }
       />
-    </>
+    </div>
   );
 }
