@@ -20,6 +20,10 @@ export function LeadForm({
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const fieldClassName = compact
+    ? "rounded-2xl border border-outline-variant/45 bg-white/90 px-4 py-3 text-sm outline-none transition focus:border-primary"
+    : "rounded-2xl border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary";
+  const labelClassName = compact ? "grid gap-1.5" : "grid gap-2";
 
   async function submitLead(
     payload: Record<string, FormDataEntryValue>,
@@ -64,16 +68,16 @@ export function LeadForm({
   }
 
   return (
-    <div className="surface-card p-8">
-      <p className="text-sm font-semibold uppercase tracking-[0.3em] text-primary">
+    <div className={`lead-form-card surface-card ${compact ? "lead-form-card--compact p-5 lg:p-6" : "p-8"}`}>
+      <p className="text-xs font-black uppercase text-primary">
         {title}
       </p>
-      <p className="mt-4 max-w-2xl text-base leading-7 text-on-surface-variant">
+      <p className={`${compact ? "mt-2 text-sm leading-6" : "mt-4 text-base leading-7"} max-w-2xl text-on-surface-variant`}>
         {description}
       </p>
 
       <form
-        className="mt-8 grid gap-4 md:grid-cols-2"
+        className={`${compact ? "mt-5 gap-3" : "mt-8 gap-4"} grid md:grid-cols-2`}
         onSubmit={(event) => {
           event.preventDefault();
           setMessage(null);
@@ -86,27 +90,27 @@ export function LeadForm({
           void submitLead(payload, form);
         }}
       >
-        <label className="grid gap-2">
+        <label className={labelClassName}>
           <span className="text-sm text-on-surface-variant">Ad Soyad</span>
           <input
             required
             autoComplete="name"
             name="fullName"
             placeholder="Ad Soyad"
-            className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary"
+            className={fieldClassName}
           />
         </label>
 
-        <label className="grid gap-2">
+        <label className={labelClassName}>
           <span className="text-sm text-on-surface-variant">Firma / Site Adı</span>
           <input
             name="company"
             placeholder="Opsiyonel"
-            className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary"
+            className={fieldClassName}
           />
         </label>
 
-        <label className="grid gap-2">
+        <label className={labelClassName}>
           <span className="text-sm text-on-surface-variant">E-posta</span>
           <input
             required
@@ -114,11 +118,11 @@ export function LeadForm({
             autoComplete="email"
             name="email"
             placeholder="ornek@parkchargeev.com"
-            className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary"
+            className={fieldClassName}
           />
         </label>
 
-        <label className="grid gap-2">
+        <label className={labelClassName}>
           <span className="text-sm text-on-surface-variant">Telefon</span>
           <input
             required
@@ -127,30 +131,30 @@ export function LeadForm({
             inputMode="tel"
             name="phone"
             placeholder="05xx xxx xx xx"
-            className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary"
+            className={fieldClassName}
           />
-          <span id="lead-phone-help" className="text-xs leading-5 text-on-surface-variant">
+          <span id="lead-phone-help" className={`${compact ? "sr-only" : "text-xs leading-5 text-on-surface-variant"}`}>
             Kesif randevusu ve teklif netlestirme icin kullanilir.
           </span>
         </label>
 
-        <label className="grid gap-2">
+        <label className={labelClassName}>
           <span className="text-sm text-on-surface-variant">Şehir</span>
           <input
             required
             name="city"
             placeholder="Sakarya"
-            className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary"
+            className={fieldClassName}
           />
         </label>
 
-        <label className="grid gap-2">
+        <label className={labelClassName}>
           <span className="text-sm text-on-surface-variant">Talep Tipi</span>
           <select
             required
             name="reason"
             defaultValue={defaultReason ?? ""}
-            className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary"
+            className={fieldClassName}
           >
             <option value="" disabled>
               Talep tipi seçin
@@ -163,18 +167,18 @@ export function LeadForm({
           </select>
         </label>
 
-        <label className="grid gap-2 md:col-span-2">
+        <label className={`${labelClassName} md:col-span-2`}>
           <span className="text-sm text-on-surface-variant">İhtiyaç Özeti</span>
           <textarea
             required
             name="message"
-            rows={compact ? 4 : 6}
+            rows={compact ? 3 : 6}
             placeholder="Araç adedi, kullanım tipi, lokasyon ve beklentinizi paylaşın."
-            className="rounded-3xl border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary"
+            className={`${fieldClassName} min-h-0 resize-y rounded-3xl`}
           />
         </label>
 
-        <label className="md:col-span-2 flex items-start gap-3 rounded-2xl bg-surface-container-low px-4 py-4 text-sm text-on-surface-variant">
+        <label className={`${compact ? "px-4 py-3 text-xs leading-5" : "px-4 py-4 text-sm"} md:col-span-2 flex items-start gap-3 rounded-2xl bg-surface-container-low text-on-surface-variant`}>
           <input
             required
             type="checkbox"
@@ -189,7 +193,7 @@ export function LeadForm({
           <button
             type="submit"
             disabled={isSubmitting}
-            className="rounded-2xl bg-linear-to-r from-primary to-secondary px-6 py-4 text-base font-semibold text-white disabled:opacity-70"
+            className={`${compact ? "px-5 py-3 text-sm" : "px-6 py-4 text-base"} rounded-2xl bg-linear-to-r from-primary to-secondary font-black text-white disabled:opacity-70`}
           >
             {isSubmitting ? "Gönderiliyor..." : "Talebi Gönder"}
           </button>

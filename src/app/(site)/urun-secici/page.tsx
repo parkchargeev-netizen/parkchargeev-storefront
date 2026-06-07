@@ -23,7 +23,7 @@ export default function ProductSelectorPage() {
   ]);
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
+    <div className="selector-page mx-auto max-w-7xl px-6 py-12 lg:px-8">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: stringifyJsonLd(breadcrumbJsonLd) }}

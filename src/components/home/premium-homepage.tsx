@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
+import { AnimatedMetricValue } from "@/components/home/animated-metric-value";
 import { ChargingVisual } from "@/components/home/charging-visual";
 import { ProductCard } from "@/components/shop/product-card";
 import {
@@ -102,10 +103,9 @@ function PremiumHero({ whatsappHref }: { whatsappHref: string }) {
   return (
     <section className="premium-hero relative isolate overflow-hidden">
       <div className="premium-hero__mesh" aria-hidden />
-      <ChargingVisual />
 
-      <div className="relative z-10 mx-auto flex min-h-[calc(100vh-80px)] max-w-7xl items-center px-4 py-14 sm:px-6 lg:px-8">
-        <div className="max-w-3xl">
+      <div className="premium-hero__inner relative z-10 mx-auto grid min-h-[calc(100vh-80px)] max-w-7xl items-center gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[minmax(0,0.88fr)_minmax(28rem,0.82fr)] lg:px-8">
+        <div className="premium-hero__copy max-w-[38rem]">
           <div className="flex flex-wrap gap-2">
             {heroTrustSignals.map((item) => {
               const Icon = iconMap[item.icon];
@@ -122,10 +122,10 @@ function PremiumHero({ whatsappHref }: { whatsappHref: string }) {
           <p className="mt-8 text-xs font-black uppercase text-emerald-300">
             ParkChargeEV premium şarj platformu
           </p>
-          <h1 className="mt-4 max-w-4xl text-[2.55rem] font-black leading-[0.98] tracking-normal text-white sm:text-6xl lg:text-[4.5rem]">
+          <h1 className="mt-4 max-w-[38rem] text-[2.55rem] font-black leading-[0.98] tracking-normal text-white sm:text-6xl lg:text-[3.95rem]">
             Doğru cihaz. Güvenli kurulum. Net karar.
           </h1>
-          <p className="mt-6 max-w-2xl text-base leading-7 text-white/72 sm:text-lg">
+          <p className="mt-6 max-w-xl text-base leading-7 text-white/72 sm:text-lg">
             Ev, site ve işletmeniz için uyumlu cihazı bulun; keşif ve kurulum desteğiyle güvenle ilerleyin.
           </p>
 
@@ -153,6 +153,10 @@ function PremiumHero({ whatsappHref }: { whatsappHref: string }) {
             ))}
           </div>
         </div>
+
+        <div className="premium-hero__visual">
+          <ChargingVisual />
+        </div>
       </div>
     </section>
   );
@@ -164,7 +168,9 @@ function TrustMetrics({ metrics }: { metrics: TrustMetricModel[] }) {
       <div className="mx-auto grid max-w-7xl gap-3 px-4 sm:px-6 md:grid-cols-4 lg:px-8">
         {metrics.map((metric) => (
           <div key={metric.label} className="premium-metric-card">
-            <p className="text-2xl font-black text-primary">{metric.value}</p>
+            <p className="text-2xl font-black text-primary">
+              <AnimatedMetricValue value={metric.value} />
+            </p>
             <p className="mt-1 text-xs font-black uppercase text-on-surface-variant">
               {metric.label}
             </p>
@@ -262,7 +268,7 @@ function MotionStorySection() {
 
 function PowerChoiceSection() {
   return (
-    <section className="premium-section bg-white">
+    <section className="premium-section premium-light-section">
       <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
         <SectionHeading
           eyebrow="Güç seçimi"
@@ -353,7 +359,7 @@ function ProofAndResources({
   testimonials: TestimonialModel[];
 }) {
   return (
-    <section className="premium-section bg-white">
+    <section className="premium-section premium-light-section">
       <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[1fr_0.9fr] lg:px-8">
         <div>
           <SectionHeading
@@ -448,7 +454,6 @@ export function PremiumHomepage({
       <PremiumHero whatsappHref={whatsappHref} />
       <TrustMetrics metrics={trustMetrics} />
       <ConversionRoutes />
-      <MotionStorySection />
       <PowerChoiceSection />
       <ProductSpotlight products={featuredProducts} />
       <InstallationFlow />

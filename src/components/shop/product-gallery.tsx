@@ -22,7 +22,7 @@ export function ProductGallery({
   const activeItem = items[activeIndex] ?? items[0];
 
   return (
-    <div className="surface-card p-5">
+    <div className="product-gallery-premium surface-card p-5">
       <div className="overflow-hidden rounded-[28px] bg-linear-to-br from-secondary-container/20 via-white to-primary/12 p-6">
         <div className="relative grid aspect-[4/3] min-h-[340px] overflow-hidden rounded-[24px] bg-slate-950 px-6 py-7 text-white md:grid-cols-[1fr_0.8fr]">
           <div className="relative z-10 flex flex-col justify-between">

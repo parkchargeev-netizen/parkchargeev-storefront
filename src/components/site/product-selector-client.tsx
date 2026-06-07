@@ -145,8 +145,8 @@ export function ProductSelectorClient({ products }: { products: ProductModel[] }
   }
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
-      <section className="surface-card p-6 lg:p-8">
+    <div className="product-selector-experience grid gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+      <section className="selector-config-panel p-6 lg:p-8">
         <p className="text-sm font-semibold uppercase tracking-[0.28em] text-primary">
           Akıllı ürün seçici
         </p>
@@ -166,9 +166,9 @@ export function ProductSelectorClient({ products }: { products: ProductModel[] }
                   key={option.value}
                   type="button"
                   onClick={() => updateValue("parking", option.value)}
-                  className={`rounded-2xl border px-4 py-4 text-left transition ${
+                  className={`selector-option rounded-2xl border px-4 py-4 text-left transition ${
                     values.parking === option.value
-                      ? "border-primary bg-primary/5"
+                      ? "selector-option--active border-primary bg-primary/5"
                       : "border-outline-variant/45 bg-white hover:border-primary/40"
                   }`}
                 >
@@ -194,9 +194,9 @@ export function ProductSelectorClient({ products }: { products: ProductModel[] }
                   key={option.value}
                   type="button"
                   onClick={() => updateValue("phase", option.value)}
-                  className={`rounded-2xl border px-4 py-4 text-left transition ${
+                  className={`selector-option rounded-2xl border px-4 py-4 text-left transition ${
                     values.phase === option.value
-                      ? "border-primary bg-primary/5"
+                      ? "selector-option--active border-primary bg-primary/5"
                       : "border-outline-variant/45 bg-white hover:border-primary/40"
                   }`}
                 >
@@ -222,9 +222,9 @@ export function ProductSelectorClient({ products }: { products: ProductModel[] }
                   key={option.value}
                   type="button"
                   onClick={() => updateValue("priority", option.value)}
-                  className={`rounded-2xl border px-4 py-4 text-left transition ${
+                  className={`selector-option rounded-2xl border px-4 py-4 text-left transition ${
                     values.priority === option.value
-                      ? "border-primary bg-primary/5"
+                      ? "selector-option--active border-primary bg-primary/5"
                       : "border-outline-variant/45 bg-white hover:border-primary/40"
                   }`}
                 >
@@ -250,9 +250,9 @@ export function ProductSelectorClient({ products }: { products: ProductModel[] }
                   key={option.value}
                   type="button"
                   onClick={() => updateValue("vehicleCount", option.value)}
-                  className={`rounded-2xl border px-4 py-3 text-sm font-semibold transition ${
+                  className={`selector-option rounded-2xl border px-4 py-3 text-sm font-semibold transition ${
                     values.vehicleCount === option.value
-                      ? "border-primary bg-primary/5 text-primary"
+                      ? "selector-option--active border-primary bg-primary/5 text-primary"
                       : "border-outline-variant/45 bg-white text-on-surface hover:border-primary/40"
                   }`}
                 >
@@ -266,7 +266,7 @@ export function ProductSelectorClient({ products }: { products: ProductModel[] }
 
       <section className="space-y-5">
         {topRecommendation ? (
-          <article className="overflow-hidden rounded-[28px] bg-slate-950 p-7 text-white">
+          <article className="selector-result-card overflow-hidden rounded-[28px] bg-slate-950 p-7 text-white">
             <p className="text-sm font-semibold uppercase tracking-[0.28em] text-blue-200">
               En güçlü eşleşme
             </p>

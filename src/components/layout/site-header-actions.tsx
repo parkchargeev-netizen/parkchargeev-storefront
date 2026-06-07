@@ -1,4 +1,4 @@
-import { MessageCircle, Search, UserRound } from "lucide-react";
+import { ClipboardCheck, MessageCircle, Search, UserRound } from "lucide-react";
 import Link from "next/link";
 
 import { SiteCartLink } from "@/components/layout/site-cart-link";
@@ -18,7 +18,7 @@ export function SiteHeaderActions({ className = "" }: SiteHeaderActionsProps) {
       <Link
         href="/arama"
         aria-label="Arama"
-        className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-outline-variant/40 bg-white text-on-surface transition hover:border-primary/30 hover:text-primary"
+        className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-outline-variant/40 bg-white/86 text-on-surface transition hover:border-primary/30 hover:text-primary"
       >
         <Search className="h-5 w-5" aria-hidden />
       </Link>
@@ -33,15 +33,16 @@ export function SiteHeaderActions({ className = "" }: SiteHeaderActionsProps) {
       </a>
       <SiteCartLink />
       <Link
-        href="/iletisim"
-        className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-primary/20 bg-white px-4 py-2 text-sm font-black text-primary transition hover:border-primary/45"
+        href="/iletisim?reason=Ucretsiz%20kesif"
+        className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-primary to-secondary px-4 py-2 text-sm font-black text-white shadow-[0_14px_34px_rgba(0,68,211,0.2)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(0,68,211,0.25)]"
       >
+        <ClipboardCheck className="h-4 w-4" aria-hidden />
         Keşif Al
       </Link>
       <Link
         href="/giris"
         aria-label="Giriş Yap"
-        className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-white shadow-[0_12px_32px_rgba(0,68,211,0.22)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_36px_rgba(0,68,211,0.28)]"
+        className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-950 text-white shadow-[0_12px_32px_rgba(15,23,42,0.2)] transition hover:-translate-y-0.5 hover:bg-primary"
       >
         <UserRound className="h-5 w-5" aria-hidden />
       </Link>

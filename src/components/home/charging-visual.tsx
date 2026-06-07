@@ -1,43 +1,42 @@
-const signalDots = [
-  { left: "18%", top: "26%", delay: "0s" },
-  { left: "34%", top: "68%", delay: "0.6s" },
-  { left: "58%", top: "30%", delay: "1.2s" },
-  { left: "78%", top: "62%", delay: "1.8s" }
+"use client";
+
+import Image from "next/image";
+
+const energyParticles = [
+  { left: "18%", top: "24%", delay: "0s" },
+  { left: "42%", top: "62%", delay: "0.7s" },
+  { left: "66%", top: "35%", delay: "1.4s" },
+  { left: "84%", top: "54%", delay: "2.1s" }
 ] as const;
 
 export function ChargingVisual() {
   return (
-    <div className="charging-cinema" aria-hidden>
-      <div className="charging-cinema__screen">
-        <div className="charging-cinema__scan" />
-        <div className="charging-cinema__route" />
-        <div className="charging-cinema__station">
-          <span className="charging-cinema__station-screen" />
-          <span className="charging-cinema__station-ring" />
-          <span className="charging-cinema__station-led" />
-        </div>
-        <div className="charging-cinema__vehicle">
-          <span className="charging-cinema__vehicle-glass" />
-          <span className="charging-cinema__vehicle-charge" />
-        </div>
-        <div className="charging-cinema__wave charging-cinema__wave--one" />
-        <div className="charging-cinema__wave charging-cinema__wave--two" />
-        {signalDots.map((dot) => (
+    <div className="real-charger-media" aria-hidden>
+      <div className="real-charger-media__frame">
+        <Image
+          src="/images/hero-realistic-ev-charging.png"
+          alt=""
+          fill
+          priority
+          sizes="(min-width: 1024px) 46vw, 100vw"
+          className="real-charger-media__photo"
+        />
+        <span className="real-charger-media__shade" />
+        <span className="real-charger-media__scan" />
+        <span className="real-charger-media__charger-pulse" />
+        <span className="real-charger-media__cable-flow real-charger-media__cable-flow--one" />
+        <span className="real-charger-media__cable-flow real-charger-media__cable-flow--two" />
+        <span className="real-charger-media__lightline real-charger-media__lightline--one" />
+        <span className="real-charger-media__lightline real-charger-media__lightline--two" />
+        <span className="real-charger-media__floor-glow" />
+
+        {energyParticles.map((dot) => (
           <span
             key={`${dot.left}-${dot.top}`}
-            className="charging-cinema__dot"
+            className="real-charger-media__dot"
             style={{ left: dot.left, top: dot.top, animationDelay: dot.delay }}
           />
         ))}
-      </div>
-
-      <div className="charging-cinema__hud charging-cinema__hud--top">
-        <span>Canlı keşif</span>
-        <strong>11 kW AC</strong>
-      </div>
-      <div className="charging-cinema__hud charging-cinema__hud--bottom">
-        <span>Önerilen akış</span>
-        <strong>Ürün + kurulum</strong>
       </div>
     </div>
   );

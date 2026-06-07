@@ -11,10 +11,11 @@ export function ProductDevicePreview({
 }: ProductDevicePreviewProps) {
   return (
     <div
-      className={`relative flex aspect-[4/3] w-full items-center justify-center overflow-hidden bg-linear-to-br from-slate-950 via-primary to-secondary ${className}`}
+      className={`product-device-preview relative flex aspect-[4/3] w-full items-center justify-center overflow-hidden bg-linear-to-br from-slate-950 via-primary to-secondary ${className}`}
       role="img"
       aria-label={`${productName} temsili ürün görseli`}
     >
+      <span className="product-device-preview__beam" aria-hidden />
       <div className="absolute inset-0 opacity-25 [background-image:linear-gradient(rgba(255,255,255,.18)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.12)_1px,transparent_1px)] [background-size:34px_34px]" />
       <div className="absolute left-5 right-5 top-1/2 h-1 -translate-y-1/2 rounded-full bg-linear-to-r from-transparent via-secondary-container to-transparent shadow-[0_0_26px_rgba(107,255,143,0.58)]" />
       <div className="relative z-10 h-[68%] w-[38%] min-w-28 rounded-[2rem] border border-white/24 bg-white p-4 shadow-[0_26px_70px_rgba(0,0,0,0.34)]">

@@ -94,7 +94,7 @@ export default async function ProductDetailPage({
   const faqJsonLd = getFaqJsonLd(detailContent.faqs);
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-10 lg:px-8">
+    <div className="product-detail-page mx-auto max-w-7xl px-6 py-10 lg:px-8">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: stringifyJsonLd(productJsonLd) }}
@@ -122,7 +122,7 @@ export default async function ProductDetailPage({
         <span className="text-on-surface">{product.name}</span>
       </div>
 
-      <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
+      <div className="product-detail-hero grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
         <section>
           <ProductGallery
             productName={product.name}
@@ -248,7 +248,7 @@ export default async function ProductDetailPage({
           </div>
         </section>
 
-        <aside className="surface-card h-fit p-8">
+        <aside className="product-detail-buybox surface-card h-fit p-8">
           <div className="flex items-center gap-3">
             {product.badge ? (
               <span className="rounded-full bg-secondary-container px-3 py-2 text-sm font-semibold text-secondary">

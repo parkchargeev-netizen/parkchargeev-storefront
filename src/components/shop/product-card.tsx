@@ -18,8 +18,9 @@ export function ProductCard({ product }: ProductCardProps) {
   const imageUrl = getDisplayProductImageUrl(product.imageUrl);
 
   return (
-    <article className="surface-card group flex h-full flex-col p-4 transition hover:-translate-y-0.5 hover:border-primary/30">
-      <div className="relative mb-4 overflow-hidden rounded-[20px] bg-surface-container">
+    <article className="premium-product-card surface-card group flex h-full flex-col p-4 transition hover:-translate-y-0.5 hover:border-primary/30">
+      <div className="premium-product-card__media relative mb-4 overflow-hidden rounded-[20px] bg-surface-container">
+        <span className="premium-product-card__energy" aria-hidden />
         {imageUrl ? (
           <Image
             src={imageUrl}
@@ -48,7 +49,7 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
       </div>
 
-      <p className="text-xs font-black uppercase text-on-surface-variant">{product.category}</p>
+      <p className="premium-product-card__category text-xs font-black uppercase text-on-surface-variant">{product.category}</p>
       <h3 className="mt-2 text-xl font-black leading-tight text-on-surface">{product.name}</h3>
       <p className="mt-3 line-clamp-2 flex-1 text-sm leading-6 text-on-surface-variant">
         {product.summary}

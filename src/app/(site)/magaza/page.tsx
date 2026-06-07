@@ -195,7 +195,7 @@ export default async function StorePage({ searchParams }: StorePageProps) {
   ]);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="store-page mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: stringifyJsonLd(itemListJsonLd) }}
@@ -331,8 +331,8 @@ export default async function StorePage({ searchParams }: StorePageProps) {
           </div>
         </aside>
 
-        <section className="min-w-0">
-          <header className="mb-6 rounded-[24px] border border-outline-variant/40 bg-white/88 p-5 shadow-[0_16px_44px_rgba(19,27,46,0.06)] backdrop-blur">
+        <section className="store-results min-w-0">
+          <header className="store-results__header mb-6 rounded-[24px] border border-outline-variant/40 bg-white/88 p-5 shadow-[0_16px_44px_rgba(19,27,46,0.06)] backdrop-blur">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
                 <p className="text-sm font-black uppercase text-primary">Sonuçlar</p>
@@ -378,7 +378,7 @@ export default async function StorePage({ searchParams }: StorePageProps) {
               </Link>
             </div>
           ) : (
-            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            <div className="store-product-grid grid gap-5 md:grid-cols-2 xl:grid-cols-3">
               {sortedProducts.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
