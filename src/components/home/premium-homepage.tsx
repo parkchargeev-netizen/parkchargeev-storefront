@@ -226,60 +226,6 @@ function ConversionRoutes() {
   );
 }
 
-function MotionStorySection() {
-  const stories = [
-    ["Ürün", "81 il kargo", "Türkiye"],
-    ["Keşif", "Sakarya rota", "Ücretsiz"],
-    ["Kurulum", "Sakarya + Kocaeli", "Planlı"]
-  ] as const;
-
-  return (
-    <section className="premium-section premium-motion-section">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
-          <SectionHeading
-            eyebrow="Operasyon akışı"
-            title="Ürün, keşif ve kurulum rotası tek bakışta netleşsin."
-            body="Yeni EV sahibi, site yöneticisi ve işletme karar vericisi için belirsizliği azaltan kısa, görsel ve hızlı karar akışı."
-          />
-          <Link href="/urun-secici" className="premium-btn premium-btn--glass shrink-0">
-            Uygunluğu Kontrol Et
-          </Link>
-        </div>
-
-        <div className="mt-8 grid gap-4 lg:grid-cols-3">
-          {stories.map(([segment, title, metric], index) => (
-            <article key={segment} className="motion-story-card">
-              <div className="motion-story-card__visual">
-                <span className="motion-story-card__beam" />
-                <span className="motion-story-card__device" />
-                <span className="motion-story-card__socket" />
-                <span className="motion-story-card__pulse" />
-                <span className="motion-story-card__route-node motion-story-card__route-node--one" />
-                <span className="motion-story-card__route-node motion-story-card__route-node--two" />
-                <span className="motion-story-card__route-node motion-story-card__route-node--three" />
-              </div>
-              <div className="mt-5 flex items-end justify-between gap-4">
-                <div>
-                  <p className="text-xs font-black uppercase text-emerald-300">{segment}</p>
-                  <h3 className="mt-2 text-2xl font-black text-white">{title}</h3>
-                </div>
-                <span className="rounded-full bg-white/10 px-4 py-2 text-sm font-black text-white">
-                  {metric}
-                </span>
-              </div>
-              <div
-                className="motion-story-card__progress"
-                style={{ animationDelay: `${index * 0.8}s` }}
-              />
-            </article>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 function ShippingPulseSection() {
   const pulses = [
     {
@@ -315,26 +261,37 @@ function ShippingPulseSection() {
             <Link href="/magaza" className="premium-btn premium-btn--primary">
               Mağazayı İncele
             </Link>
-            <Link href="/urun-secici" className="premium-btn premium-btn--glass">
+            <Link href="/urun-secici" className="btn-secondary">
               Ürün Seçici
             </Link>
           </div>
         </div>
 
-        <div className="shipping-orbit" aria-label="81 il ürün kargosu ve bölgesel kurulum akışı">
-          <span className="shipping-orbit__map-grid" aria-hidden />
-          <span className="shipping-orbit__main-line" aria-hidden />
-          <span className="shipping-orbit__cargo shipping-orbit__cargo--one" aria-hidden />
-          <span className="shipping-orbit__cargo shipping-orbit__cargo--two" aria-hidden />
-          <span className="shipping-orbit__cargo shipping-orbit__cargo--three" aria-hidden />
-          <div className="shipping-orbit__cards">
-            {pulses.map((pulse) => (
-              <Link key={pulse.title} href={pulse.href} className="shipping-orbit__card">
-                <span>{pulse.label}</span>
-                <strong>{pulse.title}</strong>
-                <small>{pulse.body}</small>
-              </Link>
-            ))}
+        <div className="coverage-design-panel" aria-label="81 il ürün kargosu ve bölgesel kurulum kapsamı">
+          <div className="coverage-design-panel__summary">
+            <span className="coverage-design-panel__socket" aria-hidden>
+              <span />
+            </span>
+            <div>
+              <p>ParkChargeEV kapsamı</p>
+              <strong>81 il ürün kargosu</strong>
+              <small>Saha hizmeti Sakarya ve Kocaeli odağında planlanır.</small>
+            </div>
+          </div>
+
+          <div className="coverage-design-panel__cards">
+            {pulses.map((pulse, index) => {
+              const icon = index === 0 ? "truck" : index === 1 ? "clipboard" : "wrench";
+
+              return (
+                <Link key={pulse.title} href={pulse.href} className="coverage-design-card">
+                  <IconBadge icon={icon} className="coverage-design-card__icon" />
+                  <span>{pulse.label}</span>
+                  <strong>{pulse.title}</strong>
+                  <small>{pulse.body}</small>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -531,7 +488,6 @@ export function PremiumHomepage({
       <TrustMetrics metrics={trustMetrics} />
       <ShippingPulseSection />
       <ConversionRoutes />
-      <MotionStorySection />
       <PowerChoiceSection />
       <ProductSpotlight products={featuredProducts} />
       <InstallationFlow />

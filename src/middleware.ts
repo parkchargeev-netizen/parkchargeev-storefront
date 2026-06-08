@@ -171,7 +171,13 @@ function getUnauthorizedResponse(request: NextRequest) {
     );
   }
 
-  const loginUrl = new URL("/admin/login", request.url);
+  if (request.nextUrl.pathname === "/admin") {
+    const rewriteUrl = request.nextUrl.clone();
+    rewriteUrl.pathname = "/admin/login";
+    return applyAdminSecurityHeaders(NextResponse.rewrite(rewriteUrl));
+  }
+
+  const loginUrl = new URL("/admin", request.url);
   loginUrl.searchParams.set("redirectTo", request.nextUrl.pathname);
   return applyAdminSecurityHeaders(NextResponse.redirect(loginUrl));
 }
@@ -238,7 +244,11 @@ export async function middleware(request: NextRequest) {
     return getForbiddenResponse("Güvenlik doğrulaması başarısız oldu.");
   }
 
-  if (pathname === "/admin/login" || pathname === "/api/admin/auth/login") {
+  if (pathname === "/admin/login") {
+    return applyAdminSecurityHeaders(NextResponse.redirect(new URL("/admin", request.url)));
+  }
+
+  if (pathname === "/api/admin/auth/login") {
     return applyAdminSecurityHeaders(NextResponse.next());
   }
 

@@ -56,6 +56,7 @@ type StorePageProps = {
     sort?: string;
     power?: string;
     installation?: string;
+    view?: string;
   }>;
 };
 
@@ -68,13 +69,15 @@ function buildStoreHref({
   q,
   sort,
   power,
-  installation
+  installation,
+  view
 }: {
   category?: string;
   q?: string;
   sort?: string;
   power?: string;
   installation?: string;
+  view?: string;
 }) {
   const params = new URLSearchParams();
 
@@ -83,6 +86,7 @@ function buildStoreHref({
   if (sort && sort !== "recommended") params.set("sort", sort);
   if (power) params.set("power", power);
   if (installation) params.set("installation", installation);
+  if (view && view !== "grid") params.set("view", view);
 
   const query = params.toString();
   return query ? `/magaza?${query}` : "/magaza";
@@ -111,6 +115,7 @@ export default async function StorePage({ searchParams }: StorePageProps) {
   const selectedSort = sortOptions.some((option) => option.value === params.sort)
     ? (params.sort as (typeof sortOptions)[number]["value"])
     : "recommended";
+  const selectedView = params.view === "list" ? "list" : "grid";
 
   const searchScopedProducts = normalizedQuery
     ? products.filter((product) => {
@@ -161,6 +166,7 @@ export default async function StorePage({ searchParams }: StorePageProps) {
     query,
     selectedPower,
     selectedInstallation,
+    selectedView !== "grid" ? selectedView : "",
     selectedSort !== "recommended" ? selectedSort : ""
   ].filter(Boolean).length;
   const categoryFilters = [
@@ -260,6 +266,36 @@ export default async function StorePage({ searchParams }: StorePageProps) {
         </div>
       </section>
 
+      <section className="store-commerce-strip mt-6">
+        <div>
+          <p className="text-xs font-black uppercase text-primary">Hızlı kategori</p>
+          <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
+            {categoryFilters.map((filter) => (
+              <Link
+                key={`strip-${filter.label}`}
+                href={buildStoreHref({
+                  category: filter.value || undefined,
+                  q: query || undefined,
+                  sort: selectedSort,
+                  power: selectedPower || undefined,
+                  installation: selectedInstallation || undefined,
+                  view: selectedView
+                })}
+                className={`store-category-chip ${filter.active ? "store-category-chip--active" : ""}`}
+              >
+                {filter.label}
+                <span>{filter.count}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+        <div className="store-commerce-strip__badges">
+          <span>{serviceCoverageSummary.shipping}</span>
+          <span>PayTR güvenli ödeme</span>
+          <span>Keşifle kurulum netliği</span>
+        </div>
+      </section>
+
       <div className="mt-8 grid gap-8 lg:grid-cols-[300px_1fr]">
         <aside className="w-full lg:sticky lg:top-24 lg:h-fit">
           <form action="/magaza" className="surface-card p-5">
@@ -337,7 +373,8 @@ export default async function StorePage({ searchParams }: StorePageProps) {
                     q: query || undefined,
                     sort: selectedSort,
                     power: selectedPower || undefined,
-                    installation: selectedInstallation || undefined
+                    installation: selectedInstallation || undefined,
+                    view: selectedView
                   })}
                   className={`flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition ${
                     filter.active ? "bg-surface-container-low text-primary" : "hover:bg-surface-container-low"
@@ -360,14 +397,42 @@ export default async function StorePage({ searchParams }: StorePageProps) {
                   {sortedProducts.length} uygun seçenek
                 </h2>
               </div>
-              {(selectedCategory || query || selectedPower || selectedInstallation || selectedSort !== "recommended") ? (
+              <div className="flex flex-wrap items-center gap-2">
                 <Link
-                  href="/magaza"
-                  className="rounded-full border border-outline-variant/40 px-4 py-3 text-sm font-black text-primary"
+                  href={buildStoreHref({
+                    category: selectedCategory || undefined,
+                    q: query || undefined,
+                    sort: selectedSort,
+                    power: selectedPower || undefined,
+                    installation: selectedInstallation || undefined,
+                    view: "grid"
+                  })}
+                  className={`store-view-toggle ${selectedView === "grid" ? "store-view-toggle--active" : ""}`}
                 >
-                  Filtreleri temizle
+                  Kart
                 </Link>
-              ) : null}
+                <Link
+                  href={buildStoreHref({
+                    category: selectedCategory || undefined,
+                    q: query || undefined,
+                    sort: selectedSort,
+                    power: selectedPower || undefined,
+                    installation: selectedInstallation || undefined,
+                    view: "list"
+                  })}
+                  className={`store-view-toggle ${selectedView === "list" ? "store-view-toggle--active" : ""}`}
+                >
+                  Liste
+                </Link>
+                {(selectedCategory || query || selectedPower || selectedInstallation || selectedSort !== "recommended" || selectedView !== "grid") ? (
+                  <Link
+                    href="/magaza"
+                    className="rounded-full border border-outline-variant/40 px-4 py-3 text-sm font-black text-primary"
+                  >
+                    Filtreleri temizle
+                  </Link>
+                ) : null}
+              </div>
             </div>
 
             <div className="mt-5 grid gap-3 md:grid-cols-4">
@@ -399,9 +464,13 @@ export default async function StorePage({ searchParams }: StorePageProps) {
               </Link>
             </div>
           ) : (
-            <div className="store-product-grid grid gap-4">
+            <div className={selectedView === "list" ? "store-product-grid grid gap-4" : "store-product-grid store-product-grid--commerce grid gap-5 md:grid-cols-2 xl:grid-cols-3"}>
               {sortedProducts.map((product) => (
-                <ProductCard key={product.id} product={product} layout="store" />
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  layout={selectedView === "list" ? "store" : "standard"}
+                />
               ))}
             </div>
           )}

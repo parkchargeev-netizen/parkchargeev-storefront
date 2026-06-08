@@ -33,7 +33,7 @@ export function AdminSessionGuard() {
         method: "POST"
       });
     } finally {
-      router.push("/admin/login?reason=session_timeout");
+      router.push("/admin?reason=session_timeout");
       router.refresh();
     }
   }, [isLoggingOut, router]);

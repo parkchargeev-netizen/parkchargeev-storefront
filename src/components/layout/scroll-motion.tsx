@@ -5,7 +5,6 @@ import { useEffect } from "react";
 const motionSelectors = [
   ".premium-section > .mx-auto",
   ".premium-route-card",
-  ".motion-story-card",
   ".premium-power-card",
   ".premium-metric-card",
   ".premium-install-card",

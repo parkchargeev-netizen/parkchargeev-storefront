@@ -12,7 +12,7 @@ export default async function AdminPanelLayout({ children }: { children: ReactNo
   const authenticatedAdmin = await requireAdminRole();
 
   if (!authenticatedAdmin) {
-    redirect("/admin/login");
+    redirect("/admin");
   }
 
   return (

@@ -15,7 +15,7 @@ export function AdminLogoutButton() {
       await fetch("/api/admin/auth/logout", {
         method: "POST"
       });
-      router.push("/admin/login");
+      router.push("/admin");
       router.refresh();
     } finally {
       setIsPending(false);

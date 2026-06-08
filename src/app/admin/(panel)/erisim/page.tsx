@@ -24,7 +24,7 @@ export default async function AdminAccessMapPage() {
   const authenticatedAdmin = await requireAdminRole();
 
   if (!authenticatedAdmin) {
-    redirect("/admin/login");
+    redirect("/admin");
   }
 
   const links = getAdminAccessLinks(authenticatedAdmin.session.role);
