@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 
 import { LeadForm } from "@/components/forms/lead-form";
-import { ManagedPageRenderer } from "@/components/site/managed-page-renderer";
 import { resolveContactReason } from "@/lib/contact-reasons";
-import { globalFaqs, trustMetrics } from "@/lib/mock-data";
+import { globalFaqs } from "@/lib/mock-data";
 import { serviceCoverageSummary } from "@/lib/service-coverage";
 import { absoluteUrl, siteConfig } from "@/lib/site";
 import {
@@ -101,28 +100,50 @@ function ContactInfoCards() {
           {siteConfig.email}
         </p>
       </div>
-      <div className="contact-info-card surface-card p-4">
-        <p className="text-xs font-black uppercase text-on-surface-variant">
-          Merkez Ofis
-        </p>
-        <p className="mt-2 text-sm font-bold leading-6 text-on-surface">{officeAddress()}</p>
-      </div>
-      <OfficeMapCard />
     </div>
   );
 }
 
-function ManagedContactDetails({ defaultReason }: { defaultReason?: string }) {
+function ContactOnePage({ defaultReason }: { defaultReason?: string }) {
   return (
-    <section className="contact-layout mx-auto grid max-w-7xl gap-5 px-6 pb-10 lg:grid-cols-[0.78fr_1.22fr] lg:px-8">
-      <ContactInfoCards />
-      <LeadForm
-        title="Teklif, keşif ve destek formu"
-        description={`Ev, site, işletme veya ticari saha ihtiyacınızı paylaşın. ${serviceCoverageSummary.shipping}; ${serviceCoverageSummary.freeSurvey}; ${serviceCoverageSummary.installation}.`}
-        compact
-        defaultReason={defaultReason}
-      />
-    </section>
+    <div className="contact-page contact-page--onepage mx-auto max-w-[92rem] px-4 py-4 sm:px-6 lg:px-8">
+      <ContactJsonLd />
+
+      <section className="contact-onepage-shell">
+        <div className="contact-onepage-intro">
+          <p className="premium-eyebrow">Teklif ve keşif</p>
+          <h1>Projenizi paylaşın, doğru şarj çözümünü aynı ekranda netleştirelim.</h1>
+          <p>
+            Ev tipi cihaz, site/apartman altyapısı, işletme otoparkı veya teknik destek
+            talebiniz doğru ekibe yönlendirilir.
+          </p>
+          <div className="contact-onepage-coverage">
+            <span>{serviceCoverageSummary.shipping}</span>
+            <span>{serviceCoverageSummary.freeSurvey}</span>
+            <span>{serviceCoverageSummary.installation}</span>
+          </div>
+          <ContactInfoCards />
+        </div>
+
+        <LeadForm
+          title="Teklif, keşif ve destek formu"
+          description="İhtiyacınızı seçin; ürün, keşif veya kurulum adımını hızlıca planlayalım."
+          compact
+          defaultReason={defaultReason}
+        />
+
+        <aside className="contact-onepage-side">
+          <OfficeMapCard />
+          <div className="contact-service-note surface-card p-4">
+            <p className="text-xs font-black uppercase text-primary">Hızlı not</p>
+            <p className="mt-2 text-sm font-bold leading-6 text-on-surface-variant">
+              Ürün kargosu 81 ile yapılır. Ücretsiz keşif Sakarya, kurulum Sakarya ve
+              Kocaeli odağında planlanır.
+            </p>
+          </div>
+        </aside>
+      </section>
+    </div>
   );
 }
 
@@ -155,88 +176,6 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function ContactPage({ searchParams }: ContactPageProps) {
   const params = searchParams ? await searchParams : undefined;
   const defaultReason = getDefaultReason(params);
-  const page = await getPublishedSitePageBySlug("iletisim");
 
-  if (page) {
-    return (
-      <>
-        <ContactJsonLd />
-        <ManagedPageRenderer page={page} />
-        <ManagedContactDetails defaultReason={defaultReason} />
-      </>
-    );
-  }
-
-  return (
-    <div className="contact-page mx-auto max-w-7xl px-6 py-8 lg:px-8">
-      <ContactJsonLd />
-
-      <section className="contact-hero-grid grid min-h-[calc(100vh-104px)] gap-5 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
-        <div>
-          <p className="text-xs font-black uppercase text-primary">
-            Teklif ve keşif
-          </p>
-          <h1 className="mt-3 text-4xl font-black leading-tight text-on-surface lg:text-5xl">
-            Projenizi paylaşın,
-            <span className="text-gradient"> doğru şarj çözümünü birlikte netleştirelim</span>
-          </h1>
-          <p className="mt-4 max-w-2xl text-base leading-7 text-on-surface-variant">
-            Ev tipi kurulum, site/apartman altyapısı, işletme otoparkı, ticari
-            lokasyon yatırımı veya teknik destek talebiniz için doğru ekibe yönlendirilirsiniz.
-            {` ${serviceCoverageSummary.shipping}; ${serviceCoverageSummary.freeSurvey}; ${serviceCoverageSummary.installation}.`}
-          </p>
-
-          <div className="mt-5">
-            <ContactInfoCards />
-          </div>
-        </div>
-
-        <LeadForm
-          title="Teklif, keşif ve destek formu"
-          description={`İhtiyacınızı seçin; ürün, keşif, kurulum veya destek adımını birlikte netleştirelim. ${serviceCoverageSummary.shipping}; ${serviceCoverageSummary.freeSurvey}; ${serviceCoverageSummary.installation}.`}
-          compact
-          defaultReason={defaultReason}
-        />
-      </section>
-
-      <section className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {trustMetrics.map((metric) => (
-          <div key={metric.label} className="surface-card p-5">
-            <p className="text-xs font-black uppercase text-on-surface-variant">
-              {metric.label}
-            </p>
-            <p className="mt-2 text-3xl font-black text-primary">
-              {metric.value}
-            </p>
-            <p className="mt-2 text-sm leading-6 text-on-surface-variant">
-              {metric.detail}
-            </p>
-          </div>
-        ))}
-      </section>
-
-      <section className="mt-10">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <p className="text-xs font-black uppercase text-secondary">
-              Sık sorulan sorular
-            </p>
-            <h2 className="mt-3 text-3xl font-black text-on-surface">
-              İletişim öncesi netlik
-            </h2>
-          </div>
-        </div>
-        <div className="mt-5 grid gap-3">
-          {globalFaqs.map((item) => (
-            <article key={item.question} className="surface-card p-5">
-              <h3 className="text-lg font-black text-on-surface">{item.question}</h3>
-              <p className="mt-2 text-sm leading-6 text-on-surface-variant">
-                {item.answer}
-              </p>
-            </article>
-          ))}
-        </div>
-      </section>
-    </div>
-  );
+  return <ContactOnePage defaultReason={defaultReason} />;
 }

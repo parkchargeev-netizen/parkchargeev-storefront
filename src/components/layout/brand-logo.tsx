@@ -11,47 +11,41 @@ export function BrandLogo({
   tone = "dark",
   showWordmark = true
 }: BrandLogoProps) {
-  const textClass = tone === "light" ? "text-[#7eecc9]" : "text-[#063326]";
-  const mutedTextClass = tone === "light" ? "text-white/84" : "text-[#0f8f6f]";
+  const logoToneClass = tone === "light" ? "brand-logo--light" : "brand-logo--dark";
 
   return (
-    <span className={`inline-flex items-center gap-2.5 ${className}`} aria-label={siteConfig.name}>
-      <span className="relative grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-[1.15rem] bg-[#063326] shadow-[0_16px_36px_rgba(6,51,38,0.22)]">
-        <span className="absolute inset-0 bg-[radial-gradient(circle_at_32%_20%,rgba(126,236,201,0.26),transparent_48%)]" />
+    <span className={`brand-logo ${logoToneClass} ${className}`} aria-label={siteConfig.name}>
+      <span className="brand-logo__mark">
+        <span className="brand-logo__mark-glow" />
         <svg
           viewBox="0 0 64 64"
-          className="relative h-9 w-9"
+          className="brand-logo__icon"
           role="img"
           aria-hidden="true"
           focusable="false"
         >
-          <circle cx="32" cy="32" r="27" fill="none" stroke="#7eecc9" strokeWidth="5" />
+          <circle cx="32" cy="32" r="25.5" fill="none" stroke="#7eecc9" strokeWidth="4.6" />
+          <circle cx="32" cy="32" r="16.5" fill="rgba(126,236,201,0.12)" stroke="rgba(126,236,201,0.34)" strokeWidth="1.6" />
           <path
-            d="M18.5 36.8c1.4-7.2 6.6-10.8 12.7-10.8h7.2c5.3 0 7.7 3.1 9.5 7.4 1.1 2.6-.7 5.8-3.6 5.8h-2.6c-1.9 0-3.3-1.2-4-2.7H27.5c-.8 1.6-2.3 2.7-4.1 2.7h-1.8c-2 0-3.5-1-3.1-2.4Z"
+            d="M18.8 37.1c1.35-7 6.45-10.55 12.4-10.55h7.4c5.15 0 7.55 3.05 9.28 7.2 1.08 2.58-.68 5.68-3.52 5.68h-2.64c-1.78 0-3.18-1.08-3.92-2.56H27.45c-.78 1.5-2.22 2.56-3.98 2.56h-1.76c-2.02 0-3.34-.96-2.91-2.33Z"
             fill="none"
             stroke="#7eecc9"
             strokeLinecap="round"
             strokeLinejoin="round"
-            strokeWidth="4.2"
+            strokeWidth="4"
           />
           <path
-            d="M35.1 17.8 26.8 33h6.4l-4.1 13.2 10.4-17.4h-6.1l1.7-11Z"
+            d="M35.35 16.9 26.8 32.5h6.35l-4 14.4 10.6-18.55h-6.12l1.72-11.45Z"
             fill="#7eecc9"
           />
         </svg>
       </span>
 
       {showWordmark ? (
-        <span className="brand-display grid leading-[0.82]" aria-hidden="true">
-          <span className={`text-[0.92rem] font-black uppercase tracking-[0.08em] ${textClass}`}>
-            Park
-          </span>
-          <span className={`text-[0.92rem] font-black uppercase tracking-[0.08em] ${textClass}`}>
-            Charge
-          </span>
-          <span className={`text-[0.92rem] font-black uppercase tracking-[0.08em] ${mutedTextClass}`}>
-            EV
-          </span>
+        <span className="brand-logo__wordmark brand-display" aria-hidden="true">
+          <span>PARK</span>
+          <span>CHARGE</span>
+          <strong>EV</strong>
         </span>
       ) : null}
     </span>

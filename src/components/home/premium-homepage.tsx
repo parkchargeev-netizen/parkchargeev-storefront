@@ -226,72 +226,59 @@ function ConversionRoutes() {
   );
 }
 
-function ShippingPulseSection() {
-  const pulses = [
+function CoverageRouteSection() {
+  const coverageItems = [
     {
+      icon: "truck",
       label: "81 il",
-      title: "Ürün kargosu",
-      body: "Wallbox ve Type 2 aksesuarlar Türkiye'nin tüm illerine gönderilir.",
+      title: "Kargoyla teslim",
+      body: "Wallbox, kablo ve aksesuarlar Türkiye geneline gönderilir.",
       href: "/magaza"
     },
     {
+      icon: "clipboard",
       label: "Sakarya",
       title: "Ücretsiz keşif",
-      body: "Pano, faz ve hat uygunluğu netleşir.",
+      body: "Pano, faz ve hat uygunluğu hızlıca netleşir.",
       href: "/iletisim?reason=%C3%9Ccretsiz%20ke%C5%9Fif%20talebi"
     },
     {
+      icon: "wrench",
       label: "Sakarya + Kocaeli",
-      title: "Kurulum",
-      body: "Montaj, test ve teslim planlı ilerler.",
+      title: "Planlı kurulum",
+      body: "Montaj, test ve teslim süreci kontrollü ilerler.",
       href: "/hizmetler"
     }
   ] as const;
 
   return (
-    <section className="premium-section premium-shipping-pulse">
-      <div className="mx-auto grid max-w-7xl gap-7 px-4 sm:px-6 lg:grid-cols-[0.85fr_1.15fr] lg:px-8">
-        <div>
-          <SectionHeading
-            eyebrow="Hızlı teslimat algısı"
-            title="Cihaz gönderimi 81 ilde, saha hizmeti bölgesinde."
-            body={serviceCoverageSummary.note}
-          />
-          <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+    <section className="premium-section premium-coverage-route">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="coverage-route-shell">
+          <div className="coverage-route-copy">
+            <p className="premium-eyebrow">Kapsam netliği</p>
+            <h2>Satın alma, keşif ve kurulum alanı tek bakışta belli.</h2>
+            <p>{serviceCoverageSummary.note}</p>
+          </div>
+
+          <div className="coverage-route-items" aria-label="ParkChargeEV hizmet kapsamı">
+            {coverageItems.map((item) => (
+              <Link key={item.title} href={item.href} className="coverage-route-card">
+                <IconBadge icon={item.icon} className="coverage-route-card__icon" />
+                <span>{item.label}</span>
+                <strong>{item.title}</strong>
+                <small>{item.body}</small>
+              </Link>
+            ))}
+          </div>
+
+          <div className="coverage-route-actions">
             <Link href="/magaza" className="premium-btn premium-btn--primary">
               Mağazayı İncele
             </Link>
             <Link href="/urun-secici" className="btn-secondary">
               Ürün Seçici
             </Link>
-          </div>
-        </div>
-
-        <div className="coverage-design-panel" aria-label="81 il ürün kargosu ve bölgesel kurulum kapsamı">
-          <div className="coverage-design-panel__summary">
-            <span className="coverage-design-panel__socket" aria-hidden>
-              <span />
-            </span>
-            <div>
-              <p>ParkChargeEV kapsamı</p>
-              <strong>81 il ürün kargosu</strong>
-              <small>Saha hizmeti Sakarya ve Kocaeli odağında planlanır.</small>
-            </div>
-          </div>
-
-          <div className="coverage-design-panel__cards">
-            {pulses.map((pulse, index) => {
-              const icon = index === 0 ? "truck" : index === 1 ? "clipboard" : "wrench";
-
-              return (
-                <Link key={pulse.title} href={pulse.href} className="coverage-design-card">
-                  <IconBadge icon={icon} className="coverage-design-card__icon" />
-                  <span>{pulse.label}</span>
-                  <strong>{pulse.title}</strong>
-                  <small>{pulse.body}</small>
-                </Link>
-              );
-            })}
           </div>
         </div>
       </div>
@@ -486,7 +473,7 @@ export function PremiumHomepage({
     <main className="premium-home-page">
       <PremiumHero whatsappHref={whatsappHref} />
       <TrustMetrics metrics={trustMetrics} />
-      <ShippingPulseSection />
+      <CoverageRouteSection />
       <ConversionRoutes />
       <PowerChoiceSection />
       <ProductSpotlight products={featuredProducts} />
