@@ -13,6 +13,7 @@ import {
   ShoppingBag,
   Sparkles,
   Timer,
+  Truck,
   Users,
   Wrench,
   Zap,
@@ -61,6 +62,7 @@ const iconMap: Record<HomeIconKey, LucideIcon> = {
   shopping: ShoppingBag,
   spark: Sparkles,
   timer: Timer,
+  truck: Truck,
   users: Users,
   wrench: Wrench,
   zap: Zap
@@ -157,7 +159,8 @@ function PremiumHero({ whatsappHref }: { whatsappHref: string }) {
             ))}
           </div>
           <p className="mt-4 text-xs font-bold leading-5 text-white/58">
-            {serviceCoverageSummary.freeSurvey} · {serviceCoverageSummary.installation}
+            {serviceCoverageSummary.shipping} · {serviceCoverageSummary.freeSurvey} ·{" "}
+            {serviceCoverageSummary.installation}
           </p>
         </div>
 
@@ -225,9 +228,9 @@ function ConversionRoutes() {
 
 function MotionStorySection() {
   const stories = [
-    ["Ev", "Gece şarjı", "11 kW"],
-    ["Site", "RFID akışı", "22 kW"],
-    ["Ticari", "ROI saha", "DC"]
+    ["Ürün", "81 il kargo", "Türkiye"],
+    ["Keşif", "Sakarya rota", "Ücretsiz"],
+    ["Kurulum", "Sakarya + Kocaeli", "Planlı"]
   ] as const;
 
   return (
@@ -235,8 +238,9 @@ function MotionStorySection() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <SectionHeading
-            eyebrow="Canlı deneyim"
-            title="Şarj akışını canlı hissedin."
+            eyebrow="Operasyon akışı"
+            title="Ürün, keşif ve kurulum rotası tek bakışta netleşsin."
+            body="Yeni EV sahibi, site yöneticisi ve işletme karar vericisi için belirsizliği azaltan kısa, görsel ve hızlı karar akışı."
           />
           <Link href="/urun-secici" className="premium-btn premium-btn--glass shrink-0">
             Uygunluğu Kontrol Et
@@ -251,6 +255,9 @@ function MotionStorySection() {
                 <span className="motion-story-card__device" />
                 <span className="motion-story-card__socket" />
                 <span className="motion-story-card__pulse" />
+                <span className="motion-story-card__route-node motion-story-card__route-node--one" />
+                <span className="motion-story-card__route-node motion-story-card__route-node--two" />
+                <span className="motion-story-card__route-node motion-story-card__route-node--three" />
               </div>
               <div className="mt-5 flex items-end justify-between gap-4">
                 <div>
@@ -267,6 +274,68 @@ function MotionStorySection() {
               />
             </article>
           ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ShippingPulseSection() {
+  const pulses = [
+    {
+      label: "81 il",
+      title: "Ürün kargosu",
+      body: "Wallbox ve Type 2 aksesuarlar Türkiye'nin tüm illerine gönderilir.",
+      href: "/magaza"
+    },
+    {
+      label: "Sakarya",
+      title: "Ücretsiz keşif",
+      body: "Pano, faz ve hat uygunluğu netleşir.",
+      href: "/iletisim?reason=%C3%9Ccretsiz%20ke%C5%9Fif%20talebi"
+    },
+    {
+      label: "Sakarya + Kocaeli",
+      title: "Kurulum",
+      body: "Montaj, test ve teslim planlı ilerler.",
+      href: "/hizmetler"
+    }
+  ] as const;
+
+  return (
+    <section className="premium-section premium-shipping-pulse">
+      <div className="mx-auto grid max-w-7xl gap-7 px-4 sm:px-6 lg:grid-cols-[0.85fr_1.15fr] lg:px-8">
+        <div>
+          <SectionHeading
+            eyebrow="Hızlı teslimat algısı"
+            title="Cihaz gönderimi 81 ilde, saha hizmeti bölgesinde."
+            body={serviceCoverageSummary.note}
+          />
+          <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+            <Link href="/magaza" className="premium-btn premium-btn--primary">
+              Mağazayı İncele
+            </Link>
+            <Link href="/urun-secici" className="premium-btn premium-btn--glass">
+              Ürün Seçici
+            </Link>
+          </div>
+        </div>
+
+        <div className="shipping-orbit" aria-label="81 il ürün kargosu ve bölgesel kurulum akışı">
+          <span className="shipping-orbit__map-grid" aria-hidden />
+          <span className="shipping-orbit__main-line" aria-hidden />
+          <span className="shipping-orbit__cargo shipping-orbit__cargo--one" aria-hidden />
+          <span className="shipping-orbit__cargo shipping-orbit__cargo--two" aria-hidden />
+          <span className="shipping-orbit__cargo shipping-orbit__cargo--three" aria-hidden />
+          <div className="shipping-orbit__cards">
+            {pulses.map((pulse) => (
+              <Link key={pulse.title} href={pulse.href} className="shipping-orbit__card">
+                <span>{pulse.label}</span>
+                <strong>{pulse.title}</strong>
+                <small>{pulse.body}</small>
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -460,7 +529,9 @@ export function PremiumHomepage({
     <main className="premium-home-page">
       <PremiumHero whatsappHref={whatsappHref} />
       <TrustMetrics metrics={trustMetrics} />
+      <ShippingPulseSection />
       <ConversionRoutes />
+      <MotionStorySection />
       <PowerChoiceSection />
       <ProductSpotlight products={featuredProducts} />
       <InstallationFlow />

@@ -29,7 +29,8 @@ export function SiteFooter({
               <p>{siteConfig.phone}</p>
               <p>{siteConfig.email}</p>
               <p>
-                {serviceCoverageSummary.freeSurvey} · {serviceCoverageSummary.installation}
+                {serviceCoverageSummary.shipping} · {serviceCoverageSummary.freeSurvey} ·{" "}
+                {serviceCoverageSummary.installation}
               </p>
               <p>
                 {siteConfig.address.streetAddress}, {siteConfig.address.addressLocality} /{" "}

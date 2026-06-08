@@ -18,6 +18,12 @@ export function SiteShell({ children, navigation }: SiteShellProps) {
         <span className="site-ambient-background__sweep site-ambient-background__sweep--one" />
         <span className="site-ambient-background__sweep site-ambient-background__sweep--two" />
         <span className="site-ambient-background__sweep site-ambient-background__sweep--three" />
+        <span className="site-ambient-background__connector-trace site-ambient-background__connector-trace--one" />
+        <span className="site-ambient-background__connector-trace site-ambient-background__connector-trace--two" />
+        <span className="site-ambient-background__connector-trace site-ambient-background__connector-trace--three" />
+        <span className="site-ambient-background__data-stream site-ambient-background__data-stream--one" />
+        <span className="site-ambient-background__data-stream site-ambient-background__data-stream--two" />
+        <span className="site-ambient-background__data-stream site-ambient-background__data-stream--three" />
         <span className="site-ambient-background__aurora site-ambient-background__aurora--one" />
         <span className="site-ambient-background__aurora site-ambient-background__aurora--two" />
         <span className="site-ambient-background__line site-ambient-background__line--one" />

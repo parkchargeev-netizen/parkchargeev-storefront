@@ -201,7 +201,8 @@ export function LeadForm({
         <div className={`${compact ? "px-4 py-3 text-xs leading-5" : "px-4 py-4 text-sm leading-6"} md:col-span-2 rounded-2xl border border-primary/15 bg-primary/5 text-on-surface-variant`}>
           <span className="font-black text-primary">{coverageHelp}</span>
           <span className="mt-1 block">
-            {serviceCoverageSummary.freeSurvey} · {serviceCoverageSummary.installation}
+            {serviceCoverageSummary.shipping} · {serviceCoverageSummary.freeSurvey} ·{" "}
+            {serviceCoverageSummary.installation}
           </span>
         </div>
 

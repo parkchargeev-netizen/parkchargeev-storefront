@@ -55,7 +55,7 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
     },
     {
       title: "Hizmet kapsamını kontrol et",
-      detail: `${serviceCoverageSummary.freeSurvey}; ${serviceCoverageSummary.installation}.`,
+      detail: `${serviceCoverageSummary.shipping}; ${serviceCoverageSummary.freeSurvey}; ${serviceCoverageSummary.installation}.`,
       href: `/iletisim?reason=${encodeURIComponent("Ücretsiz keşif talebi")}`,
       icon: MapPin
     },
@@ -114,7 +114,11 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
                 Ürün seçimi, şehir kapsamı, sipariş, kurulum adresi, teklif ve servis süreçlerini tek güvenli panelden yönetin.
               </p>
               <div className="mt-4 flex flex-wrap gap-2">
-                {[serviceCoverageSummary.freeSurvey, serviceCoverageSummary.installation].map((item) => (
+                {[
+                  serviceCoverageSummary.shipping,
+                  serviceCoverageSummary.freeSurvey,
+                  serviceCoverageSummary.installation
+                ].map((item) => (
                   <span
                     key={item}
                     className="rounded-full bg-primary/10 px-3 py-1.5 text-xs font-black text-primary"

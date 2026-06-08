@@ -118,7 +118,7 @@ function ManagedContactDetails({ defaultReason }: { defaultReason?: string }) {
       <ContactInfoCards />
       <LeadForm
         title="Teklif, keşif ve destek formu"
-        description={`Ev, site, işletme veya ticari saha ihtiyacınızı paylaşın. ${serviceCoverageSummary.freeSurvey}; ${serviceCoverageSummary.installation}.`}
+        description={`Ev, site, işletme veya ticari saha ihtiyacınızı paylaşın. ${serviceCoverageSummary.shipping}; ${serviceCoverageSummary.freeSurvey}; ${serviceCoverageSummary.installation}.`}
         compact
         defaultReason={defaultReason}
       />
@@ -183,7 +183,7 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
           <p className="mt-4 max-w-2xl text-base leading-7 text-on-surface-variant">
             Ev tipi kurulum, site/apartman altyapısı, işletme otoparkı, ticari
             lokasyon yatırımı veya teknik destek talebiniz için doğru ekibe yönlendirilirsiniz.
-            {` ${serviceCoverageSummary.freeSurvey}; ${serviceCoverageSummary.installation}.`}
+            {` ${serviceCoverageSummary.shipping}; ${serviceCoverageSummary.freeSurvey}; ${serviceCoverageSummary.installation}.`}
           </p>
 
           <div className="mt-5">
@@ -193,7 +193,7 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
 
         <LeadForm
           title="Teklif, keşif ve destek formu"
-          description={`İhtiyacınızı seçin; ürün, keşif, kurulum veya destek adımını birlikte netleştirelim. ${serviceCoverageSummary.freeSurvey}; ${serviceCoverageSummary.installation}.`}
+          description={`İhtiyacınızı seçin; ürün, keşif, kurulum veya destek adımını birlikte netleştirelim. ${serviceCoverageSummary.shipping}; ${serviceCoverageSummary.freeSurvey}; ${serviceCoverageSummary.installation}.`}
           compact
           defaultReason={defaultReason}
         />

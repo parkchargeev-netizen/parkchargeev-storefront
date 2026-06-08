@@ -5,10 +5,11 @@ export const leadCityOptions = Array.from(
 );
 
 export const serviceCoverageSummary = {
+  shipping: "Ürün kargosu: 81 il",
   freeSurvey: "Ücretsiz keşif: Sakarya",
   installation: "Kurulum: Sakarya ve Kocaeli",
   note:
-    "Ürün satın alma ve genel bilgi talepleri alınır; ücretsiz keşif yalnızca Sakarya, kurulum hizmeti Sakarya ve Kocaeli için planlanır."
+    "Ürün kargosu Türkiye'nin 81 iline yapılır; ücretsiz keşif yalnızca Sakarya, kurulum hizmeti Sakarya ve Kocaeli için planlanır."
 } as const;
 
 function normalizeText(value: string) {
@@ -53,7 +54,7 @@ export function validateLeadServiceCoverage(reason: string, city: string) {
     return {
       ok: false,
       message:
-        "Ücretsiz keşif talebi şu an yalnızca Sakarya için alınabiliyor. Kurulum talepleri Sakarya ve Kocaeli için değerlendiriliyor."
+        "Ücretsiz keşif talebi şu an yalnızca Sakarya için alınabiliyor. Ürün kargosu 81 ile yapılır; kurulum talepleri Sakarya ve Kocaeli için değerlendiriliyor."
     };
   }
 
@@ -61,7 +62,7 @@ export function validateLeadServiceCoverage(reason: string, city: string) {
     return {
       ok: false,
       message:
-        "Kurulum hizmeti şu an Sakarya ve Kocaeli için planlanıyor. Ürün satın alma ve genel bilgi talepleriniz için bize yazabilirsiniz."
+        "Kurulum hizmeti şu an Sakarya ve Kocaeli için planlanıyor. Ürün kargosu 81 ile yapılır; satın alma ve genel bilgi talepleriniz için bize yazabilirsiniz."
     };
   }
 

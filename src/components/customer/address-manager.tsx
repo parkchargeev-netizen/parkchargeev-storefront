@@ -103,7 +103,7 @@ export function AddressManager({ addresses }: { addresses: CustomerAddressFormMo
           </h2>
           <p className="mt-2 text-sm leading-6 text-on-surface-variant">
             Kurulum ve teslimat adreslerini hızlı checkout için kayıt altında tutun.
-            {` ${serviceCoverageSummary.installation}.`}
+            {` ${serviceCoverageSummary.shipping}; ${serviceCoverageSummary.installation}.`}
           </p>
         </div>
       </div>

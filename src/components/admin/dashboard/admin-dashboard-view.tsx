@@ -433,6 +433,8 @@ export function AdminDashboardView({
                   Kapsam
                 </p>
                 <p className="mt-2 text-xs font-semibold leading-5 text-slate-950">
+                  {serviceCoverageSummary.shipping}
+                  <br />
                   {serviceCoverageSummary.freeSurvey}
                   <br />
                   {serviceCoverageSummary.installation}
@@ -483,7 +485,11 @@ export function AdminDashboardView({
             Keşif ve kurulum taleplerini şehir kuralına göre ayırın.
           </h2>
           <div className="mt-5 grid gap-3">
-            {[serviceCoverageSummary.freeSurvey, serviceCoverageSummary.installation].map((item) => (
+            {[
+              serviceCoverageSummary.shipping,
+              serviceCoverageSummary.freeSurvey,
+              serviceCoverageSummary.installation
+            ].map((item) => (
               <div key={item} className="rounded-2xl border border-white/10 bg-white/[0.08] px-4 py-3">
                 <p className="text-sm font-semibold">{item}</p>
               </div>

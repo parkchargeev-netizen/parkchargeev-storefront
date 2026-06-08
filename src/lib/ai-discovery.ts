@@ -59,7 +59,7 @@ export async function generateLlmsText() {
     `- Telefon: ${siteConfig.phone}`,
     `- E-posta: ${siteConfig.email}`,
     `- Hizmet bölgeleri: ${siteConfig.serviceAreas.join(", ")}`,
-    `- ${serviceCoverageSummary.freeSurvey}; ${serviceCoverageSummary.installation}`,
+    `- ${serviceCoverageSummary.shipping}; ${serviceCoverageSummary.freeSurvey}; ${serviceCoverageSummary.installation}`,
     "",
     "## Kanonik Sayfalar",
     "",

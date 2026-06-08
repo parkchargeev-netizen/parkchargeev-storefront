@@ -232,7 +232,7 @@ export function ProductPurchasePanel({
           </div>
           <div className="mt-3 flex items-center justify-between gap-4 text-sm text-on-surface-variant">
             <span>Kargo</span>
-            <span className="font-semibold text-secondary">Ücretsiz</span>
+            <span className="font-semibold text-secondary">81 il</span>
           </div>
           <div className="mt-3 flex items-center justify-between gap-4 text-sm text-on-surface-variant">
             <span>Kurulum akışı</span>
@@ -241,7 +241,8 @@ export function ProductPurchasePanel({
             </span>
           </div>
           <p className="mt-3 text-xs leading-5 text-on-surface-variant">
-            KDV ve varsa kurulum kalemi sepet/teklif akışında ayrı gösterilir.
+            Ürün kargosu Türkiye&apos;nin 81 iline yapılır. KDV ve varsa kurulum kalemi
+            sepet/teklif akışında ayrı gösterilir.
           </p>
         </div>
 

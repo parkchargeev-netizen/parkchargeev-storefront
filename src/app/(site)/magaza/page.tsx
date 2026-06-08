@@ -10,6 +10,7 @@ import {
   getProductImageUrl,
   stringifyJsonLd
 } from "@/lib/structured-data";
+import { serviceCoverageSummary } from "@/lib/service-coverage";
 import { listPublicProducts } from "@/server/admin/repository";
 
 export const metadata: Metadata = {
@@ -221,11 +222,15 @@ export default async function StorePage({ searchParams }: StorePageProps) {
             <p className="mt-5 max-w-2xl text-base leading-7 text-white/68">
               Ev tipi wallbox, site/ofis çözümleri, DC üniteler ve Type 2 aksesuarları uyum, güç ve kurulum bilgisiyle karşılaştırın.
             </p>
+            <p className="mt-4 inline-flex rounded-full border border-white/12 bg-white/10 px-4 py-2 text-sm font-black text-[#7eecc9] backdrop-blur">
+              {serviceCoverageSummary.shipping}
+            </p>
           </div>
           <div className="rounded-[24px] border border-white/12 bg-white/10 p-5 text-white backdrop-blur">
             {[
               ["Ürün", `${products.length} seçenek`],
               ["Filtre", `${activeFilterCount} aktif`],
+              ["Kargo", "81 il"],
               ["Aralık", `${formatPriceTRY(minPrice)} - ${formatPriceTRY(maxPrice)}`]
             ].map(([label, value]) => (
               <div key={label} className="flex items-center justify-between gap-4 py-2">
@@ -365,9 +370,10 @@ export default async function StorePage({ searchParams }: StorePageProps) {
               ) : null}
             </div>
 
-            <div className="mt-5 grid gap-3 md:grid-cols-3">
+            <div className="mt-5 grid gap-3 md:grid-cols-4">
               {[
                 ["Ödeme", "PayTR güvenli altyapı"],
+                ["Kargo", "Türkiye'nin 81 iline ürün gönderimi"],
                 ["Kurulum", "Keşifle kapsam netleşir"],
                 ["Destek", "Garanti ve servis süreci"]
               ].map(([label, detail]) => (
@@ -393,9 +399,9 @@ export default async function StorePage({ searchParams }: StorePageProps) {
               </Link>
             </div>
           ) : (
-            <div className="store-product-grid grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            <div className="store-product-grid grid gap-4">
               {sortedProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
+                <ProductCard key={product.id} product={product} layout="store" />
               ))}
             </div>
           )}

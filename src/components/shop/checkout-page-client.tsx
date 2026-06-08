@@ -417,7 +417,7 @@ export function CheckoutPageClient({
                 className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary"
               />
               <span className="text-xs leading-5 text-on-surface-variant">
-                {serviceCoverageSummary.installation}; ürün teslimatı ayrıca değerlendirilir.
+                {serviceCoverageSummary.shipping}; {serviceCoverageSummary.installation}.
               </span>
             </label>
             <label className="grid gap-2 md:col-span-2">

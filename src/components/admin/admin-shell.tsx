@@ -195,7 +195,11 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
                 Katalog, sipariş, teklif ve Sakarya/Kocaeli saha işlerini öncelik sırasıyla yönetin.
               </p>
               <div className="mt-4 grid gap-2">
-                {[serviceCoverageSummary.freeSurvey, serviceCoverageSummary.installation].map((item) => (
+                {[
+                  serviceCoverageSummary.shipping,
+                  serviceCoverageSummary.freeSurvey,
+                  serviceCoverageSummary.installation
+                ].map((item) => (
                   <span
                     key={item}
                     className="rounded-full bg-white/80 px-3 py-1.5 text-xs font-semibold text-[#063326]"

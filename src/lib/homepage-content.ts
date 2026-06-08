@@ -11,15 +11,16 @@ export type HomeIconKey =
   | "shopping"
   | "spark"
   | "timer"
+  | "truck"
   | "users"
   | "wrench"
   | "zap";
 
 export const heroTrustSignals = [
   { icon: "shield", label: "PayTR güvenli ödeme" },
+  { icon: "truck", label: "81 il ürün kargosu" },
   { icon: "wrench", label: "Keşif + kurulum planı" },
-  { icon: "plug", label: "Araç uyumu kontrolü" },
-  { icon: "message", label: "Hızlı destek" }
+  { icon: "plug", label: "Araç uyumu kontrolü" }
 ] as const;
 
 export const heroStats = [

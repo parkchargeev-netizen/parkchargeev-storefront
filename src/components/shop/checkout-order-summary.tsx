@@ -1,4 +1,5 @@
 import { formatPriceTRY } from "@/lib/format";
+import { serviceCoverageSummary } from "@/lib/service-coverage";
 
 type CheckoutSummaryItem = {
   product: {
@@ -49,8 +50,13 @@ export function CheckoutOrderSummary({
         </div>
         <div className="flex items-center justify-between text-on-surface-variant">
           <span>Kargo tutarı</span>
-          <span>₺0</span>
+          <span className="text-right text-sm font-black text-secondary">
+            81 il · ₺0
+          </span>
         </div>
+        <p className="text-xs leading-5 text-on-surface-variant">
+          {serviceCoverageSummary.shipping}; kurulum kapsamı ayrı planlanır.
+        </p>
         <div className="flex items-center justify-between text-on-surface-variant">
           <span>KDV (%20)</span>
           <span>{formatPriceTRY(taxKurus)}</span>

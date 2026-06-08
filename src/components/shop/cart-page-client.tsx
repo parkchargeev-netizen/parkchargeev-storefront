@@ -38,7 +38,7 @@ const checkoutSteps = ["Sepet", "Teslimat", "Kurulum", "Ödeme"] as const;
 
 const cartTrustSignals = [
   { icon: ShieldCheck, label: "PayTR güvenli ödeme" },
-  { icon: Truck, label: "Ücretsiz kargo" },
+  { icon: Truck, label: "81 il ürün kargosu" },
   { icon: BadgeCheck, label: "Garanti + teknik destek" }
 ] as const;
 
@@ -136,7 +136,7 @@ export function CartPageClient() {
               Sepetin hazır. Kurulum adımını netleştirelim.
             </h1>
             <p className="mt-4 max-w-2xl text-base leading-7 text-white/68">
-              Ürün, kargo, KDV ve keşif kararını tek ekranda görüp güvenli ödeme akışına geçin.
+              Ürün, 81 il kargo, KDV ve keşif kararını tek ekranda görüp güvenli ödeme akışına geçin.
             </p>
           </div>
 
@@ -336,7 +336,7 @@ export function CartPageClient() {
               </div>
               <div className="flex items-center justify-between text-on-surface-variant">
                 <span>Kargo</span>
-                <span className="font-black text-secondary">Ücretsiz</span>
+                <span className="font-black text-secondary">81 il</span>
               </div>
               <div className="flex items-center justify-between text-on-surface-variant">
                 <span>KDV (%20)</span>
@@ -352,7 +352,8 @@ export function CartPageClient() {
                 </span>
               </div>
               <p className="mt-2 text-xs leading-5 text-on-surface-variant">
-                Kurulum keşfi teklif kapsamına göre ayrıca netleşir. {serviceCoverageSummary.installation}.
+                {serviceCoverageSummary.shipping}. Kurulum keşfi teklif kapsamına göre ayrıca
+                netleşir. {serviceCoverageSummary.installation}.
               </p>
             </div>
 

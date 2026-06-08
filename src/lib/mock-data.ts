@@ -106,9 +106,9 @@ export type TestimonialModel = {
 
 export const trustMetrics: TrustMetricModel[] = [
   {
-    label: "Hizmet kapsamı",
-    value: "2 il",
-    detail: "Ücretsiz keşif Sakarya; kurulum hizmeti Sakarya ve Kocaeli için planlanır"
+    label: "Ürün kargosu",
+    value: "81 il",
+    detail: "Şarj cihazı ve aksesuar gönderimi Türkiye'nin 81 iline yapılır"
   },
   {
     label: "Pazar momentumu",

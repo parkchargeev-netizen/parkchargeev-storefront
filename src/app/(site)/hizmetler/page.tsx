@@ -59,7 +59,7 @@ export default async function ServicesPage() {
         <p className="mt-6 text-lg leading-8 text-on-surface-variant">
           Ev kullanıcısından site yönetimine, ofis otoparkından ticari sahaya kadar
           cihaz, keşif, kurulum ve servis sürecini tek plan içinde yönetiyoruz.
-          {` ${serviceCoverageSummary.freeSurvey}; ${serviceCoverageSummary.installation}.`}
+          {` ${serviceCoverageSummary.shipping}; ${serviceCoverageSummary.freeSurvey}; ${serviceCoverageSummary.installation}.`}
         </p>
       </section>
 
