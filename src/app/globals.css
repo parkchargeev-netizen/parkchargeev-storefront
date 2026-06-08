@@ -25,7 +25,8 @@
 
 :root {
   color-scheme: light;
-  --cursor-ev-connector: url("/cursors/ev-connector.svg") 5 5, auto;
+  --cursor-ev-connector: auto;
+  --cursor-ev-action: pointer;
 }
 
 * {
@@ -94,7 +95,7 @@ body {
 }
 
 :where(a, button, input, textarea, select, summary, [role="button"], label) {
-  cursor: var(--cursor-ev-connector);
+  cursor: var(--cursor-ev-action);
 }
 
 :where(button:disabled, [aria-disabled="true"]) {
@@ -198,7 +199,7 @@ body {
   width: 4.2rem;
   height: 4.2rem;
   transform: translate3d(calc(var(--click-x) - 2.1rem), calc(var(--click-y) - 2.1rem), 0);
-  animation: charging-click-impact-life 1080ms ease-out both;
+  animation: charging-click-impact-life 1180ms ease-out both;
 }
 
 .charging-click-impact__ring,
@@ -219,7 +220,7 @@ body {
   box-shadow:
     0 0 0 0 rgba(126, 236, 201, 0.34),
     0 0 24px rgba(126, 236, 201, 0.28);
-  animation: charging-click-impact-ring 1080ms ease-out both;
+  animation: charging-click-impact-ring 1180ms ease-out both;
 }
 
 .charging-click-impact__socket {
@@ -237,7 +238,7 @@ body {
     0 12px 34px rgba(6, 51, 38, 0.22),
     0 0 30px rgba(126, 236, 201, 0.34);
   transform: translate(-50%, -50%) scale(0.28);
-  animation: charging-click-impact-socket 1080ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: charging-click-impact-socket 1180ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .charging-click-impact__bolt {
@@ -249,7 +250,7 @@ body {
   clip-path: polygon(58% 0, 12% 55%, 46% 55%, 28% 100%, 88% 40%, 54% 40%);
   filter: drop-shadow(0 0 10px rgba(126, 236, 201, 0.9));
   transform: translate(-50%, -50%) scale(0) rotate(-12deg);
-  animation: charging-click-impact-bolt 1080ms ease-out both;
+  animation: charging-click-impact-bolt 1180ms ease-out both;
 }
 
 .charging-click-impact__particle {
@@ -266,20 +267,20 @@ body {
 .charging-click-impact__particle--one {
   --particle-x: -1.45rem;
   --particle-y: -1.15rem;
-  animation: charging-click-impact-particle 1080ms ease-out both;
+  animation: charging-click-impact-particle 1180ms ease-out both;
 }
 
 .charging-click-impact__particle--two {
   --particle-x: 1.55rem;
   --particle-y: -0.8rem;
-  animation: charging-click-impact-particle 1080ms ease-out both;
+  animation: charging-click-impact-particle 1180ms ease-out both;
   animation-delay: 70ms;
 }
 
 .charging-click-impact__particle--three {
   --particle-x: 0.9rem;
   --particle-y: 1.5rem;
-  animation: charging-click-impact-particle 1080ms ease-out both;
+  animation: charging-click-impact-particle 1180ms ease-out both;
   animation-delay: 110ms;
 }
 
@@ -291,7 +292,7 @@ body {
   height: 1.2rem;
   transform: translate3d(var(--cable-x), calc(var(--cable-y) - 0.6rem), 0) rotate(var(--cable-angle));
   transform-origin: 0 50%;
-  animation: charging-click-cable-life 1080ms ease-out both;
+  animation: charging-click-cable-life 1180ms ease-out both;
 }
 
 .charging-click-cable__core {
@@ -308,7 +309,7 @@ body {
     0 0 22px rgba(126, 236, 201, 0.48);
   transform: translateY(-50%) scaleX(0);
   transform-origin: 0 50%;
-  animation: charging-click-core 1080ms ease-out both;
+  animation: charging-click-core 1180ms ease-out both;
 }
 
 .charging-click-cable__core::before {
@@ -321,6 +322,18 @@ body {
   content: "";
   background: #7eecc9;
   box-shadow: 0 0 18px rgba(126, 236, 201, 0.9);
+}
+
+.charging-click-cable__core::after {
+  position: absolute;
+  inset: -0.18rem auto -0.18rem 0;
+  width: 2.8rem;
+  border-radius: 999px;
+  content: "";
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.92), transparent);
+  filter: blur(1px);
+  transform: translateX(-100%);
+  animation: charging-click-core-glint 1180ms ease-out both;
 }
 
 .charging-click-cable__plug {
@@ -336,7 +349,7 @@ body {
     linear-gradient(135deg, #f8fffb, #b9d7cd);
   box-shadow: 0 0 22px rgba(126, 236, 201, 0.48);
   transform: translateY(-50%) scale(0.4);
-  animation: charging-click-plug 1080ms ease-out both;
+  animation: charging-click-plug 1180ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .charging-click-cable__spark {
@@ -349,7 +362,7 @@ body {
   background: #7eecc9;
   box-shadow: 0 0 0 0 rgba(126, 236, 201, 0.7);
   transform: translate(50%, -50%) scale(0);
-  animation: charging-click-spark 1080ms ease-out both;
+  animation: charging-click-spark 1180ms ease-out both;
 }
 
 .charging-click-target {
@@ -367,7 +380,7 @@ body {
     0 0 0 0 rgba(126, 236, 201, 0.3),
     0 0 24px rgba(126, 236, 201, 0.46);
   transform: translate3d(calc(var(--target-x) - 0.575rem), calc(var(--target-y) - 0.575rem), 0) scale(0.2);
-  animation: charging-click-target 1080ms ease-out both;
+  animation: charging-click-target 1180ms ease-out both;
 }
 
 .site-experience-shell {
@@ -833,6 +846,132 @@ body {
   animation-delay: 7s;
 }
 
+.site-ambient-background__cable-trail {
+  position: absolute;
+  width: 46rem;
+  height: 0.18rem;
+  border-radius: 999px;
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(6, 51, 38, 0.18),
+      rgba(126, 236, 201, 0.58),
+      rgba(255, 255, 255, 0.76),
+      rgba(15, 143, 111, 0.36),
+      transparent
+    );
+  filter:
+    drop-shadow(0 0 18px rgba(126, 236, 201, 0.34))
+    drop-shadow(0 0 34px rgba(6, 51, 38, 0.14));
+  opacity: 0;
+  transform-origin: 50% 50%;
+  animation: site-ambient-cable-trail 13s ease-in-out infinite;
+}
+
+.site-ambient-background__cable-trail::before,
+.site-ambient-background__cable-trail::after {
+  position: absolute;
+  top: 50%;
+  width: 0.62rem;
+  height: 0.62rem;
+  border-radius: 999px;
+  content: "";
+  background: #7eecc9;
+  box-shadow: 0 0 22px rgba(126, 236, 201, 0.76);
+  transform: translateY(-50%);
+}
+
+.site-ambient-background__cable-trail::before {
+  left: 12%;
+}
+
+.site-ambient-background__cable-trail::after {
+  right: 8%;
+}
+
+.site-ambient-background__cable-trail--one {
+  --trail-rotation: -17deg;
+  top: 18%;
+  left: -18rem;
+  transform: rotate(-17deg);
+}
+
+.site-ambient-background__cable-trail--two {
+  --trail-rotation: 11deg;
+  top: 38%;
+  right: -20rem;
+  width: 58rem;
+  transform: rotate(11deg);
+  animation-delay: 2.5s;
+}
+
+.site-ambient-background__cable-trail--three {
+  --trail-rotation: -5deg;
+  bottom: 23%;
+  left: 4%;
+  width: 54rem;
+  transform: rotate(-5deg);
+  animation-delay: 5.1s;
+}
+
+.site-ambient-background__cable-trail--four {
+  --trail-rotation: 24deg;
+  top: 66%;
+  right: 10%;
+  width: 36rem;
+  transform: rotate(24deg);
+  animation-delay: 7.3s;
+  animation-direction: reverse;
+}
+
+.site-ambient-background__cable-trail--five {
+  --trail-rotation: -28deg;
+  bottom: 6%;
+  right: -16rem;
+  width: 64rem;
+  transform: rotate(-28deg);
+  animation-delay: 9.1s;
+}
+
+.site-ambient-background__scan {
+  position: absolute;
+  width: 120vw;
+  height: 14rem;
+  border-radius: 999px;
+  background:
+    linear-gradient(90deg, transparent, rgba(126, 236, 201, 0.1), rgba(255, 255, 255, 0.28), transparent);
+  filter: blur(10px);
+  opacity: 0;
+  transform-origin: 50% 50%;
+  animation: site-ambient-scan 17s ease-in-out infinite;
+}
+
+.site-ambient-background__scan--one {
+  --scan-rotation: -10deg;
+  top: 10%;
+  left: -20vw;
+  transform: rotate(-10deg);
+}
+
+.site-ambient-background__scan--two {
+  --scan-rotation: 16deg;
+  right: -28vw;
+  bottom: 18%;
+  transform: rotate(16deg);
+  animation-delay: 5.4s;
+  animation-direction: reverse;
+}
+
+.site-ambient-background__scan--three {
+  --scan-rotation: -3deg;
+  top: 54%;
+  left: -12vw;
+  height: 10rem;
+  transform: rotate(-3deg);
+  animation-delay: 10.2s;
+}
+
 .site-ambient-background__spark {
   position: absolute;
   width: 0.34rem;
@@ -1219,21 +1358,39 @@ body {
   }
 }
 
+@keyframes charging-click-core-glint {
+  0%,
+  18% {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+
+  46%,
+  72% {
+    opacity: 0.95;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(calc(var(--cable-length) - 1.2rem));
+  }
+}
+
 @keyframes charging-click-plug {
   0% {
     opacity: 0;
-    transform: translateY(-50%) translateX(-0.8rem) scale(0.4);
+    transform: translateY(-50%) translateX(var(--plug-start)) scale(0.5);
   }
 
-  38%,
-  76% {
+  58%,
+  82% {
     opacity: 1;
     transform: translateY(-50%) translateX(0) scale(1);
   }
 
   100% {
     opacity: 0;
-    transform: translateY(-50%) translateX(0.35rem) scale(0.8);
+    transform: translateY(-50%) translateX(0.2rem) scale(0.82);
   }
 }
 
@@ -1487,6 +1644,42 @@ body {
   }
 }
 
+@keyframes site-ambient-cable-trail {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translate3d(-16%, 0, 0) rotate(var(--trail-rotation)) scaleX(0.62);
+  }
+
+  24%,
+  66% {
+    opacity: 0.62;
+  }
+
+  74% {
+    opacity: 0;
+    transform: translate3d(36%, -0.8rem, 0) rotate(calc(var(--trail-rotation) + 2deg)) scaleX(1.08);
+  }
+}
+
+@keyframes site-ambient-scan {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translate3d(-18%, 0, 0) rotate(var(--scan-rotation));
+  }
+
+  38%,
+  58% {
+    opacity: 0.72;
+  }
+
+  72% {
+    opacity: 0;
+    transform: translate3d(18%, 1rem, 0) rotate(calc(var(--scan-rotation) + 3deg));
+  }
+}
+
 @keyframes site-ambient-particle {
   0%,
   100% {
@@ -1531,6 +1724,17 @@ body {
   }
 }
 
+@keyframes site-surface-light-shift {
+  0%,
+  100% {
+    background-position: 0% 0%, 100% 0%, 50% 50%;
+  }
+
+  50% {
+    background-position: 100% 18%, 0% 100%, 50% 50%;
+  }
+}
+
 @keyframes site-ambient-pulse {
   0%,
   100% {
@@ -1565,6 +1769,41 @@ body {
 .surface-card:hover {
   border-color: color-mix(in srgb, var(--color-primary) 20%, var(--color-outline-variant));
   box-shadow: 0 22px 64px rgba(19, 27, 46, 0.1);
+}
+
+.surface-card,
+.premium-product-card,
+.premium-route-card,
+.premium-install-card,
+.premium-signal-card,
+.premium-metric-card,
+.selector-config-panel,
+.selector-result-card,
+.store-results__header,
+.product-detail-buybox,
+.product-gallery-premium,
+.contact-info-card,
+.contact-map-card,
+.lead-form-card,
+.cart-summary-card {
+  background-size: 160% 160%, 140% 140%, 100% 100%;
+  animation: site-surface-light-shift 14s ease-in-out infinite;
+}
+
+.premium-product-card,
+.premium-route-card,
+.selector-option,
+.coverage-route-card,
+.contact-channel-card {
+  transform-style: preserve-3d;
+}
+
+.premium-product-card:hover,
+.premium-route-card:hover,
+.selector-option:hover,
+.coverage-route-card:hover,
+.contact-channel-card:hover {
+  filter: saturate(1.04);
 }
 
 .soft-panel {
@@ -5561,6 +5800,8 @@ body {
   .site-ambient-background__gradient-ribbon,
   .site-ambient-background__current,
   .site-ambient-background__halo,
+  .site-ambient-background__cable-trail,
+  .site-ambient-background__scan,
   .site-ambient-background__spark,
   .site-ambient-background__beam,
   .site-ambient-background__ring,
@@ -5573,6 +5814,7 @@ body {
   .charging-click-impact__particle,
   .charging-click-cable,
   .charging-click-cable__core,
+  .charging-click-cable__core::after,
   .charging-click-cable__plug,
   .charging-click-cable__spark,
   .charging-click-target,
@@ -5632,7 +5874,22 @@ body {
   .charging-studio__orbit,
   .charging-studio__particle,
   .charging-studio__hud,
-  .motion-observe {
+  .motion-observe,
+  .surface-card,
+  .premium-product-card,
+  .premium-route-card,
+  .premium-install-card,
+  .premium-signal-card,
+  .premium-metric-card,
+  .selector-config-panel,
+  .selector-result-card,
+  .store-results__header,
+  .product-detail-buybox,
+  .product-gallery-premium,
+  .contact-info-card,
+  .contact-map-card,
+  .lead-form-card,
+  .cart-summary-card {
     animation: none;
   }
 

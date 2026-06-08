@@ -18,9 +18,9 @@ export type HomeIconKey =
 
 export const heroTrustSignals = [
   { icon: "shield", label: "PayTR güvenli ödeme" },
-  { icon: "truck", label: "81 il ürün kargosu" },
-  { icon: "wrench", label: "Keşif + kurulum planı" },
-  { icon: "plug", label: "Araç uyumu kontrolü" }
+  { icon: "truck", label: "81 ile kargo" },
+  { icon: "wrench", label: "Keşif + kurulum" },
+  { icon: "plug", label: "Araç uyumu" }
 ] as const;
 
 export const heroStats = [

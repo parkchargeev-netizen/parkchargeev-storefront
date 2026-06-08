@@ -11,6 +11,8 @@ const ringLayers = ["one", "two", "three"] as const;
 const pulseLayers = ["one", "two"] as const;
 const currentLayers = ["one", "two", "three", "four"] as const;
 const haloLayers = ["one", "two", "three"] as const;
+const cableTrailLayers = ["one", "two", "three", "four", "five"] as const;
+const scanLayers = ["one", "two", "three"] as const;
 const sparkLayers = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"] as const;
 const particleLayers = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"] as const;
 
@@ -37,6 +39,8 @@ export function SiteAmbientBackground() {
       {renderLayer("site-ambient-background__pulse", pulseLayers)}
       {renderLayer("site-ambient-background__current", currentLayers)}
       {renderLayer("site-ambient-background__halo", haloLayers)}
+      {renderLayer("site-ambient-background__cable-trail", cableTrailLayers)}
+      {renderLayer("site-ambient-background__scan", scanLayers)}
       {renderLayer("site-ambient-background__spark", sparkLayers)}
       {renderLayer("site-ambient-background__particle", particleLayers)}
     </div>

@@ -5,46 +5,50 @@ import { useEffect, useRef, useState } from "react";
 
 type CableEffect = {
   id: number;
-  x: number;
-  y: number;
-  endX: number;
-  endY: number;
+  sourceX: number;
+  sourceY: number;
+  targetX: number;
+  targetY: number;
   length: number;
   angle: number;
+  plugStart: number;
 };
 
 const maxEffects = 7;
-const effectDurationMs = 1080;
+const effectDurationMs = 1180;
 
-function getConnectionPoint(event: MouseEvent | PointerEvent) {
-  const target = event.target instanceof Element ? event.target : null;
-  const interactiveTarget = target?.closest(
-    "a, button, input, select, textarea, summary, [role='button'], [data-click-cable-target]"
+function clamp(value: number, min: number, max: number) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function getCableSourcePoint(event: MouseEvent | PointerEvent) {
+  const margin = 52;
+  const candidates = [
+    {
+      x: -margin,
+      y: clamp(event.clientY + 28, margin, window.innerHeight - margin),
+      distance: event.clientX
+    },
+    {
+      x: window.innerWidth + margin,
+      y: clamp(event.clientY - 32, margin, window.innerHeight - margin),
+      distance: window.innerWidth - event.clientX
+    },
+    {
+      x: clamp(event.clientX - 64, margin, window.innerWidth - margin),
+      y: -margin,
+      distance: event.clientY
+    },
+    {
+      x: clamp(event.clientX + 54, margin, window.innerWidth - margin),
+      y: window.innerHeight + margin,
+      distance: window.innerHeight - event.clientY
+    }
+  ];
+
+  return candidates.reduce((closest, candidate) =>
+    candidate.distance < closest.distance ? candidate : closest
   );
-
-  if (!(interactiveTarget instanceof HTMLElement)) {
-    return {
-      x: event.clientX + 118,
-      y: event.clientY - 42
-    };
-  }
-
-  const rect = interactiveTarget.getBoundingClientRect();
-  const centerY = rect.top + rect.height / 2;
-  const rightSpace = window.innerWidth - rect.right;
-  const leftSpace = rect.left;
-
-  if (rightSpace > 96 || rightSpace >= leftSpace) {
-    return {
-      x: Math.min(window.innerWidth - 18, rect.right + 42),
-      y: centerY
-    };
-  }
-
-  return {
-    x: Math.max(18, rect.left - 42),
-    y: centerY
-  };
 }
 
 export function ChargingClickEffect() {
@@ -56,20 +60,21 @@ export function ChargingClickEffect() {
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
     function createCable(event: MouseEvent | PointerEvent) {
-      const end = getConnectionPoint(event);
-      const dx = end.x - event.clientX;
-      const dy = end.y - event.clientY;
+      const source = getCableSourcePoint(event);
+      const dx = event.clientX - source.x;
+      const dy = event.clientY - source.y;
       const rawLength = Math.hypot(dx, dy);
-      const length = Math.min(Math.max(rawLength, 68), 180);
+      const length = Math.min(Math.max(rawLength, 120), 760);
       const angle = Math.atan2(dy, dx) * (180 / Math.PI);
       const effect = {
         id: idRef.current++,
-        x: event.clientX,
-        y: event.clientY,
-        endX: event.clientX + Math.cos(angle * (Math.PI / 180)) * length,
-        endY: event.clientY + Math.sin(angle * (Math.PI / 180)) * length,
+        sourceX: source.x,
+        sourceY: source.y,
+        targetX: event.clientX,
+        targetY: event.clientY,
         length,
-        angle
+        angle,
+        plugStart: -length + 18
       };
 
       setEffects((current) => [...current.slice(-(maxEffects - 1)), effect]);
@@ -117,8 +122,8 @@ export function ChargingClickEffect() {
             className="charging-click-impact"
             style={
               {
-                "--click-x": `${effect.x}px`,
-                "--click-y": `${effect.y}px`
+                "--click-x": `${effect.targetX}px`,
+                "--click-y": `${effect.targetY}px`
               } as CSSProperties
             }
           >
@@ -133,10 +138,11 @@ export function ChargingClickEffect() {
             className="charging-click-cable"
             style={
               {
-                "--cable-x": `${effect.x}px`,
-                "--cable-y": `${effect.y}px`,
+                "--cable-x": `${effect.sourceX}px`,
+                "--cable-y": `${effect.sourceY}px`,
                 "--cable-length": `${effect.length}px`,
-                "--cable-angle": `${effect.angle}deg`
+                "--cable-angle": `${effect.angle}deg`,
+                "--plug-start": `${effect.plugStart}px`
               } as CSSProperties
             }
           >
@@ -148,8 +154,8 @@ export function ChargingClickEffect() {
             className="charging-click-target"
             style={
               {
-                "--target-x": `${effect.endX}px`,
-                "--target-y": `${effect.endY}px`
+                "--target-x": `${effect.targetX}px`,
+                "--target-y": `${effect.targetY}px`
               } as CSSProperties
             }
           />
