@@ -30,6 +30,7 @@ import {
 import { formatPriceTRY } from "@/lib/format";
 import { products } from "@/lib/mock-data";
 import { getDisplayProductImageUrl } from "@/lib/product-media";
+import { serviceCoverageSummary } from "@/lib/service-coverage";
 import { getProductStoreProfile } from "@/lib/shop-merchandising";
 import { siteConfig } from "@/lib/site";
 
@@ -299,11 +300,12 @@ export function CartPageClient() {
                     </h2>
                     <p className="mt-1 text-sm leading-6 text-on-surface-variant">
                       Pano, faz, kablo hattı ve koruma ekipmanı ödeme öncesi netleşsin.
+                      {` ${serviceCoverageSummary.installation}.`}
                     </p>
                   </div>
                 </div>
                 <Link
-                  href="/iletisim?reason=Sepet%20kurulum%20kesfi"
+                  href={`/iletisim?reason=${encodeURIComponent("Ev tipi kurulum talebi")}`}
                   className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-primary/20 bg-white px-5 py-3 text-sm font-black text-primary"
                 >
                   Keşif Ekle
@@ -350,7 +352,7 @@ export function CartPageClient() {
                 </span>
               </div>
               <p className="mt-2 text-xs leading-5 text-on-surface-variant">
-                Kurulum keşfi teklif kapsamına göre ayrıca netleşir.
+                Kurulum keşfi teklif kapsamına göre ayrıca netleşir. {serviceCoverageSummary.installation}.
               </p>
             </div>
 

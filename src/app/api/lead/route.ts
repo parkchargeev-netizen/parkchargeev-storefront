@@ -5,6 +5,7 @@ import {
   getRuntimeConfigErrorPayload,
   isRuntimeConfigError
 } from "@/lib/runtime-config";
+import { validateLeadServiceCoverage } from "@/lib/service-coverage";
 import { getDb } from "@/server/db/client";
 import { quoteRequests, serviceLeads } from "@/server/db/schema";
 
@@ -30,7 +31,12 @@ function getQuoteSegment(reason: string) {
     return "fleet" as const;
   }
 
-  if (normalized.includes("is yeri") || normalized.includes("ofis") || normalized.includes("kurumsal")) {
+  if (
+    normalized.includes("iş yeri") ||
+    normalized.includes("is yeri") ||
+    normalized.includes("ofis") ||
+    normalized.includes("kurumsal")
+  ) {
     return "business" as const;
   }
 
@@ -45,6 +51,18 @@ function isServiceLead(reason: string) {
 export async function POST(request: Request) {
   try {
     const body = leadSchema.parse(await request.json());
+    const coverageValidation = validateLeadServiceCoverage(body.reason, body.city);
+
+    if (!coverageValidation.ok) {
+      return NextResponse.json(
+        {
+          ok: false,
+          message: coverageValidation.message
+        },
+        { status: 400 }
+      );
+    }
+
     const db = getDb();
 
     await db.insert(serviceLeads).values({

@@ -80,11 +80,11 @@ function getReadinessDefaults(product?: ProductModel): ProductDetailTextPair[] {
       label: "Kurulum dahil mi?",
       value: isAccessory
         ? "Kurulum gerektirmez"
-        : "Keşif sonrası kurulum teklifi eklenebilir"
+        : "Cihaz fiyatından ayrı değerlendirilir; keşif sonrası netleşir"
     },
     {
       label: "Keşif gerekiyor mu?",
-      value: isHighPower ? "Önerilir" : "Altyapı bilinmiyorsa önerilir"
+      value: isHighPower ? "Önerilir" : "Pano/faz bilgisi net değilse önerilir"
     },
     {
       label: "Uyumlu araçlar",
@@ -102,54 +102,54 @@ export function getDefaultProductDetailContent(product?: ProductModel): ProductD
       : ["Ön görünüm", "Yan profil", "Montaj görünümü", "Video"],
     galleryFeatureLabels: ["IP koruma", "Type 2", "Kurulum"],
     galleryDeviceCaption: "Ölçekli cihaz temsili",
-    specsHeading: "Teknik özellikler",
-    intentHeading: "Satın alma niyetleri",
+    specsHeading: "Teknik karar bilgileri",
+    intentHeading: "Bu ürün kimin için?",
     intentBody:
-      "Bu ürün kullanıcıların en çok aşağıdaki karar sorularında öne çıkar.",
+      "Ürün, aşağıdaki satın alma senaryolarında hızlı ve güvenli karar vermenize yardımcı olur.",
     seoIntents: product?.seoIntent?.length ? product.seoIntent : [],
-    useCasesHeading: "Kullanım senaryoları",
+    useCasesHeading: "Uygun kullanım alanı",
     useCases: product?.useCases?.length ? product.useCases : [],
-    highlightsHeading: "Öne çıkan avantajlar",
+    highlightsHeading: "Satış ve kurulum avantajları",
     highlights: product?.highlights?.length ? product.highlights : [],
     purchaseBenefits: [
-      "Ücretsiz kargo ve hızlı gönderim",
-      "2 yıl garanti ve kurulum desteği",
-      "PayTR ile güvenli ödeme altyapısı"
+      "PayTR güvenli ödeme ve net sipariş takibi",
+      "Garanti, servis ve kurulum desteği",
+      "Keşif talebiyle yanlış ürün riskini azaltma"
     ],
     purchaseReadiness: getReadinessDefaults(product),
     decisionChecks: [
-      "Kargo, KDV ve kurulum kapsamı karar öncesinde ayrı ayrı gösterilir.",
-      "Keşif talebiyle pano kapasitesi ve kablo hattı netleştirilebilir.",
-      "PayTR iFrame akışı kart verisini site sunucusuna taşımaz."
+      "Araç uyumu, güç ihtiyacı ve kurulum kapsamı satın alma öncesinde ayrı değerlendirilir.",
+      "Keşif talebiyle pano kapasitesi, faz yapısı ve kablo hattı netleştirilebilir.",
+      "PayTR ödeme akışı kart verisini site sunucusuna taşımaz."
     ],
     support: {
-      title: "Satın alma öncesi destek",
+      title: "Uygunluğu birlikte kontrol edelim",
       body:
-        "Ürünün saha uygunluğunu netleştirmek için teknik keşif ve kurulum danışmanlığı talebinizi iletebilirsiniz.",
-      ctaLabel: "Teknik Değerlendirme İste",
+        "Aracınız, otoparkınız ve elektrik altyapınız için bu ürünün doğru seçim olup olmadığını teknik ekiple netleştirebilirsiniz.",
+      ctaLabel: "Uygunluğu Kontrol Et",
       href: "/iletisim"
     },
     policyDetails: [
       {
-        title: "Teslimat ve kurulum",
+        title: "Teslimat ve kurulum planı",
         body:
-          "Stoktaki ürünlerde standart sevkiyat 2-5 iş günü olarak planlanır. Kurulum talebi varsa saha keşfi sonrası randevu ve kapsam ayrıca netleştirilir."
+          "Stoktaki ürünlerde sevkiyat 2-5 iş günü olarak planlanır. Kurulum talebi varsa keşif sonrası randevu, kablo hattı ve kapsam ayrıca netleştirilir."
       },
       {
         title: "İade ve değişim",
         body:
-          "Kullanılmamış ürünlerde 14 gün içinde iade talebi alınabilir. Saha montajı yapılan projelerde keşif ve kurulum kapsamı ayrı değerlendirilir."
+          "Kullanılmamış ürünlerde 14 gün içinde iade talebi alınabilir. Montaj yapılan projelerde cihaz, keşif ve kurulum kapsamı ayrı değerlendirilir."
       },
       {
         title: "Garanti ve servis",
         body:
-          "Ürünler için 2 yıl garanti ve kurulum sonrası teknik destek süreci sunulur. Kurumsal projelerde bakım periyodu teklif kapsamına eklenebilir."
+          "Ürünler için garanti ve kurulum sonrası teknik destek süreci sunulur. Site, ofis ve ticari projelerde bakım periyodu teklif kapsamına eklenebilir."
       }
     ],
-    faqHeading: "Sık sorulan sorular",
+    faqHeading: "Karar öncesi sık sorulanlar",
     faqs: product?.faqs?.length ? product.faqs : [],
     relatedEyebrow: "İlgili ürünler",
-    relatedHeading: "Karşılaştırılabilecek alternatifler"
+    relatedHeading: "Aynı ihtiyaca uygun alternatifler"
   };
 }
 

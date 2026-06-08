@@ -16,6 +16,7 @@ import {
   getEnrichedCartTaxKurus,
   getEnrichedCartTotalKurus
 } from "@/lib/cart";
+import { serviceCoverageSummary } from "@/lib/service-coverage";
 
 type CheckoutPageClientProps = {
   initialStatus?: string;
@@ -403,7 +404,7 @@ export function CheckoutPageClient({
                 className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary"
               />
               <span id="checkout-phone-help" className="text-xs leading-5 text-on-surface-variant">
-                Kargo ve kurulum randevusu icin kullanilir; pazarlama aramasi icin kullanilmaz.
+                Kargo ve kurulum randevusu için kullanılır; pazarlama araması için kullanılmaz.
               </span>
             </label>
             <label className="grid gap-2">
@@ -415,6 +416,9 @@ export function CheckoutPageClient({
                 onChange={(event) => updateField("city", event.target.value)}
                 className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary"
               />
+              <span className="text-xs leading-5 text-on-surface-variant">
+                {serviceCoverageSummary.installation}; ürün teslimatı ayrıca değerlendirilir.
+              </span>
             </label>
             <label className="grid gap-2 md:col-span-2">
               <span className="text-sm text-on-surface-variant">Teslimat Adresi</span>

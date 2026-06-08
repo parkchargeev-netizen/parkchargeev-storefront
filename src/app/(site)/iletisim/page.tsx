@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 
 import { LeadForm } from "@/components/forms/lead-form";
 import { ManagedPageRenderer } from "@/components/site/managed-page-renderer";
+import { resolveContactReason } from "@/lib/contact-reasons";
 import { globalFaqs, trustMetrics } from "@/lib/mock-data";
+import { serviceCoverageSummary } from "@/lib/service-coverage";
 import { absoluteUrl, siteConfig } from "@/lib/site";
 import {
   getFaqJsonLd,
@@ -22,6 +24,17 @@ const parkChargeEvMapEmbedSrc =
 
 function officeAddress() {
   return `${siteConfig.address.streetAddress}, ${siteConfig.address.addressLocality} / ${siteConfig.address.addressRegion}`;
+}
+
+type ContactPageProps = {
+  searchParams?: Promise<{
+    reason?: string;
+    konu?: string;
+  }>;
+};
+
+function getDefaultReason(params?: { reason?: string; konu?: string }) {
+  return resolveContactReason(params?.reason ?? params?.konu);
 }
 
 function ContactJsonLd() {
@@ -99,14 +112,15 @@ function ContactInfoCards() {
   );
 }
 
-function ManagedContactDetails() {
+function ManagedContactDetails({ defaultReason }: { defaultReason?: string }) {
   return (
     <section className="contact-layout mx-auto grid max-w-7xl gap-5 px-6 pb-10 lg:grid-cols-[0.78fr_1.22fr] lg:px-8">
       <ContactInfoCards />
       <LeadForm
         title="Teklif, keşif ve destek formu"
-        description="Talebinizin türünü seçin; ekip doğru satış veya destek akışıyla size geri dönüş yapsın."
+        description={`Ev, site, işletme veya ticari saha ihtiyacınızı paylaşın. ${serviceCoverageSummary.freeSurvey}; ${serviceCoverageSummary.installation}.`}
         compact
+        defaultReason={defaultReason}
       />
     </section>
   );
@@ -138,7 +152,9 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function ContactPage() {
+export default async function ContactPage({ searchParams }: ContactPageProps) {
+  const params = searchParams ? await searchParams : undefined;
+  const defaultReason = getDefaultReason(params);
   const page = await getPublishedSitePageBySlug("iletisim");
 
   if (page) {
@@ -146,7 +162,7 @@ export default async function ContactPage() {
       <>
         <ContactJsonLd />
         <ManagedPageRenderer page={page} />
-        <ManagedContactDetails />
+        <ManagedContactDetails defaultReason={defaultReason} />
       </>
     );
   }
@@ -158,15 +174,16 @@ export default async function ContactPage() {
       <section className="contact-hero-grid grid min-h-[calc(100vh-104px)] gap-5 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
         <div>
           <p className="text-xs font-black uppercase text-primary">
-            İletişim ve lead yönetimi
+            Teklif ve keşif
           </p>
           <h1 className="mt-3 text-4xl font-black leading-tight text-on-surface lg:text-5xl">
             Projenizi paylaşın,
-            <span className="text-gradient"> doğru çözümü birlikte kuralım</span>
+            <span className="text-gradient"> doğru şarj çözümünü birlikte netleştirelim</span>
           </h1>
           <p className="mt-4 max-w-2xl text-base leading-7 text-on-surface-variant">
-            Bireysel kurulum, kurumsal proje, bakım, bayi adaylığı veya teknik
-            destek taleplerinizi aynı iletişim mimarisinde toplayacak sayfa.
+            Ev tipi kurulum, site/apartman altyapısı, işletme otoparkı, ticari
+            lokasyon yatırımı veya teknik destek talebiniz için doğru ekibe yönlendirilirsiniz.
+            {` ${serviceCoverageSummary.freeSurvey}; ${serviceCoverageSummary.installation}.`}
           </p>
 
           <div className="mt-5">
@@ -176,8 +193,9 @@ export default async function ContactPage() {
 
         <LeadForm
           title="Teklif, keşif ve destek formu"
-          description="Talebinizin türünü seçin; ekip doğru satış veya destek akışıyla size geri dönüş yapsın."
+          description={`İhtiyacınızı seçin; ürün, keşif, kurulum veya destek adımını birlikte netleştirelim. ${serviceCoverageSummary.freeSurvey}; ${serviceCoverageSummary.installation}.`}
           compact
+          defaultReason={defaultReason}
         />
       </section>
 

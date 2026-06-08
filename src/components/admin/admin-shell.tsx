@@ -22,6 +22,7 @@ import {
 import { AdminLogoutButton } from "@/components/admin/admin-logout-button";
 import { AdminNavLink } from "@/components/admin/admin-nav-link";
 import { AdminSessionGuard } from "@/components/admin/admin-session-guard";
+import { serviceCoverageSummary } from "@/lib/service-coverage";
 import { adminNavigation, adminRoleLabels } from "@/server/admin/constants";
 import type { AdminRole } from "@/server/auth/authorization";
 
@@ -51,13 +52,13 @@ const navigationIconMap = {
 } as const;
 
 const navigationDetailMap: Record<string, string> = {
-  "/admin": "KPI, kuyruk ve operasyon özeti",
+  "/admin": "Persona, kuyruk ve operasyon özeti",
   "/admin/erisim": "Tüm yetkili admin modülleri",
   "/admin/site": "Menü, sayfa ve yayındaki içerik yönetimi",
   "/admin/urunler": "Katalog, stok, fiyat ve SEO",
   "/admin/siparisler": "Ödeme, teslimat ve sipariş karşılama",
-  "/admin/teklifler": "B2B/B2C teklif akışı",
-  "/admin/saha": "Servis ve saha talepleri",
+  "/admin/teklifler": "Ev, site, işletme ve ticari teklif akışı",
+  "/admin/saha": "Sakarya/Kocaeli keşif, servis ve kurulum talepleri",
   "/admin/blog": "Blog ve içerik operasyonu",
   "/admin/katalog": "Marka ve kategori sözlükleri",
   "/admin/paytr": "Ödeme hareketleri",
@@ -136,7 +137,7 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
                   ParkChargeEV Admin
                 </p>
                 <h1 className="mt-2 text-xl font-semibold text-slate-950">
-                  Operasyon Kontrol Merkezi
+                  Satış ve Saha Kontrol Merkezi
                 </h1>
                 <p className="mt-2 text-sm text-slate-600">{admin.fullName}</p>
               </div>
@@ -188,11 +189,21 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
                 ParkChargeEV Admin
               </p>
               <h1 className="mt-3 text-2xl font-semibold text-slate-950">
-                Operasyon Kontrol Merkezi
+                Satış ve Saha Kontrol Merkezi
               </h1>
               <p className="mt-3 text-sm leading-6 text-slate-600">
-                Katalog, sipariş, teklif ve saha işlerini öncelik sırasıyla yönetin.
+                Katalog, sipariş, teklif ve Sakarya/Kocaeli saha işlerini öncelik sırasıyla yönetin.
               </p>
+              <div className="mt-4 grid gap-2">
+                {[serviceCoverageSummary.freeSurvey, serviceCoverageSummary.installation].map((item) => (
+                  <span
+                    key={item}
+                    className="rounded-full bg-white/80 px-3 py-1.5 text-xs font-semibold text-[#063326]"
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
             </div>
 
             <div className="mt-6 rounded-[28px] border border-slate-200 bg-slate-50/90 p-4">
@@ -248,8 +259,7 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
                 Panel Durumu
               </p>
               <p className="mt-3 text-sm leading-6 text-slate-600">
-                Komut araması, rol bazlı navigasyon, oturum uyarısı ve sadece admin güvenlik
-                başlıkları aktif.
+                Komut araması, rol bazlı navigasyon, şehir kapsamı, oturum uyarısı ve admin güvenlik başlıkları aktif.
               </p>
             </div>
 
@@ -266,11 +276,10 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
                     Kontrol Merkezi
                   </p>
                   <h2 className="mt-2 text-2xl font-semibold text-slate-950">
-                    Bugünün işlem masası
+                    Bugünün satış ve saha masası
                   </h2>
                   <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-                    Arama, hızlı işlem, güvenlik durumu ve rol kapsamlı modüller tek üst katmanda
-                    toplandı.
+                    Persona rotaları, hızlı işlem, güvenlik durumu ve rol kapsamlı modüller tek üst katmanda toplandı.
                   </p>
                 </div>
 

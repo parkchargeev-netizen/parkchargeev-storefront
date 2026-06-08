@@ -1,4 +1,5 @@
 import { solutionPages } from "@/lib/mock-data";
+import { serviceCoverageSummary } from "@/lib/service-coverage";
 import { absoluteUrl, siteConfig } from "@/lib/site";
 import { listPublicProducts } from "@/server/admin/repository";
 import { listPublicBlogArticles } from "@/server/blog/repository";
@@ -58,6 +59,7 @@ export async function generateLlmsText() {
     `- Telefon: ${siteConfig.phone}`,
     `- E-posta: ${siteConfig.email}`,
     `- Hizmet bölgeleri: ${siteConfig.serviceAreas.join(", ")}`,
+    `- ${serviceCoverageSummary.freeSurvey}; ${serviceCoverageSummary.installation}`,
     "",
     "## Kanonik Sayfalar",
     "",

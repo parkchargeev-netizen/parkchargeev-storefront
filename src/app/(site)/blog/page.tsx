@@ -19,15 +19,14 @@ export default async function BlogPage() {
     <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
       <section className="mx-auto max-w-4xl text-center">
         <p className="text-sm font-semibold uppercase tracking-[0.34em] text-primary">
-          SEO + GEO + AIEO içerik merkezi
+          Satın alma rehberleri
         </p>
         <h1 className="mt-4 text-5xl font-black tracking-[-0.08em] text-on-surface">
-          EV charging karar yolculuğunu besleyen içerikler
+          Şarj cihazı ve kurulum kararınızı netleştiren rehberler
         </h1>
         <p className="mt-6 text-lg leading-8 text-on-surface-variant">
-          Satın alma niyeti, kurulum araştırması ve kurumsal proje değerlendirme
-          süreçlerinde görünür olmak için rehber, karşılaştırma ve çözüm odaklı
-          içerik kümesi.
+          Ev tipi wallbox, 11 kW / 22 kW farkı, apartman otoparkı kurulumu ve
+          kurumsal şarj yatırımı için kısa, uygulanabilir ve güven veren içerikler.
         </p>
       </section>
 

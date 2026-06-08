@@ -106,9 +106,9 @@ export type TestimonialModel = {
 
 export const trustMetrics: TrustMetricModel[] = [
   {
-    label: "Kurulum kapasitesi",
-    value: "81 il",
-    detail: "Bireysel ve kurumsal saha operasyonları için ölçeklenebilir hizmet modeli"
+    label: "Hizmet kapsamı",
+    value: "2 il",
+    detail: "Ücretsiz keşif Sakarya; kurulum hizmeti Sakarya ve Kocaeli için planlanır"
   },
   {
     label: "Pazar momentumu",
@@ -123,7 +123,7 @@ export const trustMetrics: TrustMetricModel[] = [
   {
     label: "Servis disiplini",
     value: "7/24",
-    detail: "Uzaktan destek, bakım ve teknik servis erişimi için önerilen operasyon standardı"
+    detail: "Satış öncesi uygunluk, kurulum sonrası destek ve teknik servis standardı"
   }
 ];
 
@@ -135,9 +135,9 @@ export const products: ProductModel[] = [
     category: "Ev Tipi",
     badge: "Çok Satan",
     summary:
-      "Akıllı telefon uygulaması ile uzaktan yönetilebilen, konut kullanımı için optimize edilmiş wallbox çözümü.",
+      "Trifaze altyapılı ev ve villalarda her sabah hazır araç isteyen kullanıcılar için akıllı wallbox.",
     description:
-      "Ev kullanıcıları için tasarlanan HomeCharge Pro 11kW; güvenli AC şarj, zamanlama, enerji takibi ve kompakt montaj avantajını tek gövdede birleştirir.",
+      "HomeCharge Pro 11kW; Togg, Tesla, BYD ve Type 2 AC uyumlu araçlarda evde güvenli şarj, zamanlama, enerji takibi ve keşifle netleşen kurulum planını tek satın alma akışında birleştirir.",
     priceKurus: 1249000,
     compareAtKurus: 1399000,
     stockLabel: "Stokta",
@@ -175,11 +175,11 @@ export const products: ProductModel[] = [
       { label: "Kurulum", value: "İç ve dış ortam uyumlu" }
     ],
     highlights: [
-      "Mobil uygulama ile zamanlama",
-      "Dinamik yük dengeleme desteği",
-      "Ücretsiz keşif ve montaj danışmanlığı"
+      "Gece şarjı için zamanlama ve enerji takibi",
+      "Pano yükünü korumaya yardımcı dinamik dengeleme desteği",
+      "Ev/villa kurulumu için keşif ve montaj danışmanlığı"
     ],
-    useCases: ["Müstakil ev", "Kapalı otopark", "Yazlık / ikinci konut"],
+    useCases: ["Müstakil ev", "Villa", "Kapalı otopark", "Yazlık / ikinci konut"],
     seoIntent: [
       "ev tipi şarj cihazı",
       "11 kW wallbox fiyatı",
@@ -205,9 +205,9 @@ export const products: ProductModel[] = [
     category: "İş Yeri Tipi",
     badge: "Kurumsal",
     summary:
-      "Aynı anda iki aracı şarj edebilen, RFID destekli ve çoklu kullanım senaryoları için tasarlanan ticari ünite.",
+      "Site, ofis ve ortak otoparklarda RFID, raporlama ve çoklu kullanıcı yönetimi isteyen ekipler için 22 kW AC çözüm.",
     description:
-      "Kurumsal otopark, ofis ve ticari alanlarda çoklu araç kullanımını yönetmek için geliştirilen Business Charge Dual 22kW; yazılım entegrasyonu ve raporlama altyapısına hazırdır.",
+      "Business Charge Dual 22kW; site yönetimleri, ofis otoparkları ve ticari alanlarda kullanıcı yetkisi, raporlama, OCPP uyumu ve servis destekli kurulum ihtiyacını tek cihazda toplar.",
     priceKurus: 3490000,
     stockLabel: "Stokta",
     powerLabel: "22kW AC",
@@ -220,11 +220,11 @@ export const products: ProductModel[] = [
       { label: "Kullanım", value: "Ticari ve çoklu kullanıcı" }
     ],
     highlights: [
-      "Kurumsal raporlama desteği",
-      "Çoklu kullanıcı ve yetkilendirme",
-      "Ticari lokasyonlar için uygun"
+      "RFID ile kullanıcı yetkilendirme ve kullanım takibi",
+      "Ofis, site ve filo için ölçeklenebilir AC altyapı",
+      "Kurumsal teklif ve keşif sürecine uygun teknik yapı"
     ],
-    useCases: ["Ofis otoparkı", "Otel", "AVM otoparkı"],
+    useCases: ["Site otoparkı", "Ofis otoparkı", "Otel", "AVM otoparkı"],
     seoIntent: [
       "22 kW şarj cihazı",
       "iş yeri şarj cihazı",
@@ -250,9 +250,9 @@ export const products: ProductModel[] = [
     category: "Ev Tipi",
     badge: "Yeni",
     summary:
-      "Monofaze altyapıya uygun, ilk EV kullanıcıları için ekonomik ve güvenli başlangıç çözümü.",
+      "Tek faz altyapılı evlerde uygun bütçeyle güvenli AC şarja başlamak isteyen yeni EV sahipleri için.",
     description:
-      "EcoCharge Lite 7.4kW, apartman veya müstakil evlerde kontrollü ve güvenli şarj isteyen kullanıcılar için tasarlanmış giriş seviyesi wallbox modelidir.",
+      "EcoCharge Lite 7.4kW, apartman içi park alanı veya müstakil evlerde monofaze altyapıyla kontrollü, anlaşılır ve ekonomik ev tipi şarj deneyimi sunar.",
     priceKurus: 890000,
     stockLabel: "Az Stok",
     powerLabel: "7.4kW AC",
@@ -265,9 +265,9 @@ export const products: ProductModel[] = [
       { label: "Garanti", value: "2 Yıl" }
     ],
     highlights: [
-      "Konut kurulumları için optimize edildi",
-      "Kompakt gövde",
-      "Kolay devreye alma"
+      "Monofaze altyapıya uygun ekonomik başlangıç",
+      "Kompakt gövde ve sade kullanım",
+      "İlk EV sahipleri için keşifle netleşen kurulum"
     ],
     useCases: ["Apartman içi park alanı", "Tek araçlı hane", "İlk EV sahipleri"],
     seoIntent: [
@@ -295,9 +295,9 @@ export const products: ProductModel[] = [
     category: "DC Hızlı Şarj",
     badge: "Yeni Nesil",
     summary:
-      "Hızlı devirli ticari lokasyonlar için geliştirilen, yüksek görünürlük ve hızlı servis sunan DC çözüm.",
+      "Akaryakıt, otel, AVM ve filo sahalarında hızlı şarjı gelir modeline dönüştürmek isteyen yatırımcılar için.",
     description:
-      "Akaryakıt sahası, otopark ve filo merkezleri için uygun DC Fast 60kW; gelir odaklı ticari kullanım senaryolarında hızlı şarj erişimi sağlar.",
+      "DC Fast 60kW; yüksek araç sirkülasyonu olan ticari lokasyonlarda saha fizibilitesi, enerji kapasitesi, görünür kullanıcı deneyimi ve gelir odaklı hızlı şarj erişimi için tasarlanır.",
     priceKurus: 12990000,
     stockLabel: "Stokta",
     powerLabel: "60kW DC",
@@ -310,9 +310,9 @@ export const products: ProductModel[] = [
       { label: "Yönetim", value: "Uzaktan erişim ve raporlama" }
     ],
     highlights: [
-      "Ticari gelir modeli için güçlü giriş seviyesi DC yatırım",
+      "Ticari gelir modeli için güçlü DC başlangıç yatırımı",
       "Görünür ekran ve kullanıcı yönlendirmesi",
-      "Filo ve halka açık kullanım senaryolarına uygun"
+      "Filo, rota üstü ve halka açık kullanım senaryolarına uygun"
     ],
     useCases: ["Benzinlik", "AVM", "Halka açık otopark"],
     seoIntent: ["DC hızlı şarj cihazı", "60 kW DC ünite", "ticari şarj cihazı"],
@@ -335,9 +335,9 @@ export const products: ProductModel[] = [
     name: "Type-2 Şarj Kablosu 5m",
     category: "Aksesuar",
     summary:
-      "32A destekli, dayanıklı dış kaplamaya sahip günlük kullanım ve yedek taşıma için uygun şarj kablosu.",
+      "Type 2 AC uyumlu araçlarda günlük kullanım, yedek taşıma ve ev/ofis şarjı için net kablo seçimi.",
     description:
-      "Ev, iş yeri ve cihaz kullanımına uygun Type-2 şarj kablosu; taşıma çantası ve sağlam bağlantı uçlarıyla güvenli bir yedek ekipman çözümüdür.",
+      "Type-2 Şarj Kablosu 5m; araç teslimi sonrası hızlıca hazır olmak, ev/ofis cihazına bağlanmak ve seyahatte yedek ekipman taşımak isteyen kullanıcılar için dayanıklı bir tamamlayıcıdır.",
     priceKurus: 425000,
     stockLabel: "Stokta",
     powerLabel: "32A",
@@ -350,9 +350,9 @@ export const products: ProductModel[] = [
       { label: "Taşıma", value: "Çanta dahil" }
     ],
     highlights: [
-      "Dayanıklı taşıma çözümü",
-      "Günlük kullanıma uygun",
-      "Yedek kablo senaryosu için ideal"
+      "Type 2 AC uyumluluğu kolay kontrol edilir",
+      "Günlük kullanım ve seyahat için taşıma çantası",
+      "Araç teslimi sonrası hızlı tamamlayıcı ürün"
     ],
     useCases: ["Yedek ekipman", "Seyahat", "Günlük araç bagajı"],
     seoIntent: ["type 2 şarj kablosu", "5 metre şarj kablosu", "32A type 2 kablo"],
@@ -376,32 +376,32 @@ export const services: ServiceModel[] = [
     id: "svc_installation",
     title: "Şarj Ünitesi Kurulumu",
     summary:
-      "Keşif, altyapı analizi, montaj, test ve devreye alma adımlarını tek ekip ile yönetiyoruz.",
-    cta: "Kurulum Detayları",
+      "Pano, faz, kablo hattı, koruma ekipmanı, montaj, test ve devreye alma adımlarını uçtan uca yönetiyoruz.",
+    cta: "Kurulumu Planla",
     href: "/hizmetler"
   },
   {
     id: "svc_support",
     title: "7/24 Teknik Servis",
     summary:
-      "Kurulum sonrası arıza, bakım, uzaktan destek ve periyodik kontrol süreçlerini yönetiyoruz.",
-    cta: "Destek Talebi",
+      "Kurulum sonrası kullanım, arıza, bakım, uzaktan destek ve periyodik kontrol süreçlerini görünür tutuyoruz.",
+    cta: "Destek Al",
     href: "/iletisim"
   },
   {
     id: "svc_corporate",
     title: "Kurumsal Çözümler ve Filo",
     summary:
-      "Site, ofis, AVM, otopark ve filo projeleri için cihaz, kurulum ve yönetim senaryoları tasarlıyoruz.",
-    cta: "Kurumsal Çözümleri İncele",
+      "Site, ofis, AVM, otopark ve filo projeleri için cihaz, RFID/yönetim, kurulum ve servis planı tasarlıyoruz.",
+    cta: "Kurumsal Akışı Gör",
     href: "/kurumsal-cozumler"
   },
   {
     id: "svc_consulting",
     title: "Enerji Danışmanlığı",
     summary:
-      "Elektrik altyapısı, güç ihtiyacı, maliyet optimizasyonu ve büyüme planı için mühendislik desteği sunuyoruz.",
-    cta: "Danışmanlık Talebi",
+      "Elektrik altyapısı, güç ihtiyacı, saha fizibilitesi, maliyet optimizasyonu ve büyüme planı için mühendislik desteği sunuyoruz.",
+    cta: "Fizibilite İste",
     href: "/iletisim"
   }
 ];
@@ -413,7 +413,7 @@ export const solutionPages: SolutionModel[] = [
     title: "Site ve Apartman Çözümleri",
     segment: "B2B2C",
     summary:
-      "Ortak otoparklarda mevzuata, kapasiteye ve kullanıcı yönetimine uygun EV charging mimarisi.",
+      "Ortak otoparklarda mevzuata, kapasiteye ve kullanıcı yönetimine uygun şarj altyapısı.",
     heroMetric: "Çoklu kullanıcı",
     heroLabel: "Yetkilendirme ve yük yönetimi",
     introduction:
@@ -667,7 +667,7 @@ export const testimonials: TestimonialModel[] = [
     role: "Site Yöneticisi",
     company: "Sakarya Residence",
     quote:
-      "Kurulum öncesinde sadece cihaz konuşulmadı; pano kapasitesi, kullanıcı yetkisi ve ileride büyüme planı birlikte ele alındı. Bu yaklaşım karar vermemizi kolaylaştırdı."
+      "Kurulum öncesinde yalnızca cihaz konuşulmadı; pano kapasitesi, kullanıcı yetkisi ve büyüme planı birlikte ele alındı. Yönetim kuruluna sunmak kolaylaştı."
   },
   {
     id: "tsm_2",
@@ -675,7 +675,7 @@ export const testimonials: TestimonialModel[] = [
     role: "İdari İşler Müdürü",
     company: "Teknoloji Kampüsü",
     quote:
-      "İş yeri şarj altyapısını çalışan memnuniyeti projesi gibi değil, ölçülebilir operasyon yatırımı gibi kurgulamak bizim için fark yarattı."
+      "İş yeri şarj altyapısını yalnızca çalışan memnuniyeti değil, ölçülebilir operasyon yatırımı gibi kurgulamak bizim için fark yarattı."
   },
   {
     id: "tsm_3",
@@ -691,7 +691,7 @@ export const globalFaqs: FaqItem[] = [
   {
     question: "ParkChargeEV yalnızca ürün mü satar, yoksa kurulum da yapar mı?",
     answer:
-      "Önerilen proje modeli ürün satışı, keşif, kurulum, teknik destek ve kurumsal proje danışmanlığını tek çatı altında birleştirir."
+      "Evet. Ürün satışı, teknik keşif, kurulum, garanti/servis desteği ve kurumsal proje danışmanlığı tek satın alma akışında birlikte ilerleyebilir."
   },
   {
     question: "PayTR ile ödeme güvenli mi?",
@@ -706,6 +706,7 @@ export const globalFaqs: FaqItem[] = [
 ];
 
 export const contactReasons = [
+  "Ücretsiz keşif talebi",
   "Ev tipi kurulum talebi",
   "İş yeri / ofis projesi",
   "Site / apartman çözümü",

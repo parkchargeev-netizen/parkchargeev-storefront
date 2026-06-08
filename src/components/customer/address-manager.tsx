@@ -11,6 +11,7 @@ import {
   getJsonValue,
   parseApiResponse
 } from "@/components/customer/account-form-utils";
+import { serviceCoverageSummary } from "@/lib/service-coverage";
 
 export type CustomerAddressFormModel = {
   id: string;
@@ -102,6 +103,7 @@ export function AddressManager({ addresses }: { addresses: CustomerAddressFormMo
           </h2>
           <p className="mt-2 text-sm leading-6 text-on-surface-variant">
             Kurulum ve teslimat adreslerini hızlı checkout için kayıt altında tutun.
+            {` ${serviceCoverageSummary.installation}.`}
           </p>
         </div>
       </div>
@@ -177,6 +179,7 @@ export function AddressManager({ addresses }: { addresses: CustomerAddressFormMo
             name="city"
             required
             autoComplete="address-level1"
+            placeholder="Sakarya veya Kocaeli"
             className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 outline-none transition focus:border-primary"
           />
         </label>

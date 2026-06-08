@@ -86,6 +86,10 @@ export default async function ProductDetailPage({
   const storeProfile = getProductStoreProfile(product);
   const mediaItems = detailContent.galleryItems;
   const productImageUrl = getDisplayProductImageUrl(product.imageUrl);
+  const isAccessoryProduct = storeProfile.powerTier === "Aksesuar";
+  const decisionNote = isAccessoryProduct
+    ? "Aksesuar ürünlerinde karar için soket tipi, kablo uzunluğu ve araç uyumu yeterlidir. Emin değilseniz ürün sayfasından keşif yerine hızlı destek alabilirsiniz."
+    : "Yanlış cihaz veya eksik kurulum kapsamı riskini azaltmak için pano kapasitesi, faz yapısı, kablo hattı ve koruma ekipmanı keşifte kontrol edilir.";
   const breadcrumbJsonLd = getBreadcrumbJsonLd([
     { name: "Ana Sayfa", path: "/" },
     { name: "Mağaza", path: "/magaza" },
@@ -201,17 +205,17 @@ export default async function ProductDetailPage({
             </div>
           </div>
 
-          <div className="mt-8 surface-card p-8">
-            <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.3em] text-primary">
-                  Satın alma kontrolü
-                </p>
-                <h2 className="mt-3 text-3xl font-bold tracking-[-0.05em] text-on-surface">
-                  Kurulum ve altyapı kararı
-                </h2>
-              </div>
-              <Link href="/urun-secici" className="text-sm font-semibold text-primary">
+            <div className="mt-8 surface-card p-8">
+              <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                <div>
+                  <p className="text-sm font-semibold uppercase tracking-[0.3em] text-primary">
+                  Uygunluk kontrolü
+                  </p>
+                  <h2 className="mt-3 text-3xl font-bold tracking-[-0.05em] text-on-surface">
+                  Bu ürün sizin senaryonuza uyuyor mu?
+                  </h2>
+                </div>
+                <Link href="/urun-secici" className="text-sm font-semibold text-primary">
                 Akıllı seçiciye git
               </Link>
             </div>
@@ -237,12 +241,10 @@ export default async function ProductDetailPage({
             </div>
             <div className="mt-5 rounded-[22px] border border-primary/15 bg-primary/5 p-5">
               <p className="text-sm font-semibold text-primary">
-                Satış öncesi not
+                Karar notu
               </p>
               <p className="mt-2 text-sm leading-7 text-on-surface-variant">
-                22 kW ve DC ürünlerde saha keşfi, pano kapasitesi ve kablo güzergahı
-                netleşmeden kurulum kapsamı kesinleştirilmez. Bu yapı, ürün seçimini
-                hızlandırırken yanlış altyapı satın alımını azaltır.
+                {decisionNote}
               </p>
             </div>
           </div>

@@ -13,33 +13,39 @@ import {
 import { listPublicProducts } from "@/server/admin/repository";
 
 export const metadata: Metadata = {
-  title: "Mağaza",
+  title: "EV Şarj Mağazası | Ev, Site ve İşletme Çözümleri",
   description:
-    "Ev, site, işletme ve ticari lokasyonlar için elektrikli araç şarj cihazı, kablo ve kurulum çözümlerini karşılaştırın.",
+    "Ev tipi wallbox, site ve apartman şarj altyapısı, işletme otoparkı, DC hızlı şarj ve Type 2 aksesuarları araç uyumu ve kurulum ihtiyacıyla karşılaştırın.",
   alternates: {
     canonical: "/magaza"
   },
   openGraph: {
-    title: "ParkChargeEV Mağaza",
-    description: "Wallbox, kablo, DC hızlı şarj ve kurulum çözümleri.",
+    title: "ParkChargeEV EV Şarj Mağazası",
+    description: "Doğru cihazı, kurulum ihtiyacını ve araç uyumunu tek ekranda karşılaştırın.",
     url: "/magaza",
     type: "website"
   }
 };
 
 const sortOptions = [
-  { value: "recommended", label: "Önerilenler" },
+  { value: "recommended", label: "Karar için önerilenler" },
   { value: "price-asc", label: "Fiyat artan" },
   { value: "price-desc", label: "Fiyat azalan" },
   { value: "name-asc", label: "İsim A-Z" }
 ] as const;
 
 const quickSegments = [
-  { label: "Ev", href: "/magaza?category=Ev%20Tipi", detail: "7.4 / 11 kW" },
-  { label: "Site", href: "/magaza?power=22%20kW", detail: "RFID + kurulum" },
-  { label: "İşletme", href: "/magaza?installation=Sabit%20kurulum", detail: "22 kW AC" },
-  { label: "DC", href: "/magaza?category=DC%20Hızlı%20Şarj", detail: "Ticari lokasyon" },
-  { label: "Aksesuar", href: "/magaza?category=Aksesuar", detail: "Type 2 kablo" }
+  { label: "Evde gece şarjı", href: "/magaza?category=Ev%20Tipi", detail: "7.4 / 11 kW wallbox" },
+  { label: "Site yönetimi", href: "/magaza?power=22%20kW", detail: "RFID + ortak kullanım" },
+  { label: "Ofis otoparkı", href: "/magaza?installation=Sabit%20kurulum", detail: "22 kW AC + servis" },
+  { label: "Ticari saha", href: "/magaza?category=DC%20Hızlı%20Şarj", detail: "DC yatırım planı" },
+  { label: "Type 2 aksesuar", href: "/magaza?category=Aksesuar", detail: "Kablo ve uyum" }
+] as const;
+
+const storeDecisionCards = [
+  ["Yanlış ürün riskini azaltın", "Güç, faz, konnektör ve kullanım alanını aynı kartta görün."],
+  ["Kurulumu baştan planlayın", "Pano, kablo hattı ve koruma ekipmanı keşif sürecinde netleşir."],
+  ["Fiyatı güvenle karşılaştırın", "Stok, kurulum ihtiyacı ve destek bilgisini karar anında görün."]
 ] as const;
 
 type StorePageProps = {
@@ -210,17 +216,17 @@ export default async function StorePage({ searchParams }: StorePageProps) {
           <div>
             <p className="premium-eyebrow text-emerald-300">EV şarj mağazası</p>
             <h1 className="mt-4 max-w-4xl text-4xl font-black leading-tight text-white md:text-6xl">
-              Cihazı seçin. Kurulumu netleştirin.
+              Aracınız ve otoparkınız için doğru şarj ürününü seçin.
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-7 text-white/68">
-              Ev, site ve işletme için uygun wallbox, DC ünite ve aksesuarları tek ekranda karşılaştırın.
+              Ev tipi wallbox, site/ofis çözümleri, DC üniteler ve Type 2 aksesuarları uyum, güç ve kurulum bilgisiyle karşılaştırın.
             </p>
           </div>
           <div className="rounded-[24px] border border-white/12 bg-white/10 p-5 text-white backdrop-blur">
             {[
               ["Ürün", `${products.length} seçenek`],
               ["Filtre", `${activeFilterCount} aktif`],
-              ["Fiyat", `${formatPriceTRY(minPrice)} - ${formatPriceTRY(maxPrice)}`]
+              ["Aralık", `${formatPriceTRY(minPrice)} - ${formatPriceTRY(maxPrice)}`]
             ].map(([label, value]) => (
               <div key={label} className="flex items-center justify-between gap-4 py-2">
                 <span className="text-sm text-white/58">{label}</span>
@@ -233,9 +239,18 @@ export default async function StorePage({ searchParams }: StorePageProps) {
         <div className="relative z-10 mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           {quickSegments.map((segment) => (
             <Link key={segment.label} href={segment.href} className="store-segment-card">
-              <span className="text-lg font-black">{segment.label}</span>
+              <span className="text-base font-black">{segment.label}</span>
               <span className="text-xs font-bold text-white/58">{segment.detail}</span>
             </Link>
+          ))}
+        </div>
+
+        <div className="relative z-10 mt-5 grid gap-3 md:grid-cols-3">
+          {storeDecisionCards.map(([title, detail]) => (
+            <div key={title} className="rounded-[22px] border border-white/12 bg-white/[0.08] p-4 text-white backdrop-blur">
+              <p className="text-sm font-black">{title}</p>
+              <p className="mt-2 text-xs leading-5 text-white/58">{detail}</p>
+            </div>
           ))}
         </div>
       </section>
@@ -243,13 +258,13 @@ export default async function StorePage({ searchParams }: StorePageProps) {
       <div className="mt-8 grid gap-8 lg:grid-cols-[300px_1fr]">
         <aside className="w-full lg:sticky lg:top-24 lg:h-fit">
           <form action="/magaza" className="surface-card p-5">
-            <p className="text-sm font-black uppercase text-primary">Filtrele</p>
+            <p className="text-sm font-black uppercase text-primary">Doğru ürünü filtrele</p>
             <label className="mt-5 grid gap-2">
               <span className="text-sm text-on-surface-variant">Arama</span>
               <input
                 name="q"
                 defaultValue={query}
-                placeholder="22 kW, RFID, Type 2"
+                placeholder="Araç, güç, RFID, Type 2"
                 className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 outline-none transition focus:border-primary"
               />
             </label>
@@ -261,7 +276,7 @@ export default async function StorePage({ searchParams }: StorePageProps) {
                 defaultValue={selectedPower}
                 className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 outline-none transition focus:border-primary"
               >
-                <option value="">Tüm güçler</option>
+                <option value="">Tüm güç seviyeleri</option>
                 {filterOptions.powerTiers.map((option) => (
                   <option key={option} value={option}>
                     {option}
@@ -276,7 +291,7 @@ export default async function StorePage({ searchParams }: StorePageProps) {
                 defaultValue={selectedInstallation}
                 className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 outline-none transition focus:border-primary"
               >
-                <option value="">Tüm kurulumlar</option>
+                <option value="">Tüm kurulum seçenekleri</option>
                 {filterOptions.installationModes.map((option) => (
                   <option key={option} value={option}>
                     {option}
@@ -307,7 +322,7 @@ export default async function StorePage({ searchParams }: StorePageProps) {
           </form>
 
           <div className="surface-card mt-5 p-5">
-            <p className="text-sm font-black uppercase text-primary">Kategoriler</p>
+            <p className="text-sm font-black uppercase text-primary">Kullanım alanı</p>
             <div className="mt-4 grid gap-2">
               {categoryFilters.map((filter) => (
                 <Link
@@ -337,7 +352,7 @@ export default async function StorePage({ searchParams }: StorePageProps) {
               <div>
                 <p className="text-sm font-black uppercase text-primary">Sonuçlar</p>
                 <h2 className="mt-2 text-3xl font-black text-on-surface">
-                  {sortedProducts.length} ürün
+                  {sortedProducts.length} uygun seçenek
                 </h2>
               </div>
               {(selectedCategory || query || selectedPower || selectedInstallation || selectedSort !== "recommended") ? (
@@ -352,9 +367,9 @@ export default async function StorePage({ searchParams }: StorePageProps) {
 
             <div className="mt-5 grid gap-3 md:grid-cols-3">
               {[
-                ["Güvenli ödeme", "PayTR altyapısı"],
-                ["Kurulum", "Keşif ile netleşir"],
-                ["Destek", "Satış sonrası servis"]
+                ["Ödeme", "PayTR güvenli altyapı"],
+                ["Kurulum", "Keşifle kapsam netleşir"],
+                ["Destek", "Garanti ve servis süreci"]
               ].map(([label, detail]) => (
                 <div key={label} className="rounded-2xl bg-surface-container-low px-4 py-3">
                   <p className="text-sm font-black text-on-surface">{label}</p>
@@ -368,7 +383,7 @@ export default async function StorePage({ searchParams }: StorePageProps) {
             <div className="surface-card p-10 text-center">
               <h2 className="text-3xl font-black text-on-surface">Sonuç bulunamadı</h2>
               <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-on-surface-variant">
-                Filtreleri sadeleştirerek tekrar deneyin veya teknik keşif isteyin.
+                Filtreleri sadeleştirerek tekrar deneyin ya da aracınız ve otoparkınız için keşif talebi bırakın.
               </p>
               <Link
                 href="/magaza"

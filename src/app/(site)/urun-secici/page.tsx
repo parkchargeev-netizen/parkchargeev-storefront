@@ -8,9 +8,9 @@ import {
 } from "@/lib/structured-data";
 
 export const metadata: Metadata = {
-  title: "Akıllı Şarj Cihazı Seçici",
+  title: "Akıllı EV Şarj Ürün Seçici",
   description:
-    "Kurulum yeri, elektrik altyapısı, araç sayısı ve kullanım önceliğine göre ParkChargeEV ürünleri arasından doğru şarj cihazını bulun.",
+    "Aracınız, otoparkınız, elektrik altyapınız ve kullanım ihtiyacınıza göre ev, site, işletme veya ticari saha için doğru şarj ürününü bulun.",
   alternates: {
     canonical: "/urun-secici"
   }

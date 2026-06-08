@@ -1,7 +1,7 @@
 export const siteConfig = {
   name: "ParkChargeEV",
   description:
-    "Elektrikli araç şarj cihazı ürünleri, kurulum hizmetleri ve teknik destek süreçlerini tek platformda buluşturan premium EV commerce deneyimi.",
+    "Ev, site, işletme ve ticari lokasyonlar için elektrikli araç şarj cihazı, keşif, kurulum ve teknik destek çözümleri.",
   domain: "parkchargeev.com",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://parkchargeev.com",
   phone: process.env.NEXT_PUBLIC_SUPPORT_PHONE ?? "05514914320",
@@ -21,7 +21,7 @@ export const siteConfig = {
     facebook: process.env.NEXT_PUBLIC_FACEBOOK_URL ?? ""
   },
   supportHours: "Mo-Sa 09:00-18:00",
-  serviceAreas: ["Sakarya", "İstanbul", "Kocaeli", "Bursa", "Türkiye Geneli"],
+  serviceAreas: ["Sakarya", "Kocaeli"],
   primaryNavigation: [
     { href: "/", label: "Ana Sayfa" },
     { href: "/magaza", label: "Mağaza" },

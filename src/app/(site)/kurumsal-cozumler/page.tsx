@@ -16,12 +16,11 @@ export default function CorporateSolutionsPage() {
       <section className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.34em] text-primary">
-            Kurumsal satış mimarisi
+            Kurumsal şarj çözümleri
           </p>
           <h1 className="mt-5 text-5xl font-black tracking-[-0.08em] text-on-surface md:text-6xl">
-            EV charging projelerini
-            <span className="text-gradient"> tekliften operasyona</span>
-            taşıyan yapı
+            Site, ofis ve ticari sahalar için
+            <span className="text-gradient"> net teklif ve güvenli kurulum</span>
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-on-surface-variant">
             Site yönetimleri, ofisler, otopark işletmeleri ve filolar için ürün,
@@ -32,13 +31,13 @@ export default function CorporateSolutionsPage() {
 
         <div className="surface-card p-8">
           <p className="text-sm font-semibold uppercase tracking-[0.3em] text-secondary">
-            Neden ayrı bir kurumsal akış?
+            Neden ayrı kurumsal süreç?
           </p>
           <div className="mt-6 grid gap-4">
             {[
-              "B2C mağaza akışı ile kurumsal teklif akışı birbirinden ayrılmalı",
-              "Karar verici, kullanıcı ve teknik ekip aynı sayfada farklı bilgiye ihtiyaç duyar",
-              "Şarj altyapısında cihaz kadar enerji planı ve saha organizasyonu da satılır"
+              "Yönetim, teknik ekip ve kullanıcıların beklentisi aynı teklif içinde net görünmeli",
+              "Cihaz fiyatı, keşif, elektrik altyapısı, bakım ve servis kapsamı ayrı gösterilmeli",
+              "RFID, adil kullanım, enerji planı ve büyüme senaryosu baştan tasarlanmalı"
             ].map((item) => (
               <div key={item} className="rounded-[24px] bg-surface-container-low p-5 text-sm leading-7 text-on-surface-variant">
                 {item}
@@ -71,12 +70,13 @@ export default function CorporateSolutionsPage() {
               Kullanım senaryoları
             </p>
             <h2 className="mt-4 text-4xl font-black tracking-[-0.07em] text-on-surface">
-              Her segment için ayrı satış dili
+              Her segment için ayrı çözüm yolu
             </h2>
           </div>
           <p className="max-w-2xl text-base leading-7 text-on-surface-variant">
-            ParkChargeEV&apos;in kurumsal büyüme modeli; tek tip ürün sayfası yerine,
-            ihtiyaca göre uzmanlaşmış landing page yapısı üzerinden ilerlemelidir.
+            Site yönetimi, ofis otoparkı, filo ve ticari saha yatırımı farklı
+            karar kriterlerine sahiptir. Her senaryoda doğru ürün, keşif ve servis
+            kapsamı ayrı netleştirilir.
           </p>
         </div>
 
@@ -94,7 +94,7 @@ export default function CorporateSolutionsPage() {
               Teklif süreci
             </p>
             <h2 className="mt-4 text-4xl font-black tracking-[-0.07em]">
-              Kurumsal projede dönüşüm nasıl artar?
+              Kurumsal projede karar nasıl hızlanır?
             </h2>
           </div>
           <div className="grid gap-4">
@@ -118,7 +118,7 @@ export default function CorporateSolutionsPage() {
       <section className="mt-14">
         <LeadForm
           title="Kurumsal keşif ve teklif formu"
-          description="Site, iş yeri, ofis, filo veya otopark projenizi paylaşın; ihtiyaç analiziyle birlikte doğru çözüm mimarisini kuralım."
+          description="Site, iş yeri, ofis, filo veya otopark projenizi paylaşın; doğru cihaz, keşif, kurulum ve servis kapsamını birlikte netleştirelim."
           defaultReason="İş yeri / ofis projesi"
         />
       </section>

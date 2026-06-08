@@ -32,6 +32,7 @@ import {
   proofSignals,
   type HomeIconKey
 } from "@/lib/homepage-content";
+import { serviceCoverageSummary } from "@/lib/service-coverage";
 import type {
   ArticleModel,
   ProductModel,
@@ -120,21 +121,24 @@ function PremiumHero({ whatsappHref }: { whatsappHref: string }) {
           </div>
 
           <p className="mt-8 text-xs font-black uppercase text-emerald-300">
-            ParkChargeEV premium şarj platformu
+            Doğru cihaz + doğru altyapı + güvenli kurulum
           </p>
           <h1 className="mt-4 max-w-[38rem] text-[2.55rem] font-black leading-[0.98] tracking-normal text-white sm:text-6xl lg:text-[3.95rem]">
-            Doğru cihaz. Güvenli kurulum. Net karar.
+            Elektrikli aracınız için net ve güvenli şarj çözümü.
           </h1>
           <p className="mt-6 max-w-xl text-base leading-7 text-white/72 sm:text-lg">
-            Ev, site ve işletmeniz için uyumlu cihazı bulun; keşif ve kurulum desteğiyle güvenle ilerleyin.
+            Aracınızı, otoparkınızı ve elektrik altyapınızı birlikte değerlendirerek ev, site veya işletme için doğru ürüne yönlendiren şarj platformu.
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <Link href="/magaza?segment=Ev" className="premium-btn premium-btn--primary">
               <ShoppingBag className="h-5 w-5" aria-hidden />
-              Ev Tipi Cihazları Gör
+              Ev İçin Cihaz Seç
             </Link>
-            <Link href="/iletisim?reason=Ucretsiz%20kesif" className="premium-btn premium-btn--glass">
+            <Link
+              href={`/iletisim?reason=${encodeURIComponent("Ücretsiz keşif talebi")}`}
+              className="premium-btn premium-btn--glass"
+            >
               <ClipboardCheck className="h-5 w-5" aria-hidden />
               Ücretsiz Keşif İste
             </Link>
@@ -152,6 +156,9 @@ function PremiumHero({ whatsappHref }: { whatsappHref: string }) {
               </div>
             ))}
           </div>
+          <p className="mt-4 text-xs font-bold leading-5 text-white/58">
+            {serviceCoverageSummary.freeSurvey} · {serviceCoverageSummary.installation}
+          </p>
         </div>
 
         <div className="premium-hero__visual">
@@ -186,8 +193,8 @@ function ConversionRoutes() {
     <section className="premium-section">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
-          eyebrow="Kendi rotanı seç"
-          title="İhtiyacınıza göre doğru çözüme gidin."
+          eyebrow="İlk karar rotası"
+          title="Siteye geldiğiniz anda doğru yola girin."
         />
 
         <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
@@ -272,7 +279,7 @@ function PowerChoiceSection() {
       <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
         <SectionHeading
           eyebrow="Güç seçimi"
-          title="Ev, site ve işletme için doğru güç."
+          title="Gücünüz, kullanım senaryonuza göre seçilsin."
         />
 
         <div className="grid gap-3 md:grid-cols-2">
@@ -299,7 +306,7 @@ function ProductSpotlight({ products }: { products: ProductModel[] }) {
         <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <SectionHeading
             eyebrow="Mağaza"
-            title="Öne çıkan şarj çözümleri."
+            title="Satışa hazır, kuruluma uygun çözümler."
           />
           <Link href="/magaza" className="btn-secondary shrink-0">
             Mağazaya Git
@@ -324,10 +331,10 @@ function InstallationFlow() {
         <div>
           <p className="premium-eyebrow text-emerald-300">Kurulum güveni</p>
           <h2 className="mt-3 text-2xl font-black leading-tight tracking-normal text-white md:text-4xl">
-            Cihaz satışı, teknik güvenle tamamlanır.
+            Cihaz seçimi, teknik keşifle güvenli karara dönüşür.
           </h2>
           <p className="mt-4 max-w-xl text-sm leading-7 text-white/68 md:text-base">
-            Pano, faz ve kablo hattı netleşsin; montaj güvenle tamamlansın.
+            Yanlış cihaz, eksik kablo hattı veya uygunsuz pano riskini keşif ve kurulum planıyla azaltın.
           </p>
           <Link href="/hizmetler" className="premium-btn premium-btn--primary mt-7">
             Kurulum Hizmetini İncele
@@ -364,7 +371,7 @@ function ProofAndResources({
         <div>
           <SectionHeading
             eyebrow="Sosyal kanıt"
-            title="Karar öncesi güven sinyalleri."
+            title="Karar öncesi görmeniz gereken güven sinyalleri."
           />
           <div className="mt-6 grid gap-3 sm:grid-cols-3">
             {proofSignals.map((signal) => (
@@ -391,7 +398,7 @@ function ProofAndResources({
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="premium-eyebrow">Rehberler</p>
-              <h3 className="mt-2 text-2xl font-black text-on-surface">Kısa rehberler.</h3>
+              <h3 className="mt-2 text-2xl font-black text-on-surface">Satın alma rehberleri.</h3>
             </div>
             <Link href="/blog" className="text-sm font-black text-primary">
               Tümü
@@ -424,7 +431,7 @@ function FinalCta({ whatsappHref }: { whatsappHref: string }) {
       <div className="mx-auto max-w-5xl px-4 text-center sm:px-6 lg:px-8">
         <p className="premium-eyebrow text-emerald-300">Son adım</p>
         <h2 className="mt-4 text-3xl font-black leading-tight text-white md:text-5xl">
-          Bugün doğru cihaz ve kurulum planını netleştirelim.
+          Cihazı, keşfi ve kurulum planını bugün netleştirelim.
         </h2>
         <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
           <Link href="/magaza?segment=Ev" className="premium-btn premium-btn--primary">

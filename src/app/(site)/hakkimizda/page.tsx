@@ -8,7 +8,7 @@ import { getPublishedSitePageBySlug } from "@/server/site/repository";
 const fallbackMetadata: Metadata = {
   title: "Hakkımızda",
   description:
-    "ParkChargeEV'in marka yaklaşımı, uzmanlık alanları ve neden premium EV commerce modeli olarak konumlandığı."
+    "ParkChargeEV'in elektrikli araç şarj cihazı, keşif, kurulum ve teknik destek yaklaşımı."
 };
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -49,30 +49,30 @@ export default async function AboutPage() {
       <section className="grid gap-8 lg:grid-cols-[1fr_360px]">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.34em] text-primary">
-            Marka yaklaşımı
+            ParkChargeEV yaklaşımı
           </p>
           <h1 className="mt-5 text-5xl font-black tracking-[-0.08em] text-on-surface">
             ParkChargeEV,
-            <span className="text-gradient"> satış ile mühendisliği</span>
-            aynı deneyimde buluşturur
+            <span className="text-gradient"> doğru cihazı güvenli kurulumla</span>
+            birlikte sunar
           </h1>
           <p className="mt-6 max-w-3xl text-lg leading-8 text-on-surface-variant">
-            Doğru konumlandırma; yalnızca wallbox satan bir mağaza olmak değil,
-            ürün, saha uygunluğu, kurulum, teknik servis ve içerik otoritesini tek
-            dijital omurgada birleştirmektir.
+            Amacımız yalnızca wallbox satmak değil; aracınıza, otoparkınıza ve
+            elektrik altyapınıza uygun ürünü keşif, kurulum ve teknik destekle
+            güvenli bir satın alma deneyimine dönüştürmektir.
           </p>
         </div>
 
         <aside className="surface-card h-fit p-8">
           <p className="text-sm font-semibold uppercase tracking-[0.3em] text-secondary">
-            Konumlandırma özeti
+            Ne sunuyoruz?
           </p>
           <p className="mt-4 text-3xl font-bold tracking-[-0.05em] text-on-surface">
-            Premium EV commerce
+            Cihaz + keşif + kurulum
           </p>
           <p className="mt-4 text-sm leading-7 text-on-surface-variant">
-            Ürün vitrinini, kurulum hizmetini, teknik destek katmanını ve AI
-            arama görünürlüğünü birlikte kurgulayan hibrit büyüme modeli.
+            Ev, site, işletme ve ticari lokasyonlar için ürün seçimini teknik
+            uygunluk ve satış sonrası destekle birlikte planlayan çözüm modeli.
           </p>
         </aside>
       </section>
@@ -96,19 +96,19 @@ export default async function AboutPage() {
       <section className="mt-14 grid gap-6 lg:grid-cols-3">
         {[
           {
-            title: "Ticaret disiplini",
+            title: "Güvenli satın alma",
             body:
-              "Güvenli ödeme, açık fiyatlandırma, garanti ve sipariş görünürlüğü e-ticaret tarafının temelidir."
+              "PayTR güvenli ödeme, açık fiyatlandırma, garanti ve sipariş görünürlüğü her ürün kararının temelidir."
           },
           {
-            title: "Mühendislik yaklaşımı",
+            title: "Teknik uygunluk",
             body:
-              "Cihaz seçimi tek başına yeterli değildir; saha, enerji kapasitesi ve büyüme planı birlikte kurgulanmalıdır."
+              "Cihaz seçimi tek başına yeterli değildir; pano, faz, kablo hattı, saha ve büyüme planı birlikte değerlendirilmelidir."
           },
           {
-            title: "İçerik otoritesi",
+            title: "Karar rehberliği",
             body:
-              "SEO, GEO ve answer engine görünürlüğü için kullanıcı sorularına doğrudan cevap veren içerik mimarisi gerekir."
+              "Ev kullanıcısı, site yönetimi ve işletme karar vericisi için soruları kısa, net ve uygulanabilir cevaplarla karşılarız."
           }
         ].map((item) => (
           <article key={item.title} className="surface-card p-8">

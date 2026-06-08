@@ -18,9 +18,9 @@ type ProductPurchasePanelProps = {
 };
 
 const defaultBenefits = [
-  "Ücretsiz kargo ve hızlı gönderim",
-  "2 yıl garanti ve kurulum desteği",
-  "PayTR ile güvenli ödeme altyapısı"
+  "PayTR güvenli ödeme ve net sipariş takibi",
+  "Garanti, servis ve kurulum desteği",
+  "Keşif talebiyle yanlış ürün riskini azaltma"
 ];
 
 export function ProductPurchasePanel({
@@ -48,9 +48,9 @@ export function ProductPurchasePanel({
       )
     : null;
   const purchaseTrustSignals = [
-    { label: "Uyum", detail: storeProfile.connectorHint },
-    { label: "Kurulum", detail: storeProfile.installationMode },
-    { label: "Güven", detail: "PayTR + garanti" }
+    { label: "Araç", detail: storeProfile.connectorHint },
+    { label: "Saha", detail: storeProfile.installationMode },
+    { label: "Ödeme", detail: "PayTR + garanti" }
   ];
 
   function handleAddToCart() {
@@ -103,26 +103,26 @@ export function ProductPurchasePanel({
         ))}
       </div>
       <p className="mt-3 rounded-2xl bg-surface-container-low px-4 py-3 text-xs leading-5 text-on-surface-variant">
-        Pano, faz, kablo hattı ve koruma ekipmanı keşifte kontrol edilir; emin değilseniz ürün + keşif akışıyla ilerleyin.
+        Emin değilseniz ürünle birlikte keşif akışını seçin; pano, faz, kablo hattı ve koruma ekipmanı netleştirilir.
       </p>
 
       <div className="mt-8 rounded-[24px] bg-surface-container-low p-6">
         <p className="text-sm font-semibold uppercase text-on-surface-variant">
-          Sipariş detayları
+          Satın alma yolu
         </p>
 
         <div className="mt-5">
-          <p className="text-sm font-medium text-on-surface-variant">Satın alma akışı</p>
+          <p className="text-sm font-medium text-on-surface-variant">Nasıl ilerlemek istersiniz?</p>
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
             {[
               {
                 value: "product",
-                label: "Sadece ürün",
-                detail: "Stoktan gönderim"
+                label: "Ürünü satın al",
+                detail: "Stoktan sevkiyat"
               },
               {
                 value: "survey",
-                label: "Ürün + keşif",
+                label: "Keşifle ilerle",
                 detail: storeProfile.installationMode
               }
             ].map((option) => (
@@ -146,8 +146,8 @@ export function ProductPurchasePanel({
           </div>
           {purchaseMode === "survey" ? (
             <p className="mt-3 rounded-2xl border border-primary/15 bg-white px-4 py-3 text-xs leading-5 text-on-surface-variant">
-              Sepete ürün ekleyebilir, kurulum kapsamı için ayrıca keşif talebi
-              bırakabilirsiniz. Keşif kalemi saha uygunluğuna göre netleşir.
+              Ürünü sepete ekleyip kurulum kapsamı için keşif talebi bırakabilirsiniz.
+              Keşif sonrası kablo hattı, pano ve randevu bilgisi netleşir.
             </p>
           ) : null}
         </div>

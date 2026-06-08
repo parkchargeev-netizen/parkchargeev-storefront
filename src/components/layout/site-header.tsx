@@ -4,6 +4,7 @@ import { BadgeCheck, ChevronRight } from "lucide-react";
 import { BrandLogo } from "@/components/layout/brand-logo";
 import { SiteHeaderActions } from "@/components/layout/site-header-actions";
 import { SiteMobileMenu } from "@/components/layout/site-mobile-menu";
+import { serviceCoverageSummary } from "@/lib/service-coverage";
 import { siteConfig } from "@/lib/site";
 import type { PublicNavigationItem } from "@/server/site/repository";
 
@@ -35,11 +36,14 @@ export function SiteHeader({ navigation = siteConfig.primaryNavigation }: SiteHe
               <BadgeCheck className="h-3.5 w-3.5 text-[#7eecc9]" aria-hidden />
               PayTR güvenli ödeme
             </span>
-            <span>Kurulum + keşif desteği</span>
-            <span>Type 2 araç uyumu</span>
+            <span>{serviceCoverageSummary.freeSurvey}</span>
+            <span>{serviceCoverageSummary.installation}</span>
           </div>
-          <Link href="/iletisim?reason=Hizli%20kesif" className="inline-flex items-center gap-1 text-[#7eecc9]">
-            24 saat içinde keşif planı
+          <Link
+            href={`/iletisim?reason=${encodeURIComponent("Ücretsiz keşif talebi")}`}
+            className="inline-flex items-center gap-1 text-[#7eecc9]"
+          >
+            Sakarya keşif talebi
             <ChevronRight className="h-3.5 w-3.5" aria-hidden />
           </Link>
         </div>

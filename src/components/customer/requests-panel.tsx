@@ -67,7 +67,7 @@ export function RequestsPanel({ snapshot }: { snapshot: AccountSnapshot }) {
       </div>
 
       <Link
-        href="/iletisim?konu=servis"
+        href={`/iletisim?konu=${encodeURIComponent("Teknik servis ve bakım")}`}
         className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-white"
       >
         Talep oluştur

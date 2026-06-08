@@ -16,62 +16,62 @@ export type HomeIconKey =
   | "zap";
 
 export const heroTrustSignals = [
-  { icon: "shield", label: "Güvenli ödeme" },
-  { icon: "wrench", label: "Keşif + kurulum" },
-  { icon: "plug", label: "Araç uyumu" },
+  { icon: "shield", label: "PayTR güvenli ödeme" },
+  { icon: "wrench", label: "Keşif + kurulum planı" },
+  { icon: "plug", label: "Araç uyumu kontrolü" },
   { icon: "message", label: "Hızlı destek" }
 ] as const;
 
 export const heroStats = [
-  { value: "11 kW", label: "Ev için denge" },
-  { value: "22 kW", label: "Site / ofis" },
-  { value: "DC", label: "Ticari yatırım" }
+  { value: "7.4 / 11 kW", label: "Evde gece şarjı" },
+  { value: "22 kW", label: "Site ve ofis" },
+  { value: "AC / DC", label: "Ticari lokasyon" }
 ] as const;
 
 export const conversionRoutes = [
   {
     icon: "home",
     label: "Ev",
-    title: "Her sabah dolu batarya.",
-    body: "7.4 / 11 kW wallbox ve güvenli konut kurulumu.",
+    title: "Her sabah hazır araç.",
+    body: "Pano uygunluğu, araç uyumu ve 7.4/11 kW wallbox seçeneklerini hızlıca netleştirin.",
     href: "/magaza?segment=Ev",
-    cta: "Ev cihazları",
-    accent: "11 kW"
+    cta: "Ev için seç",
+    accent: "7.4/11 kW"
   },
   {
     icon: "building",
     label: "Site",
     title: "Yönetime hazır çözüm.",
-    body: "RFID, adil kullanım ve ölçeklenebilir otopark altyapısı.",
+    body: "RFID, adil kullanım ve maliyet paylaşımı için yönetime sunulabilir teknik teklif alın.",
     href: "/kurumsal-cozumler/site-ve-apartman",
-    cta: "Site çözümü",
-    accent: "RFID"
+    cta: "Site çözümünü planla",
+    accent: "RFID + yönetim"
   },
   {
     icon: "users",
     label: "İşletme",
     title: "Otoparkı marka değerine çevirin.",
-    body: "22 kW AC, raporlama ve çalışan/misafir deneyimi.",
+    body: "Çalışan, misafir ve filo kullanımı için 22 kW AC, raporlama ve servis destekli kurulum.",
     href: "/iletisim?reason=Kurumsal%20teklif",
-    cta: "Teklif al",
+    cta: "İşletme teklifi al",
     accent: "OCPP"
   },
   {
     icon: "zap",
     label: "Ticari",
     title: "Şarjı gelir modeline bağlayın.",
-    body: "DC hızlı şarj, saha fizibilitesi ve yatırım planı.",
+    body: "DC hızlı şarj veya çoklu AC yatırımında saha, trafo ve geri dönüş riskini azaltın.",
     href: "/iletisim?reason=Ticari%20lokasyon%20teklifi",
-    cta: "Saha planla",
-    accent: "ROI"
+    cta: "Fizibilite iste",
+    accent: "Gelir modeli"
   },
   {
     icon: "cable",
     label: "Aksesuar",
     title: "Araca uygun kabloyu seçin.",
-    body: "Type 2 kablo ve günlük kullanım ekipmanları.",
+    body: "Type 2 kablo, soket uyumu ve kablo uzunluğunu stok ve fiyatla birlikte görün.",
     href: "/magaza?category=Aksesuar",
-    cta: "Aksesuarlar",
+    cta: "Aksesuar seç",
     accent: "Type 2"
   }
 ] as const;
@@ -81,41 +81,41 @@ export const powerChoices = [
     icon: "plug",
     power: "7.4 kW",
     title: "Monofaze ev",
-    body: "İlk EV sahipleri ve gece şarjı için sade başlangıç.",
+    body: "Tek faz altyapılı evlerde ekonomik ve risksiz başlangıç seçeneği.",
     href: "/magaza?power=7.4%20kW"
   },
   {
     icon: "battery",
     power: "11 kW",
     title: "Trifaze ev / villa",
-    body: "Günlük kullanım için en dengeli AC tercih.",
+    body: "Günlük kullanım için hız, maliyet ve güven dengesini sağlar.",
     href: "/magaza?power=11%20kW"
   },
   {
     icon: "gauge",
     power: "22 kW",
     title: "Site / ofis",
-    body: "Çoklu kullanıcı ve daha kısa park süresi için.",
+    body: "Paylaşımlı otopark, RFID ve filo ihtiyacı olan alanlarda güçlü tercih.",
     href: "/magaza?power=22%20kW"
   },
   {
     icon: "zap",
     power: "DC",
     title: "Ticari lokasyon",
-    body: "Yüksek devirli saha yatırımı ve fizibilite.",
+    body: "Otel, AVM, akaryakıt ve rota üstü lokasyonlarda yatırım modeli.",
     href: "/magaza?segment=Ticari"
   }
 ] as const;
 
 export const installationSteps = [
-  { icon: "clipboard", step: "01", title: "Keşif", body: "Pano, faz ve hat kontrolü." },
-  { icon: "gauge", step: "02", title: "Plan", body: "Güç, cihaz ve kablo seçimi." },
-  { icon: "wrench", step: "03", title: "Montaj", body: "Güvenli kurulum ve test." },
-  { icon: "timer", step: "04", title: "Destek", body: "Garanti ve servis takibi." }
+  { icon: "clipboard", step: "01", title: "Uygunluk", body: "Araç, otopark ve kullanım ihtiyacı belirlenir." },
+  { icon: "gauge", step: "02", title: "Keşif", body: "Pano, faz ve hat durumu netleşir." },
+  { icon: "wrench", step: "03", title: "Kurulum", body: "Cihaz monte edilir, test edilir ve teslim edilir." },
+  { icon: "timer", step: "04", title: "Destek", body: "Garanti, servis ve kullanım desteği devam eder." }
 ] as const;
 
 export const proofSignals = [
   { icon: "shield", label: "PayTR güvenli ödeme" },
-  { icon: "wrench", label: "Kurulum sonrası destek" },
-  { icon: "spark", label: "Premium marka deneyimi" }
+  { icon: "wrench", label: "Keşifle net kurulum" },
+  { icon: "spark", label: "Araç ve kullanım uyumu" }
 ] as const;

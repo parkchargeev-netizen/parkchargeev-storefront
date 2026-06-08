@@ -109,7 +109,7 @@ async function priceCheckoutItems(items: PaytrCheckoutRequest["items"]) {
 
     if (!selectedOption) {
       throw new PaytrCheckoutPricingError(
-        `${product.name} icin secilen kablo varyanti artik kullanilamiyor. Lutfen sepetinizi guncelleyin.`
+        `${product.name} için seçilen kablo varyantı artık kullanılamıyor. Lütfen sepetinizi güncelleyin.`
       );
     }
 
@@ -125,7 +125,7 @@ async function priceCheckoutItems(items: PaytrCheckoutRequest["items"]) {
 
     if (selectedOption.priceKurus <= 0) {
       throw new PaytrCheckoutPricingError(
-        `${product.name} icin gecerli bir fiyat bulunamadi. Lutfen sepetinizi guncelleyin.`
+        `${product.name} için geçerli bir fiyat bulunamadı. Lütfen sepetinizi güncelleyin.`
       );
     }
 

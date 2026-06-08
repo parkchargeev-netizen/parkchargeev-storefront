@@ -3,6 +3,12 @@
 import { useState } from "react";
 
 import { contactReasons } from "@/lib/contact-reasons";
+import {
+  getLeadCoverageHelp,
+  leadCityOptions,
+  serviceCoverageSummary,
+  validateLeadServiceCoverage
+} from "@/lib/service-coverage";
 
 type LeadFormProps = {
   title?: string;
@@ -20,10 +26,13 @@ export function LeadForm({
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedReason, setSelectedReason] = useState(defaultReason ?? "");
+  const [selectedCity, setSelectedCity] = useState("");
   const fieldClassName = compact
     ? "rounded-2xl border border-outline-variant/45 bg-white/90 px-4 py-3 text-sm outline-none transition focus:border-primary"
     : "rounded-2xl border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary";
   const labelClassName = compact ? "grid gap-1.5" : "grid gap-2";
+  const coverageHelp = getLeadCoverageHelp(selectedReason);
 
   async function submitLead(
     payload: Record<string, FormDataEntryValue>,
@@ -50,11 +59,15 @@ export function LeadForm({
 
       setMessage(result.message);
       form.reset();
+      setSelectedCity("");
       if (defaultReason) {
         const reasonField = form.elements.namedItem("reason");
         if (reasonField instanceof HTMLSelectElement) {
           reasonField.value = defaultReason;
         }
+        setSelectedReason(defaultReason);
+      } else {
+        setSelectedReason("");
       }
     } catch (submissionError) {
       setError(
@@ -86,6 +99,15 @@ export function LeadForm({
           const form = event.currentTarget;
           const formData = new FormData(form);
           const payload = Object.fromEntries(formData.entries());
+          const coverageValidation = validateLeadServiceCoverage(
+            String(payload.reason ?? ""),
+            String(payload.city ?? "")
+          );
+
+          if (!coverageValidation.ok) {
+            setError(coverageValidation.message);
+            return;
+          }
 
           void submitLead(payload, form);
         }}
@@ -134,7 +156,7 @@ export function LeadForm({
             className={fieldClassName}
           />
           <span id="lead-phone-help" className={`${compact ? "sr-only" : "text-xs leading-5 text-on-surface-variant"}`}>
-            Kesif randevusu ve teklif netlestirme icin kullanilir.
+            Keşif randevusu ve teklif netleştirme için kullanılır.
           </span>
         </label>
 
@@ -143,9 +165,17 @@ export function LeadForm({
           <input
             required
             name="city"
-            placeholder="Sakarya"
+            placeholder="Sakarya veya Kocaeli"
+            list="lead-city-options"
+            value={selectedCity}
+            onChange={(event) => setSelectedCity(event.target.value)}
             className={fieldClassName}
           />
+          <datalist id="lead-city-options">
+            {leadCityOptions.map((city) => (
+              <option key={city} value={city} />
+            ))}
+          </datalist>
         </label>
 
         <label className={labelClassName}>
@@ -153,7 +183,8 @@ export function LeadForm({
           <select
             required
             name="reason"
-            defaultValue={defaultReason ?? ""}
+            value={selectedReason}
+            onChange={(event) => setSelectedReason(event.target.value)}
             className={fieldClassName}
           >
             <option value="" disabled>
@@ -166,6 +197,13 @@ export function LeadForm({
             ))}
           </select>
         </label>
+
+        <div className={`${compact ? "px-4 py-3 text-xs leading-5" : "px-4 py-4 text-sm leading-6"} md:col-span-2 rounded-2xl border border-primary/15 bg-primary/5 text-on-surface-variant`}>
+          <span className="font-black text-primary">{coverageHelp}</span>
+          <span className="mt-1 block">
+            {serviceCoverageSummary.freeSurvey} · {serviceCoverageSummary.installation}
+          </span>
+        </div>
 
         <label className={`${labelClassName} md:col-span-2`}>
           <span className="text-sm text-on-surface-variant">İhtiyaç Özeti</span>

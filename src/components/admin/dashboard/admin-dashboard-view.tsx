@@ -2,11 +2,15 @@ import type { ReactNode } from "react";
 import {
   AlertTriangle,
   ArrowRight,
+  Building2,
+  Cable,
   CheckCircle2,
   Clock3,
   FileText,
   Gauge,
+  Home,
   LockKeyhole,
+  MapPin,
   ShieldCheck,
   ShoppingCart,
   Target,
@@ -18,6 +22,7 @@ import {
 import { AdminPrefetchLink } from "@/components/admin/admin-prefetch-link";
 import { DashboardCharts } from "@/components/admin/dashboard-charts";
 import { formatPriceTRY } from "@/lib/format";
+import { serviceCoverageSummary } from "@/lib/service-coverage";
 import {
   leadStatusOptions,
   orderStatusOptions,
@@ -231,6 +236,56 @@ const adminStandards = [
   }
 ] as const;
 
+const personaOperationCards: Array<{
+  href: string;
+  label: string;
+  detail: string;
+  signal: string;
+  icon: ReactNode;
+  tone: Tone;
+}> = [
+  {
+    href: "/admin/teklifler",
+    label: "Ev tipi AC alıcısı",
+    detail: "Sakarya ücretsiz keşif, 7.4/11 kW wallbox ve kurulum uygunluğu.",
+    signal: "En hızlı dönüşüm",
+    icon: <Home className="h-5 w-5" />,
+    tone: "success"
+  },
+  {
+    href: "/admin/teklifler",
+    label: "Site / apartman",
+    detail: "RFID, ortak kullanım, yönetim onayı ve teknik teklif paketi.",
+    signal: "Yönetim kararı",
+    icon: <Building2 className="h-5 w-5" />,
+    tone: "info"
+  },
+  {
+    href: "/admin/teklifler",
+    label: "KOBİ / ofis",
+    detail: "22 kW AC, çalışan/misafir deneyimi ve servis planı.",
+    signal: "Kurumsal teklif",
+    icon: <Users className="h-5 w-5" />,
+    tone: "warning"
+  },
+  {
+    href: "/admin/saha",
+    label: "Ticari lokasyon",
+    detail: "DC/çoklu AC saha, enerji kapasitesi ve fizibilite ön kontrolü.",
+    signal: "Fizibilite",
+    icon: <MapPin className="h-5 w-5" />,
+    tone: "danger"
+  },
+  {
+    href: "/admin/urunler",
+    label: "Kablo / aksesuar",
+    detail: "Type 2 uyum, stok görünürlüğü ve hızlı sepet dönüşümü.",
+    signal: "Hızlı satış",
+    icon: <Cable className="h-5 w-5" />,
+    tone: "neutral"
+  }
+];
+
 type AdminDashboardViewProps = {
   snapshot: AdminDashboardSnapshot;
   role?: AdminRole;
@@ -353,11 +408,10 @@ export function AdminDashboardView({
               Operasyon Komuta Paneli
             </p>
             <h1 className="mt-3 max-w-4xl text-3xl font-semibold leading-tight text-slate-950 lg:text-4xl">
-              Bugün neye odaklanmanız gerektiğini tek bakışta gösterir.
+              Sakarya ve Kocaeli satış, keşif ve kurulum masası.
             </h1>
             <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-600">
-              Sipariş, teklif, saha, güvenlik ve içerik sinyalleri aynı ekranda toplanır; açık
-              kuyruklar ilk sıraya, detaylı analizler alt bölümlere iner.
+              Sipariş, teklif, saha, güvenlik ve içerik sinyalleri aynı ekranda toplanır; persona bazlı fırsatlar açık kuyruklarla birlikte önceliklendirilir.
             </p>
             <div className="mt-6 grid gap-3 sm:grid-cols-3">
               <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
@@ -376,10 +430,12 @@ export function AdminDashboardView({
               </div>
               <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                  Veri modu
+                  Kapsam
                 </p>
-                <p className="mt-2 text-sm font-semibold text-slate-950">
-                  {databaseEnabled ? "Canlı Supabase" : "Yerel yedek"}
+                <p className="mt-2 text-xs font-semibold leading-5 text-slate-950">
+                  {serviceCoverageSummary.freeSurvey}
+                  <br />
+                  {serviceCoverageSummary.installation}
                 </p>
               </div>
             </div>
@@ -414,6 +470,59 @@ export function AdminDashboardView({
                 Siparişlere git
               </AdminPrefetchLink>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="grid gap-4 xl:grid-cols-[0.86fr_1.14fr]">
+        <div className="surface-card border border-slate-200 bg-slate-950 p-6 text-white">
+          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-emerald-200">
+            Saha Kapsamı
+          </p>
+          <h2 className="mt-3 text-2xl font-semibold leading-tight">
+            Keşif ve kurulum taleplerini şehir kuralına göre ayırın.
+          </h2>
+          <div className="mt-5 grid gap-3">
+            {[serviceCoverageSummary.freeSurvey, serviceCoverageSummary.installation].map((item) => (
+              <div key={item} className="rounded-2xl border border-white/10 bg-white/[0.08] px-4 py-3">
+                <p className="text-sm font-semibold">{item}</p>
+              </div>
+            ))}
+          </div>
+          <p className="mt-4 text-sm leading-6 text-white/64">
+            Kocaeli taleplerini kurulum kapsamına alın; ücretsiz keşif etiketini yalnızca Sakarya kayıtlarında kullanın.
+          </p>
+        </div>
+
+        <div className="surface-card border border-slate-200 bg-white/95 p-6">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-blue-600">
+                Persona Satış Masası
+              </p>
+              <h2 className="mt-2 text-2xl font-semibold text-slate-950">
+                Her talep doğru operasyon yoluna düşsün.
+              </h2>
+            </div>
+          </div>
+          <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+            {personaOperationCards.map((item) => (
+              <AdminPrefetchLink
+                key={item.label}
+                href={item.href}
+                className="group rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:border-blue-200 hover:bg-blue-50"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <span className={`rounded-2xl p-2 ${iconToneClass(item.tone)}`}>{item.icon}</span>
+                  <ArrowRight className="h-4 w-4 text-slate-400 transition group-hover:translate-x-0.5 group-hover:text-blue-700" />
+                </div>
+                <p className="mt-4 text-sm font-semibold text-slate-950">{item.label}</p>
+                <p className="mt-2 text-xs leading-5 text-slate-600">{item.detail}</p>
+                <span className={`mt-3 inline-flex rounded-full border px-2.5 py-1 text-[11px] font-semibold ${toneClass(item.tone)}`}>
+                  {item.signal}
+                </span>
+              </AdminPrefetchLink>
+            ))}
           </div>
         </div>
       </section>

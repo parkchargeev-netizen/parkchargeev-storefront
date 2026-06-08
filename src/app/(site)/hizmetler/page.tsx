@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { ManagedPageRenderer } from "@/components/site/managed-page-renderer";
 import { services } from "@/lib/mock-data";
+import { serviceCoverageSummary } from "@/lib/service-coverage";
 import { absoluteUrl } from "@/lib/site";
 import { getPublishedSitePageBySlug } from "@/server/site/repository";
 
@@ -49,15 +50,16 @@ export default async function ServicesPage() {
     <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
       <section className="mx-auto max-w-4xl text-center">
         <p className="text-sm font-semibold uppercase tracking-[0.34em] text-primary">
-          Sürdürülebilir mobilite
+          Kurulum ve teknik destek
         </p>
         <h1 className="mt-4 text-5xl font-black tracking-[-0.08em] text-on-surface">
-          Geleceğin enerjisini
-          <span className="text-gradient"> bugünden inşa edin</span>
+          Şarj cihazınızı
+          <span className="text-gradient"> güvenli kurulumla tamamlayın</span>
         </h1>
         <p className="mt-6 text-lg leading-8 text-on-surface-variant">
-          Bireysel kullanıcıdan filo operasyonuna kadar EV charging altyapısını
-          ürün, keşif, kurulum ve teknik destek katmanlarıyla kurguluyoruz.
+          Ev kullanıcısından site yönetimine, ofis otoparkından ticari sahaya kadar
+          cihaz, keşif, kurulum ve servis sürecini tek plan içinde yönetiyoruz.
+          {` ${serviceCoverageSummary.freeSurvey}; ${serviceCoverageSummary.installation}.`}
         </p>
       </section>
 
@@ -91,11 +93,11 @@ export default async function ServicesPage() {
 
       <section className="mt-12 overflow-hidden rounded-[32px] border border-outline-variant/35 bg-surface-container-low p-8 lg:p-12">
         <h2 className="text-4xl font-black tracking-[-0.07em] text-on-surface">
-          Zahmetsiz kurulum süreci
+          Net kurulum süreci
         </h2>
         <p className="mt-4 max-w-3xl text-lg leading-8 text-on-surface-variant">
-          Ücretsiz keşif, projelendirme, profesyonel kurulum ve test/devreye alma
-          olmak üzere dört adımlı anahtar teslim akış tasarlıyoruz.
+          Keşif, projelendirme, profesyonel kurulum ve devreye alma adımlarıyla
+          cihazın sahada güvenle çalışmasını sağlıyoruz.
         </p>
 
         <div className="mt-10 grid gap-5">
@@ -104,7 +106,7 @@ export default async function ServicesPage() {
               step: "Adım 01",
               title: "Ücretsiz keşif",
               summary:
-                "Mevcut altyapı, pano mesafesi, enerji kapasitesi ve cihaz lokasyonu analiz edilir."
+                "Sakarya içindeki taleplerde mevcut altyapı, pano mesafesi, enerji kapasitesi ve cihaz lokasyonu analiz edilir."
             },
             {
               step: "Adım 02",
@@ -116,13 +118,13 @@ export default async function ServicesPage() {
               step: "Adım 03",
               title: "Profesyonel kurulum",
               summary:
-                "Standartlara uygun montaj, bağlantı ve kullanıcı eğitimi birlikte tamamlanır."
+                "Sakarya ve Kocaeli için standartlara uygun montaj, bağlantı ve kullanıcı eğitimi birlikte tamamlanır."
             },
             {
               step: "Adım 04",
               title: "Test ve devreye alma",
               summary:
-                "Sistem güvenlik testlerinden geçirilir ve PayTR dahil ticari akışlar devreye alınır."
+                "Sistem güvenlik testlerinden geçirilir, kullanım ve destek süreci net şekilde teslim edilir."
             }
           ].map((item) => (
             <div key={item.step} className="surface-card p-6">

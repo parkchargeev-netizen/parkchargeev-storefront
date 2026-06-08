@@ -21,23 +21,23 @@ type ScoredProduct = {
 };
 
 const parkingOptions = [
-  { value: "home", label: "Müstakil ev", detail: "Tek araç veya aile kullanımı" },
-  { value: "apartment", label: "Site / apartman", detail: "Ortak otopark ve yönetim onayı" },
-  { value: "business", label: "İş yeri", detail: "Çalışan, müşteri veya misafir kullanımı" },
-  { value: "fleet", label: "Filo / ticari saha", detail: "Çok araçlı operasyon" }
+  { value: "home", label: "Ev / villa", detail: "Her sabah hazır araç ve güvenli gece şarjı" },
+  { value: "apartment", label: "Site / apartman", detail: "Ortak otopark, yönetim onayı ve adil kullanım" },
+  { value: "business", label: "İş yeri", detail: "Çalışan, müşteri, misafir veya filo kullanımı" },
+  { value: "fleet", label: "Ticari saha", detail: "Gelir modeli, hızlı şarj ve çok araçlı operasyon" }
 ] as const;
 
 const phaseOptions = [
-  { value: "single", label: "Monofaze", detail: "7.4 kW sınıfı için uygun başlangıç" },
-  { value: "three", label: "Üç faz", detail: "11 kW ve 22 kW AC için ideal" },
-  { value: "unknown", label: "Bilmiyorum", detail: "Keşifte netleştirilsin" }
+  { value: "single", label: "Monofaze", detail: "7.4 kW için ekonomik başlangıç" },
+  { value: "three", label: "Üç faz", detail: "11 kW ve 22 kW AC için güçlü altyapı" },
+  { value: "unknown", label: "Emin değilim", detail: "Pano ve faz keşifte netleşsin" }
 ] as const;
 
 const priorityOptions = [
-  { value: "budget", label: "Ekonomik", detail: "Başlangıç maliyeti düşük olsun" },
-  { value: "balanced", label: "Dengeli", detail: "Güvenli hız ve uzun ömür dengesi" },
-  { value: "speed", label: "Hız", detail: "Daha kısa şarj süresi önemli" },
-  { value: "revenue", label: "Gelir modeli", detail: "Ticari kullanım ve raporlama" }
+  { value: "budget", label: "Ekonomik", detail: "Başlangıç maliyeti düşük, karar net olsun" },
+  { value: "balanced", label: "Dengeli", detail: "Hız, güvenlik ve kurulum maliyeti dengesi" },
+  { value: "speed", label: "Hız", detail: "Daha kısa şarj süresi ve yüksek güç" },
+  { value: "revenue", label: "Gelir modeli", detail: "Ticari kullanım, raporlama ve saha fizibilitesi" }
 ] as const;
 
 const vehicleCountOptions = [
@@ -53,7 +53,7 @@ function scoreProduct(product: ProductModel, values: SelectorValues): ScoredProd
 
   if (values.phase === "single" && (text.includes("7.4") || text.includes("monofaze"))) {
     score += 35;
-    reasons.push("Monofaze altyapıya uygun");
+    reasons.push("Monofaze altyapıda uygulanabilir");
   }
 
   if (values.phase === "three" && (text.includes("11kw") || text.includes("22kw") || text.includes("11 kW".toLocaleLowerCase("tr-TR")) || text.includes("22 kW".toLocaleLowerCase("tr-TR")))) {
@@ -63,12 +63,12 @@ function scoreProduct(product: ProductModel, values: SelectorValues): ScoredProd
 
   if (values.parking === "home" && product.category === "Ev Tipi") {
     score += 35;
-    reasons.push("Konut kullanımına yakın eşleşme");
+    reasons.push("Ev/villa gece şarjına yakın eşleşme");
   }
 
   if (values.parking === "apartment" && (text.includes("apartman") || text.includes("site") || product.category === "Ev Tipi")) {
     score += 24;
-    reasons.push("Site ve apartman projelerinde uygulanabilir");
+    reasons.push("Site ve apartman karar sürecine uygun");
   }
 
   if (values.parking === "business" && (product.category.includes("İş") || text.includes("rfid") || text.includes("22kw"))) {
@@ -78,7 +78,7 @@ function scoreProduct(product: ProductModel, values: SelectorValues): ScoredProd
 
   if (values.parking === "fleet" && (text.includes("dc") || text.includes("filo") || text.includes("60kw"))) {
     score += 40;
-    reasons.push("Filo ve ticari saha için güçlü aday");
+    reasons.push("Ticari saha ve filo için güçlü aday");
   }
 
   if (values.priority === "budget" && product.priceKurus <= 1000000) {
@@ -148,10 +148,10 @@ export function ProductSelectorClient({ products }: { products: ProductModel[] }
     <div className="product-selector-experience grid gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
       <section className="selector-config-panel p-6 lg:p-8">
         <p className="text-sm font-semibold uppercase tracking-[0.28em] text-primary">
-          Akıllı ürün seçici
+          Akıllı uygunluk seçici
         </p>
         <h1 className="mt-4 text-4xl font-black tracking-[-0.06em] text-on-surface md:text-5xl">
-          Şarj cihazını kullanım senaryona göre seç
+          Aracınıza ve otoparkınıza göre doğru ürünü bulun
         </h1>
 
         <div className="mt-8 space-y-8">
@@ -268,7 +268,7 @@ export function ProductSelectorClient({ products }: { products: ProductModel[] }
         {topRecommendation ? (
           <article className="selector-result-card overflow-hidden rounded-[28px] bg-slate-950 p-7 text-white">
             <p className="text-sm font-semibold uppercase tracking-[0.28em] text-blue-200">
-              En güçlü eşleşme
+              En güçlü öneri
             </p>
             <h2 className="mt-4 text-4xl font-black tracking-[-0.06em]">
               {topRecommendation.product.name}
@@ -284,7 +284,7 @@ export function ProductSelectorClient({ products }: { products: ProductModel[] }
                 {formatPriceTRY(topRecommendation.product.priceKurus)}
               </span>
               <span className="rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">
-                Skor {topRecommendation.score}
+                Uygunluk {topRecommendation.score}
               </span>
             </div>
             <div className="mt-6 grid gap-2">
@@ -307,7 +307,7 @@ export function ProductSelectorClient({ products }: { products: ProductModel[] }
                 href="/iletisim"
                 className="rounded-2xl border border-white/20 px-5 py-3 text-sm font-semibold text-white"
               >
-                Keşif Talebi
+                Keşif Planla
               </Link>
             </div>
           </article>
@@ -330,7 +330,7 @@ export function ProductSelectorClient({ products }: { products: ProductModel[] }
                   </p>
                 </div>
                 <span className="shrink-0 rounded-full bg-primary/10 px-3 py-2 text-xs font-semibold text-primary">
-                  Skor {recommendation.score}
+                  Uygunluk {recommendation.score}
                 </span>
               </div>
             </Link>

@@ -18,8 +18,8 @@ export function ProductCard({ product }: ProductCardProps) {
   const imageUrl = getDisplayProductImageUrl(product.imageUrl);
   const compactSpecs = [
     ["Güç", profile.powerTier],
-    ["Kurulum", profile.installationMode],
-    ["Uyum", profile.connectorHint]
+    ["Saha", profile.installationMode],
+    ["Soket", profile.connectorHint]
   ] as const;
 
   return (
@@ -100,7 +100,7 @@ export function ProductCard({ product }: ProductCardProps) {
           href={`/urun/${product.slug}`}
           className="inline-flex min-h-11 items-center justify-center rounded-2xl bg-primary px-4 py-3 text-sm font-black text-white transition hover:bg-primary-container"
         >
-          İncele
+          Ürünü İncele
         </Link>
         <Link
           href={`/iletisim?reason=${encodeURIComponent(`${product.name} kurulum keşfi`)}`}
