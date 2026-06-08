@@ -145,7 +145,7 @@ export default async function SolutionDetailPage({
         </div>
       </section>
 
-      <section className="mt-12 overflow-hidden rounded-[32px] bg-linear-to-br from-primary to-primary-container p-8 text-white shadow-[0_24px_80px_rgba(0,68,211,0.24)] lg:p-12">
+      <section className="mt-12 overflow-hidden rounded-[32px] bg-linear-to-br from-primary to-primary-container p-8 text-white shadow-[0_24px_80px_rgba(6,51,38,0.24)] lg:p-12">
         <p className="text-sm font-semibold uppercase tracking-[0.34em] text-white/70">
           Kullanım senaryoları
         </p>

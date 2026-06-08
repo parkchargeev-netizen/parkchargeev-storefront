@@ -152,7 +152,7 @@ export default async function ProductDetailPage({
               </div>
             </div>
 
-            <div className="overflow-hidden rounded-[28px] bg-linear-to-br from-primary to-primary-container p-8 text-white shadow-[0_24px_80px_rgba(0,68,211,0.26)]">
+            <div className="overflow-hidden rounded-[28px] bg-linear-to-br from-primary to-primary-container p-8 text-white shadow-[0_24px_80px_rgba(6,51,38,0.26)]">
               <h2 className="text-3xl font-bold tracking-[-0.05em]">
                 {detailContent.intentHeading}
               </h2>

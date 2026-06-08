@@ -31,7 +31,7 @@ export async function GET(_request: Request, { params }: ProductOgRouteProps) {
           padding: "54px",
           background: "#f8fafc",
           color: "#0f172a",
-          fontFamily: "Arial, sans-serif"
+          fontFamily: "Manrope, Space Grotesk, Arial, sans-serif"
         }}
       >
         <div
@@ -47,7 +47,7 @@ export async function GET(_request: Request, { params }: ProductOgRouteProps) {
           }}
         >
           <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-            <div style={{ display: "flex", fontSize: "28px", fontWeight: 800, color: "#0044d3" }}>
+            <div style={{ display: "flex", fontSize: "28px", fontWeight: 800, color: "#063326" }}>
               {siteConfig.name}
             </div>
             <div style={{ display: "flex", fontSize: "64px", fontWeight: 900, lineHeight: 1.02 }}>
@@ -94,7 +94,7 @@ export async function GET(_request: Request, { params }: ProductOgRouteProps) {
             alignItems: "center",
             justifyContent: "center",
             borderRadius: "34px",
-            background: "linear-gradient(160deg, #0044d3 0%, #006e2f 100%)"
+            background: "linear-gradient(160deg, #063326 0%, #0f8f6f 100%)"
           }}
         >
           <div
@@ -117,7 +117,7 @@ export async function GET(_request: Request, { params }: ProductOgRouteProps) {
                 height: "96px",
                 display: "flex",
                 borderRadius: "999px",
-                border: "16px solid #0044d3",
+                border: "16px solid #063326",
                 background: "#dbeafe"
               }}
             />

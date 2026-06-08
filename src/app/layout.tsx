@@ -1,15 +1,23 @@
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Manrope, Space_Grotesk } from "next/font/google";
 
 import { absoluteUrl, siteConfig } from "@/lib/site";
 
 import "@/app/globals.css";
 
-const inter = Inter({
+const manrope = Manrope({
   subsets: ["latin", "latin-ext"],
-  variable: "--font-inter",
-  display: "swap"
+  variable: "--font-manrope",
+  display: "swap",
+  weight: ["400", "500", "600", "700", "800"]
+});
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin", "latin-ext"],
+  variable: "--font-space-grotesk",
+  display: "swap",
+  weight: ["500", "600", "700"]
 });
 
 const defaultTitle = `${siteConfig.name} | EV Şarj Cihazı ve Kurulum Çözümleri`;
@@ -76,7 +84,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="tr">
-      <body className={`${inter.variable} font-sans`}>
+      <body className={`${manrope.variable} ${spaceGrotesk.variable} font-sans`}>
         {children}
       </body>
     </html>

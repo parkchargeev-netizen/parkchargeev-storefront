@@ -1,6 +1,6 @@
 import { formatPriceTRY } from "@/lib/format";
 
-const chartColors = ["#0044d3", "#00a25b", "#7c3aed", "#f97316", "#ef4444", "#14b8a6"];
+const chartColors = ["#063326", "#0f8f6f", "#7eecc9", "#f97316", "#ef4444", "#14b8a6"];
 
 const quoteStatusLabels: Record<string, string> = {
   new: "Yeni Talep",
@@ -110,14 +110,14 @@ function RevenueTrendChart({ data }: { data: DashboardChartsProps["revenueTrend"
         <polyline
           fill="none"
           points={polylinePoints}
-          stroke="#0044d3"
+          stroke="#063326"
           strokeLinecap="round"
           strokeLinejoin="round"
           strokeWidth="5"
         />
         {points.map((point, index) => (
           <g key={`${point.month}-${index}`}>
-            <circle cx={point.x} cy={point.y} fill="#ffffff" r="7" stroke="#0044d3" strokeWidth="4" />
+            <circle cx={point.x} cy={point.y} fill="#ffffff" r="7" stroke="#063326" strokeWidth="4" />
             <text
               x={point.x}
               y={height - 8}

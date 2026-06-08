@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { BrandLogo } from "@/components/layout/brand-logo";
 import { siteConfig } from "@/lib/site";
 import type { PublicSiteNavigation } from "@/server/site/repository";
 
@@ -18,9 +19,7 @@ export function SiteFooter({
       <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
         <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr]">
           <div>
-            <p className="text-2xl font-black tracking-[-0.05em] text-on-surface">
-              {siteConfig.name}
-            </p>
+            <BrandLogo />
             <p className="mt-4 max-w-xl text-sm leading-7 text-on-surface-variant">
               Elektrikli araç şarj cihazı ürünleri, kurulum hizmetleri ve
               teknik destek süreçlerini tek platformda buluşturan premium EV

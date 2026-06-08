@@ -34,7 +34,7 @@ export function SiteHeaderActions({ className = "" }: SiteHeaderActionsProps) {
       <SiteCartLink />
       <Link
         href="/iletisim?reason=Ucretsiz%20kesif"
-        className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-primary to-secondary px-4 py-2 text-sm font-black text-white shadow-[0_14px_34px_rgba(0,68,211,0.2)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(0,68,211,0.25)]"
+        className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-primary to-secondary px-4 py-2 text-sm font-black text-white shadow-[0_14px_34px_rgba(6,51,38,0.2)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(6,51,38,0.25)]"
       >
         <ClipboardCheck className="h-4 w-4" aria-hidden />
         Keşif Al

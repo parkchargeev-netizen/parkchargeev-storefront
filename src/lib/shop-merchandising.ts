@@ -1,7 +1,7 @@
 import type { ProductModel } from "@/lib/mock-data";
 
 export type ProductStoreProfile = {
-  powerTier: "11 kW" | "22 kW" | "DC" | "Aksesuar";
+  powerTier: "7.4 kW" | "11 kW" | "22 kW" | "DC" | "Aksesuar";
   phaseHint: string;
   connectorHint: string;
   installationHint: string;
@@ -31,9 +31,20 @@ function productCorpus(product: ProductModel) {
 export function getProductStoreProfile(product: ProductModel): ProductStoreProfile {
   const corpus = productCorpus(product);
   const category = product.category.toLocaleLowerCase("tr-TR");
-  const isAccessory = category.includes("aksesuar") || corpus.includes("kablo");
+  const productName = product.name.toLocaleLowerCase("tr-TR");
+  const isAccessory =
+    category.includes("aksesuar") ||
+    category.includes("kablo") ||
+    productName.includes("kablo") ||
+    productName.includes("adaptör") ||
+    productName.includes("adapter");
   const isDc = corpus.includes("dc") || corpus.includes("60kw");
   const is22Kw = corpus.includes("22") || product.powerLabel.includes("22");
+  const is74Kw =
+    product.powerLabel.includes("7.4") ||
+    product.powerLabel.includes("7,4") ||
+    corpus.includes("7.4") ||
+    corpus.includes("7,4");
   const isPortable = corpus.includes("taşınabilir") || corpus.includes("portable");
   const hasLoadManagement =
     corpus.includes("yük") ||
@@ -43,7 +54,7 @@ export function getProductStoreProfile(product: ProductModel): ProductStoreProfi
     corpus.includes("wifi") ||
     corpus.includes("wi-fi");
 
-  const powerTier = isAccessory ? "Aksesuar" : isDc ? "DC" : is22Kw ? "22 kW" : "11 kW";
+  const powerTier = isAccessory ? "Aksesuar" : isDc ? "DC" : is22Kw ? "22 kW" : is74Kw ? "7.4 kW" : "11 kW";
   const installationMode = isAccessory
     ? "Kurulum gerekmez"
     : isDc

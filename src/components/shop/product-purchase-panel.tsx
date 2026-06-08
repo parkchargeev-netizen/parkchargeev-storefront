@@ -208,7 +208,7 @@ export function ProductPurchasePanel({
               onClick={handleAddToCart}
               disabled={isAddDisabled}
               aria-busy={!isHydrated}
-              className="flex-1 rounded-2xl bg-linear-to-r from-primary to-secondary px-6 py-4 text-center text-base font-semibold text-white shadow-[0_18px_50px_rgba(0,68,211,0.22)] disabled:cursor-not-allowed disabled:opacity-60"
+              className="flex-1 rounded-2xl bg-linear-to-r from-primary to-secondary px-6 py-4 text-center text-base font-semibold text-white shadow-[0_18px_50px_rgba(6,51,38,0.22)] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isOutOfStock ? "Stokta Yok" : "Sepete Ekle"}
             </button>

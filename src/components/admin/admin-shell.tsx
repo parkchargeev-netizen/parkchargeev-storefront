@@ -183,7 +183,7 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
         </div>
         <div className="grid gap-6 xl:grid-cols-[310px_minmax(0,1fr)]">
           <aside className="surface-card sticky top-5 hidden h-fit overflow-hidden border border-slate-200 bg-white/95 p-6 xl:block">
-            <div className="rounded-[28px] border border-blue-100 bg-[linear-gradient(135deg,rgba(0,68,211,0.08),rgba(0,110,47,0.05))] p-5">
+            <div className="rounded-[28px] border border-emerald-100 bg-[linear-gradient(135deg,rgba(6,51,38,0.08),rgba(126,236,201,0.12))] p-5">
               <p className="text-sm font-semibold uppercase tracking-[0.24em] text-blue-700">
                 ParkChargeEV Admin
               </p>

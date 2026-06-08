@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { BadgeCheck, Bolt, ChevronRight } from "lucide-react";
+import { BadgeCheck, ChevronRight } from "lucide-react";
 
+import { BrandLogo } from "@/components/layout/brand-logo";
 import { SiteHeaderActions } from "@/components/layout/site-header-actions";
 import { SiteMobileMenu } from "@/components/layout/site-mobile-menu";
 import { siteConfig } from "@/lib/site";
@@ -26,18 +27,18 @@ export function SiteHeader({ navigation = siteConfig.primaryNavigation }: SiteHe
     .slice(0, 7);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/50 bg-white/72 shadow-[0_10px_38px_rgba(15,23,42,0.07)] backdrop-blur-2xl">
-      <div className="hidden border-b border-outline-variant/20 bg-slate-950/90 text-white/72 md:block">
+    <header className="sticky top-0 z-50 border-b border-white/50 bg-white/78 shadow-[0_10px_38px_rgba(6,51,38,0.07)] backdrop-blur-2xl">
+      <div className="hidden border-b border-outline-variant/20 bg-[#063326]/95 text-white/74 md:block">
         <div className="mx-auto flex h-8 max-w-7xl items-center justify-between px-4 text-xs font-bold sm:px-6 lg:px-8">
           <div className="flex items-center gap-4">
             <span className="inline-flex items-center gap-1.5">
-              <BadgeCheck className="h-3.5 w-3.5 text-emerald-300" aria-hidden />
+              <BadgeCheck className="h-3.5 w-3.5 text-[#7eecc9]" aria-hidden />
               PayTR güvenli ödeme
             </span>
             <span>Kurulum + keşif desteği</span>
             <span>Type 2 araç uyumu</span>
           </div>
-          <Link href="/iletisim?reason=Hizli%20kesif" className="inline-flex items-center gap-1 text-emerald-300">
+          <Link href="/iletisim?reason=Hizli%20kesif" className="inline-flex items-center gap-1 text-[#7eecc9]">
             24 saat içinde keşif planı
             <ChevronRight className="h-3.5 w-3.5" aria-hidden />
           </Link>
@@ -47,14 +48,10 @@ export function SiteHeader({ navigation = siteConfig.primaryNavigation }: SiteHe
       <div className="relative mx-auto flex min-h-[68px] w-full max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
         <Link
           href="/"
-          className="group inline-flex shrink-0 items-center gap-2 text-[1.45rem] font-black leading-none text-primary sm:text-[1.6rem]"
+          className="group inline-flex shrink-0 items-center"
           aria-label={`${siteConfig.name} ana sayfa`}
         >
-          <span className="relative grid h-10 w-10 place-items-center rounded-2xl bg-primary text-sm font-black text-white shadow-[0_14px_34px_rgba(0,68,211,0.26)]">
-            <Bolt className="h-5 w-5" aria-hidden />
-            <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-secondary-container shadow-[0_0_18px_rgba(107,255,143,0.75)]" />
-          </span>
-          <span>{siteConfig.name}</span>
+          <BrandLogo />
         </Link>
 
         <nav
@@ -67,9 +64,9 @@ export function SiteHeader({ navigation = siteConfig.primaryNavigation }: SiteHe
               href={item.href}
               target={item.opensInNewTab ? "_blank" : undefined}
               rel={item.rel ?? (item.opensInNewTab ? "noopener noreferrer" : undefined)}
-              className={`rounded-full px-3.5 py-2 transition hover:bg-surface-container-low hover:text-primary ${
+              className={`rounded-full px-3.5 py-2 transition hover:bg-[#e5fff5] hover:text-primary ${
                 item.href === "/magaza"
-                  ? "bg-slate-950 text-white shadow-[0_10px_28px_rgba(15,23,42,0.14)] hover:bg-linear-to-r hover:from-primary hover:via-secondary hover:to-primary-container hover:text-white hover:shadow-[0_14px_34px_rgba(0,68,211,0.26)]"
+                  ? "bg-[#063326] text-[#7eecc9] shadow-[0_10px_28px_rgba(6,51,38,0.16)] hover:bg-linear-to-r hover:from-[#063326] hover:via-[#0f8f6f] hover:to-[#7eecc9] hover:text-white hover:shadow-[0_14px_34px_rgba(6,51,38,0.24)]"
                   : ""
               }`}
             >

@@ -356,7 +356,7 @@ export function CartPageClient() {
 
             <Link
               href="/odeme"
-              className="mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-primary to-secondary px-6 py-4 text-sm font-black text-white shadow-[0_18px_50px_rgba(0,68,211,0.22)]"
+              className="mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-primary to-secondary px-6 py-4 text-sm font-black text-white shadow-[0_18px_50px_rgba(6,51,38,0.22)]"
             >
               Güvenli Ödemeye Geç
               <Zap className="h-4 w-4" aria-hidden />
