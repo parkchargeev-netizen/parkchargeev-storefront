@@ -5960,3 +5960,148 @@ body {
   transform: translateY(-1px);
   background: white;
 }
+
+@media (prefers-reduced-motion: no-preference) {
+  .site-ambient-background {
+    contain: strict;
+    transform: translateZ(0);
+  }
+
+  .site-ambient-background::before,
+  .site-page-transition::after {
+    filter: blur(10px);
+    opacity: 0.38;
+  }
+
+  .site-ambient-background__sweep,
+  .site-ambient-background__data-stream,
+  .site-ambient-background__line,
+  .site-ambient-background__charge-lane,
+  .site-ambient-background__current,
+  .site-ambient-background__cable-trail,
+  .site-ambient-background__beam {
+    filter: none;
+    will-change: transform, opacity;
+  }
+
+  .site-ambient-background__aurora,
+  .site-ambient-background__pulse {
+    filter: blur(12px);
+  }
+
+  .site-ambient-background__matrix {
+    opacity: 0.28;
+    animation-duration: 18s;
+  }
+
+  .site-ambient-background__spark,
+  .site-ambient-background__particle {
+    box-shadow: 0 0 12px rgba(126, 236, 201, 0.42);
+    will-change: transform, opacity;
+  }
+
+  .surface-card,
+  .premium-product-card,
+  .premium-route-card,
+  .premium-install-card,
+  .premium-signal-card,
+  .premium-metric-card,
+  .selector-config-panel,
+  .selector-result-card,
+  .store-results__header,
+  .product-detail-buybox,
+  .product-gallery-premium,
+  .contact-info-card,
+  .contact-map-card,
+  .lead-form-card,
+  .cart-summary-card {
+    animation: none;
+    backdrop-filter: blur(8px);
+  }
+
+  .motion-observe {
+    transform: translate3d(0, 0.85rem, 0) scale(0.995);
+    transition:
+      opacity 280ms ease,
+      transform 340ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 140ms ease,
+      background 140ms ease,
+      box-shadow 140ms ease;
+    will-change: opacity, transform;
+  }
+
+  .motion-observe.motion-visible {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  .motion-observe.motion-complete {
+    transition-delay: 0ms;
+    will-change: auto;
+  }
+
+  .site-page-transition {
+    animation-duration: 280ms;
+  }
+
+  .charging-click-impact,
+  .charging-click-impact__ring,
+  .charging-click-impact__socket,
+  .charging-click-impact__bolt,
+  .charging-click-impact__particle,
+  .charging-click-cable,
+  .charging-click-cable__core,
+  .charging-click-cable__core::after,
+  .charging-click-cable__plug,
+  .charging-click-cable__spark,
+  .charging-click-target {
+    animation-duration: 720ms;
+  }
+}
+
+@media (max-width: 768px), (update: slow), (pointer: coarse) {
+  .site-ambient-background__aurora,
+  .site-ambient-background__halo,
+  .site-ambient-background__ring,
+  .site-ambient-background__pulse,
+  .site-ambient-background__beam,
+  .site-ambient-background__data-stream,
+  .site-ambient-background__particle--four,
+  .site-ambient-background__particle--seven,
+  .site-ambient-background__spark--eight,
+  .site-ambient-background__spark--ten {
+    display: none;
+  }
+
+  .site-ambient-background {
+    opacity: 0.82;
+    background-size: auto, auto, auto, 96px 96px, 96px 96px;
+  }
+
+  .site-ambient-background__matrix {
+    opacity: 0.18;
+  }
+
+  .surface-card,
+  .premium-product-card,
+  .premium-route-card,
+  .premium-install-card,
+  .premium-signal-card,
+  .premium-metric-card,
+  .selector-config-panel,
+  .selector-result-card,
+  .store-results__header,
+  .product-detail-buybox,
+  .product-gallery-premium,
+  .contact-info-card,
+  .contact-map-card,
+  .lead-form-card,
+  .cart-summary-card {
+    backdrop-filter: none;
+  }
+
+  .charging-click-impact__particle,
+  .charging-click-cable__core::before,
+  .charging-click-cable__core::after {
+    display: none;
+  }
+}

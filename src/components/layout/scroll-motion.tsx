@@ -34,35 +34,45 @@ export function ScrollMotion() {
       return;
     }
 
-    const candidates = Array.from(
-      document.querySelectorAll<HTMLElement>(motionSelectors.join(","))
-    ).filter((element) => !element.closest("[data-motion-skip]"));
+    let observer: IntersectionObserver | null = null;
+    let frame = 0;
 
-    candidates.forEach((element, index) => {
-      element.classList.add("motion-observe");
-      element.style.setProperty("--motion-delay", `${Math.min(index % 6, 5) * 54}ms`);
+    frame = window.requestAnimationFrame(() => {
+      const candidates = Array.from(
+        document.querySelectorAll<HTMLElement>(motionSelectors.join(","))
+      ).filter((element) => !element.closest("[data-motion-skip]"));
+
+      candidates.forEach((element, index) => {
+        element.classList.add("motion-observe");
+        element.style.setProperty("--motion-delay", `${Math.min(index % 4, 3) * 24}ms`);
+      });
+
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) {
+              return;
+            }
+
+            const target = entry.target as HTMLElement;
+            target.classList.add("motion-visible");
+            window.setTimeout(() => target.classList.add("motion-complete"), 420);
+            observer?.unobserve(target);
+          });
+        },
+        {
+          rootMargin: "0px 0px -8% 0px",
+          threshold: 0.04
+        }
+      );
+
+      candidates.forEach((element) => observer?.observe(element));
     });
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) {
-            return;
-          }
-
-          entry.target.classList.add("motion-visible");
-          observer.unobserve(entry.target);
-        });
-      },
-      {
-        rootMargin: "0px 0px -12% 0px",
-        threshold: 0.08
-      }
-    );
-
-    candidates.forEach((element) => observer.observe(element));
-
-    return () => observer.disconnect();
+    return () => {
+      window.cancelAnimationFrame(frame);
+      observer?.disconnect();
+    };
   }, []);
 
   return null;

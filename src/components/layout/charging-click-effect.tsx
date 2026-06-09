@@ -14,8 +14,9 @@ type CableEffect = {
   plugStart: number;
 };
 
-const maxEffects = 7;
-const effectDurationMs = 1180;
+const maxEffects = 3;
+const effectDurationMs = 720;
+const minEffectIntervalMs = 140;
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
@@ -54,12 +55,20 @@ function getCableSourcePoint(event: MouseEvent | PointerEvent) {
 export function ChargingClickEffect() {
   const [effects, setEffects] = useState<CableEffect[]>([]);
   const idRef = useRef(0);
+  const lastEffectAtRef = useRef(0);
   const lastPointerDownRef = useRef(0);
 
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
     function createCable(event: MouseEvent | PointerEvent) {
+      const now = window.performance.now();
+
+      if (now - lastEffectAtRef.current < minEffectIntervalMs) {
+        return;
+      }
+
+      lastEffectAtRef.current = now;
       const source = getCableSourcePoint(event);
       const dx = event.clientX - source.x;
       const dy = event.clientY - source.y;

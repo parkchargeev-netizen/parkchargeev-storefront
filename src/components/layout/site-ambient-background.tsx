@@ -1,20 +1,20 @@
-const sweepLayers = ["one", "two", "three"] as const;
-const connectorTraceLayers = ["one", "two", "three"] as const;
-const dataStreamLayers = ["one", "two", "three"] as const;
-const auroraLayers = ["one", "two"] as const;
-const lineLayers = ["one", "two", "three"] as const;
-const flowLayers = ["one", "two", "three"] as const;
-const chargeLaneLayers = ["one", "two", "three"] as const;
-const gradientRibbonLayers = ["one", "two"] as const;
-const beamLayers = ["one", "two", "three"] as const;
-const ringLayers = ["one", "two", "three"] as const;
-const pulseLayers = ["one", "two"] as const;
-const currentLayers = ["one", "two", "three", "four"] as const;
-const haloLayers = ["one", "two", "three"] as const;
-const cableTrailLayers = ["one", "two", "three", "four", "five"] as const;
-const scanLayers = ["one", "two", "three"] as const;
-const sparkLayers = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"] as const;
-const particleLayers = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"] as const;
+const sweepLayers = ["one", "two"] as const;
+const connectorTraceLayers = [] as const;
+const dataStreamLayers = ["one", "two"] as const;
+const auroraLayers = ["one"] as const;
+const lineLayers = ["one", "two"] as const;
+const flowLayers = [] as const;
+const chargeLaneLayers = ["one", "two"] as const;
+const gradientRibbonLayers = [] as const;
+const beamLayers = ["one"] as const;
+const ringLayers = ["one"] as const;
+const pulseLayers = ["one"] as const;
+const currentLayers = ["one", "three"] as const;
+const haloLayers = ["two"] as const;
+const cableTrailLayers = ["one", "three"] as const;
+const scanLayers = [] as const;
+const sparkLayers = ["one", "three", "six", "eight", "ten"] as const;
+const particleLayers = ["one", "two", "four", "seven"] as const;
 
 function renderLayer(baseClassName: string, variants: readonly string[]) {
   return variants.map((variant) => (
