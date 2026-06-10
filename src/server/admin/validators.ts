@@ -137,7 +137,7 @@ export const adminProductSchema = z.object({
   installRequired: z.boolean().default(false),
   categories: z.array(z.string().trim().min(1)).min(1),
   tags: z.array(z.string().trim().min(1)).default([]),
-  vehicleBrands: z.array(z.string().trim().min(1)).default([]),
+  vehicleBrands: z.array(z.string().trim().min(1).max(60)).default([]),
   relatedProductIds: z.array(z.string().uuid()).default([]),
   accessoryProductIds: z.array(z.string().uuid()).default([]),
   variants: z.array(productVariantSchema).default([]),

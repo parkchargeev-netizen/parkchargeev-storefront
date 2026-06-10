@@ -75,7 +75,7 @@ function OfficeMapCard() {
         referrerPolicy="no-referrer-when-downgrade"
         allowFullScreen
         data-testid="contact-map-iframe"
-        className="h-[220px] w-full border-0 lg:h-[240px]"
+        className="h-[160px] w-full border-0 lg:h-[180px]"
       />
     </div>
   );
@@ -111,12 +111,6 @@ function ContactOnePage({ defaultReason }: { defaultReason?: string }) {
 
       <section className="contact-onepage-shell">
         <div className="contact-onepage-intro">
-          <p className="premium-eyebrow">Teklif ve keşif</p>
-          <h1>Projenizi paylaşın, doğru şarj çözümünü aynı ekranda netleştirelim.</h1>
-          <p>
-            Ev tipi cihaz, site/apartman altyapısı, işletme otoparkı veya teknik destek
-            talebiniz doğru ekibe yönlendirilir.
-          </p>
           <div className="contact-onepage-coverage">
             <span>{serviceCoverageSummary.shipping}</span>
             <span>{serviceCoverageSummary.freeSurvey}</span>
@@ -134,13 +128,6 @@ function ContactOnePage({ defaultReason }: { defaultReason?: string }) {
 
         <aside className="contact-onepage-side">
           <OfficeMapCard />
-          <div className="contact-service-note surface-card p-4">
-            <p className="text-xs font-black uppercase text-primary">Hızlı not</p>
-            <p className="mt-2 text-sm font-bold leading-6 text-on-surface-variant">
-              Ürün kargosu 81 ile yapılır. Ücretsiz keşif Sakarya, kurulum Sakarya ve
-              Kocaeli odağında planlanır.
-            </p>
-          </div>
         </aside>
       </section>
     </div>

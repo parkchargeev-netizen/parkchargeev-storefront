@@ -5,25 +5,25 @@ export type AccountOrder = AccountSnapshot["recentOrders"][number];
 
 export const orderStatusLabel: Record<string, string> = {
   draft: "Taslak",
-  pending_payment: "Ödeme bekliyor",
-  payment_processing: "Ödeme işleniyor",
+  pending_payment: "Odeme bekliyor",
+  payment_processing: "Odeme isleniyor",
   pending_confirmation: "Onay bekliyor",
-  paid: "Ödendi",
-  confirmed: "Onaylandı",
+  paid: "Odendi",
+  confirmed: "Onaylandi",
   shipped: "Kargoda",
   delivered: "Teslim edildi",
-  failed: "Başarısız",
-  cancelled: "İptal edildi",
-  refunded: "İade edildi",
-  fulfilled: "Tamamlandı"
+  failed: "Basarisiz",
+  cancelled: "Iptal edildi",
+  refunded: "Iade edildi",
+  fulfilled: "Tamamlandi"
 };
 
 export const paymentStatusLabel: Record<string, string> = {
-  pending: "Ödeme bekliyor",
-  paid: "Ödeme alındı",
-  success: "Ödeme başarılı",
-  failed: "Ödeme başarısız",
-  refunded: "İade edildi"
+  pending: "Odeme bekliyor",
+  paid: "Odeme alindi",
+  success: "Odeme basarili",
+  failed: "Odeme basarisiz",
+  refunded: "Iade edildi"
 };
 
 export function formatAccountDate(value: Date) {
@@ -103,7 +103,7 @@ export function getCustomerPanelStage(snapshot: AccountSnapshot) {
   if (activeQuote) {
     return {
       label: "Teklif sureci acik",
-      detail: `${activeQuote.segment ?? "Cozum"} talebiniz teklif masasında degerlendiriliyor.`,
+      detail: `${activeQuote.segment ?? "Cozum"} talebiniz teklif masasinda degerlendiriliyor.`,
       href: "#destek"
     };
   }
@@ -118,7 +118,7 @@ export function getCustomerPanelStage(snapshot: AccountSnapshot) {
 
   return {
     label: "Yeni cozum secilebilir",
-    detail: "Araciniz veya otoparkiniz icin dogru cihazı urun seciciyle netlestirin.",
+    detail: "Araciniz veya otoparkiniz icin dogru cihazi urun seciciyle netlestirin.",
     href: "/urun-secici"
   };
 }
@@ -139,7 +139,11 @@ export function getCustomerSegmentLabel(snapshot: AccountSnapshot) {
     return "Ticari lokasyon yatirimcisi";
   }
 
-  if (snapshot.recentOrders.some((order) => order.items.some((item) => item.productName.toLowerCase().includes("kablo")))) {
+  if (
+    snapshot.recentOrders.some((order) =>
+      order.items.some((item) => item.productName.toLowerCase().includes("kablo"))
+    )
+  ) {
     return "Aksesuar alicisi";
   }
 
@@ -152,8 +156,10 @@ export function getActionItems(snapshot: AccountSnapshot) {
 
   if (openOrders.length > 0) {
     actions.push({
-      title: "Açık siparişi takip et",
-      detail: `${openOrders[0].orderNumber} şu an ${orderStatusLabel[openOrders[0].status] ?? openOrders[0].status}.`,
+      title: "Acik siparisi takip et",
+      detail: `${openOrders[0].orderNumber} su an ${
+        orderStatusLabel[openOrders[0].status] ?? openOrders[0].status
+      }.`,
       href: "#siparisler"
     });
   }
@@ -161,7 +167,7 @@ export function getActionItems(snapshot: AccountSnapshot) {
   if (snapshot.addresses.length === 0) {
     actions.push({
       title: "Kurulum adresi ekle",
-      detail: "Adres defteri boş olduğu için checkout ve saha planlama yavaşlayabilir.",
+      detail: "Adres defteri bos oldugu icin checkout ve saha planlama yavaslayabilir.",
       href: "#adresler"
     });
   }
@@ -169,7 +175,7 @@ export function getActionItems(snapshot: AccountSnapshot) {
   if (!snapshot.customer.phone) {
     actions.push({
       title: "Telefon bilgisini tamamla",
-      detail: "Saha ekibi keşif ve teslimat için telefon numarasına ihtiyaç duyar.",
+      detail: "Saha ekibi kesif ve teslimat icin telefon numarasina ihtiyac duyar.",
       href: "#profil"
     });
   }
@@ -177,15 +183,15 @@ export function getActionItems(snapshot: AccountSnapshot) {
   if (snapshot.recentQuoteRequests.some((quote) => quote.status === "new")) {
     actions.push({
       title: "Teklif talebini izle",
-      detail: "Yeni teklif talebiniz operasyon kuyruğunda görünüyor.",
+      detail: "Yeni teklif talebiniz operasyon kuyrugunda gorunuyor.",
       href: "#destek"
     });
   }
 
   if (actions.length === 0) {
     actions.push({
-      title: "Panel güncel",
-      detail: "Profil, adres ve sipariş takip alanlarında bekleyen kritik aksiyon yok.",
+      title: "Panel guncel",
+      detail: "Profil, adres ve siparis takip alanlarinda bekleyen kritik aksiyon yok.",
       href: "/magaza"
     });
   }

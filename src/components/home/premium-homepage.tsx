@@ -257,7 +257,10 @@ function CoverageRouteSection() {
         <div className="coverage-route-shell">
           <div className="coverage-route-copy">
             <p className="premium-eyebrow">Kapsam netliği</p>
-            <h2>Satın alma, keşif ve kurulum alanı tek bakışta belli.</h2>
+            <div className="coverage-route-heading">
+              <IconBadge icon="spark" className="coverage-route-heading__icon" />
+              <h2>Satın alma, keşif ve kurulum alanı tek bakışta belli.</h2>
+            </div>
             <p>{serviceCoverageSummary.note}</p>
           </div>
 
@@ -265,8 +268,11 @@ function CoverageRouteSection() {
             {coverageItems.map((item) => (
               <Link key={item.title} href={item.href} className="coverage-route-card">
                 <IconBadge icon={item.icon} className="coverage-route-card__icon" />
-                <span>{item.label}</span>
-                <strong>{item.title}</strong>
+                <span className="coverage-route-card__label">{item.label}</span>
+                <span className="coverage-route-card__title">
+                  <IconBadge icon={item.icon} className="coverage-route-card__title-icon" />
+                  <strong>{item.title}</strong>
+                </span>
                 <small>{item.body}</small>
               </Link>
             ))}

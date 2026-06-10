@@ -217,15 +217,22 @@ export function LeadForm({
           />
         </label>
 
-        <label className={`${compact ? "px-4 py-3 text-xs leading-5" : "px-4 py-4 text-sm"} md:col-span-2 flex items-start gap-3 rounded-2xl bg-surface-container-low text-on-surface-variant`}>
+        <label
+          className={`${
+            compact ? "px-4 py-3 text-xs leading-5" : "px-4 py-4 text-sm"
+          } md:col-span-2 grid grid-cols-[18px_1fr] items-start gap-3 rounded-2xl bg-surface-container-low text-on-surface-variant`}
+        >
           <input
             required
             type="checkbox"
             name="privacyConsent"
             value="true"
-            className="mt-1 rounded border-outline-variant"
+            className="mt-[3px] h-4 w-4 rounded border-outline-variant"
           />
-          ParkChargeEV&apos;in benimle teklif, keşif ve proje değerlendirmesi için iletişime geçmesini kabul ediyorum.
+
+          <span className="min-w-0">
+            ParkChargeEV&apos;in benimle teklif, keşif ve proje değerlendirmesi için iletişime geçmesini kabul ediyorum.
+          </span>
         </label>
 
         <div className="md:col-span-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">

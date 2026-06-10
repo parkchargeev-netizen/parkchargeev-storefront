@@ -2,15 +2,19 @@ import type { ReactNode } from "react";
 import {
   AlertTriangle,
   ArrowRight,
+  BookOpen,
   Building2,
   Cable,
   CheckCircle2,
   Clock3,
+  CreditCard,
+  Database,
   FileText,
   Gauge,
   Home,
   LockKeyhole,
   MapPin,
+  Package,
   ShieldCheck,
   ShoppingCart,
   Target,
@@ -28,15 +32,248 @@ import {
   marketPanelInsights
 } from "@/lib/panel-experience";
 import { serviceCoverageSummary } from "@/lib/service-coverage";
-import {
-  leadStatusOptions,
-  orderStatusOptions,
-  quoteStatusOptions
-} from "@/server/admin/constants";
 import type { AdminDashboardSnapshot } from "@/server/admin/dashboard";
 import type { AdminRole } from "@/server/auth/authorization";
 
 type Tone = "success" | "warning" | "danger" | "info" | "neutral";
+
+type AdminDashboardViewProps = {
+  snapshot: AdminDashboardSnapshot;
+  role?: AdminRole;
+  databaseEnabled: boolean;
+  paytrReady: boolean;
+};
+
+const orderStatusLabels: Record<string, string> = {
+  draft: "Taslak",
+  pending_payment: "Odeme bekliyor",
+  payment_processing: "Odeme isleniyor",
+  pending_confirmation: "Onay bekliyor",
+  paid: "Odendi",
+  confirmed: "Onaylandi",
+  shipped: "Kargoda",
+  delivered: "Teslim edildi",
+  failed: "Basarisiz",
+  cancelled: "Iptal",
+  refunded: "Iade",
+  fulfilled: "Tamamlandi"
+};
+
+const quoteStatusLabels: Record<string, string> = {
+  new: "Yeni talep",
+  reviewing: "Inceleniyor",
+  proposal_sent: "Teklif gonderildi",
+  negotiation: "Muzakere",
+  won: "Kazanildi",
+  lost: "Kaybedildi"
+};
+
+const leadStatusLabels: Record<string, string> = {
+  new: "Yeni",
+  contacted: "Iletisime gecildi",
+  qualified: "Nitelikli",
+  scheduled: "Planlandi",
+  won: "Kazanildi",
+  lost: "Kaybedildi"
+};
+
+const personaCards: Array<{
+  href: string;
+  label: string;
+  detail: string;
+  signal: string;
+  tone: Tone;
+  icon: ReactNode;
+}> = [
+  {
+    href: "/admin/teklifler",
+    label: "Ev tipi AC alicisi",
+    detail: "7.4/11 kW wallbox, arac uyumu ve Sakarya kesfiyle hizli kapanir.",
+    signal: "Hizli donusum",
+    tone: "success",
+    icon: <Home className="h-5 w-5" />
+  },
+  {
+    href: "/admin/saha",
+    label: "Site / apartman",
+    detail: "RFID, adil kullanim ve yonetim sunumu teknik planla ilerler.",
+    signal: "Toplu karar",
+    tone: "info",
+    icon: <Building2 className="h-5 w-5" />
+  },
+  {
+    href: "/admin/teklifler",
+    label: "KOBI / ofis",
+    detail: "22 kW AC, misafir deneyimi, servis ve fatura akisi birlikte sunulur.",
+    signal: "Kurumsal teklif",
+    tone: "warning",
+    icon: <Users className="h-5 w-5" />
+  },
+  {
+    href: "/admin/saha",
+    label: "Ticari lokasyon",
+    detail: "DC veya coklu AC saha icin enerji kapasitesi ve fizibilite notu gerekir.",
+    signal: "Fizibilite",
+    tone: "danger",
+    icon: <MapPin className="h-5 w-5" />
+  },
+  {
+    href: "/admin/urunler",
+    label: "Kablo / aksesuar",
+    detail: "Type 2 uyum, stok gorunurlugu ve hizli sepet donusumu takip edilir.",
+    signal: "Hizli satis",
+    tone: "neutral",
+    icon: <Cable className="h-5 w-5" />
+  }
+];
+
+const moduleCards: Array<{
+  href: string;
+  label: string;
+  detail: string;
+  icon: ReactNode;
+  roles: AdminRole[];
+}> = [
+  {
+    href: "/admin/urunler",
+    label: "Urun merkezi",
+    detail: "Fiyat, stok, varyant, SEO, gorsel ve teknik ozellikleri yonet.",
+    icon: <Package className="h-5 w-5" />,
+    roles: ["superadmin", "sales"]
+  },
+  {
+    href: "/admin/siparisler",
+    label: "Siparis operasyonu",
+    detail: "Odeme, kargo, fatura, not ve teslimat adimlarini takip et.",
+    icon: <ShoppingCart className="h-5 w-5" />,
+    roles: ["superadmin", "sales"]
+  },
+  {
+    href: "/admin/teklifler",
+    label: "Teklif CRM",
+    detail: "Bireysel, site, isletme ve filo taleplerini aksiyona cevir.",
+    icon: <FileText className="h-5 w-5" />,
+    roles: ["superadmin", "sales"]
+  },
+  {
+    href: "/admin/saha",
+    label: "Saha planlama",
+    detail: "Kesif, kurulum, servis ve lokasyon kapsamlarini netlestir.",
+    icon: <Wrench className="h-5 w-5" />,
+    roles: ["superadmin", "operations", "technician"]
+  },
+  {
+    href: "/admin/blog",
+    label: "Icerik ve SEO",
+    detail: "Blog, rehber, arama niyeti ve satis destekli icerikleri yayinla.",
+    icon: <BookOpen className="h-5 w-5" />,
+    roles: ["superadmin", "editor"]
+  },
+  {
+    href: "/admin/paytr",
+    label: "Odeme merkezi",
+    detail: "PayTR kayitlari, callback ve odeme kontrolunu incele.",
+    icon: <CreditCard className="h-5 w-5" />,
+    roles: ["superadmin", "sales"]
+  }
+];
+
+const adminWorkflowCards = [
+  {
+    label: "1. Bul",
+    detail: "Komut aramasiyla siparis, teklif, urun veya musteri kaydina hizli ulasin.",
+    icon: <Database className="h-5 w-5" />
+  },
+  {
+    label: "2. Onceliklendir",
+    detail: "Bekleyen siparis, teklif ve saha taleplerini acik kuyruk kartlarindan secin.",
+    icon: <Target className="h-5 w-5" />
+  },
+  {
+    label: "3. Guncelle",
+    detail: "Durum, not, stok, fiyat, kargo, teklif veya servis adimini tek kayitta guncelleyin.",
+    icon: <CheckCircle2 className="h-5 w-5" />
+  },
+  {
+    label: "4. Denetle",
+    detail: "PayTR, rol, audit ve oturum sinyalleriyle operasyon guvenini kontrol edin.",
+    icon: <ShieldCheck className="h-5 w-5" />
+  }
+] as const;
+
+const commerceAdminStandards: Array<{
+  href: string;
+  label: string;
+  detail: string;
+  proof: string;
+  icon: ReactNode;
+  roles: AdminRole[];
+}> = [
+  {
+    href: "/admin/urunler",
+    label: "Katalog kalitesi",
+    detail: "Baslik, fiyat, stok, varyant, medya, SEO, AI ve teknik ozellikler eksiksiz tutulur.",
+    proof: "Shopify + Woo urun standardi",
+    icon: <Package className="h-5 w-5" />,
+    roles: ["superadmin", "sales"]
+  },
+  {
+    href: "/admin/siparisler",
+    label: "Siparis ve teslimat",
+    detail: "Odeme, onay, kargo, iade, not ve durum akisi tek operasyon ekranindan izlenir.",
+    proof: "Fulfillment akisi",
+    icon: <ShoppingCart className="h-5 w-5" />,
+    roles: ["superadmin", "sales", "operations"]
+  },
+  {
+    href: "/admin/teklifler",
+    label: "Musteri ve segment",
+    detail: "Ev, site, KOBI ve ticari lokasyon talepleri persona bazli takip edilir.",
+    proof: "CRM + segment",
+    icon: <Users className="h-5 w-5" />,
+    roles: ["superadmin", "sales"]
+  },
+  {
+    href: "/admin/saha",
+    label: "Kesif ve kurulum",
+    detail: "Sakarya ucretsiz kesif, Sakarya + Kocaeli kurulum ve servis aksiyonlari ayrisir.",
+    proof: "Saha is emri",
+    icon: <Wrench className="h-5 w-5" />,
+    roles: ["superadmin", "operations", "technician"]
+  },
+  {
+    href: "/admin/blog",
+    label: "Icerik ve pazarlama",
+    detail: "Blog, rehber, kampanya metni ve satis destekli aciklamalar zengin editorle uretilir.",
+    proof: "SEO + CRO icerik",
+    icon: <BookOpen className="h-5 w-5" />,
+    roles: ["superadmin", "editor", "sales"]
+  },
+  {
+    href: "/admin/paytr",
+    label: "Odeme guveni",
+    detail: "PayTR kayitlari, odeme callback sinyalleri ve siparis kapanisi kontrol edilir.",
+    proof: "Odeme denetimi",
+    icon: <CreditCard className="h-5 w-5" />,
+    roles: ["superadmin", "sales"]
+  },
+  {
+    href: "/admin/katalog",
+    label: "Toplu operasyon",
+    detail: "Katalog duzeni, kanal gorunurlugu ve yinelenen urun kontrolleri hizlanir.",
+    proof: "Bulk yonetim",
+    icon: <Database className="h-5 w-5" />,
+    roles: ["superadmin", "sales", "editor"]
+  },
+  {
+    href: "/admin/audit",
+    label: "Rol ve denetim",
+    detail: "Rol bazli erisim, oturum, audit ve guvenlik kayitlari is surecine baglanir.",
+    proof: "Admin guvenligi",
+    icon: <ShieldCheck className="h-5 w-5" />,
+    roles: ["superadmin"]
+  }
+];
 
 function toneClass(tone: Tone) {
   switch (tone) {
@@ -47,7 +284,7 @@ function toneClass(tone: Tone) {
     case "danger":
       return "border-red-200 bg-red-50 text-red-800";
     case "info":
-      return "border-blue-200 bg-blue-50 text-blue-800";
+      return "border-cyan-200 bg-cyan-50 text-cyan-800";
     default:
       return "border-slate-200 bg-slate-50 text-slate-700";
   }
@@ -62,17 +299,10 @@ function iconToneClass(tone: Tone) {
     case "danger":
       return "bg-red-100 text-red-700";
     case "info":
-      return "bg-blue-100 text-blue-700";
+      return "bg-cyan-100 text-cyan-700";
     default:
-      return "bg-slate-100 text-slate-600";
+      return "bg-slate-100 text-slate-700";
   }
-}
-
-function labelFor(
-  options: ReadonlyArray<{ readonly value: string; readonly label: string }>,
-  value: string
-) {
-  return options.find((option) => option.value === value)?.label ?? value;
 }
 
 function formatDate(value: string | Date) {
@@ -84,7 +314,7 @@ function formatDate(value: string | Date) {
   }).format(new Date(value));
 }
 
-function MetricCard({
+function KpiCard({
   label,
   value,
   detail,
@@ -98,11 +328,11 @@ function MetricCard({
   tone?: Tone;
 }) {
   return (
-    <div className="surface-card border border-slate-200 bg-white/95 p-5">
+    <div className="surface-card border border-white/70 p-5">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-sm font-medium text-slate-500">{label}</p>
-          <p className="mt-3 text-3xl font-semibold text-slate-950">{value}</p>
+          <p className="text-sm font-semibold text-slate-500">{label}</p>
+          <p className="mt-3 text-3xl font-black tracking-[-0.04em] text-slate-950">{value}</p>
         </div>
         <span className={`rounded-2xl p-2 ${iconToneClass(tone)}`}>{icon}</span>
       </div>
@@ -131,20 +361,20 @@ function QueueCard({
   return (
     <AdminPrefetchLink
       href={href}
-      className="surface-card group flex h-full flex-col justify-between border border-slate-200 bg-white/95 p-5 transition hover:border-blue-200 hover:bg-blue-50/60"
+      className="surface-card group flex h-full flex-col justify-between border border-white/70 p-5 transition hover:-translate-y-0.5 hover:border-emerald-200"
     >
       <div className="flex items-start justify-between gap-4">
         <span className={`rounded-2xl p-2 ${iconToneClass(tone)}`}>{icon}</span>
-        <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${toneClass(tone)}`}>
+        <span className={`rounded-full border px-3 py-1 text-xs font-black ${toneClass(tone)}`}>
           {value > 0 ? "Aksiyon var" : "Temiz"}
         </span>
       </div>
       <div className="mt-6">
-        <p className="text-sm font-semibold text-slate-700">{label}</p>
-        <p className="mt-2 text-4xl font-semibold text-slate-950">{value}</p>
+        <p className="text-sm font-black text-slate-800">{label}</p>
+        <p className="mt-2 text-4xl font-black tracking-[-0.05em] text-slate-950">{value}</p>
         <p className="mt-3 text-sm leading-6 text-slate-600">{detail}</p>
       </div>
-      <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-blue-700">
+      <span className="mt-5 inline-flex items-center gap-2 text-sm font-black text-[#063326]">
         {action}
         <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
       </span>
@@ -152,151 +382,13 @@ function QueueCard({
   );
 }
 
-function HealthItem({
-  label,
-  detail,
-  status,
-  tone
-}: {
-  label: string;
-  detail: string;
-  status: string;
-  tone: Tone;
-}) {
+function EmptyState({ label }: { label: string }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="text-sm font-semibold text-slate-950">{label}</p>
-          <p className="mt-1 text-xs leading-5 text-slate-600">{detail}</p>
-        </div>
-        <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${toneClass(tone)}`}>
-          {status}
-        </span>
-      </div>
-    </div>
-  );
-}
-
-function EmptyActivity({ label }: { label: string }) {
-  return (
-    <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-8 text-center text-sm text-slate-500">
+    <div className="rounded-3xl border border-dashed border-slate-200 bg-white/60 px-4 py-8 text-center text-sm font-semibold text-slate-500">
       {label}
     </div>
   );
 }
-
-const quickActions: Array<{
-  href: string;
-  label: string;
-  detail: string;
-  roles: AdminRole[];
-}> = [
-  {
-    href: "/admin/siparisler",
-    label: "Sipariş kuyruğu",
-    detail: "Ödeme ve onay bekleyen kayıtlar",
-    roles: ["superadmin", "sales"]
-  },
-  {
-    href: "/admin/teklifler",
-    label: "Teklif akışı",
-    detail: "Yeni, inceleme ve müzakere talepleri",
-    roles: ["superadmin", "sales"]
-  },
-  {
-    href: "/admin/site",
-    label: "Site yönetimi",
-    detail: "Menü, açılış sayfaları ve yayındaki içerik",
-    roles: ["superadmin", "editor"]
-  },
-  {
-    href: "/admin/audit",
-    label: "Denetim ve güvenlik",
-    detail: "İşlem geçmişi ve admin oturum denetimi",
-    roles: ["superadmin"]
-  }
-];
-
-const adminStandards = [
-  {
-    label: "Aksiyon odaklı kuyruk",
-    detail: "Sipariş, teklif ve saha talepleri sıradaki iş olarak ayrıldı.",
-    status: "Aktif"
-  },
-  {
-    label: "Rol bazlı erişim",
-    detail: "Modüller role göre filtreleniyor ve middleware seviyesinde korunuyor.",
-    status: "Aktif"
-  },
-  {
-    label: "Oturum güvenliği",
-    detail: "Çıkış butonu, no-store başlıkları ve hareketsizlik uyarısı var.",
-    status: "Aktif"
-  },
-  {
-    label: "Erişilebilir tablolar",
-    detail: "Sıralanabilir listeler ve CSV çıkışları operasyon görünümlerinde kullanılıyor.",
-    status: "Aktif"
-  }
-] as const;
-
-const personaOperationCards: Array<{
-  href: string;
-  label: string;
-  detail: string;
-  signal: string;
-  icon: ReactNode;
-  tone: Tone;
-}> = [
-  {
-    href: "/admin/teklifler",
-    label: "Ev tipi AC alıcısı",
-    detail: "Sakarya ücretsiz keşif, 7.4/11 kW wallbox ve kurulum uygunluğu.",
-    signal: "En hızlı dönüşüm",
-    icon: <Home className="h-5 w-5" />,
-    tone: "success"
-  },
-  {
-    href: "/admin/teklifler",
-    label: "Site / apartman",
-    detail: "RFID, ortak kullanım, yönetim onayı ve teknik teklif paketi.",
-    signal: "Yönetim kararı",
-    icon: <Building2 className="h-5 w-5" />,
-    tone: "info"
-  },
-  {
-    href: "/admin/teklifler",
-    label: "KOBİ / ofis",
-    detail: "22 kW AC, çalışan/misafir deneyimi ve servis planı.",
-    signal: "Kurumsal teklif",
-    icon: <Users className="h-5 w-5" />,
-    tone: "warning"
-  },
-  {
-    href: "/admin/saha",
-    label: "Ticari lokasyon",
-    detail: "DC/çoklu AC saha, enerji kapasitesi ve fizibilite ön kontrolü.",
-    signal: "Fizibilite",
-    icon: <MapPin className="h-5 w-5" />,
-    tone: "danger"
-  },
-  {
-    href: "/admin/urunler",
-    label: "Kablo / aksesuar",
-    detail: "Type 2 uyum, stok görünürlüğü ve hızlı sepet dönüşümü.",
-    signal: "Hızlı satış",
-    icon: <Cable className="h-5 w-5" />,
-    tone: "neutral"
-  }
-];
-
-type AdminDashboardViewProps = {
-  snapshot: AdminDashboardSnapshot;
-  role?: AdminRole;
-  databaseEnabled: boolean;
-  paytrReady: boolean;
-};
 
 export function AdminDashboardView({
   snapshot,
@@ -304,140 +396,131 @@ export function AdminDashboardView({
   databaseEnabled,
   paytrReady
 }: AdminDashboardViewProps) {
-  const visibleQuickActions = role
-    ? quickActions.filter((action) => action.roles.includes(role))
-    : [];
+  const canSee = (roles: AdminRole[]) => (role ? roles.includes(role) : false);
   const openQueueTotal =
     snapshot.kpis.pendingOrders +
     snapshot.kpis.pendingQuotes +
     snapshot.kpis.openServiceRequests;
-  const securityHref = role === "superadmin" ? "/admin/adminler" : "/admin/erisim";
-  const securityAction = role === "superadmin" ? "Oturumları denetle" : "Erişim haritası";
-  const queueCards: Array<{
-    href: string;
-    label: string;
-    value: number;
-    detail: string;
-    action: string;
-    icon: ReactNode;
-    tone: Tone;
-    roles: AdminRole[];
-  }> = [
-    {
-      href: "/admin/siparisler?status=pending_confirmation",
-      label: "Sipariş onay bekliyor",
-      value: snapshot.kpis.pendingOrders,
-      detail: "Ödeme, stok ve teslimat kontrolü gereken kayıtlar.",
-      action: "Siparişleri incele",
-      icon: <ShoppingCart className="h-5 w-5" />,
-      tone: snapshot.kpis.pendingOrders > 0 ? "warning" : "success",
-      roles: ["superadmin", "sales"]
-    },
-    {
-      href: "/admin/teklifler",
-      label: "Teklif aksiyonu",
-      value: snapshot.kpis.pendingQuotes,
-      detail: "Yeni, inceleme veya muzakere aşamasındaki talepler.",
-      action: "Akışı aç",
-      icon: <FileText className="h-5 w-5" />,
-      tone: snapshot.kpis.pendingQuotes > 0 ? "info" : "success",
-      roles: ["superadmin", "sales"]
-    },
-    {
-      href: "/admin/saha",
-      label: "Saha ve servis",
-      value: snapshot.kpis.openServiceRequests,
-      detail: "Servis, keşif ve kurulum ekibine aktarılacak talepler.",
-      action: "Saha talepleri",
-      icon: <Wrench className="h-5 w-5" />,
-      tone: snapshot.kpis.openServiceRequests > 0 ? "warning" : "success",
-      roles: ["superadmin", "operations", "technician"]
-    },
-    {
-      href: securityHref,
-      label: "Güvenlik sinyali",
-      value: snapshot.security.activeSessions,
-      detail: "Aktif admin oturumları ve son denetim hareketleri.",
-      action: securityAction,
-      icon: <ShieldCheck className="h-5 w-5" />,
-      tone: snapshot.security.activeSessions > 1 ? "info" : "neutral",
-      roles: ["superadmin", "sales", "operations", "technician", "editor"]
-    }
-  ];
-  const visibleQueueCards = queueCards.filter((card) => (role ? card.roles.includes(role) : false));
+  const targetProgress = Math.min(snapshot.kpis.targetProgress, 100);
   const targetTone: Tone =
     snapshot.kpis.targetProgress >= 85
       ? "success"
       : snapshot.kpis.targetProgress >= 45
         ? "info"
         : "warning";
+  const queueCards = [
+    {
+      href: "/admin/siparisler?status=pending_confirmation",
+      label: "Siparis onayi",
+      value: snapshot.kpis.pendingOrders,
+      detail: "Odeme, stok, kargo ve fatura kontrolu bekleyen kayitlar.",
+      action: "Siparisleri ac",
+      icon: <ShoppingCart className="h-5 w-5" />,
+      tone: snapshot.kpis.pendingOrders > 0 ? "warning" : "success",
+      roles: ["superadmin", "sales"] as AdminRole[]
+    },
+    {
+      href: "/admin/teklifler",
+      label: "Teklif aksiyonu",
+      value: snapshot.kpis.pendingQuotes,
+      detail: "Yeni, inceleme veya muzakeredeki satis firsatlari.",
+      action: "Teklif masasina git",
+      icon: <FileText className="h-5 w-5" />,
+      tone: snapshot.kpis.pendingQuotes > 0 ? "info" : "success",
+      roles: ["superadmin", "sales"] as AdminRole[]
+    },
+    {
+      href: "/admin/saha",
+      label: "Saha planlama",
+      value: snapshot.kpis.openServiceRequests,
+      detail: "Kesif, kurulum ve teknik servis ekibine aktarilacak isler.",
+      action: "Saha taleplerini ac",
+      icon: <Wrench className="h-5 w-5" />,
+      tone: snapshot.kpis.openServiceRequests > 0 ? "warning" : "success",
+      roles: ["superadmin", "operations", "technician"] as AdminRole[]
+    },
+    {
+      href: role === "superadmin" ? "/admin/adminler" : "/admin/erisim",
+      label: "Guvenlik",
+      value: snapshot.security.activeSessions,
+      detail: "Aktif admin oturumlari, rol kapsami ve denetim kayitlari.",
+      action: role === "superadmin" ? "Oturumlari denetle" : "Erisim haritasi",
+      icon: <ShieldCheck className="h-5 w-5" />,
+      tone: snapshot.security.activeSessions > 1 ? "info" : "neutral",
+      roles: ["superadmin", "sales", "operations", "technician", "editor"] as AdminRole[]
+    }
+  ];
+  const visibleQueueCards = queueCards.filter((card) => canSee(card.roles));
+  const visibleModules = moduleCards.filter((card) => canSee(card.roles));
+  const visibleCommerceStandards = commerceAdminStandards.filter((card) => canSee(card.roles));
   const todayActions = [
     {
-      label: "Ödeme ve sipariş onayı",
+      label: "Odeme ve siparis onayi",
       count: snapshot.kpis.pendingOrders,
       href: "/admin/siparisler?status=pending_confirmation",
-      detail: "Ödeme, stok ve teslimat kontrolü bekleyen siparişler."
+      detail: "Musteri bekletmeden odeme ve stok kontrolunu kapat."
     },
     {
-      label: "Teklif dönüşü",
+      label: "Teklif donusu",
       count: snapshot.kpis.pendingQuotes,
       href: "/admin/teklifler",
-      detail: "Yeni veya müzakere aşamasındaki satış fırsatları."
+      detail: "Ev, site ve isletme taleplerinde hizli ilk temas kur."
     },
     {
-      label: "Saha planlama",
+      label: "Saha takvimi",
       count: snapshot.kpis.openServiceRequests,
       href: "/admin/saha",
-      detail: "Keşif, servis veya kurulum ekibine aktarılacak kayıtlar."
+      detail: "Sakarya kesif ve Sakarya + Kocaeli kurulum kapsamlarini ayir."
     }
   ].filter((action) => action.count > 0);
 
   return (
     <div className="space-y-6">
       {!databaseEnabled ? (
-        <section className="surface-card border border-amber-200 bg-amber-50/80 p-6">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-700">
-            Yerel Yedek Mod
+        <section className="surface-card border border-amber-200 bg-amber-50/85 p-5">
+          <p className="text-sm font-black uppercase tracking-[0.22em] text-amber-700">
+            Yerel yedek mod
           </p>
-          <p className="mt-3 max-w-3xl text-sm text-slate-700">
-            Veritabanı bağlantısı olmadan çalışabilen yerel admin veri katmanı aktif. Ürün,
-            sipariş ve teklif aksiyonları bu modda da kaydedilir.
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-700">
+            Veritabani baglantisi olmadiginda panel yerel yedek veriyle acilir. Canli operasyon icin
+            Supabase ortam degiskenlerini kontrol edin.
           </p>
         </section>
       ) : null}
 
-      <section className="surface-card overflow-hidden border border-slate-200 bg-white/95 p-8">
-        <div className="grid gap-8 xl:grid-cols-[minmax(0,1.6fr)_minmax(320px,0.9fr)] xl:items-end">
+      <section className="surface-card overflow-hidden border border-white/70 p-6 lg:p-8">
+        <div className="grid gap-7 xl:grid-cols-[minmax(0,1.35fr)_minmax(340px,0.65fr)] xl:items-stretch">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-blue-600">
-              Operasyon Komuta Paneli
+            <p className="text-sm font-black uppercase tracking-[0.24em] text-[#0f8f6f]">
+              Admin operasyon merkezi
             </p>
-            <h1 className="mt-3 max-w-4xl text-3xl font-semibold leading-tight text-slate-950 lg:text-4xl">
-              Sakarya ve Kocaeli satış, keşif ve kurulum masası.
+            <h1 className="mt-3 max-w-4xl text-3xl font-black tracking-[-0.05em] text-slate-950 lg:text-5xl">
+              Satilabilir urun, dogru teklif ve saha aksiyonu tek masada.
             </h1>
             <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-600">
-              Sipariş, teklif, saha, güvenlik ve içerik sinyalleri aynı ekranda toplanır; persona bazlı fırsatlar açık kuyruklarla birlikte önceliklendirilir.
+              ParkChargeEV paneli; e-ticaret siparislerini, teklif CRM akisini, Sakarya/Kocaeli saha
+              planini, icerik operasyonunu ve guvenlik sinyallerini ayni karar ekraninda toplar.
             </p>
             <div className="mt-6 grid gap-3 sm:grid-cols-3">
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                  Açık kuyruk
+              <div className="rounded-3xl border border-slate-200 bg-white/70 p-4">
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">
+                  Acik kuyruk
                 </p>
-                <p className="mt-2 text-2xl font-semibold text-slate-950">{openQueueTotal}</p>
+                <p className="mt-2 text-3xl font-black text-slate-950">{openQueueTotal}</p>
               </div>
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                  Aktif oturum
+              <div className="rounded-3xl border border-slate-200 bg-white/70 p-4">
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">
+                  7 gun yeni musteri
                 </p>
-                <p className="mt-2 text-2xl font-semibold text-slate-950">
-                  {snapshot.security.activeSessions}
+                <p className="mt-2 text-3xl font-black text-slate-950">
+                  {snapshot.kpis.newCustomers}
                 </p>
               </div>
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+              <div className="rounded-3xl border border-slate-200 bg-white/70 p-4">
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">
                   Kapsam
                 </p>
-                <p className="mt-2 text-xs font-semibold leading-5 text-slate-950">
+                <p className="mt-2 text-xs font-black leading-5 text-slate-950">
                   {serviceCoverageSummary.shipping}
                   <br />
                   {serviceCoverageSummary.freeSurvey}
@@ -448,207 +531,96 @@ export function AdminDashboardView({
             </div>
           </div>
 
-          <div className="rounded-[28px] border border-slate-200 bg-slate-950 p-5 text-white">
-            <div className="flex items-center justify-between gap-4">
+          <div className="rounded-[30px] bg-[#063326] p-5 text-white">
+            <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-300">
-                  Aylık hedef
+                <p className="text-xs font-black uppercase tracking-[0.22em] text-white/55">
+                  Aylik hedef
                 </p>
-                <p className="mt-2 text-4xl font-semibold">
+                <p className="mt-3 text-5xl font-black tracking-[-0.05em]">
                   %{snapshot.kpis.targetProgress.toFixed(1)}
                 </p>
               </div>
-              <Target className="h-8 w-8 text-blue-200" />
+              <Target className="h-8 w-8 text-emerald-200" />
             </div>
-            <div className="mt-5 h-3 overflow-hidden rounded-full bg-white/15">
+            <div className="mt-6 h-3 overflow-hidden rounded-full bg-white/15">
               <div
-                className="h-full rounded-full bg-blue-300"
-                style={{ width: `${Math.min(snapshot.kpis.targetProgress, 100)}%` }}
+                className="h-full rounded-full bg-[#7eecc9]"
+                style={{ width: `${targetProgress}%` }}
               />
             </div>
-            <div className="mt-5 flex flex-wrap gap-2">
-              <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${toneClass(targetTone)}`}>
+            <div className="mt-6 grid gap-2">
+              <span className={`rounded-full border px-3 py-1 text-xs font-black ${toneClass(targetTone)}`}>
                 Hedef sinyali
               </span>
               <AdminPrefetchLink
                 href="/admin/siparisler"
-                className="rounded-full border border-white/20 px-3 py-1 text-xs font-semibold text-white transition hover:bg-white/10"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-4 py-3 text-sm font-black text-[#063326]"
               >
-                Siparişlere git
+                Siparis performansi
+                <ArrowRight className="h-4 w-4" />
               </AdminPrefetchLink>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
-        <div className="surface-card border border-slate-200 bg-white/95 p-6">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-blue-600">
-                Pazar ve Gelir Playbook
-              </p>
-              <h2 className="mt-2 text-2xl font-semibold text-slate-950">
-                Talebi persona bazli hizli aksiyona cevirin.
-              </h2>
-            </div>
-            <AdminPrefetchLink
-              href="/admin/teklifler"
-              className="rounded-2xl border border-slate-300 bg-white px-5 py-3 text-center text-sm font-semibold text-slate-800 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
-            >
-              Teklif masasi
-            </AdminPrefetchLink>
+      <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+        {adminWorkflowCards.map((item) => (
+          <div key={item.label} className="surface-card border border-white/70 p-5">
+            <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-100 text-[#063326]">
+              {item.icon}
+            </span>
+            <p className="mt-4 text-sm font-black text-slate-950">{item.label}</p>
+            <p className="mt-2 text-xs leading-5 text-slate-600">{item.detail}</p>
           </div>
-          <div className="mt-5 grid gap-3 md:grid-cols-2">
-            {adminRevenuePlays.map((play) => (
-              <AdminPrefetchLink
-                key={play.label}
-                href={play.href}
-                className="group rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:border-blue-200 hover:bg-blue-50"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${toneClass(play.tone)}`}>
-                    {play.signal}
-                  </span>
-                  <ArrowRight className="h-4 w-4 text-slate-400 transition group-hover:translate-x-0.5 group-hover:text-blue-700" />
-                </div>
-                <p className="mt-4 text-sm font-semibold text-slate-950">{play.label}</p>
-                <p className="mt-2 text-xs leading-5 text-slate-600">{play.detail}</p>
-              </AdminPrefetchLink>
-            ))}
-          </div>
-        </div>
-
-        <div className="surface-card border border-slate-200 bg-slate-950 p-6 text-white">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-emerald-200">
-            Panel Zekasi
-          </p>
-          <h2 className="mt-2 text-2xl font-semibold leading-tight">
-            E-ticaret hizi ile EV saha guvenini ayni ekranda birlestirin.
-          </h2>
-          <div className="mt-5 grid gap-3">
-            {marketPanelInsights.map((insight) => (
-              <div key={insight.label} className="rounded-2xl border border-white/10 bg-white/[0.08] p-4">
-                <p className="text-sm font-semibold">{insight.label}</p>
-                <p className="mt-2 text-xs leading-5 text-white/68">{insight.detail}</p>
-                <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-200">
-                  {insight.source}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
+        ))}
       </section>
 
-      <section className="grid gap-4 xl:grid-cols-[0.86fr_1.14fr]">
-        <div className="surface-card border border-slate-200 bg-slate-950 p-6 text-white">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-emerald-200">
-            Saha Kapsamı
-          </p>
-          <h2 className="mt-3 text-2xl font-semibold leading-tight">
-            Keşif ve kurulum taleplerini şehir kuralına göre ayırın.
-          </h2>
-          <div className="mt-5 grid gap-3">
-            {[
-              serviceCoverageSummary.shipping,
-              serviceCoverageSummary.freeSurvey,
-              serviceCoverageSummary.installation
-            ].map((item) => (
-              <div key={item} className="rounded-2xl border border-white/10 bg-white/[0.08] px-4 py-3">
-                <p className="text-sm font-semibold">{item}</p>
-              </div>
-            ))}
-          </div>
-          <p className="mt-4 text-sm leading-6 text-white/64">
-            Kocaeli taleplerini kurulum kapsamına alın; ücretsiz keşif etiketini yalnızca Sakarya kayıtlarında kullanın.
-          </p>
-        </div>
-
-        <div className="surface-card border border-slate-200 bg-white/95 p-6">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-blue-600">
-                Persona Satış Masası
-              </p>
-              <h2 className="mt-2 text-2xl font-semibold text-slate-950">
-                Her talep doğru operasyon yoluna düşsün.
-              </h2>
-            </div>
-          </div>
-          <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
-            {personaOperationCards.map((item) => (
-              <AdminPrefetchLink
-                key={item.label}
-                href={item.href}
-                className="group rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:border-blue-200 hover:bg-blue-50"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <span className={`rounded-2xl p-2 ${iconToneClass(item.tone)}`}>{item.icon}</span>
-                  <ArrowRight className="h-4 w-4 text-slate-400 transition group-hover:translate-x-0.5 group-hover:text-blue-700" />
-                </div>
-                <p className="mt-4 text-sm font-semibold text-slate-950">{item.label}</p>
-                <p className="mt-2 text-xs leading-5 text-slate-600">{item.detail}</p>
-                <span className={`mt-3 inline-flex rounded-full border px-2.5 py-1 text-[11px] font-semibold ${toneClass(item.tone)}`}>
-                  {item.signal}
-                </span>
-              </AdminPrefetchLink>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {visibleQuickActions.length > 0 ? (
-        <section className="grid gap-4 lg:grid-cols-4">
-          {visibleQuickActions.map((action) => (
-            <AdminPrefetchLink
-              key={action.href}
-              href={action.href}
-              className="surface-card border border-slate-200 bg-white/95 p-5 transition hover:border-blue-200 hover:bg-blue-50/70"
-            >
-              <p className="text-sm font-semibold text-slate-950">{action.label}</p>
-              <p className="mt-2 text-xs leading-5 text-slate-600">{action.detail}</p>
-            </AdminPrefetchLink>
-          ))}
-        </section>
-      ) : null}
-
-      <section className="surface-card border border-slate-200 bg-white/95 p-6">
+      <section className="surface-card border border-white/70 p-6">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-blue-600">
-              Bugünün Aksiyonları
+            <p className="text-sm font-black uppercase tracking-[0.24em] text-[#0f8f6f]">
+              E-ticaret admin standardi
             </p>
-            <h2 className="mt-2 text-2xl font-semibold text-slate-950">
-              Öncelikli operasyon masası
+            <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-slate-950">
+              Panel, satisin butun arka ofisini tek akista toplar.
             </h2>
+            <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">
+              Urun katalog kalitesi, siparis/fulfillment, musteri segmentleri, pazarlama icerigi,
+              odeme guveni ve rol denetimi ayni operasyon ritminde ilerler.
+            </p>
           </div>
+          <AdminPrefetchLink
+            href="/admin/urunler"
+            className="rounded-2xl bg-[#063326] px-5 py-3 text-center text-sm font-black text-white transition hover:bg-[#0b4b39]"
+          >
+            Urun merkezini ac
+          </AdminPrefetchLink>
         </div>
-        <div className="mt-5 grid gap-3 md:grid-cols-3">
-          {(todayActions.length > 0
-            ? todayActions
-            : [
-                {
-                  label: "Açık kritik kuyruk yok",
-                  count: 0,
-                  href: "/admin/audit",
-                  detail: "Yeni talep geldiğinde bu alan otomatik öncelik sırasına göre dolacak."
-                }
-              ]
-          ).map((action) => (
+
+        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          {visibleCommerceStandards.map((item) => (
             <AdminPrefetchLink
-              key={action.label}
-              href={action.href}
-              className="rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:border-blue-200 hover:bg-blue-50"
+              key={item.label}
+              href={item.href}
+              className="group rounded-3xl border border-slate-200 bg-white/70 p-4 transition hover:-translate-y-0.5 hover:border-emerald-200 hover:bg-emerald-50"
             >
-              <p className="text-sm font-semibold text-slate-950">{action.label}</p>
-              <p className="mt-2 text-3xl font-semibold text-slate-950">{action.count}</p>
-              <p className="mt-2 text-xs leading-5 text-slate-600">{action.detail}</p>
+              <div className="flex items-start justify-between gap-3">
+                <span className="rounded-2xl bg-[#d8fff0] p-2 text-[#063326]">{item.icon}</span>
+                <ArrowRight className="h-4 w-4 text-slate-400 transition group-hover:translate-x-0.5 group-hover:text-[#063326]" />
+              </div>
+              <p className="mt-4 text-sm font-black text-slate-950">{item.label}</p>
+              <p className="mt-2 text-xs leading-5 text-slate-600">{item.detail}</p>
+              <span className="mt-4 inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-black text-[#063326]">
+                {item.proof}
+              </span>
             </AdminPrefetchLink>
           ))}
         </div>
       </section>
 
-      <section className="grid gap-4 lg:grid-cols-4">
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {visibleQueueCards.map((card) => (
           <QueueCard
             key={card.label}
@@ -658,40 +630,217 @@ export function AdminDashboardView({
             detail={card.detail}
             action={card.action}
             icon={card.icon}
-            tone={card.tone}
+            tone={card.tone as Tone}
           />
         ))}
       </section>
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <MetricCard
-          label="Bugünkü ciro"
+        <KpiCard
+          label="Bugunku ciro"
           value={formatPriceTRY(snapshot.kpis.todayRevenue)}
-          detail="Bugün oluşan onaylı sipariş toplamı"
+          detail="Bugun olusan onayli siparis toplami."
           icon={<Zap className="h-5 w-5" />}
           tone="success"
         />
-        <MetricCard
+        <KpiCard
           label="Bu ayki ciro"
           value={formatPriceTRY(snapshot.kpis.monthRevenue)}
-          detail="Aylık hedef karşılaştırması için ana gösterge"
+          detail="Aylik hedef karsilastirmasi icin ana metrik."
           icon={<Gauge className="h-5 w-5" />}
           tone={targetTone}
         />
-        <MetricCard
-          label="Bu hafta tamamlanan"
+        <KpiCard
+          label="Tamamlanan is"
           value={String(snapshot.kpis.completedInstallations)}
-          detail="Teslim edildi veya tamamlandı durumuna geçen kayıtlar"
+          detail="Bu hafta teslim edilen veya tamamlanan kayitlar."
           icon={<CheckCircle2 className="h-5 w-5" />}
           tone="success"
         />
-        <MetricCard
-          label="Son 7 gün yeni müşteri"
-          value={String(snapshot.kpis.newCustomers)}
-          detail="Kayıt olan kullanıcı sayısı"
-          icon={<Users className="h-5 w-5" />}
+        <KpiCard
+          label="Aktif oturum"
+          value={String(snapshot.security.activeSessions)}
+          detail="Admin oturumlari ve guvenlik izleme sinyali."
+          icon={<LockKeyhole className="h-5 w-5" />}
           tone="info"
         />
+      </section>
+
+      <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_380px]">
+        <div className="surface-card border border-white/70 p-6">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p className="text-sm font-black uppercase tracking-[0.24em] text-[#0f8f6f]">
+                Bugunun aksiyonlari
+              </p>
+              <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-slate-950">
+                Panel once bekleyen isi kapatsin.
+              </h2>
+            </div>
+            <AdminPrefetchLink
+              href="/admin/erisim"
+              className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-center text-sm font-black text-slate-800 transition hover:border-emerald-200 hover:bg-emerald-50"
+            >
+              Tum moduller
+            </AdminPrefetchLink>
+          </div>
+          <div className="mt-5 grid gap-3 md:grid-cols-3">
+            {(todayActions.length > 0
+              ? todayActions
+              : [
+                  {
+                    label: "Kritik kuyruk yok",
+                    count: 0,
+                    href: "/admin",
+                    detail: "Yeni siparis, teklif veya saha talebi gelince bu alan otomatik dolacak."
+                  }
+                ]
+            ).map((action) => (
+              <AdminPrefetchLink
+                key={action.label}
+                href={action.href}
+                className="group rounded-3xl border border-slate-200 bg-white/70 p-5 transition hover:border-emerald-200 hover:bg-emerald-50"
+              >
+                <p className="text-sm font-black text-slate-950">{action.label}</p>
+                <p className="mt-3 text-4xl font-black tracking-[-0.05em] text-[#063326]">
+                  {action.count}
+                </p>
+                <p className="mt-3 text-xs leading-5 text-slate-600">{action.detail}</p>
+                <span className="mt-4 inline-flex items-center gap-2 text-xs font-black text-[#063326]">
+                  Islemi ac
+                  <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
+                </span>
+              </AdminPrefetchLink>
+            ))}
+          </div>
+        </div>
+
+        <div className="surface-card border border-white/70 bg-[#063326] p-6 text-white">
+          <p className="text-sm font-black uppercase tracking-[0.24em] text-emerald-200">
+            Sistem sagligi
+          </p>
+          <div className="mt-5 grid gap-3">
+            {[
+              {
+                label: "Veri kaynagi",
+                status: databaseEnabled ? "Canli" : "Yerel",
+                tone: databaseEnabled ? "success" : "warning",
+                icon: <Database className="h-4 w-4" />
+              },
+              {
+                label: "PayTR",
+                status: paytrReady ? "Hazir" : "Eksik",
+                tone: paytrReady ? "success" : "danger",
+                icon: <CreditCard className="h-4 w-4" />
+              },
+              {
+                label: "Rol bazli erisim",
+                status: "Aktif",
+                tone: "success",
+                icon: <ShieldCheck className="h-4 w-4" />
+              },
+              {
+                label: "Oturum denetimi",
+                status: "Aktif",
+                tone: "success",
+                icon: <LockKeyhole className="h-4 w-4" />
+              }
+            ].map((item) => (
+              <div key={item.label} className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.08] px-4 py-3">
+                <span className="flex items-center gap-3 text-sm font-semibold">
+                  {item.icon}
+                  {item.label}
+                </span>
+                <span className={`rounded-full border px-3 py-1 text-xs font-black ${toneClass(item.tone as Tone)}`}>
+                  {item.status}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="surface-card border border-white/70 p-6">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="text-sm font-black uppercase tracking-[0.24em] text-[#0f8f6f]">
+              Persona satis rotalari
+            </p>
+            <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-slate-950">
+              Her musteri tipi dogru modula dussun.
+            </h2>
+          </div>
+        </div>
+        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+          {personaCards.map((item) => (
+            <AdminPrefetchLink
+              key={item.label}
+              href={item.href}
+              className="group rounded-3xl border border-slate-200 bg-white/70 p-4 transition hover:border-emerald-200 hover:bg-emerald-50"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <span className={`rounded-2xl p-2 ${iconToneClass(item.tone)}`}>{item.icon}</span>
+                <ArrowRight className="h-4 w-4 text-slate-400 transition group-hover:translate-x-0.5 group-hover:text-[#063326]" />
+              </div>
+              <p className="mt-4 text-sm font-black text-slate-950">{item.label}</p>
+              <p className="mt-2 text-xs leading-5 text-slate-600">{item.detail}</p>
+              <span className={`mt-3 inline-flex rounded-full border px-2.5 py-1 text-[11px] font-black ${toneClass(item.tone)}`}>
+                {item.signal}
+              </span>
+            </AdminPrefetchLink>
+          ))}
+        </div>
+      </section>
+
+      <section className="grid gap-5 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+        <div className="surface-card border border-white/70 p-6">
+          <p className="text-sm font-black uppercase tracking-[0.24em] text-[#0f8f6f]">
+            Modul kisayollari
+          </p>
+          <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-slate-950">
+            Admin panelde beklenen ana ozellikler.
+          </h2>
+          <div className="mt-5 grid gap-3 md:grid-cols-2">
+            {visibleModules.map((item) => (
+              <AdminPrefetchLink
+                key={item.href}
+                href={item.href}
+                className="group rounded-3xl border border-slate-200 bg-white/70 p-4 transition hover:border-emerald-200 hover:bg-emerald-50"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <span className="rounded-2xl bg-emerald-100 p-2 text-[#063326]">{item.icon}</span>
+                  <ArrowRight className="h-4 w-4 text-slate-400 transition group-hover:translate-x-0.5 group-hover:text-[#063326]" />
+                </div>
+                <p className="mt-4 text-sm font-black text-slate-950">{item.label}</p>
+                <p className="mt-2 text-xs leading-5 text-slate-600">{item.detail}</p>
+              </AdminPrefetchLink>
+            ))}
+          </div>
+        </div>
+
+        <div className="surface-card border border-white/70 p-6">
+          <p className="text-sm font-black uppercase tracking-[0.24em] text-[#0f8f6f]">
+            Pazar playbook
+          </p>
+          <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-slate-950">
+            Satis ekibinin gunluk rehberi.
+          </h2>
+          <div className="mt-5 grid gap-3">
+            {adminRevenuePlays.map((play) => (
+              <AdminPrefetchLink
+                key={play.label}
+                href={play.href}
+                className="rounded-3xl border border-slate-200 bg-white/70 p-4 transition hover:border-emerald-200 hover:bg-emerald-50"
+              >
+                <span className={`rounded-full border px-3 py-1 text-xs font-black ${toneClass(play.tone)}`}>
+                  {play.signal}
+                </span>
+                <p className="mt-3 text-sm font-black text-slate-950">{play.label}</p>
+                <p className="mt-2 text-xs leading-5 text-slate-600">{play.detail}</p>
+              </AdminPrefetchLink>
+            ))}
+          </div>
+        </div>
       </section>
 
       <DashboardCharts
@@ -700,230 +849,153 @@ export function AdminDashboardView({
         orderDistribution={snapshot.charts.orderDistribution}
       />
 
-      <section className="grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
-        <div className="surface-card border border-slate-200 bg-white/95 p-6">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-blue-600">
-                Sistem ve Risk Radarı
-              </p>
-              <h2 className="mt-2 text-2xl font-semibold text-slate-950">
-                Kritik admin kontrolleri
-              </h2>
-            </div>
-            <AlertTriangle className="h-6 w-6 text-amber-500" />
-          </div>
-          <div className="mt-5 grid gap-3 md:grid-cols-2">
-            <HealthItem
-              label="Veri bağlantısı"
-              detail="Admin listeleri ve KPI kartları canlı veri kaynağına bağlı."
-              status={databaseEnabled ? "Canlı" : "Yerel yedek"}
-              tone={databaseEnabled ? "success" : "warning"}
-            />
-            <HealthItem
-              label="PayTR konfigürasyonu"
-              detail="Ödeme operasyonu için merchant anahtarları kontrol edildi."
-              status={paytrReady ? "Hazır" : "Eksik"}
-              tone={paytrReady ? "success" : "danger"}
-            />
-            <HealthItem
-              label="Oturum politikası"
-              detail="No-store, noindex, görünür çıkış ve hareketsizlik uyarısı etkin."
-              status="Aktif"
-              tone="success"
-            />
-            <HealthItem
-              label="Yetki modeli"
-              detail="Rol bazlı modüller middleware ve shell seviyesinde eşleşiyor."
-              status="Korumalı"
-              tone="success"
-            />
-          </div>
-        </div>
-
-        <div className="surface-card border border-slate-200 bg-white/95 p-6">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-blue-600">
-                Denetim
-              </p>
-              <h2 className="mt-2 text-2xl font-semibold text-slate-950">Son hareketler</h2>
-            </div>
-            <LockKeyhole className="h-6 w-6 text-slate-400" />
-          </div>
-          <div className="mt-5 space-y-3">
-            {snapshot.security.recentAuditLogs.length > 0 ? (
-              snapshot.security.recentAuditLogs.map((log) => (
-                <div key={log.id} className="rounded-2xl bg-slate-50 px-4 py-3">
-                  <div className="flex items-center justify-between gap-3">
-                    <p className="text-sm font-semibold text-slate-950">{log.action}</p>
-                    <span className="text-xs text-slate-500">{formatDate(log.createdAt)}</span>
-                  </div>
-                  <p className="mt-1 text-xs text-slate-500">{log.entityType}</p>
-                  <p className="mt-2 text-sm leading-6 text-slate-600">
-                    {log.summary ?? "Denetim özeti yok"}
-                  </p>
-                </div>
-              ))
-            ) : (
-              <EmptyActivity label="Henüz denetim hareketi yok." />
-            )}
-          </div>
-        </div>
-      </section>
-
-      <section className="surface-card border border-slate-200 bg-white/95 p-6">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-blue-600">
-              Operasyon Checklist
-            </p>
-            <h2 className="mt-2 text-2xl font-semibold text-slate-950">
-              Bugun panelden kapatilacak isler
-            </h2>
-          </div>
-          <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-            Satis + saha + guvenlik
-          </span>
-        </div>
-        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-          {adminOpsChecklist.map((item, index) => (
-            <AdminPrefetchLink
-              key={item.label}
-              href={item.href}
-              className="group rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:border-blue-200 hover:bg-blue-50"
-            >
-              <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-white text-sm font-semibold text-blue-700">
-                {index + 1}
-              </span>
-              <p className="mt-4 text-sm font-semibold text-slate-950">{item.label}</p>
-              <p className="mt-2 text-xs leading-5 text-slate-600">{item.detail}</p>
-              <span className="mt-4 inline-flex items-center gap-2 text-xs font-semibold text-blue-700">
-                Modulu ac
-                <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
-              </span>
-            </AdminPrefetchLink>
-          ))}
-        </div>
-      </section>
-
-      <section className="surface-card border border-slate-200 bg-white/95 p-6">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-blue-600">
-              Admin Standartları
-            </p>
-            <h2 className="mt-2 text-2xl font-semibold text-slate-950">
-              Üst düzey panel kontrol listesi
-            </h2>
-          </div>
-          <AdminPrefetchLink
-            href="/admin/erisim"
-            className="rounded-2xl border border-slate-300 bg-white px-5 py-3 text-center text-sm font-semibold text-slate-800 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
-          >
-            Tüm admin kısayolları
-          </AdminPrefetchLink>
-        </div>
-        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-          {adminStandards.map((item) => (
-            <div key={item.label} className="rounded-2xl bg-slate-50 p-4">
-              <div className="flex items-center justify-between gap-3">
-                <p className="text-sm font-semibold text-slate-950">{item.label}</p>
-                <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
-                  {item.status}
-                </span>
-              </div>
-              <p className="mt-3 text-xs leading-5 text-slate-600">{item.detail}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="grid gap-6 xl:grid-cols-3">
-        <div className="surface-card border border-slate-200 bg-white/95 p-6">
-          <h2 className="text-lg font-semibold text-slate-950">Son 10 Sipariş</h2>
+      <section className="grid gap-5 xl:grid-cols-3">
+        <div className="surface-card border border-white/70 p-6">
+          <h2 className="text-lg font-black text-slate-950">Son 10 siparis</h2>
           <div className="mt-5 space-y-3">
             {snapshot.activity.recentOrders.length > 0 ? (
               snapshot.activity.recentOrders.map((order) => (
                 <AdminPrefetchLink
                   key={order.id}
                   href={`/admin/siparisler/${order.id}`}
-                  className="block rounded-2xl bg-slate-50 px-4 py-3 transition hover:bg-blue-50"
+                  className="block rounded-2xl bg-white/70 px-4 py-3 transition hover:bg-emerald-50"
                 >
-                  <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-start justify-between gap-4">
                     <div>
-                      <p className="text-sm font-semibold text-slate-900">{order.orderNumber}</p>
-                      <p className="text-sm text-slate-600">
-                        {order.customerName || "Misafir müşteri"}
+                      <p className="text-sm font-black text-slate-950">{order.orderNumber}</p>
+                      <p className="mt-1 text-sm text-slate-600">
+                        {order.customerName || "Misafir musteri"}
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-semibold text-slate-900">
+                      <p className="text-sm font-black text-slate-950">
                         {formatPriceTRY(order.totalKurus)}
                       </p>
-                      <p className="text-xs text-slate-500">
-                        {labelFor(orderStatusOptions, order.status)}
+                      <p className="mt-1 text-xs text-slate-500">
+                        {orderStatusLabels[order.status] ?? order.status}
                       </p>
                     </div>
                   </div>
                 </AdminPrefetchLink>
               ))
             ) : (
-              <EmptyActivity label="Henüz sipariş hareketi yok." />
+              <EmptyState label="Henuz siparis hareketi yok." />
             )}
           </div>
         </div>
 
-        <div className="surface-card border border-slate-200 bg-white/95 p-6">
-          <h2 className="text-lg font-semibold text-slate-950">Son 5 Teklif</h2>
+        <div className="surface-card border border-white/70 p-6">
+          <h2 className="text-lg font-black text-slate-950">Son 5 teklif</h2>
           <div className="mt-5 space-y-3">
             {snapshot.activity.recentQuotes.length > 0 ? (
               snapshot.activity.recentQuotes.map((quote) => (
                 <AdminPrefetchLink
                   key={quote.id}
                   href={`/admin/teklifler/${quote.id}`}
-                  className="block rounded-2xl bg-slate-50 px-4 py-3 transition hover:bg-blue-50"
+                  className="block rounded-2xl bg-white/70 px-4 py-3 transition hover:bg-emerald-50"
                 >
-                  <p className="text-sm font-semibold text-slate-900">{quote.fullName}</p>
-                  <p className="text-sm text-slate-600">
+                  <p className="text-sm font-black text-slate-950">{quote.fullName}</p>
+                  <p className="mt-1 text-sm text-slate-600">
                     {quote.companyName || "Bireysel talep"}
                   </p>
                   <p className="mt-2 text-xs text-slate-500">
-                    {labelFor(quoteStatusOptions, quote.status)}
+                    {quoteStatusLabels[quote.status] ?? quote.status}
                   </p>
                 </AdminPrefetchLink>
               ))
             ) : (
-              <EmptyActivity label="Henüz teklif hareketi yok." />
+              <EmptyState label="Henuz teklif hareketi yok." />
             )}
           </div>
         </div>
 
-        <div className="surface-card border border-slate-200 bg-white/95 p-6">
-          <h2 className="text-lg font-semibold text-slate-950">Son 3 Servis Talebi</h2>
+        <div className="surface-card border border-white/70 p-6">
+          <h2 className="text-lg font-black text-slate-950">Son saha talepleri</h2>
           <div className="mt-5 space-y-3">
             {snapshot.activity.recentServiceRequests.length > 0 ? (
               snapshot.activity.recentServiceRequests.map((item) => (
                 <AdminPrefetchLink
                   key={item.id}
                   href={`/admin/saha/${item.id}`}
-                  className="block rounded-2xl bg-slate-50 px-4 py-3 transition hover:bg-blue-50"
+                  className="block rounded-2xl bg-white/70 px-4 py-3 transition hover:bg-emerald-50"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="text-sm font-semibold text-slate-900">{item.fullName}</p>
-                      <p className="text-sm text-slate-600">{item.leadType}</p>
+                      <p className="text-sm font-black text-slate-950">{item.fullName}</p>
+                      <p className="mt-1 text-sm text-slate-600">{item.leadType}</p>
                     </div>
                     <Clock3 className="mt-0.5 h-4 w-4 text-slate-400" />
                   </div>
                   <p className="mt-2 text-xs text-slate-500">
-                    {labelFor(leadStatusOptions, item.status)}
+                    {leadStatusLabels[item.status] ?? item.status} - {formatDate(item.createdAt)}
                   </p>
                 </AdminPrefetchLink>
               ))
             ) : (
-              <EmptyActivity label="Henüz servis talebi yok." />
+              <EmptyState label="Henuz saha talebi yok." />
             )}
+          </div>
+        </div>
+      </section>
+
+      <section className="grid gap-5 xl:grid-cols-[0.82fr_1.18fr]">
+        <div className="surface-card border border-white/70 bg-[#063326] p-6 text-white">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="text-sm font-black uppercase tracking-[0.24em] text-emerald-200">
+                Risk radari
+              </p>
+              <h2 className="mt-2 text-2xl font-black tracking-[-0.04em]">
+                Kritik kontrolleri her gun kapatin.
+              </h2>
+            </div>
+            <AlertTriangle className="h-6 w-6 text-amber-200" />
+          </div>
+          <div className="mt-5 grid gap-3">
+            {marketPanelInsights.map((insight) => (
+              <div key={insight.label} className="rounded-2xl border border-white/10 bg-white/[0.08] p-4">
+                <p className="text-sm font-black">{insight.label}</p>
+                <p className="mt-2 text-xs leading-5 text-white/68">{insight.detail}</p>
+                <p className="mt-3 text-[11px] font-black uppercase tracking-[0.18em] text-emerald-200">
+                  {insight.source}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="surface-card border border-white/70 p-6">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p className="text-sm font-black uppercase tracking-[0.24em] text-[#0f8f6f]">
+                Operasyon checklist
+              </p>
+              <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-slate-950">
+                Satis, saha, icerik ve guvenlik kapanislari.
+              </h2>
+            </div>
+            <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-black text-[#063326]">
+              Gunluk rutin
+            </span>
+          </div>
+          <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            {adminOpsChecklist.map((item, index) => (
+              <AdminPrefetchLink
+                key={item.label}
+                href={item.href}
+                className="group rounded-3xl border border-slate-200 bg-white/70 p-4 transition hover:border-emerald-200 hover:bg-emerald-50"
+              >
+                <span className="grid h-9 w-9 place-items-center rounded-2xl bg-emerald-100 text-sm font-black text-[#063326]">
+                  {index + 1}
+                </span>
+                <p className="mt-4 text-sm font-black text-slate-950">{item.label}</p>
+                <p className="mt-2 text-xs leading-5 text-slate-600">{item.detail}</p>
+                <span className="mt-4 inline-flex items-center gap-2 text-xs font-black text-[#063326]">
+                  Modulu ac
+                  <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
+                </span>
+              </AdminPrefetchLink>
+            ))}
           </div>
         </div>
       </section>

@@ -4,25 +4,25 @@ const chartColors = ["#063326", "#0f8f6f", "#7eecc9", "#f97316", "#ef4444", "#14
 
 const quoteStatusLabels: Record<string, string> = {
   new: "Yeni Talep",
-  reviewing: "İnceleniyor",
-  proposal_sent: "Teklif Gönderildi",
-  negotiation: "Müzakere",
-  won: "Kazandı",
+  reviewing: "Inceleniyor",
+  proposal_sent: "Teklif Gonderildi",
+  negotiation: "Muzakere",
+  won: "Kazandi",
   lost: "Kaybetti"
 };
 
 const orderStatusLabels: Record<string, string> = {
-  pending_payment: "Ödeme Bekliyor",
-  pending_confirmation: "Ödeme Alındı",
-  confirmed: "Onaylandı",
+  pending_payment: "Odeme Bekliyor",
+  pending_confirmation: "Odeme Alindi",
+  confirmed: "Onaylandi",
   shipped: "Kargoya Verildi",
   delivered: "Teslim Edildi",
-  cancelled: "İptal",
-  refunded: "İade",
-  failed: "Başarısız",
-  paid: "Ödendi",
-  fulfilled: "Tamamlandı",
-  payment_processing: "Ödeme İşleniyor",
+  cancelled: "Iptal",
+  refunded: "Iade",
+  failed: "Basarisiz",
+  paid: "Odendi",
+  fulfilled: "Tamamlandi",
+  payment_processing: "Odeme Isleniyor",
   draft: "Taslak"
 };
 
@@ -43,8 +43,8 @@ type DashboardChartsProps = {
 
 function ChartEmptyState() {
   return (
-    <div className="flex h-full min-h-48 items-center justify-center rounded-lg bg-slate-50 text-sm font-medium text-slate-500">
-      Henüz veri yok
+    <div className="flex h-full min-h-48 items-center justify-center rounded-3xl bg-white/70 text-sm font-bold text-slate-500">
+      Henuz veri yok
     </div>
   );
 }
@@ -78,18 +78,18 @@ function RevenueTrendChart({ data }: { data: DashboardChartsProps["revenueTrend"
     <div>
       <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-sm text-slate-500">Son değer</p>
-          <p className="mt-1 text-2xl font-semibold text-slate-950">
+          <p className="text-sm font-semibold text-slate-500">Son deger</p>
+          <p className="mt-1 text-2xl font-black tracking-[-0.04em] text-slate-950">
             {formatPriceTRY(latest?.total ?? 0)}
           </p>
         </div>
-        <p className="text-sm font-medium text-slate-500">
+        <p className="text-sm font-semibold text-slate-500">
           Maksimum {formatPriceTRY(maxValue)}
         </p>
       </div>
       <svg
         role="img"
-        aria-label="Aylık ciro trendi"
+        aria-label="Aylik ciro trendi"
         viewBox={`0 0 ${width} ${height}`}
         className="h-72 w-full overflow-visible"
       >
@@ -123,7 +123,7 @@ function RevenueTrendChart({ data }: { data: DashboardChartsProps["revenueTrend"
               y={height - 8}
               fill="#64748b"
               fontSize="14"
-              fontWeight="600"
+              fontWeight="700"
               textAnchor="middle"
             >
               {point.month}
@@ -159,8 +159,8 @@ function DistributionBars({
         return (
           <div key={item.status} className="space-y-2">
             <div className="flex items-center justify-between gap-3 text-sm">
-              <span className="font-medium text-slate-700">{formatStatus(item.status)}</span>
-              <span className="font-semibold text-slate-950">{item.total}</span>
+              <span className="font-bold text-slate-700">{formatStatus(item.status)}</span>
+              <span className="font-black text-slate-950">{item.total}</span>
             </div>
             <div className="h-3 overflow-hidden rounded-full bg-slate-100">
               <div
@@ -185,35 +185,44 @@ export function DashboardCharts({
 }: DashboardChartsProps) {
   return (
     <div className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-      <section className="surface-card border border-slate-200 bg-white/95 p-6">
+      <section className="surface-card border border-white/70 p-6">
         <div className="mb-6">
-          <h2 className="text-lg font-semibold text-slate-950">Aylık Ciro Trendi</h2>
-          <p className="mt-1 text-sm text-slate-600">Son 12 ay içindeki onaylı sipariş akışı</p>
+          <p className="text-sm font-black uppercase tracking-[0.24em] text-[#0f8f6f]">
+            Finans
+          </p>
+          <h2 className="mt-2 text-lg font-black text-slate-950">Aylik ciro trendi</h2>
+          <p className="mt-1 text-sm text-slate-600">Son 12 ay icindeki onayli siparis akisi</p>
         </div>
         <RevenueTrendChart data={revenueTrend} />
       </section>
 
       <div className="grid gap-6">
-        <section className="surface-card border border-slate-200 bg-white/95 p-6">
+        <section className="surface-card border border-white/70 p-6">
           <div className="mb-6">
-            <h2 className="text-lg font-semibold text-slate-950">Teklif Akışı</h2>
-            <p className="mt-1 text-sm text-slate-600">Durum bazlı teklif dağılımı</p>
+            <p className="text-sm font-black uppercase tracking-[0.24em] text-[#0f8f6f]">
+              CRM
+            </p>
+            <h2 className="mt-2 text-lg font-black text-slate-950">Teklif dagilimi</h2>
+            <p className="mt-1 text-sm text-slate-600">Durum bazli teklif akisi</p>
           </div>
           <DistributionBars
             data={quoteDistribution}
-            emptyLabel="Teklif dağılımı boş"
+            emptyLabel="Teklif dagilimi bos"
             formatStatus={(status) => quoteStatusLabels[status] ?? status}
           />
         </section>
 
-        <section className="surface-card border border-slate-200 bg-white/95 p-6">
+        <section className="surface-card border border-white/70 p-6">
           <div className="mb-6">
-            <h2 className="text-lg font-semibold text-slate-950">Sipariş Dağılımı</h2>
-            <p className="mt-1 text-sm text-slate-600">Anlık sipariş durum dağılımı</p>
+            <p className="text-sm font-black uppercase tracking-[0.24em] text-[#0f8f6f]">
+              Fulfillment
+            </p>
+            <h2 className="mt-2 text-lg font-black text-slate-950">Siparis dagilimi</h2>
+            <p className="mt-1 text-sm text-slate-600">Anlik siparis durum dagilimi</p>
           </div>
           <DistributionBars
             data={orderDistribution}
-            emptyLabel="Sipariş dağılımı boş"
+            emptyLabel="Siparis dagilimi bos"
             formatStatus={(status) => orderStatusLabels[status] ?? status}
           />
         </section>

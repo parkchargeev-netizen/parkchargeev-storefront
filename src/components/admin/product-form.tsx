@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import dynamic from "next/dynamic";
+import { Car, Plus, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { Controller, type Resolver, useFieldArray, useForm } from "react-hook-form";
@@ -141,6 +142,63 @@ function ExampleHint({ children }: { children: string }) {
   return <p className="mt-2 text-xs leading-5 text-slate-500">{children}</p>;
 }
 
+function cleanText(value: unknown) {
+  return String(value ?? "").trim();
+}
+
+function escapeHtmlText(value: string) {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function phaseLabel(value: string) {
+  if (value === "three_phase") {
+    return "trifaz";
+  }
+
+  if (value === "single_phase") {
+    return "monofaz";
+  }
+
+  return "altyapi";
+}
+
+function uniqueList(values: string[]) {
+  return Array.from(new Set(values.map((value) => value.trim()).filter(Boolean)));
+}
+
+function specKey(label: string) {
+  return label.trim().toLocaleLowerCase("tr-TR");
+}
+
+function normalizeVehicleBrand(value: string) {
+  return value.replace(/\s+/g, " ").trim();
+}
+
+function hasVehicleBrand(values: string[], nextValue: string) {
+  const normalizedNextValue = normalizeVehicleBrand(nextValue).toLocaleLowerCase("tr-TR");
+
+  return values.some(
+    (value) => normalizeVehicleBrand(value).toLocaleLowerCase("tr-TR") === normalizedNextValue
+  );
+}
+
+function mergeVehicleBrands(values: string[]) {
+  return values.reduce<string[]>((accumulator, value) => {
+    const normalizedValue = normalizeVehicleBrand(value);
+
+    if (normalizedValue && !hasVehicleBrand(accumulator, normalizedValue)) {
+      accumulator.push(normalizedValue);
+    }
+
+    return accumulator;
+  }, []);
+}
+
 export function ProductForm({
   mode,
   productId,
@@ -154,6 +212,7 @@ export function ProductForm({
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [uploadMessage, setUploadMessage] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [vehicleBrandInput, setVehicleBrandInput] = useState("");
 
   const mergedDefaults = useMemo<ProductFormValues>(
     () => ({
@@ -264,7 +323,89 @@ export function ProductForm({
   const selectedKeywords = watch("searchKeywords") ?? [];
   const currentName = watch("name");
   const currentSlug = watch("slug");
+  const shortDescriptionValue = watch("shortDescription") ?? "";
+  const descriptionValue = watch("description") ?? "";
+  const powerKwValue = watch("powerKw") ?? "";
+  const powerLabelValue = watch("powerLabel") ?? "";
+  const cableLengthValue = watch("cableLength") ?? "";
+  const chargeTypeValue = watch("chargeType") ?? "ac";
+  const connectorTypeValue = watch("connectorType") ?? "";
+  const phaseTypeValue = watch("phaseType") ?? "";
+  const ipClassValue = watch("ipClass") ?? "";
+  const hasWifiValue = Boolean(watch("hasWifi"));
+  const hasRfidValue = Boolean(watch("hasRfid"));
+  const has4gValue = Boolean(watch("has4g"));
+  const installRequiredValue = Boolean(watch("installRequired"));
+  const mediaValues = watch("media") ?? [];
+  const specValues = watch("specs") ?? [];
+  const variantValues = watch("variants") ?? [];
+  const seoTitleValue = watch("seoTitle") ?? "";
+  const seoDescriptionValue = watch("seoDescription") ?? "";
+  const aiSummaryValue = watch("aiSummary") ?? "";
   const detailContent = (watch("detailContent") ?? detailContentDefaults) as ProductDetailFormValues;
+  const smartFeatureLabels = uniqueList([
+    hasWifiValue ? "Wi-Fi" : "",
+    hasRfidValue ? "RFID" : "",
+    has4gValue ? "4G" : ""
+  ]);
+  const powerText = cleanText(powerLabelValue || (powerKwValue ? `${powerKwValue} kW` : ""));
+  const chargeText = cleanText(chargeTypeValue).toUpperCase();
+  const connectorText = cleanText(connectorTypeValue || "Type 2");
+  const phaseText = phaseLabel(phaseTypeValue);
+  const featureAuditItems = [
+    {
+      label: "Urun adi",
+      ok: cleanText(currentName).length > 2,
+      detail: "Baslik karar verme ve SEO icin net olmali."
+    },
+    {
+      label: "Kisa aciklama",
+      ok: cleanText(shortDescriptionValue).length >= 70,
+      detail: "Kullanim alani, guc, uyum ve kurulum bilgisi ozetlenmeli."
+    },
+    {
+      label: "Uzun aciklama",
+      ok: cleanText(descriptionValue).replace(/<[^>]+>/g, "").length >= 180,
+      detail: "Fayda, teknik detay, kurulum, teslimat ve guven bilgisi olmali."
+    },
+    {
+      label: "Guc + sarj tipi",
+      ok: Boolean(powerText && chargeText),
+      detail: "7.4/11/22 kW veya DC guc sinifi net olmali."
+    },
+    {
+      label: "Faz + konnektor",
+      ok: Boolean(connectorText && phaseTypeValue),
+      detail: "Type 2/CCS2 ve monofaz/trifaz bilgisi yazilmali."
+    },
+    {
+      label: "Akilli ozellikler",
+      ok: smartFeatureLabels.length > 0 || specValues.some((item) => /ocpp|yük|yuk|load|wifi|wi-fi|rfid/i.test(`${item.label} ${item.value}`)),
+      detail: "Wi-Fi, RFID, 4G, OCPP veya yuk dengeleme sinyali eklenmeli."
+    },
+    {
+      label: "Kurulum bilgisi",
+      ok: installRequiredValue || cleanText(descriptionValue).toLocaleLowerCase("tr-TR").includes("kurulum"),
+      detail: "Kesif, pano, faz, kablo hatti veya montaj notu olmali."
+    },
+    {
+      label: "Teknik tablo",
+      ok: specValues.filter((item) => cleanText(item.label) && cleanText(item.value)).length >= 6,
+      detail: "Guc, faz, konnektor, IP, akilli ozellik ve kapsam maddeleri olmali."
+    },
+    {
+      label: "Gorsel + alt text",
+      ok: mediaValues.some((item) => cleanText(item.url) && cleanText(item.altText)),
+      detail: "En az bir gorsel ve anlamli alt text girilmeli."
+    },
+    {
+      label: "SEO + AI",
+      ok: Boolean(cleanText(seoTitleValue) && cleanText(seoDescriptionValue) && cleanText(aiSummaryValue)),
+      detail: "Meta baslik, meta aciklama ve AI ozeti tamamlanmali."
+    }
+  ];
+  const readyFeatureCount = featureAuditItems.filter((item) => item.ok).length;
+  const featureReadinessPercent = Math.round((readyFeatureCount / featureAuditItems.length) * 100);
   const hasValidationErrors = isSubmitted && Object.keys(errors).length > 0;
   const categoryOptions =
     catalogOptions?.categories.length
@@ -273,6 +414,7 @@ export function ProductForm({
           label: category.name
         }))
       : productCategoryOptions;
+  const vehicleOptions = mergeVehicleBrands([...vehicleBrandOptions, ...selectedVehicles]);
 
   useEffect(() => {
     setIsHydrated(true);
@@ -295,6 +437,40 @@ export function ProductForm({
     });
   }
 
+  function addVehicleBrand() {
+    const nextVehicleBrand = normalizeVehicleBrand(vehicleBrandInput);
+
+    if (!nextVehicleBrand || nextVehicleBrand.length > 60) {
+      return;
+    }
+
+    if (hasVehicleBrand(selectedVehicles, nextVehicleBrand)) {
+      setVehicleBrandInput("");
+      return;
+    }
+
+    setValue("vehicleBrands", [...selectedVehicles, nextVehicleBrand], {
+      shouldDirty: true,
+      shouldValidate: true
+    });
+    setVehicleBrandInput("");
+  }
+
+  function removeVehicleBrand(vehicleBrand: string) {
+    const normalizedVehicleBrand = normalizeVehicleBrand(vehicleBrand).toLocaleLowerCase("tr-TR");
+
+    setValue(
+      "vehicleBrands",
+      selectedVehicles.filter(
+        (item) => normalizeVehicleBrand(item).toLocaleLowerCase("tr-TR") !== normalizedVehicleBrand
+      ),
+      {
+        shouldDirty: true,
+        shouldValidate: true
+      }
+    );
+  }
+
   function fillSlugFromName() {
     const nextSlug = slugify(currentSlug || currentName || "");
 
@@ -304,6 +480,200 @@ export function ProductForm({
         shouldValidate: true
       });
     }
+  }
+
+  function appendCoreSpecsFromFields() {
+    const existingSpecKeys = new Set(
+      (watch("specs") ?? [])
+        .filter((item) => cleanText(item.label))
+        .map((item) => specKey(item.label ?? ""))
+    );
+    const variantSummary = uniqueList(
+      (watch("variants") ?? [])
+        .map((variant) =>
+          [variant.powerLabel, variant.cableLength, variant.connectorType].filter(Boolean).join(" / ")
+        )
+        .filter(Boolean)
+    ).join(", ");
+    const smartSummary = smartFeatureLabels.length
+      ? smartFeatureLabels.join(", ")
+      : "Standart kontrol";
+    const candidateSpecs = [
+      {
+        groupName: "Teknik",
+        label: "Guc",
+        value: powerText
+      },
+      {
+        groupName: "Teknik",
+        label: "Sarj tipi",
+        value: chargeText
+      },
+      {
+        groupName: "Teknik",
+        label: "Faz",
+        value: phaseText
+      },
+      {
+        groupName: "Teknik",
+        label: "Konnektor",
+        value: connectorText
+      },
+      {
+        groupName: "Teknik",
+        label: "IP sinifi",
+        value: cleanText(ipClassValue)
+      },
+      {
+        groupName: "Akilli ozellik",
+        label: "Baglanti ve erisim",
+        value: smartSummary
+      },
+      {
+        groupName: "Kurulum",
+        label: "Kurulum gereksinimi",
+        value: installRequiredValue
+          ? "Kesif ve profesyonel kurulum onerilir"
+          : "Urun kargo ile teslim edilir; uygunluk destekle netlesir"
+      },
+      {
+        groupName: "Kurulum",
+        label: "Hizmet kapsami",
+        value: "81 il urun kargosu; ucretsiz kesif Sakarya; kurulum Sakarya + Kocaeli"
+      },
+      {
+        groupName: "Uyum",
+        label: "Arac uyumu",
+        value: selectedVehicles.length ? selectedVehicles.join(", ") : connectorText
+      },
+      {
+        groupName: "Varyant",
+        label: "Varyant ozeti",
+        value: variantSummary || cleanText(cableLengthValue)
+      },
+      {
+        groupName: "Ticari",
+        label: "Yonetim ozellikleri",
+        value: specValues.some((item) => /ocpp|yük|yuk|load/i.test(`${item.label} ${item.value}`))
+          ? ""
+          : "OCPP, yuk dengeleme veya RFID ihtiyaci varsa teklif asamasinda netlestirilir"
+      }
+    ];
+
+    candidateSpecs
+      .filter((item) => cleanText(item.value))
+      .filter((item) => !existingSpecKeys.has(specKey(item.label)))
+      .forEach((item) => specFields.append(item));
+  }
+
+  function buildProductCopyFromFeatures() {
+    const productName = cleanText(currentName) || "ParkChargeEV sarj cozumu";
+    const usageArea = selectedCategories.includes("aksesuar")
+      ? "aksesuar ihtiyaci"
+      : selectedCategories.includes("dc-hizli-sarj")
+        ? "ticari lokasyon ve hizli sarj yatirimi"
+        : selectedCategories.includes("is-yeri-tipi")
+          ? "isletme, ofis ve otopark kullanimi"
+          : "ev tipi AC sarj kullanimi";
+    const smartSummary = smartFeatureLabels.length
+      ? smartFeatureLabels.join(", ")
+      : "net teknik secim";
+    const vehicleSummary = selectedVehicles.length
+      ? selectedVehicles.join(", ")
+      : `${connectorText} uyumlu elektrikli araclar`;
+    const installSummary = installRequiredValue
+      ? "Kurulum oncesi pano, faz, kablo hatti ve koruma ekipmani kontrol edilerek ilerlenir."
+      : "Urun kargo ile teslim edilir; uyumluluk veya montaj sorulari destek ekibiyle netlestirilebilir.";
+    const primaryPower = powerText || `${chargeText} sarj`;
+    const shortDescription =
+      `${productName}, ${usageArea} icin ${primaryPower} guc sinifi, ${connectorText} konnektor, ${phaseText} altyapi ve ${smartSummary} ozelliklerini tek pakette sunar.`;
+    const descriptionParagraphs = [
+      `${productName}, ${usageArea} icin dogru cihaz, dogru altyapi ve guvenli kullanim odağiyla hazirlanmis bir ParkChargeEV cozumudur.`,
+      `Teknik tarafta ${primaryPower}, ${connectorText} konnektor, ${phaseText} faz yapisi${ipClassValue ? `, ${ipClassValue} koruma sinifi` : ""} ve ${smartSummary} bilgisi one cikar.`,
+      `Uyum tarafinda ${vehicleSummary} icin karar vermeyi kolaylastirir. ${installSummary}`,
+      "Urunler Turkiye genelinde 81 ile kargolanir. Ucretsiz kesif Sakarya icin, planli kurulum ise Sakarya ve Kocaeli icin organize edilir."
+    ];
+    const featureBullets = uniqueList([
+      primaryPower ? `${primaryPower} guc sinifi` : "",
+      connectorText ? `${connectorText} konnektor uyumu` : "",
+      phaseText ? `${phaseText} altyapi bilgisi` : "",
+      smartSummary ? `${smartSummary} ozellikleri` : "",
+      "81 il urun kargosu",
+      "Sakarya ucretsiz kesif",
+      "Sakarya + Kocaeli kurulum plani"
+    ]);
+    const descriptionHtml = [
+      ...descriptionParagraphs.map((paragraph) => `<p>${escapeHtmlText(paragraph)}</p>`),
+      `<ul>${featureBullets.map((item) => `<li>${escapeHtmlText(item)}</li>`).join("")}</ul>`
+    ].join("");
+    const seoTitle = `${productName} | ParkChargeEV`;
+    const seoDescription = shortDescription.slice(0, 310);
+    const aiSummary = `${productName}; ${primaryPower}, ${connectorText}, ${phaseText} ve kurulum/kargo kapsami net olan EV sarj cozumudur.`.slice(0, 178);
+
+    setValue("shortDescription", shortDescription.slice(0, 360), {
+      shouldDirty: true,
+      shouldValidate: true
+    });
+    setValue("description", descriptionHtml, { shouldDirty: true, shouldValidate: true });
+    setValue("seoTitle", seoTitle.slice(0, 255), { shouldDirty: true, shouldValidate: true });
+    setValue("seoDescription", seoDescription, { shouldDirty: true, shouldValidate: true });
+    setValue("aiSummary", aiSummary, { shouldDirty: true, shouldValidate: true });
+    setValue(
+      "detailContent.galleryFeatureLabels",
+      uniqueList([primaryPower, connectorText, phaseText, ...smartFeatureLabels, "81 il kargo"]),
+      { shouldDirty: true, shouldValidate: true }
+    );
+    setValue(
+      "detailContent.highlights",
+      uniqueList([
+        `${primaryPower} guc sinifi ile net secim`,
+        `${connectorText} uyumlu araclar icin pratik kullanim`,
+        installRequiredValue
+          ? "Kesif ve kurulum planiyla altyapi riski azalir"
+          : "Kargo ile hizli teslimata uygun urun akisi",
+        "ParkChargeEV destek ekibiyle karar ve kurulum sureci netlesir"
+      ]),
+      { shouldDirty: true, shouldValidate: true }
+    );
+    setValue(
+      "detailContent.purchaseBenefits",
+      uniqueList([
+        "Güvenli odeme ve siparis takibi",
+        "81 il urun kargosu",
+        "Sakarya icin ucretsiz kesif",
+        "Sakarya ve Kocaeli icin planli kurulum"
+      ]),
+      { shouldDirty: true, shouldValidate: true }
+    );
+    setValue(
+      "detailContent.decisionChecks",
+      uniqueList([
+        "Aracinizin konnektor ve AC/DC uyumunu kontrol edin.",
+        "Pano, faz ve kablo hatti durumunu kesif veya destekle netlestirin.",
+        "Ev, site veya isletme ihtiyacina gore guc sinifini secin."
+      ]),
+      { shouldDirty: true, shouldValidate: true }
+    );
+    setValue(
+      "detailContent.seoIntents",
+      uniqueList([
+        `${productName} fiyat`,
+        `${powerText || chargeText} sarj cihazi`,
+        `${connectorText} sarj cihazi`,
+        "elektrikli arac sarj cihazi kurulumu"
+      ]),
+      { shouldDirty: true, shouldValidate: true }
+    );
+    setValue(
+      "detailContent.useCases",
+      uniqueList([
+        usageArea,
+        "evde gece sarji",
+        "site ve apartman otoparki",
+        "isletme ve ofis otoparki"
+      ]),
+      { shouldDirty: true, shouldValidate: true }
+    );
   }
 
   async function uploadMediaFile(file: File, targetIndex?: number) {
@@ -450,6 +820,86 @@ export function ProductForm({
         disabled={!isHydrated || isSubmitting}
         className="space-y-8 disabled:cursor-wait disabled:opacity-75"
       >
+      <section className="surface-card scroll-mt-28 border border-emerald-100 bg-white/95 p-6">
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)] xl:items-start">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-emerald-700">
+              Urun icerik asistani
+            </p>
+            <h2 className="mt-2 text-2xl font-semibold text-slate-950">
+              Aciklama, teknik ozellik, SEO ve AI metni eksiksiz ilerlesin.
+            </h2>
+            <p className="mt-3 text-sm leading-6 text-slate-600">
+              Urun metninde guc, faz, konnektor, akilli ozellikler, kurulum, kargo, uyumlu
+              araclar, garanti/destek ve SEO sinyalleri birlikte gorunmeli. Eksik alanlari
+              kontrol edip tek tikla taslak metin uretebilirsiniz.
+            </p>
+            <div className="mt-5 rounded-3xl bg-[#063326] p-5 text-white">
+              <div className="flex items-end justify-between gap-4">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-white/60">
+                    Icerik hazirlik skoru
+                  </p>
+                  <p className="mt-2 text-4xl font-black tracking-[-0.04em]">
+                    %{featureReadinessPercent}
+                  </p>
+                </div>
+                <span className="rounded-full bg-white px-3 py-1 text-xs font-black text-[#063326]">
+                  {readyFeatureCount}/{featureAuditItems.length} tamam
+                </span>
+              </div>
+              <div className="mt-4 h-3 overflow-hidden rounded-full bg-white/15">
+                <span
+                  className="block h-full rounded-full bg-[#7eecc9]"
+                  style={{ width: `${featureReadinessPercent}%` }}
+                />
+              </div>
+            </div>
+            <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+              <button
+                type="button"
+                onClick={buildProductCopyFromFeatures}
+                className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+              >
+                Ozelliklerden metin olustur
+              </button>
+              <button
+                type="button"
+                onClick={appendCoreSpecsFromFields}
+                className="rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-3 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-100"
+              >
+                Eksik teknik ozellikleri ekle
+              </button>
+            </div>
+          </div>
+
+          <div className="grid gap-3 md:grid-cols-2">
+            {featureAuditItems.map((item) => (
+              <div
+                key={item.label}
+                className={`rounded-3xl border p-4 ${
+                  item.ok
+                    ? "border-emerald-200 bg-emerald-50/70"
+                    : "border-amber-200 bg-amber-50/70"
+                }`}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <p className="text-sm font-semibold text-slate-950">{item.label}</p>
+                  <span
+                    className={`rounded-full px-3 py-1 text-[11px] font-black ${
+                      item.ok ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"
+                    }`}
+                  >
+                    {item.ok ? "Hazir" : "Eksik"}
+                  </span>
+                </div>
+                <p className="mt-2 text-xs leading-5 text-slate-600">{item.detail}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section id="temel-bilgiler" className="surface-card scroll-mt-28 border border-slate-200 bg-white/95 p-6">
         <div className="mb-6">
           <h2 className="text-xl font-semibold text-slate-950">Temel Bilgiler</h2>
@@ -752,19 +1202,94 @@ export function ProductForm({
             </div>
           </div>
 
-          <div>
-            <p className="mb-3 text-sm font-semibold text-slate-800">Araç uyumluluğu</p>
-            <div className="space-y-2">
-              {vehicleBrandOptions.map((brand) => (
-                <label key={brand} className="flex items-center gap-3 rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-700">
-                  <input
-                    type="checkbox"
-                    checked={selectedVehicles.includes(brand)}
-                    onChange={() => toggleArrayValue("vehicleBrands", brand)}
-                  />
-                  <span>{brand}</span>
-                </label>
-              ))}
+          <div className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div className="flex items-start gap-3">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-emerald-50 text-[#063326]">
+                <Car className="h-5 w-5" aria-hidden />
+              </span>
+              <div>
+                <p className="text-sm font-black text-slate-900">Araç uyumluluğu</p>
+                <ExampleHint>
+                  Hazır markalardan seçin veya yeni araç/marka adı ekleyin. Seçili araçlar ürün detayında uyumluluk sinyali olarak kullanılır.
+                </ExampleHint>
+              </div>
+            </div>
+
+            <div className="mt-4 flex gap-2">
+              <input
+                type="text"
+                value={vehicleBrandInput}
+                maxLength={60}
+                onChange={(event) => setVehicleBrandInput(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    addVehicleBrand();
+                  }
+                }}
+                className="min-w-0 flex-1 rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+                placeholder="Örn. Mercedes-Benz, Volvo, Kia"
+              />
+              <button
+                type="button"
+                onClick={addVehicleBrand}
+                disabled={!normalizeVehicleBrand(vehicleBrandInput)}
+                className="inline-flex items-center gap-2 rounded-2xl bg-[#063326] px-4 py-3 text-sm font-black text-white transition hover:bg-[#0b4b39] disabled:cursor-not-allowed disabled:opacity-45"
+              >
+                <Plus className="h-4 w-4" aria-hidden />
+                Ekle
+              </button>
+            </div>
+
+            {selectedVehicles.length > 0 ? (
+              <div className="mt-4 flex flex-wrap gap-2">
+                {selectedVehicles.map((brand) => (
+                  <span
+                    key={brand}
+                    className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-black text-[#063326]"
+                  >
+                    {brand}
+                    <button
+                      type="button"
+                      onClick={() => removeVehicleBrand(brand)}
+                      className="rounded-full p-0.5 text-[#063326] transition hover:bg-white"
+                      aria-label={`${brand} uyumluluğunu kaldır`}
+                    >
+                      <X className="h-3.5 w-3.5" aria-hidden />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p className="mt-4 rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-3 text-xs font-semibold text-slate-500">
+                Henüz uyumlu araç eklenmedi.
+              </p>
+            )}
+
+            <div className="mt-4 grid gap-2 sm:grid-cols-2">
+              {vehicleOptions.map((brand) => {
+                const checked = hasVehicleBrand(selectedVehicles, brand);
+
+                return (
+                  <label
+                    key={brand}
+                    className={`flex items-center gap-3 rounded-2xl border px-4 py-3 text-sm font-semibold transition ${
+                      checked
+                        ? "border-emerald-200 bg-emerald-50 text-[#063326]"
+                        : "border-slate-200 bg-slate-50 text-slate-700 hover:border-slate-300"
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={() =>
+                        checked ? removeVehicleBrand(brand) : toggleArrayValue("vehicleBrands", brand)
+                      }
+                    />
+                    <span>{brand}</span>
+                  </label>
+                );
+              })}
             </div>
           </div>
         </div>

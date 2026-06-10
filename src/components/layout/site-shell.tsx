@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 
-import { ChargingClickEffect } from "@/components/layout/charging-click-effect";
 import { SiteAmbientBackground } from "@/components/layout/site-ambient-background";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
@@ -18,7 +17,6 @@ export function SiteShell({ children, navigation }: SiteShellProps) {
       <SiteAmbientBackground />
       <SiteHeader navigation={navigation?.primary} />
       <main className="site-page-transition relative z-10">{children}</main>
-      <ChargingClickEffect />
       <ScrollMotion />
       <SiteFooter
         navigation={

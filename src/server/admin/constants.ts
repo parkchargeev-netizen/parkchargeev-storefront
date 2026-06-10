@@ -1,9 +1,9 @@
 import type { AdminRole } from "@/server/auth/authorization";
 import type {
+  orderStatusEnum,
   productStatusEnum,
   quoteRequestSegmentEnum,
-  quoteRequestStatusEnum,
-  orderStatusEnum
+  quoteRequestStatusEnum
 } from "@/server/db/schema";
 
 export type ProductStatus = (typeof productStatusEnum.enumValues)[number];
@@ -18,12 +18,12 @@ export const adminNavigation: Array<{
 }> = [
   {
     href: "/admin",
-    label: "Gösterge Paneli",
+    label: "Gosterge Paneli",
     roles: ["superadmin", "sales", "operations", "technician", "editor"]
   },
   {
     href: "/admin/erisim",
-    label: "Erişim",
+    label: "Erisim",
     roles: ["superadmin", "sales", "operations", "technician", "editor"]
   },
   {
@@ -33,12 +33,12 @@ export const adminNavigation: Array<{
   },
   {
     href: "/admin/urunler",
-    label: "Ürünler",
+    label: "Urunler",
     roles: ["superadmin", "sales"]
   },
   {
     href: "/admin/siparisler",
-    label: "Siparişler",
+    label: "Siparisler",
     roles: ["superadmin", "sales"]
   },
   {
@@ -53,7 +53,7 @@ export const adminNavigation: Array<{
   },
   {
     href: "/admin/blog",
-    label: "İçerik",
+    label: "Icerik",
     roles: ["superadmin", "editor"]
   },
   {
@@ -73,31 +73,31 @@ export const adminNavigation: Array<{
   },
   {
     href: "/admin/adminler",
-    label: "Yöneticiler",
+    label: "Yoneticiler",
     roles: ["superadmin"]
   }
 ];
 
 export const adminRoleLabels: Record<AdminRole, string> = {
-  superadmin: "Süper Admin",
-  sales: "Satış",
+  superadmin: "Super Admin",
+  sales: "Satis",
   operations: "Operasyon",
   technician: "Saha Teknisyeni",
-  editor: "İçerik Editörü"
+  editor: "Icerik Editoru"
 };
 
 export const productCategoryOptions = [
   { slug: "ev-tipi", label: "Ev Tipi" },
-  { slug: "is-yeri-tipi", label: "İş Yeri Tipi" },
-  { slug: "dc-hizli-sarj", label: "DC Hızlı Şarj" },
+  { slug: "is-yeri-tipi", label: "Is Yeri Tipi" },
+  { slug: "dc-hizli-sarj", label: "DC Hizli Sarj" },
   { slug: "aksesuar", label: "Aksesuar" }
 ] as const;
 
 export const productTagOptions = [
-  { value: "best_seller", label: "Çok Satan" },
+  { value: "best_seller", label: "Cok Satan" },
   { value: "new", label: "Yeni" },
   { value: "corporate", label: "Kurumsal" },
-  { value: "discounted", label: "İndirimli" }
+  { value: "discounted", label: "Indirimli" }
 ] as const;
 
 export const vehicleBrandOptions = [
@@ -107,7 +107,7 @@ export const vehicleBrandOptions = [
   "Renault",
   "Hyundai",
   "BMW",
-  "Diğer"
+  "Diger"
 ] as const;
 
 export const productStatusOptions: Array<{
@@ -124,16 +124,16 @@ export const orderStatusOptions: Array<{
   label: string;
 }> = [
   { value: "pending_payment", label: "Beklemede" },
-  { value: "pending_confirmation", label: "Ödeme Alındı" },
-  { value: "confirmed", label: "Onaylandı" },
+  { value: "pending_confirmation", label: "Odeme Alindi" },
+  { value: "confirmed", label: "Onaylandi" },
   { value: "shipped", label: "Kargoya Verildi" },
   { value: "delivered", label: "Teslim Edildi" },
-  { value: "cancelled", label: "İptal" },
-  { value: "refunded", label: "İade" },
-  { value: "failed", label: "Başarısız" },
-  { value: "paid", label: "Ödendi (Eski)" },
-  { value: "fulfilled", label: "Tamamlandı" },
-  { value: "payment_processing", label: "Ödeme İşleniyor" },
+  { value: "cancelled", label: "Iptal" },
+  { value: "refunded", label: "Iade" },
+  { value: "failed", label: "Basarisiz" },
+  { value: "paid", label: "Odendi (Eski)" },
+  { value: "fulfilled", label: "Tamamlandi" },
+  { value: "payment_processing", label: "Odeme Isleniyor" },
   { value: "draft", label: "Taslak" }
 ];
 
@@ -142,10 +142,10 @@ export const quoteStatusOptions: Array<{
   label: string;
 }> = [
   { value: "new", label: "Yeni Talep" },
-  { value: "reviewing", label: "İnceleniyor" },
-  { value: "proposal_sent", label: "Teklif Gönderildi" },
-  { value: "negotiation", label: "Müzakere" },
-  { value: "won", label: "Kazandı" },
+  { value: "reviewing", label: "Inceleniyor" },
+  { value: "proposal_sent", label: "Teklif Gonderildi" },
+  { value: "negotiation", label: "Muzakere" },
+  { value: "won", label: "Kazandi" },
   { value: "lost", label: "Kaybetti" }
 ];
 
@@ -154,16 +154,16 @@ export const quoteSegmentOptions: Array<{
   label: string;
 }> = [
   { value: "site_apartment", label: "Site / Apartman" },
-  { value: "business", label: "İş Yeri" },
+  { value: "business", label: "Is Yeri" },
   { value: "fleet", label: "Filo" },
   { value: "individual", label: "Bireysel" }
 ];
 
 export const leadStatusOptions = [
   { value: "new", label: "Yeni" },
-  { value: "contacted", label: "İletişime Geçildi" },
+  { value: "contacted", label: "Iletisime Gecildi" },
   { value: "qualified", label: "Nitelikli" },
-  { value: "won", label: "Kazanıldı" },
+  { value: "won", label: "Kazanildi" },
   { value: "lost", label: "Kaybedildi" }
 ] as const;
 
