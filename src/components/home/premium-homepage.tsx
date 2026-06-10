@@ -289,23 +289,37 @@ function CoverageRouteSection() {
 function PowerChoiceSection() {
   return (
     <section className="premium-section premium-light-section">
-      <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
-        <SectionHeading
-          eyebrow="Güç seçimi"
-          title="Gücünüz, kullanım senaryonuza göre seçilsin."
-        />
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="power-choice-shell">
+          <div className="power-choice-copy">
+            <SectionHeading
+              eyebrow="Güç seçimi"
+              title="Gücünüz, kullanım senaryonuza göre seçilsin."
+            />
 
-        <div className="grid gap-3 md:grid-cols-2">
-          {powerChoices.map((choice) => (
-            <Link key={choice.power} href={choice.href} className="premium-power-card group">
-              <div className="flex items-center justify-between gap-4">
-                <IconBadge icon={choice.icon} className="h-12 w-12 bg-white text-primary shadow-sm" />
-                <p className="text-3xl font-black text-primary">{choice.power}</p>
-              </div>
-              <h3 className="mt-5 text-lg font-black text-on-surface">{choice.title}</h3>
-              <p className="mt-2 text-sm leading-6 text-on-surface-variant">{choice.body}</p>
-            </Link>
-          ))}
+            <div className="power-choice-note">
+              <span>Ev icin 7.4 / 11 kW</span>
+              <span>Site ve ofis icin 22 kW</span>
+              <span>Ticari lokasyon icin DC</span>
+            </div>
+          </div>
+
+          <div className="power-choice-grid">
+            {powerChoices.map((choice) => (
+              <Link key={choice.power} href={choice.href} className="premium-power-card group">
+                <div className="flex items-center justify-between gap-4">
+                  <IconBadge icon={choice.icon} className="h-12 w-12 bg-white text-primary shadow-sm" />
+                  <p className="premium-power-card__value">{choice.power}</p>
+                </div>
+                <h3 className="mt-5 text-lg font-black text-on-surface">{choice.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-on-surface-variant">{choice.body}</p>
+                <span className="premium-power-card__cta">
+                  Uygun urunleri gor
+                  <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" aria-hidden />
+                </span>
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     </section>
