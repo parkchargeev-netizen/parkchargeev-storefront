@@ -75,6 +75,77 @@ export function getProfileScore(snapshot: AccountSnapshot) {
   return Math.round((checks.filter(Boolean).length / checks.length) * 100);
 }
 
+export function getCustomerPanelStage(snapshot: AccountSnapshot) {
+  const openOrders = getOpenOrders(snapshot.recentOrders);
+  const activeQuote = snapshot.recentQuoteRequests.find((quote) =>
+    ["new", "reviewing", "proposal_sent", "negotiation"].includes(quote.status)
+  );
+  const activeService = snapshot.recentServiceLeads.find((lead) =>
+    ["new", "contacted", "qualified", "scheduled"].includes(lead.status)
+  );
+
+  if (openOrders.length > 0) {
+    return {
+      label: "Siparis takipte",
+      detail: `${openOrders[0].orderNumber} icin odeme, kargo veya onay akisini izleyin.`,
+      href: "#siparisler"
+    };
+  }
+
+  if (activeService) {
+    return {
+      label: "Saha sureci acik",
+      detail: `${activeService.city ?? "Saha"} talebiniz kesif, servis veya kurulum ekibinde gorunur.`,
+      href: "#destek"
+    };
+  }
+
+  if (activeQuote) {
+    return {
+      label: "Teklif sureci acik",
+      detail: `${activeQuote.segment ?? "Cozum"} talebiniz teklif masasında degerlendiriliyor.`,
+      href: "#destek"
+    };
+  }
+
+  if (getProfileScore(snapshot) < 100) {
+    return {
+      label: "Profil tamamlanmali",
+      detail: "Telefon ve kurulum adresi tamamlanirsa teklif ve saha planlama hizlanir.",
+      href: "#profil"
+    };
+  }
+
+  return {
+    label: "Yeni cozum secilebilir",
+    detail: "Araciniz veya otoparkiniz icin dogru cihazı urun seciciyle netlestirin.",
+    href: "/urun-secici"
+  };
+}
+
+export function getCustomerSegmentLabel(snapshot: AccountSnapshot) {
+  const quoteSegment = snapshot.recentQuoteRequests[0]?.segment?.toLowerCase();
+  const serviceProjectType = snapshot.recentServiceLeads[0]?.projectType?.toLowerCase();
+
+  if (quoteSegment?.includes("site") || serviceProjectType?.includes("apartman")) {
+    return "Site / apartman karar vericisi";
+  }
+
+  if (quoteSegment?.includes("kurumsal") || serviceProjectType?.includes("ofis")) {
+    return "KOBI / ofis kullanicisi";
+  }
+
+  if (quoteSegment?.includes("ticari") || serviceProjectType?.includes("dc")) {
+    return "Ticari lokasyon yatirimcisi";
+  }
+
+  if (snapshot.recentOrders.some((order) => order.items.some((item) => item.productName.toLowerCase().includes("kablo")))) {
+    return "Aksesuar alicisi";
+  }
+
+  return "Ev tipi AC sarj alicisi";
+}
+
 export function getActionItems(snapshot: AccountSnapshot) {
   const openOrders = getOpenOrders(snapshot.recentOrders);
   const actions = [];

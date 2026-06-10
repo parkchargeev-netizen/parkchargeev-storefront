@@ -21,12 +21,18 @@ import { AccountActionForms } from "@/components/customer/account-action-forms";
 import {
   type AccountSnapshot,
   getActionItems,
+  getCustomerPanelStage,
+  getCustomerSegmentLabel,
   getOpenOrders,
   getProfileScore
 } from "@/components/customer/account-view-model";
 import { CustomerLogoutButton } from "@/components/customer/customer-logout-button";
 import { OrdersSection } from "@/components/customer/orders-section";
 import { RequestsPanel } from "@/components/customer/requests-panel";
+import {
+  customerSelfServiceCards,
+  customerTrustTimeline
+} from "@/lib/panel-experience";
 import { serviceCoverageSummary } from "@/lib/service-coverage";
 
 export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
@@ -35,6 +41,8 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
   const openOrders = getOpenOrders(recentOrders);
   const profileScore = getProfileScore(snapshot);
   const actionItems = getActionItems(snapshot);
+  const currentStage = getCustomerPanelStage(snapshot);
+  const customerSegment = getCustomerSegmentLabel(snapshot);
   const openRequests =
     snapshot.recentQuoteRequests.filter((request) => request.status !== "lost").length +
     snapshot.recentServiceLeads.filter((lead) => !["won", "lost"].includes(lead.status)).length;
@@ -163,6 +171,67 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
           ))}
         </section>
 
+        <section className="grid gap-4 xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
+          <div className="surface-card bg-primary p-6 text-white lg:p-8">
+            <p className="text-sm font-semibold uppercase tracking-[0.28em] text-white/60">
+              Akilli Hesap Ozeti
+            </p>
+            <h2 className="mt-3 text-3xl font-black tracking-[-0.05em]">
+              {currentStage.label}
+            </h2>
+            <p className="mt-3 text-sm leading-6 text-white/72">{currentStage.detail}</p>
+            <div className="mt-5 grid gap-3 rounded-[24px] border border-white/10 bg-white/[0.08] p-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">
+                  Musteri segmenti
+                </p>
+                <p className="mt-2 text-lg font-black">{customerSegment}</p>
+              </div>
+              <Link
+                href={currentStage.href}
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-primary"
+              >
+                Siradaki adima git
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+
+          <div className="surface-card p-6 lg:p-8">
+            <div className="flex items-start gap-3">
+              <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-secondary-container text-secondary">
+                <ClipboardCheck className="h-5 w-5" />
+              </span>
+              <div>
+                <h2 className="text-2xl font-black tracking-[-0.04em] text-on-surface">
+                  Self servis kisa yollar
+                </h2>
+                <p className="mt-2 text-sm leading-6 text-on-surface-variant">
+                  Dogru cihaz, sehir kapsami, siparis ve servis ihtiyacina gore en hizli rotayi secin.
+                </p>
+              </div>
+            </div>
+            <div className="mt-6 grid gap-3 md:grid-cols-2">
+              {customerSelfServiceCards.map((item) => (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className="group rounded-[24px] bg-surface-container-low p-5 transition hover:bg-surface-container"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <span className="rounded-full bg-white px-3 py-1 text-xs font-black text-primary">
+                      {item.signal}
+                    </span>
+                    <ArrowRight className="h-5 w-5 text-primary transition group-hover:translate-x-0.5" />
+                  </div>
+                  <p className="mt-4 font-black text-on-surface">{item.label}</p>
+                  <p className="mt-2 text-sm leading-6 text-on-surface-variant">{item.detail}</p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <section className="surface-card p-6 lg:p-8">
           <div className="flex items-start gap-3">
             <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-secondary-container text-secondary">
@@ -199,6 +268,34 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
                 </a>
               );
             })}
+          </div>
+        </section>
+
+        <section className="surface-card p-6 lg:p-8">
+          <div className="flex items-start gap-3">
+            <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+              <ShieldCheck className="h-5 w-5" />
+            </span>
+            <div>
+              <h2 className="text-2xl font-black tracking-[-0.04em] text-on-surface">
+                Guvenli sarj yolculugu
+              </h2>
+              <p className="mt-2 text-sm leading-6 text-on-surface-variant">
+                Urun, kesif, kargo ve kurulum adimlari karismadan takip edilsin.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-6 grid gap-3 md:grid-cols-4">
+            {customerTrustTimeline.map((item, index) => (
+              <div key={item.label} className="rounded-[24px] bg-surface-container-low p-5">
+                <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-white text-sm font-black text-primary">
+                  {index + 1}
+                </span>
+                <p className="mt-4 font-black text-on-surface">{item.label}</p>
+                <p className="mt-2 text-sm leading-6 text-on-surface-variant">{item.detail}</p>
+              </div>
+            ))}
           </div>
         </section>
 
