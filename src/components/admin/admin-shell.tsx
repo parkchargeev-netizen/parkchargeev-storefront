@@ -59,18 +59,18 @@ const navigationIconMap = {
 } as const;
 
 const navigationDetailMap: Record<string, string> = {
-  "/admin": "Gunluk satis, saha ve guvenlik ozeti",
-  "/admin/erisim": "Rol bazli moduller ve yetki haritasi",
-  "/admin/site": "Menu, sayfa ve yayin akisi",
-  "/admin/urunler": "Urun, stok, fiyat ve SEO yonetimi",
-  "/admin/siparisler": "Odeme, kargo ve siparis karsilama",
-  "/admin/teklifler": "Ev, site, isletme ve ticari teklif akisi",
-  "/admin/saha": "Kesif, servis ve kurulum planlama",
-  "/admin/blog": "Blog, rehber ve icerik operasyonu",
-  "/admin/katalog": "Kategori ve marka sozlukleri",
-  "/admin/paytr": "Odeme hareketleri ve callback kayitlari",
-  "/admin/audit": "Islem kayitlari ve guvenlik izleme",
-  "/admin/adminler": "Admin kullanici ve oturum yonetimi"
+  "/admin": "Günlük satış, saha ve güvenlik özeti",
+  "/admin/erisim": "Rol bazlı modüller ve yetki haritası",
+  "/admin/site": "Menü, sayfa ve yayın akışı",
+  "/admin/urunler": "Ürün, stok, fiyat ve SEO yönetimi",
+  "/admin/siparisler": "Ödeme, kargo ve sipariş karşılama",
+  "/admin/teklifler": "Ev, site, işletme ve ticari teklif akışı",
+  "/admin/saha": "Keşif, servis ve kurulum planlama",
+  "/admin/blog": "Blog, rehber ve içerik operasyonu",
+  "/admin/katalog": "Kategori ve marka sözlükleri",
+  "/admin/paytr": "Ödeme hareketleri ve callback kayıtları",
+  "/admin/audit": "İşlem kayıtları ve güvenlik izleme",
+  "/admin/adminler": "Admin kullanıcı ve oturum yönetimi"
 };
 
 const moduleGroups = [
@@ -85,12 +85,12 @@ const moduleGroups = [
     icon: Boxes
   },
   {
-    label: "Icerik ve site",
+    label: "İçerik ve site",
     items: ["/admin/site", "/admin/blog"],
     icon: Globe2
   },
   {
-    label: "Guvenlik",
+    label: "Güvenlik",
     items: ["/admin/erisim", "/admin/audit", "/admin/adminler"],
     icon: ShieldCheck
   }
@@ -99,41 +99,41 @@ const moduleGroups = [
 const commandActionItems: Array<AdminCommandItem & { roles: AdminRole[]; requiresDatabase?: boolean }> = [
   {
     href: "/admin/urunler/yeni",
-    label: "Yeni urun ekle",
-    detail: "Fiyat, stok, varyant, SEO ve gorselleri tek akista gir",
-    group: "Hizli islem",
+    label: "Yeni ürün ekle",
+    detail: "Fiyat, stok, varyant, SEO ve görselleri tek akışta gir",
+    group: "Hızlı işlem",
     roles: ["superadmin", "sales"],
     requiresDatabase: true
   },
   {
     href: "/admin/blog/yeni",
-    label: "Yeni rehber yazisi",
-    detail: "SEO, AIEO ve musteri sorularina cevap veren icerik olustur",
-    group: "Hizli islem",
+    label: "Yeni rehber yazısı",
+    detail: "SEO, AIEO ve müşteri sorularına cevap veren içerik oluştur",
+    group: "Hızlı işlem",
     roles: ["superadmin", "editor"],
     requiresDatabase: true
   },
   {
     href: "/admin/teklifler",
-    label: "Teklif masasini ac",
-    detail: "Ev, site, KOBI ve ticari lokasyon taleplerini onceliklendir",
-    group: "Satis",
+    label: "Teklif masasını aç",
+    detail: "Ev, site, KOBİ ve ticari lokasyon taleplerini önceliklendir",
+    group: "Satış",
     roles: ["superadmin", "sales"],
     requiresDatabase: true
   },
   {
     href: "/admin/saha",
-    label: "Saha planini kontrol et",
-    detail: "Sakarya kesif, Sakarya + Kocaeli kurulum taleplerini yonet",
+    label: "Saha planını kontrol et",
+    detail: "Sakarya keşif, Sakarya + Kocaeli kurulum taleplerini yönet",
     group: "Operasyon",
     roles: ["superadmin", "operations", "technician"],
     requiresDatabase: true
   },
   {
     href: "/admin/adminler",
-    label: "Admin oturumlarini denetle",
-    detail: "Rol, aktif oturum ve guvenlik kayitlarini incele",
-    group: "Guvenlik",
+    label: "Admin oturumlarını denetle",
+    detail: "Rol, aktif oturum ve güvenlik kayıtlarını incele",
+    group: "Güvenlik",
     roles: ["superadmin"],
     requiresDatabase: true
   }
@@ -161,8 +161,8 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
     ...items.map((item) => ({
       href: item.href,
       label: item.label,
-      detail: navigationDetailMap[item.href] ?? "Admin modulu",
-      group: "Moduller"
+      detail: navigationDetailMap[item.href] ?? "Admin modülü",
+      group: "Modüller"
     })),
     ...commandActionItems
       .filter((item) => item.roles.includes(admin.role))
@@ -206,7 +206,7 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
                     </span>
                     <span className="inline-flex items-center gap-1.5 rounded-full bg-white/[0.14] px-3 py-1 text-xs font-semibold text-white">
                       <Database className="h-3.5 w-3.5" />
-                      {databaseEnabled ? "Canli veri" : "Yerel veri"}
+                      {databaseEnabled ? "Canlı veri" : "Yerel veri"}
                     </span>
                   </div>
                 </div>
@@ -230,9 +230,9 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
               <section className="surface-card border border-white/70 p-4">
                 <div className="flex items-center gap-2 px-2 text-xs font-black uppercase tracking-[0.22em] text-slate-500">
                   <Sparkles className="h-4 w-4" />
-                  Calisma Alani
+                  Çalışma Alanı
                 </div>
-                <nav className="mt-4 space-y-5" aria-label="Admin modulleri">
+                <nav className="mt-4 space-y-5" aria-label="Admin modülleri">
                   {moduleGroups.map((group) => {
                     const visibleGroupItems = group.items.flatMap((href) => {
                       const item = itemByHref.get(href);
@@ -275,20 +275,20 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
 
               <section className="surface-card border border-white/70 p-4">
                 <p className="text-xs font-black uppercase tracking-[0.22em] text-slate-500">
-                  Hizli panel
+                  Hızlı panel
                 </p>
                 <div className="mt-3 grid gap-2">
                   <AdminPrefetchLink
                     href="/admin/teklifler"
                     className="rounded-2xl bg-emerald-50 px-4 py-3 text-sm font-bold text-[#063326] transition hover:bg-emerald-100"
                   >
-                    Teklifleri onceliklendir
+                    Teklifleri önceliklendir
                   </AdminPrefetchLink>
                   <AdminPrefetchLink
                     href="/admin/saha"
                     className="rounded-2xl bg-slate-100 px-4 py-3 text-sm font-bold text-slate-800 transition hover:bg-slate-200"
                   >
-                    Saha planini ac
+                    Saha planını aç
                   </AdminPrefetchLink>
                   <AdminLogoutButton />
                 </div>
@@ -313,11 +313,11 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
                     {adminRoleLabels[admin.role]}
                   </span>
                   <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-700">
-                    {databaseEnabled ? "Canli veri" : "Yerel veri"}
+                    {databaseEnabled ? "Canlı veri" : "Yerel veri"}
                   </span>
                 </div>
               </div>
-              <nav className="mt-4 grid gap-2 sm:grid-cols-2" aria-label="Admin mobil modulleri">
+              <nav className="mt-4 grid gap-2 sm:grid-cols-2" aria-label="Admin mobil modülleri">
                 {mobileQuickItems.map((item) => {
                   const Icon =
                     navigationIconMap[item.href as keyof typeof navigationIconMap] ??
@@ -346,7 +346,7 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
                     Admin operasyonu
                   </p>
                   <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-slate-950">
-                    Satis, saha, icerik ve guvenlik tek ekranda.
+                    Satış, saha, içerik ve güvenlik tek ekranda.
                   </h2>
                 </div>
                 <AdminCommandMenu

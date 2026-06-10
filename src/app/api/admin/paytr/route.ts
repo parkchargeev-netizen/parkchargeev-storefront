@@ -32,9 +32,9 @@ export async function GET(request: Request) {
   if (query.format === "csv") {
     return csvResponse("paytr-transactions.csv", result.items, [
       { header: "Merchant OID", value: (item) => item.merchantOid },
-      { header: "Siparis", value: (item) => item.orderNumber },
+      { header: "Sipariş", value: (item) => item.orderNumber },
       { header: "Durum", value: (item) => item.status },
-      { header: "Odeme", value: (item) => item.paymentStatus },
+      { header: "Ödeme", value: (item) => item.paymentStatus },
       { header: "Tutar", value: (item) => item.paymentAmountKurus },
       { header: "Tarih", value: (item) => item.createdAt }
     ]);

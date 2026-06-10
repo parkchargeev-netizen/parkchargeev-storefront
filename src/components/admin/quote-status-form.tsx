@@ -76,7 +76,7 @@ export function QuoteStatusForm({
       router.refresh();
     }
     } catch {
-      setFeedback("Sunucuya ulasilamadi. Lutfen tekrar deneyin.");
+      setFeedback("Sunucuya ulaşılamadı. Lütfen tekrar deneyin.");
     }
   });
 

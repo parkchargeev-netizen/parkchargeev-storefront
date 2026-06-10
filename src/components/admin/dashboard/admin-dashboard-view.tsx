@@ -46,25 +46,25 @@ type AdminDashboardViewProps = {
 
 const orderStatusLabels: Record<string, string> = {
   draft: "Taslak",
-  pending_payment: "Odeme bekliyor",
-  payment_processing: "Odeme isleniyor",
+  pending_payment: "Ödeme bekliyor",
+  payment_processing: "Ödeme işleniyor",
   pending_confirmation: "Onay bekliyor",
-  paid: "Odendi",
-  confirmed: "Onaylandi",
+  paid: "Ödendi",
+  confirmed: "Onaylandı",
   shipped: "Kargoda",
   delivered: "Teslim edildi",
-  failed: "Basarisiz",
-  cancelled: "Iptal",
-  refunded: "Iade",
-  fulfilled: "Tamamlandi"
+  failed: "Başarısız",
+  cancelled: "İptal",
+  refunded: "İade",
+  fulfilled: "Tamamlandı"
 };
 
 const quoteStatusLabels: Record<string, string> = {
   new: "Yeni talep",
-  reviewing: "Inceleniyor",
-  proposal_sent: "Teklif gonderildi",
-  negotiation: "Muzakere",
-  won: "Kazanildi",
+  reviewing: "İnceleniyor",
+  proposal_sent: "Teklif gönderildi",
+  negotiation: "Müzakere",
+  won: "Kazanıldı",
   lost: "Kaybedildi"
 };
 
@@ -72,8 +72,8 @@ const leadStatusLabels: Record<string, string> = {
   new: "Yeni",
   contacted: "Iletisime gecildi",
   qualified: "Nitelikli",
-  scheduled: "Planlandi",
-  won: "Kazanildi",
+  scheduled: "Planlandı",
+  won: "Kazanıldı",
   lost: "Kaybedildi"
 };
 
@@ -87,16 +87,16 @@ const personaCards: Array<{
 }> = [
   {
     href: "/admin/teklifler",
-    label: "Ev tipi AC alicisi",
-    detail: "7.4/11 kW wallbox, arac uyumu ve Sakarya kesfiyle hizli kapanir.",
-    signal: "Hizli donusum",
+    label: "Ev tipi AC alıcısi",
+    detail: "7.4/11 kW wallbox, araç uyumu ve Sakarya kesfiyle hızlı kapanir.",
+    signal: "Hızlı donusum",
     tone: "success",
     icon: <Home className="h-5 w-5" />
   },
   {
     href: "/admin/saha",
     label: "Site / apartman",
-    detail: "RFID, adil kullanim ve yonetim sunumu teknik planla ilerler.",
+    detail: "RFID, adil kullanım ve yönetim sunumu teknik planla ilerler.",
     signal: "Toplu karar",
     tone: "info",
     icon: <Building2 className="h-5 w-5" />
@@ -104,7 +104,7 @@ const personaCards: Array<{
   {
     href: "/admin/teklifler",
     label: "KOBI / ofis",
-    detail: "22 kW AC, misafir deneyimi, servis ve fatura akisi birlikte sunulur.",
+    detail: "22 kW AC, misafir deneyimi, servis ve fatura akışı birlikte sunulur.",
     signal: "Kurumsal teklif",
     tone: "warning",
     icon: <Users className="h-5 w-5" />
@@ -112,7 +112,7 @@ const personaCards: Array<{
   {
     href: "/admin/saha",
     label: "Ticari lokasyon",
-    detail: "DC veya coklu AC saha icin enerji kapasitesi ve fizibilite notu gerekir.",
+    detail: "DC veya coklu AC saha için enerji kapasitesi ve fizibilite notu gerekir.",
     signal: "Fizibilite",
     tone: "danger",
     icon: <MapPin className="h-5 w-5" />
@@ -120,8 +120,8 @@ const personaCards: Array<{
   {
     href: "/admin/urunler",
     label: "Kablo / aksesuar",
-    detail: "Type 2 uyum, stok gorunurlugu ve hizli sepet donusumu takip edilir.",
-    signal: "Hizli satis",
+    detail: "Type 2 uyum, stok görünürlugu ve hızlı sepet donusumu takip edilir.",
+    signal: "Hızlı satis",
     tone: "neutral",
     icon: <Cable className="h-5 w-5" />
   }
@@ -136,43 +136,43 @@ const moduleCards: Array<{
 }> = [
   {
     href: "/admin/urunler",
-    label: "Urun merkezi",
-    detail: "Fiyat, stok, varyant, SEO, gorsel ve teknik ozellikleri yonet.",
+    label: "Ürün merkezi",
+    detail: "Fiyat, stok, varyant, SEO, görsel ve teknik özellikleri yönet.",
     icon: <Package className="h-5 w-5" />,
     roles: ["superadmin", "sales"]
   },
   {
     href: "/admin/siparisler",
-    label: "Siparis operasyonu",
-    detail: "Odeme, kargo, fatura, not ve teslimat adimlarini takip et.",
+    label: "Sipariş operasyonu",
+    detail: "Ödeme, kargo, fatura, not ve teslimat adımlarini takip et.",
     icon: <ShoppingCart className="h-5 w-5" />,
     roles: ["superadmin", "sales"]
   },
   {
     href: "/admin/teklifler",
     label: "Teklif CRM",
-    detail: "Bireysel, site, isletme ve filo taleplerini aksiyona cevir.",
+    detail: "Bireysel, site, işletme ve filo taleplerini aksiyona cevir.",
     icon: <FileText className="h-5 w-5" />,
     roles: ["superadmin", "sales"]
   },
   {
     href: "/admin/saha",
     label: "Saha planlama",
-    detail: "Kesif, kurulum, servis ve lokasyon kapsamlarini netlestir.",
+    detail: "Keşif, kurulum, servis ve lokasyon kapsamlarini netleştir.",
     icon: <Wrench className="h-5 w-5" />,
     roles: ["superadmin", "operations", "technician"]
   },
   {
     href: "/admin/blog",
-    label: "Icerik ve SEO",
-    detail: "Blog, rehber, arama niyeti ve satis destekli icerikleri yayinla.",
+    label: "İçerik ve SEO",
+    detail: "Blog, rehber, arama niyeti ve satis destekli içerikleri yayinla.",
     icon: <BookOpen className="h-5 w-5" />,
     roles: ["superadmin", "editor"]
   },
   {
     href: "/admin/paytr",
-    label: "Odeme merkezi",
-    detail: "PayTR kayitlari, callback ve odeme kontrolunu incele.",
+    label: "Ödeme merkezi",
+    detail: "PayTR kayıtları, callback ve ödeme kontrolunu incele.",
     icon: <CreditCard className="h-5 w-5" />,
     roles: ["superadmin", "sales"]
   }
@@ -181,22 +181,22 @@ const moduleCards: Array<{
 const adminWorkflowCards = [
   {
     label: "1. Bul",
-    detail: "Komut aramasiyla siparis, teklif, urun veya musteri kaydina hizli ulasin.",
+    detail: "Komut aramasıyla sipariş, teklif, ürün veya müşteri kaydına hızlı ulaşın.",
     icon: <Database className="h-5 w-5" />
   },
   {
     label: "2. Onceliklendir",
-    detail: "Bekleyen siparis, teklif ve saha taleplerini acik kuyruk kartlarindan secin.",
+    detail: "Bekleyen sipariş, teklif ve saha taleplerini açık kuyruk kartlarindan secin.",
     icon: <Target className="h-5 w-5" />
   },
   {
     label: "3. Guncelle",
-    detail: "Durum, not, stok, fiyat, kargo, teklif veya servis adimini tek kayitta guncelleyin.",
+    detail: "Durum, not, stok, fiyat, kargo, teklif veya servis adımini tek kayıtta güncelleyin.",
     icon: <CheckCircle2 className="h-5 w-5" />
   },
   {
     label: "4. Denetle",
-    detail: "PayTR, rol, audit ve oturum sinyalleriyle operasyon guvenini kontrol edin.",
+    detail: "PayTR, rol, audit ve oturum sinyalleriyle operasyon güvenini kontrol edin.",
     icon: <ShieldCheck className="h-5 w-5" />
   }
 ] as const;
@@ -212,64 +212,64 @@ const commerceAdminStandards: Array<{
   {
     href: "/admin/urunler",
     label: "Katalog kalitesi",
-    detail: "Baslik, fiyat, stok, varyant, medya, SEO, AI ve teknik ozellikler eksiksiz tutulur.",
-    proof: "Shopify + Woo urun standardi",
+    detail: "Baslik, fiyat, stok, varyant, medya, SEO, AI ve teknik özellikler eksiksiz tutulur.",
+    proof: "Shopify + Woo ürün standardı",
     icon: <Package className="h-5 w-5" />,
     roles: ["superadmin", "sales"]
   },
   {
     href: "/admin/siparisler",
-    label: "Siparis ve teslimat",
-    detail: "Odeme, onay, kargo, iade, not ve durum akisi tek operasyon ekranindan izlenir.",
-    proof: "Fulfillment akisi",
+    label: "Sipariş ve teslimat",
+    detail: "Ödeme, onay, kargo, iade, not ve durum akışı tek operasyon ekranından izlenir.",
+    proof: "Fulfillment akışı",
     icon: <ShoppingCart className="h-5 w-5" />,
     roles: ["superadmin", "sales", "operations"]
   },
   {
     href: "/admin/teklifler",
-    label: "Musteri ve segment",
-    detail: "Ev, site, KOBI ve ticari lokasyon talepleri persona bazli takip edilir.",
+    label: "Müşteri ve segment",
+    detail: "Ev, site, KOBI ve ticari lokasyon talepleri persona bazlı takip edilir.",
     proof: "CRM + segment",
     icon: <Users className="h-5 w-5" />,
     roles: ["superadmin", "sales"]
   },
   {
     href: "/admin/saha",
-    label: "Kesif ve kurulum",
-    detail: "Sakarya ucretsiz kesif, Sakarya + Kocaeli kurulum ve servis aksiyonlari ayrisir.",
+    label: "Keşif ve kurulum",
+    detail: "Sakarya ücretsiz keşif, Sakarya + Kocaeli kurulum ve servis aksiyonlari ayrisir.",
     proof: "Saha is emri",
     icon: <Wrench className="h-5 w-5" />,
     roles: ["superadmin", "operations", "technician"]
   },
   {
     href: "/admin/blog",
-    label: "Icerik ve pazarlama",
-    detail: "Blog, rehber, kampanya metni ve satis destekli aciklamalar zengin editorle uretilir.",
-    proof: "SEO + CRO icerik",
+    label: "İçerik ve pazarlama",
+    detail: "Blog, rehber, kampanya metni ve satis destekli açıklamalar zengin editorle uretilir.",
+    proof: "SEO + CRO içerik",
     icon: <BookOpen className="h-5 w-5" />,
     roles: ["superadmin", "editor", "sales"]
   },
   {
     href: "/admin/paytr",
-    label: "Odeme guveni",
-    detail: "PayTR kayitlari, odeme callback sinyalleri ve siparis kapanisi kontrol edilir.",
-    proof: "Odeme denetimi",
+    label: "Ödeme güveni",
+    detail: "PayTR kayıtları, ödeme callback sinyalleri ve sipariş kapanışı kontrol edilir.",
+    proof: "Ödeme denetimi",
     icon: <CreditCard className="h-5 w-5" />,
     roles: ["superadmin", "sales"]
   },
   {
     href: "/admin/katalog",
     label: "Toplu operasyon",
-    detail: "Katalog duzeni, kanal gorunurlugu ve yinelenen urun kontrolleri hizlanir.",
-    proof: "Bulk yonetim",
+    detail: "Katalog düzeni, kanal görünürlüğü ve yinelenen ürün kontrolleri hızlanır.",
+    proof: "Bulk yönetim",
     icon: <Database className="h-5 w-5" />,
     roles: ["superadmin", "sales", "editor"]
   },
   {
     href: "/admin/audit",
     label: "Rol ve denetim",
-    detail: "Rol bazli erisim, oturum, audit ve guvenlik kayitlari is surecine baglanir.",
-    proof: "Admin guvenligi",
+    detail: "Rol bazlı erisim, oturum, audit ve güvenlik kayıtları is sürecine baglanir.",
+    proof: "Admin güvenligi",
     icon: <ShieldCheck className="h-5 w-5" />,
     roles: ["superadmin"]
   }
@@ -411,10 +411,10 @@ export function AdminDashboardView({
   const queueCards = [
     {
       href: "/admin/siparisler?status=pending_confirmation",
-      label: "Siparis onayi",
+      label: "Sipariş onayi",
       value: snapshot.kpis.pendingOrders,
-      detail: "Odeme, stok, kargo ve fatura kontrolu bekleyen kayitlar.",
-      action: "Siparisleri ac",
+      detail: "Ödeme, stok, kargo ve fatura kontrolu bekleyen kayıtlar.",
+      action: "Siparişleri ac",
       icon: <ShoppingCart className="h-5 w-5" />,
       tone: snapshot.kpis.pendingOrders > 0 ? "warning" : "success",
       roles: ["superadmin", "sales"] as AdminRole[]
@@ -433,7 +433,7 @@ export function AdminDashboardView({
       href: "/admin/saha",
       label: "Saha planlama",
       value: snapshot.kpis.openServiceRequests,
-      detail: "Kesif, kurulum ve teknik servis ekibine aktarilacak isler.",
+      detail: "Keşif, kurulum ve teknik servis ekibine aktarilacak işler.",
       action: "Saha taleplerini ac",
       icon: <Wrench className="h-5 w-5" />,
       tone: snapshot.kpis.openServiceRequests > 0 ? "warning" : "success",
@@ -441,10 +441,10 @@ export function AdminDashboardView({
     },
     {
       href: role === "superadmin" ? "/admin/adminler" : "/admin/erisim",
-      label: "Guvenlik",
+      label: "Güvenlik",
       value: snapshot.security.activeSessions,
-      detail: "Aktif admin oturumlari, rol kapsami ve denetim kayitlari.",
-      action: role === "superadmin" ? "Oturumlari denetle" : "Erisim haritasi",
+      detail: "Aktif admin oturumları, rol kapsamı ve denetim kayıtları.",
+      action: role === "superadmin" ? "Oturumlari denetle" : "Erişim haritasi",
       icon: <ShieldCheck className="h-5 w-5" />,
       tone: snapshot.security.activeSessions > 1 ? "info" : "neutral",
       roles: ["superadmin", "sales", "operations", "technician", "editor"] as AdminRole[]
@@ -455,22 +455,22 @@ export function AdminDashboardView({
   const visibleCommerceStandards = commerceAdminStandards.filter((card) => canSee(card.roles));
   const todayActions = [
     {
-      label: "Odeme ve siparis onayi",
+      label: "Ödeme ve sipariş onayi",
       count: snapshot.kpis.pendingOrders,
       href: "/admin/siparisler?status=pending_confirmation",
-      detail: "Musteri bekletmeden odeme ve stok kontrolunu kapat."
+      detail: "Müşteri bekletmeden ödeme ve stok kontrolunu kapat."
     },
     {
       label: "Teklif donusu",
       count: snapshot.kpis.pendingQuotes,
       href: "/admin/teklifler",
-      detail: "Ev, site ve isletme taleplerinde hizli ilk temas kur."
+      detail: "Ev, site ve işletme taleplerinde hızlı ilk temas kur."
     },
     {
       label: "Saha takvimi",
       count: snapshot.kpis.openServiceRequests,
       href: "/admin/saha",
-      detail: "Sakarya kesif ve Sakarya + Kocaeli kurulum kapsamlarini ayir."
+      detail: "Sakarya keşif ve Sakarya + Kocaeli kurulum kapsamlarini ayir."
     }
   ].filter((action) => action.count > 0);
 
@@ -482,7 +482,7 @@ export function AdminDashboardView({
             Yerel yedek mod
           </p>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-700">
-            Veritabani baglantisi olmadiginda panel yerel yedek veriyle acilir. Canli operasyon icin
+            Veritabani baglantisi olmadiginda panel yerel yedek veriyle acilir. Canlı operasyon için
             Supabase ortam degiskenlerini kontrol edin.
           </p>
         </section>
@@ -495,22 +495,22 @@ export function AdminDashboardView({
               Admin operasyon merkezi
             </p>
             <h1 className="mt-3 max-w-4xl text-3xl font-black tracking-[-0.05em] text-slate-950 lg:text-5xl">
-              Satilabilir urun, dogru teklif ve saha aksiyonu tek masada.
+              Satılabilir ürün, doğru teklif ve saha aksiyonu tek masada.
             </h1>
             <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-600">
-              ParkChargeEV paneli; e-ticaret siparislerini, teklif CRM akisini, Sakarya/Kocaeli saha
-              planini, icerik operasyonunu ve guvenlik sinyallerini ayni karar ekraninda toplar.
+              ParkChargeEV paneli; e-ticaret siparişlerini, teklif CRM akışını, Sakarya/Kocaeli saha
+              planıni, içerik operasyonunu ve güvenlik sinyallerini ayni karar ekraninda toplar.
             </p>
             <div className="mt-6 grid gap-3 sm:grid-cols-3">
               <div className="rounded-3xl border border-slate-200 bg-white/70 p-4">
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">
-                  Acik kuyruk
+                  Açık kuyruk
                 </p>
                 <p className="mt-2 text-3xl font-black text-slate-950">{openQueueTotal}</p>
               </div>
               <div className="rounded-3xl border border-slate-200 bg-white/70 p-4">
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">
-                  7 gun yeni musteri
+                  7 gun yeni müşteri
                 </p>
                 <p className="mt-2 text-3xl font-black text-slate-950">
                   {snapshot.kpis.newCustomers}
@@ -557,7 +557,7 @@ export function AdminDashboardView({
                 href="/admin/siparisler"
                 className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-4 py-3 text-sm font-black text-[#063326]"
               >
-                Siparis performansi
+                Sipariş performansi
                 <ArrowRight className="h-4 w-4" />
               </AdminPrefetchLink>
             </div>
@@ -581,21 +581,21 @@ export function AdminDashboardView({
         <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-sm font-black uppercase tracking-[0.24em] text-[#0f8f6f]">
-              E-ticaret admin standardi
+              E-ticaret admin standardı
             </p>
             <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-slate-950">
               Panel, satisin butun arka ofisini tek akista toplar.
             </h2>
             <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">
-              Urun katalog kalitesi, siparis/fulfillment, musteri segmentleri, pazarlama icerigi,
-              odeme guveni ve rol denetimi ayni operasyon ritminde ilerler.
+              Ürün katalog kalitesi, sipariş/fulfillment, müşteri segmentleri, pazarlama içeriği,
+              ödeme güveni ve rol denetimi ayni operasyon ritminde ilerler.
             </p>
           </div>
           <AdminPrefetchLink
             href="/admin/urunler"
             className="rounded-2xl bg-[#063326] px-5 py-3 text-center text-sm font-black text-white transition hover:bg-[#0b4b39]"
           >
-            Urun merkezini ac
+            Ürün merkezini ac
           </AdminPrefetchLink>
         </div>
 
@@ -639,28 +639,28 @@ export function AdminDashboardView({
         <KpiCard
           label="Bugunku ciro"
           value={formatPriceTRY(snapshot.kpis.todayRevenue)}
-          detail="Bugun olusan onayli siparis toplami."
+          detail="Bugun olusan onaylı sipariş toplami."
           icon={<Zap className="h-5 w-5" />}
           tone="success"
         />
         <KpiCard
           label="Bu ayki ciro"
           value={formatPriceTRY(snapshot.kpis.monthRevenue)}
-          detail="Aylik hedef karsilastirmasi icin ana metrik."
+          detail="Aylik hedef karsilastirmasi için ana metrik."
           icon={<Gauge className="h-5 w-5" />}
           tone={targetTone}
         />
         <KpiCard
           label="Tamamlanan is"
           value={String(snapshot.kpis.completedInstallations)}
-          detail="Bu hafta teslim edilen veya tamamlanan kayitlar."
+          detail="Bu hafta teslim edilen veya tamamlanan kayıtlar."
           icon={<CheckCircle2 className="h-5 w-5" />}
           tone="success"
         />
         <KpiCard
           label="Aktif oturum"
           value={String(snapshot.security.activeSessions)}
-          detail="Admin oturumlari ve guvenlik izleme sinyali."
+          detail="Admin oturumları ve güvenlik izleme sinyali."
           icon={<LockKeyhole className="h-5 w-5" />}
           tone="info"
         />
@@ -692,7 +692,7 @@ export function AdminDashboardView({
                     label: "Kritik kuyruk yok",
                     count: 0,
                     href: "/admin",
-                    detail: "Yeni siparis, teklif veya saha talebi gelince bu alan otomatik dolacak."
+                    detail: "Yeni sipariş, teklif veya saha talebi gelince bu alan otomatik dolacak."
                   }
                 ]
             ).map((action) => (
@@ -723,7 +723,7 @@ export function AdminDashboardView({
             {[
               {
                 label: "Veri kaynagi",
-                status: databaseEnabled ? "Canli" : "Yerel",
+                status: databaseEnabled ? "Canlı" : "Yerel",
                 tone: databaseEnabled ? "success" : "warning",
                 icon: <Database className="h-4 w-4" />
               },
@@ -734,7 +734,7 @@ export function AdminDashboardView({
                 icon: <CreditCard className="h-4 w-4" />
               },
               {
-                label: "Rol bazli erisim",
+                label: "Rol bazlı erisim",
                 status: "Aktif",
                 tone: "success",
                 icon: <ShieldCheck className="h-4 w-4" />
@@ -767,7 +767,7 @@ export function AdminDashboardView({
               Persona satis rotalari
             </p>
             <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-slate-950">
-              Her musteri tipi dogru modula dussun.
+              Her müşteri tipi doğru modüle dussun.
             </h2>
           </div>
         </div>
@@ -798,7 +798,7 @@ export function AdminDashboardView({
             Modul kisayollari
           </p>
           <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-slate-950">
-            Admin panelde beklenen ana ozellikler.
+            Admin panelde beklenen ana özellikler.
           </h2>
           <div className="mt-5 grid gap-3 md:grid-cols-2">
             {visibleModules.map((item) => (
@@ -823,7 +823,7 @@ export function AdminDashboardView({
             Pazar playbook
           </p>
           <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-slate-950">
-            Satis ekibinin gunluk rehberi.
+            Satış ekibinin günlük rehberi.
           </h2>
           <div className="mt-5 grid gap-3">
             {adminRevenuePlays.map((play) => (
@@ -851,7 +851,7 @@ export function AdminDashboardView({
 
       <section className="grid gap-5 xl:grid-cols-3">
         <div className="surface-card border border-white/70 p-6">
-          <h2 className="text-lg font-black text-slate-950">Son 10 siparis</h2>
+          <h2 className="text-lg font-black text-slate-950">Son 10 sipariş</h2>
           <div className="mt-5 space-y-3">
             {snapshot.activity.recentOrders.length > 0 ? (
               snapshot.activity.recentOrders.map((order) => (
@@ -864,7 +864,7 @@ export function AdminDashboardView({
                     <div>
                       <p className="text-sm font-black text-slate-950">{order.orderNumber}</p>
                       <p className="mt-1 text-sm text-slate-600">
-                        {order.customerName || "Misafir musteri"}
+                        {order.customerName || "Misafir müşteri"}
                       </p>
                     </div>
                     <div className="text-right">
@@ -879,7 +879,7 @@ export function AdminDashboardView({
                 </AdminPrefetchLink>
               ))
             ) : (
-              <EmptyState label="Henuz siparis hareketi yok." />
+              <EmptyState label="Henuz sipariş hareketi yok." />
             )}
           </div>
         </div>
@@ -971,11 +971,11 @@ export function AdminDashboardView({
                 Operasyon checklist
               </p>
               <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-slate-950">
-                Satis, saha, icerik ve guvenlik kapanislari.
+                Satış, saha, içerik ve güvenlik kapanislari.
               </h2>
             </div>
             <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-black text-[#063326]">
-              Gunluk rutin
+              Günlük rutin
             </span>
           </div>
           <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">

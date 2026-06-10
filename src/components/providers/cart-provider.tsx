@@ -175,7 +175,7 @@ export function useCart() {
   const context = useContext(CartContext);
 
   if (!context) {
-    throw new Error("useCart sadece CartProvider icinde kullanilabilir.");
+    throw new Error("useCart sadece CartProvider içinde kullanılabilir.");
   }
 
   return context;

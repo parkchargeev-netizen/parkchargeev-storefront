@@ -22,7 +22,7 @@ export async function GET(_request: Request, { params }: OrderRouteProps) {
   const order = await getAdminOrderById(id);
 
   if (!order) {
-    return NextResponse.json({ ok: false, message: "Siparis bulunamadi." }, { status: 404 });
+    return NextResponse.json({ ok: false, message: "Sipariş bulunamadı." }, { status: 404 });
   }
 
   return NextResponse.json({ ok: true, order });
@@ -42,7 +42,7 @@ export async function PATCH(request: Request, { params }: OrderRouteProps) {
     const order = await updateAdminOrder(id, payload, authenticatedAdmin.session, requestMeta);
 
     if (!order) {
-      return NextResponse.json({ ok: false, message: "Siparis bulunamadi." }, { status: 404 });
+      return NextResponse.json({ ok: false, message: "Sipariş bulunamadı." }, { status: 404 });
     }
 
     return NextResponse.json({ ok: true, order });

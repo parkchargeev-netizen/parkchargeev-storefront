@@ -304,9 +304,9 @@ function PowerChoiceSection() {
             />
 
             <div className="power-choice-note">
-              <span>Ev icin 7.4 / 11 kW</span>
-              <span>Site ve ofis icin 22 kW</span>
-              <span>Ticari lokasyon icin DC</span>
+              <span>Ev için 7.4 / 11 kW</span>
+              <span>Site ve ofis için 22 kW</span>
+              <span>Ticari lokasyon için DC</span>
             </div>
           </div>
 

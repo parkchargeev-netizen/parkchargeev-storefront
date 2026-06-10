@@ -4,25 +4,25 @@ const chartColors = ["#063326", "#0f8f6f", "#7eecc9", "#f97316", "#ef4444", "#14
 
 const quoteStatusLabels: Record<string, string> = {
   new: "Yeni Talep",
-  reviewing: "Inceleniyor",
+  reviewing: "İnceleniyor",
   proposal_sent: "Teklif Gonderildi",
-  negotiation: "Muzakere",
+  negotiation: "Müzakere",
   won: "Kazandi",
   lost: "Kaybetti"
 };
 
 const orderStatusLabels: Record<string, string> = {
-  pending_payment: "Odeme Bekliyor",
-  pending_confirmation: "Odeme Alindi",
-  confirmed: "Onaylandi",
+  pending_payment: "Ödeme Bekliyor",
+  pending_confirmation: "Ödeme Alindi",
+  confirmed: "Onaylandı",
   shipped: "Kargoya Verildi",
   delivered: "Teslim Edildi",
-  cancelled: "Iptal",
-  refunded: "Iade",
-  failed: "Basarisiz",
-  paid: "Odendi",
-  fulfilled: "Tamamlandi",
-  payment_processing: "Odeme Isleniyor",
+  cancelled: "İptal",
+  refunded: "İade",
+  failed: "Başarısız",
+  paid: "Ödendi",
+  fulfilled: "Tamamlandı",
+  payment_processing: "Ödeme Isleniyor",
   draft: "Taslak"
 };
 
@@ -78,7 +78,7 @@ function RevenueTrendChart({ data }: { data: DashboardChartsProps["revenueTrend"
     <div>
       <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-sm font-semibold text-slate-500">Son deger</p>
+          <p className="text-sm font-semibold text-slate-500">Son değer</p>
           <p className="mt-1 text-2xl font-black tracking-[-0.04em] text-slate-950">
             {formatPriceTRY(latest?.total ?? 0)}
           </p>
@@ -191,7 +191,7 @@ export function DashboardCharts({
             Finans
           </p>
           <h2 className="mt-2 text-lg font-black text-slate-950">Aylik ciro trendi</h2>
-          <p className="mt-1 text-sm text-slate-600">Son 12 ay icindeki onayli siparis akisi</p>
+          <p className="mt-1 text-sm text-slate-600">Son 12 ay içindeki onaylı sipariş akışı</p>
         </div>
         <RevenueTrendChart data={revenueTrend} />
       </section>
@@ -202,12 +202,12 @@ export function DashboardCharts({
             <p className="text-sm font-black uppercase tracking-[0.24em] text-[#0f8f6f]">
               CRM
             </p>
-            <h2 className="mt-2 text-lg font-black text-slate-950">Teklif dagilimi</h2>
-            <p className="mt-1 text-sm text-slate-600">Durum bazli teklif akisi</p>
+            <h2 className="mt-2 text-lg font-black text-slate-950">Teklif dağılımı</h2>
+            <p className="mt-1 text-sm text-slate-600">Durum bazlı teklif akışı</p>
           </div>
           <DistributionBars
             data={quoteDistribution}
-            emptyLabel="Teklif dagilimi bos"
+            emptyLabel="Teklif dağılımı boş"
             formatStatus={(status) => quoteStatusLabels[status] ?? status}
           />
         </section>
@@ -217,12 +217,12 @@ export function DashboardCharts({
             <p className="text-sm font-black uppercase tracking-[0.24em] text-[#0f8f6f]">
               Fulfillment
             </p>
-            <h2 className="mt-2 text-lg font-black text-slate-950">Siparis dagilimi</h2>
-            <p className="mt-1 text-sm text-slate-600">Anlik siparis durum dagilimi</p>
+            <h2 className="mt-2 text-lg font-black text-slate-950">Sipariş dağılımı</h2>
+            <p className="mt-1 text-sm text-slate-600">Anlık sipariş durum dağılımı</p>
           </div>
           <DistributionBars
             data={orderDistribution}
-            emptyLabel="Siparis dagilimi bos"
+            emptyLabel="Sipariş dağılımı boş"
             formatStatus={(status) => orderStatusLabels[status] ?? status}
           />
         </section>

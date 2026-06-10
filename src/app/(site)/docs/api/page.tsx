@@ -9,8 +9,8 @@ export default function ApiDocsPage() {
           ParkChargeEV servis dokumani
         </h1>
         <p className="mt-5 max-w-3xl text-base leading-8 text-on-surface-variant">
-          Bu dokuman, AI agent ve arama motoru odakli servis kesfini desteklemek icin
-          yayinlanir. Faz 1 kapsaminda saglik, admin oturum ve katalog kesif endpoint&apos;leri
+          Bu dokuman, AI agent ve arama motoru odakli servis kesfini desteklemek için
+          yayınlanır. Faz 1 kapsamında sağlık, admin oturum ve katalog keşif endpoint&apos;leri
           burada referanslanir.
         </p>
 

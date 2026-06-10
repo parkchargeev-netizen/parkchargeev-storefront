@@ -822,7 +822,7 @@ function createSeedOrders(products: FallbackProductRecord[]): FallbackOrderRecor
           adminName: salesAdmin.fullName,
           fromStatus: "confirmed",
           toStatus: "fulfilled",
-          note: "Proje kapanisi sisteme islendi.",
+          note: "Proje kapanışı sisteme işlendi.",
           createdAt: isoDaysAgo(34, 14)
         }
       ],

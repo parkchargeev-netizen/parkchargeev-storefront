@@ -10,50 +10,50 @@ export type PanelActionCard = {
 
 export const marketPanelInsights = [
   {
-    label: "Siparis ve fulfillment netligi",
+    label: "Sipariş ve fulfillment netligi",
     detail:
-      "E-ticaret panellerinde siparis durumu, odeme, stok ve kargo aksiyonu tek bakista gorunur olunca operasyon hizi artar.",
+      "E-ticaret panellerinde sipariş durumu, ödeme, stok ve kargo aksiyonu tek bakista görünür olunca operasyon hızı artar.",
     source: "Shopify/modern e-ticaret panel deseni"
   },
   {
-    label: "EV icin teknik guven",
+    label: "EV için teknik güven",
     detail:
-      "OCPP, akilli sarj, yuk dengeleme ve kurulum gereksinimi gibi sinyaller karar vericinin risk algisini dusurur.",
+      "OCPP, akıllı şarj, yük dengeleme ve kurulum gereksinimi gibi sinyaller karar veriçinin risk algisini dusurur.",
     source: "Open Charge Alliance OCPP ekosistemi"
   },
   {
     label: "Self servis takip",
     detail:
-      "Musteri panelinde siparis, kesif, kurulum, adres ve destek akisi ayrilinca tekrar arama ve WhatsApp yogunlugu azalir.",
+      "Müşteri panelinde sipariş, keşif, kurulum, adres ve destek akışı ayrılınca tekrar arama ve WhatsApp yoğunluğu azalır.",
     source: "E-ticaret hesap merkezi UX deseni"
   }
 ] as const;
 
 export const adminRevenuePlays: PanelActionCard[] = [
   {
-    label: "Ev tipi AC alicisi",
-    detail: "7.4/11 kW wallbox, arac uyumu ve Sakarya ucretsiz kesif talebi hizli kapanir.",
-    signal: "Hizli teklif",
+    label: "Ev tipi AC alıcısi",
+    detail: "7.4/11 kW wallbox, araç uyumu ve Sakarya ücretsiz keşif talebi hızlı kapanir.",
+    signal: "Hızlı teklif",
     href: "/admin/teklifler",
     tone: "success"
   },
   {
     label: "Site / apartman karari",
-    detail: "RFID, adil kullanim, kablo hatti ve yonetim sunumu teknik raporla ilerler.",
-    signal: "Yonetim paketi",
+    detail: "RFID, adil kullanım, kablo hattı ve yönetim sunumu teknik raporla ilerler.",
+    signal: "Yönetim paketi",
     href: "/admin/saha",
     tone: "info"
   },
   {
     label: "KOBI ve ofis otoparki",
-    detail: "22 kW AC, misafir/filo deneyimi, fatura ve servis plani birlikte sunulur.",
+    detail: "22 kW AC, misafir/filo deneyimi, fatura ve servis planı birlikte sunulur.",
     signal: "Kurumsal teklif",
     href: "/admin/teklifler",
     tone: "warning"
   },
   {
     label: "Ticari lokasyon yatirimcisi",
-    detail: "DC veya coklu AC saha icin trafo, enerji kapasitesi ve ROI on fizibilitesi istenir.",
+    detail: "DC veya coklu AC saha için trafo, enerji kapasitesi ve ROI on fizibilitesi istenir.",
     signal: "Fizibilite",
     href: "/admin/saha",
     tone: "danger"
@@ -62,52 +62,52 @@ export const adminRevenuePlays: PanelActionCard[] = [
 
 export const adminOpsChecklist = [
   {
-    label: "Siparis karşilama",
-    detail: "Odeme, stok, fatura, kargo ve kurulum upsell notlarini tek sirada kontrol et.",
+    label: "Sipariş karşılama",
+    detail: "Ödeme, stok, fatura, kargo ve kurulum upsell notlarını tek sırada kontrol et.",
     href: "/admin/siparisler"
   },
   {
-    label: "Kesif planlama",
-    detail: "Ucretsiz kesif yalnizca Sakarya; kurulum Sakarya ve Kocaeli olacak sekilde etiketle.",
+    label: "Keşif planlama",
+    detail: "Ücretsiz keşif yalnızca Sakarya; kurulum Sakarya ve Kocaeli olacak şekilde etiketle.",
     href: "/admin/saha"
   },
   {
-    label: "Icerik ve SEO",
-    detail: "11 kW vs 22 kW, apartman kurulumu ve Type 2 uyum rehberlerini guncel tut.",
+    label: "İçerik ve SEO",
+    detail: "11 kW vs 22 kW, apartman kurulumu ve Type 2 uyum rehberlerini güncel tut.",
     href: "/admin/blog"
   },
   {
-    label: "Guvenlik ve denetim",
-    detail: "Admin oturumlari, audit loglari ve rol yetkilerini gunluk kontrol et.",
+    label: "Güvenlik ve denetim",
+    detail: "Admin oturumları, audit logları ve rol yetkilerini günlük kontrol et.",
     href: "/admin/audit"
   }
 ] as const;
 
 export const customerSelfServiceCards: PanelActionCard[] = [
   {
-    label: "Dogru cihazi bul",
-    detail: "Arac, kullanim alani, faz ve gunluk ihtiyaca gore en uygun wallbox secilir.",
-    signal: "Urun secici",
+    label: "Dogru cihazı bul",
+    detail: "Araç, kullanım alanı, faz ve günlük ihtiyaca göre en uygun wallbox secilir.",
+    signal: "Ürün secici",
     href: "/urun-secici",
     tone: "success"
   },
   {
-    label: "Kesif uygunlugunu kontrol et",
-    detail: "Sakarya icin ucretsiz kesif, Sakarya ve Kocaeli icin kurulum plani gorunur.",
-    signal: "Sehir kapsami",
-    href: "/iletisim?reason=Ucretsiz%20kesif%20talebi",
+    label: "Keşif uygunluğunu kontrol et",
+    detail: "Sakarya için ucretsiz keşif, Sakarya ve Kocaeli için kurulum planı görünür.",
+    signal: "Sehir kapsamı",
+    href: "/iletisim?reason=%C3%9Ccretsiz%20ke%C5%9Fif%20talebi",
     tone: "info"
   },
   {
-    label: "Siparis ve kargoyu izle",
-    detail: "81 ile urun kargosu, odeme ve kargo bilgisi ayni hesap merkezinde takip edilir.",
+    label: "Sipariş ve kargoyu izle",
+    detail: "81 ile ürün kargosu, ödeme ve kargo bilgisi aynı hesap merkezinde takip edilir.",
     signal: "81 il kargo",
     href: "#siparisler",
     tone: "neutral"
   },
   {
-    label: "Servis kaydi ac",
-    detail: "Kurulum sonrasi garanti, bakim ve teknik destek talepleri tek panelde toplanir.",
+    label: "Servis kaydı ac",
+    detail: "Kurulum sonrası garanti, bakım ve teknik destek talepleri tek panelde toplanır.",
     signal: "Destek",
     href: "#destek",
     tone: "warning"
@@ -116,16 +116,16 @@ export const customerSelfServiceCards: PanelActionCard[] = [
 
 export const customerTrustTimeline = [
   {
-    label: "1. Uygunluk",
-    detail: "Arac, konnektor, guc ve kurulum alani netlesir."
+    label: "1. Uygünlük",
+    detail: "Araç, konnektör, güç ve kurulum alanı netleşir."
   },
   {
     label: "2. Teklif / sepet",
-    detail: "Urun, aksesuar ve kurulum ihtiyaci birlikte secilir."
+    detail: "Ürün, aksesuar ve kurulum ihtiyacı birlikte secilir."
   },
   {
-    label: "3. Kargo / kesif",
-    detail: "Urun 81 ile kargolanir; Sakarya kesif kaydi planlanir."
+    label: "3. Kargo / keşif",
+    detail: "Ürün 81 ile kargolanır; Sakarya keşif kaydı planlanır."
   },
   {
     label: "4. Kurulum / destek",

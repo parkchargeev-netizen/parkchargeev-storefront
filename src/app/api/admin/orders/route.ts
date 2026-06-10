@@ -27,11 +27,11 @@ export async function GET(request: Request) {
 
   if (query.format === "csv") {
     return csvResponse("orders.csv", result.items, [
-      { header: "Siparis", value: (item) => item.orderNumber },
-      { header: "Musteri", value: (item) => item.customerName },
+      { header: "Sipariş", value: (item) => item.orderNumber },
+      { header: "Müşteri", value: (item) => item.customerName },
       { header: "E-posta", value: (item) => item.customerEmail },
       { header: "Durum", value: (item) => item.status },
-      { header: "Odeme", value: (item) => item.paymentStatus },
+      { header: "Ödeme", value: (item) => item.paymentStatus },
       { header: "Toplam", value: (item) => item.totalKurus },
       { header: "Tarih", value: (item) => item.createdAt }
     ]);

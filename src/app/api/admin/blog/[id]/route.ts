@@ -36,7 +36,7 @@ export async function GET(_request: Request, { params }: BlogPostRouteProps) {
   const post = await getAdminBlogPostById(id);
 
   if (!post) {
-    return NextResponse.json({ ok: false, message: "Icerik bulunamadi." }, { status: 404 });
+    return NextResponse.json({ ok: false, message: "İçerik bulunamadı." }, { status: 404 });
   }
 
   return NextResponse.json({ ok: true, post });
@@ -59,7 +59,7 @@ export async function PATCH(request: Request, { params }: BlogPostRouteProps) {
     const post = await upsertAdminBlogPost(payload, authenticatedAdmin.session, requestMeta);
 
     if (!post) {
-      return NextResponse.json({ ok: false, message: "Icerik bulunamadi." }, { status: 404 });
+      return NextResponse.json({ ok: false, message: "İçerik bulunamadı." }, { status: 404 });
     }
 
     return NextResponse.json({ ok: true, post });

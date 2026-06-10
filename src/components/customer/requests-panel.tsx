@@ -10,11 +10,11 @@ const requestStatusLabels: Record<string, string> = {
   new: "Yeni",
   contacted: "Iletisime gecildi",
   qualified: "Nitelikli",
-  scheduled: "Planlandi",
-  reviewing: "Inceleniyor",
-  proposal_sent: "Teklif gonderildi",
-  negotiation: "Muzakere",
-  won: "Kazanildi",
+  scheduled: "Planlandı",
+  reviewing: "İnceleniyor",
+  proposal_sent: "Teklif gönderildi",
+  negotiation: "Müzakere",
+  won: "Kazanıldı",
   lost: "Kaybedildi"
 };
 
@@ -30,7 +30,7 @@ export function RequestsPanel({ snapshot }: { snapshot: AccountSnapshot }) {
     ...snapshot.recentServiceLeads.map((lead) => ({
       id: lead.id,
       title: lead.leadType,
-      detail: [lead.city, lead.district].filter(Boolean).join(" / ") || lead.projectType || "Servis kaydi",
+      detail: [lead.city, lead.district].filter(Boolean).join(" / ") || lead.projectType || "Servis kaydı",
       status: lead.status,
       date: lead.createdAt
     }))
@@ -48,18 +48,18 @@ export function RequestsPanel({ snapshot }: { snapshot: AccountSnapshot }) {
               Teklif ve servis
             </p>
             <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-on-surface">
-              Kesif, kurulum ve destek talepleri
+              Keşif, kurulum ve destek talepleri
             </h2>
             <p className="mt-2 text-sm leading-6 text-on-surface-variant">
-              Talep durumlari, lokasyon ve son hareket tarihi tek listede gorunur.
+              Talep durumlari, lokasyon ve son hareket tarihi tek listede görünür.
             </p>
           </div>
         </div>
         <Link
-          href={`/iletisim?konu=${encodeURIComponent("Teknik servis ve bakim")}`}
+          href={`/iletisim?konu=${encodeURIComponent("Teknik servis ve bakım")}`}
           className="inline-flex items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-black text-white"
         >
-          Yeni talep olustur
+          Yeni talep oluştur
           <ArrowRight className="h-4 w-4" />
         </Link>
       </div>
@@ -84,8 +84,8 @@ export function RequestsPanel({ snapshot }: { snapshot: AccountSnapshot }) {
           ))
         ) : (
           <div className="rounded-[24px] bg-surface-container-low p-5 text-sm leading-6 text-on-surface-variant">
-            Acik teklif veya servis kaydi yok. Yeni kesif, bakim veya kurulum ihtiyaci icin hizli
-            talep olusturabilirsiniz.
+            Açık teklif veya servis kaydı yok. Yeni keşif, bakım veya kurulum ihtiyacı için hızlı
+            talep oluşturabilirsiniz.
           </div>
         )}
       </div>

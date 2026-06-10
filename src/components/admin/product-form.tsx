@@ -124,8 +124,8 @@ const productFormSections = [
   { id: "varyantlar", label: "Varyantlar" },
   { id: "katalog", label: "Katalog" },
   { id: "teknik", label: "Teknik" },
-  { id: "gorseller", label: "Gorseller" },
-  { id: "ozellikler", label: "Ozellikler" },
+  { id: "görseller", label: "Görseller" },
+  { id: "özellikler", label: "Özellikler" },
   { id: "detay", label: "Detay" },
   { id: "seo", label: "SEO" },
   { id: "iliskiler", label: "Iliskiler" }
@@ -164,7 +164,7 @@ function phaseLabel(value: string) {
     return "monofaz";
   }
 
-  return "altyapi";
+  return "altyapı";
 }
 
 function uniqueList(values: string[]) {
@@ -354,54 +354,54 @@ export function ProductForm({
   const phaseText = phaseLabel(phaseTypeValue);
   const featureAuditItems = [
     {
-      label: "Urun adi",
+      label: "Ürün adi",
       ok: cleanText(currentName).length > 2,
-      detail: "Baslik karar verme ve SEO icin net olmali."
+      detail: "Baslik karar verme ve SEO için net olmali."
     },
     {
-      label: "Kisa aciklama",
+      label: "Kisa açıklama",
       ok: cleanText(shortDescriptionValue).length >= 70,
-      detail: "Kullanim alani, guc, uyum ve kurulum bilgisi ozetlenmeli."
+      detail: "Kullanım alanı, güç, uyum ve kurulum bilgisi özetlenmeli."
     },
     {
-      label: "Uzun aciklama",
+      label: "Uzun açıklama",
       ok: cleanText(descriptionValue).replace(/<[^>]+>/g, "").length >= 180,
-      detail: "Fayda, teknik detay, kurulum, teslimat ve guven bilgisi olmali."
+      detail: "Fayda, teknik detay, kurulum, teslimat ve güven bilgisi olmali."
     },
     {
-      label: "Guc + sarj tipi",
+      label: "Güç + şarj tipi",
       ok: Boolean(powerText && chargeText),
-      detail: "7.4/11/22 kW veya DC guc sinifi net olmali."
+      detail: "7.4/11/22 kW veya DC güç sinifi net olmali."
     },
     {
-      label: "Faz + konnektor",
+      label: "Faz + konnektör",
       ok: Boolean(connectorText && phaseTypeValue),
       detail: "Type 2/CCS2 ve monofaz/trifaz bilgisi yazilmali."
     },
     {
-      label: "Akilli ozellikler",
-      ok: smartFeatureLabels.length > 0 || specValues.some((item) => /ocpp|yük|yuk|load|wifi|wi-fi|rfid/i.test(`${item.label} ${item.value}`)),
-      detail: "Wi-Fi, RFID, 4G, OCPP veya yuk dengeleme sinyali eklenmeli."
+      label: "Akıllı özellikler",
+      ok: smartFeatureLabels.length > 0 || specValues.some((item) => /ocpp|yük|yük|load|wifi|wi-fi|rfid/i.test(`${item.label} ${item.value}`)),
+      detail: "Wi-Fi, RFID, 4G, OCPP veya yük dengeleme sinyali eklenmeli."
     },
     {
       label: "Kurulum bilgisi",
       ok: installRequiredValue || cleanText(descriptionValue).toLocaleLowerCase("tr-TR").includes("kurulum"),
-      detail: "Kesif, pano, faz, kablo hatti veya montaj notu olmali."
+      detail: "Keşif, pano, faz, kablo hattı veya montaj notu olmali."
     },
     {
       label: "Teknik tablo",
       ok: specValues.filter((item) => cleanText(item.label) && cleanText(item.value)).length >= 6,
-      detail: "Guc, faz, konnektor, IP, akilli ozellik ve kapsam maddeleri olmali."
+      detail: "Güç, faz, konnektör, IP, akıllı özellik ve kapsam maddeleri olmali."
     },
     {
-      label: "Gorsel + alt text",
+      label: "Görsel + alt text",
       ok: mediaValues.some((item) => cleanText(item.url) && cleanText(item.altText)),
-      detail: "En az bir gorsel ve anlamli alt text girilmeli."
+      detail: "En az bir görsel ve anlamli alt text girilmeli."
     },
     {
       label: "SEO + AI",
       ok: Boolean(cleanText(seoTitleValue) && cleanText(seoDescriptionValue) && cleanText(aiSummaryValue)),
-      detail: "Meta baslik, meta aciklama ve AI ozeti tamamlanmali."
+      detail: "Meta başlık, meta açıklama ve AI özeti tamamlanmalı."
     }
   ];
   const readyFeatureCount = featureAuditItems.filter((item) => item.ok).length;
@@ -501,12 +501,12 @@ export function ProductForm({
     const candidateSpecs = [
       {
         groupName: "Teknik",
-        label: "Guc",
+        label: "Güç",
         value: powerText
       },
       {
         groupName: "Teknik",
-        label: "Sarj tipi",
+        label: "Şarj tipi",
         value: chargeText
       },
       {
@@ -525,7 +525,7 @@ export function ProductForm({
         value: cleanText(ipClassValue)
       },
       {
-        groupName: "Akilli ozellik",
+        groupName: "Akıllı özellik",
         label: "Baglanti ve erisim",
         value: smartSummary
       },
@@ -533,17 +533,17 @@ export function ProductForm({
         groupName: "Kurulum",
         label: "Kurulum gereksinimi",
         value: installRequiredValue
-          ? "Kesif ve profesyonel kurulum onerilir"
-          : "Urun kargo ile teslim edilir; uygunluk destekle netlesir"
+          ? "Keşif ve profesyonel kurulum onerilir"
+          : "Ürün kargo ile teslim edilir; uygünlük destekle netleşir"
       },
       {
         groupName: "Kurulum",
-        label: "Hizmet kapsami",
-        value: "81 il urun kargosu; ucretsiz kesif Sakarya; kurulum Sakarya + Kocaeli"
+        label: "Hizmet kapsamı",
+        value: "81 il ürün kargosu; ücretsiz keşif Sakarya; kurulum Sakarya + Kocaeli"
       },
       {
         groupName: "Uyum",
-        label: "Arac uyumu",
+        label: "Araç uyumu",
         value: selectedVehicles.length ? selectedVehicles.join(", ") : connectorText
       },
       {
@@ -553,10 +553,10 @@ export function ProductForm({
       },
       {
         groupName: "Ticari",
-        label: "Yonetim ozellikleri",
-        value: specValues.some((item) => /ocpp|yük|yuk|load/i.test(`${item.label} ${item.value}`))
+        label: "Yönetim özellikleri",
+        value: specValues.some((item) => /ocpp|yük|yük|load/i.test(`${item.label} ${item.value}`))
           ? ""
-          : "OCPP, yuk dengeleme veya RFID ihtiyaci varsa teklif asamasinda netlestirilir"
+          : "OCPP, yük dengeleme veya RFID ihtiyacı varsa teklif asamasinda netleştirilir"
       }
     ];
 
@@ -567,40 +567,40 @@ export function ProductForm({
   }
 
   function buildProductCopyFromFeatures() {
-    const productName = cleanText(currentName) || "ParkChargeEV sarj cozumu";
+    const productName = cleanText(currentName) || "ParkChargeEV şarj çözümu";
     const usageArea = selectedCategories.includes("aksesuar")
-      ? "aksesuar ihtiyaci"
+      ? "aksesuar ihtiyacı"
       : selectedCategories.includes("dc-hizli-sarj")
-        ? "ticari lokasyon ve hizli sarj yatirimi"
+        ? "ticari lokasyon ve hızlı şarj yatirimi"
         : selectedCategories.includes("is-yeri-tipi")
-          ? "isletme, ofis ve otopark kullanimi"
-          : "ev tipi AC sarj kullanimi";
+          ? "işletme, ofis ve otopark kullanımi"
+          : "ev tipi AC şarj kullanımi";
     const smartSummary = smartFeatureLabels.length
       ? smartFeatureLabels.join(", ")
       : "net teknik secim";
     const vehicleSummary = selectedVehicles.length
       ? selectedVehicles.join(", ")
-      : `${connectorText} uyumlu elektrikli araclar`;
+      : `${connectorText} uyumlu elektrikli araçlar`;
     const installSummary = installRequiredValue
-      ? "Kurulum oncesi pano, faz, kablo hatti ve koruma ekipmani kontrol edilerek ilerlenir."
-      : "Urun kargo ile teslim edilir; uyumluluk veya montaj sorulari destek ekibiyle netlestirilebilir.";
-    const primaryPower = powerText || `${chargeText} sarj`;
+      ? "Kurulum oncesi pano, faz, kablo hattı ve koruma ekipmani kontrol edilerek ilerlenir."
+      : "Ürün kargo ile teslim edilir; uyumluluk veya montaj sorulari destek ekibiyle netleştirilebilir.";
+    const primaryPower = powerText || `${chargeText} şarj`;
     const shortDescription =
-      `${productName}, ${usageArea} icin ${primaryPower} guc sinifi, ${connectorText} konnektor, ${phaseText} altyapi ve ${smartSummary} ozelliklerini tek pakette sunar.`;
+      `${productName}, ${usageArea} için ${primaryPower} güç sinifi, ${connectorText} konnektör, ${phaseText} altyapı ve ${smartSummary} özelliklerini tek pakette sunar.`;
     const descriptionParagraphs = [
-      `${productName}, ${usageArea} icin dogru cihaz, dogru altyapi ve guvenli kullanim odağiyla hazirlanmis bir ParkChargeEV cozumudur.`,
-      `Teknik tarafta ${primaryPower}, ${connectorText} konnektor, ${phaseText} faz yapisi${ipClassValue ? `, ${ipClassValue} koruma sinifi` : ""} ve ${smartSummary} bilgisi one cikar.`,
-      `Uyum tarafinda ${vehicleSummary} icin karar vermeyi kolaylastirir. ${installSummary}`,
-      "Urunler Turkiye genelinde 81 ile kargolanir. Ucretsiz kesif Sakarya icin, planli kurulum ise Sakarya ve Kocaeli icin organize edilir."
+      `${productName}, ${usageArea} için doğru cihaz, doğru altyapı ve güvenli kullanım odağıyla hazırlanmış bir ParkChargeEV çözümüdür.`,
+      `Teknik tarafta ${primaryPower}, ${connectorText} konnektör, ${phaseText} faz yapisi${ipClassValue ? `, ${ipClassValue} koruma sinifi` : ""} ve ${smartSummary} bilgisi one cikar.`,
+      `Uyum tarafinda ${vehicleSummary} için karar vermeyi kolaylastirir. ${installSummary}`,
+      "Ürünler Türkiye genelinde 81 ile kargolanır. Ücretsiz keşif Sakarya için, planlı kurulum ise Sakarya ve Kocaeli için organize edilir."
     ];
     const featureBullets = uniqueList([
-      primaryPower ? `${primaryPower} guc sinifi` : "",
-      connectorText ? `${connectorText} konnektor uyumu` : "",
-      phaseText ? `${phaseText} altyapi bilgisi` : "",
-      smartSummary ? `${smartSummary} ozellikleri` : "",
-      "81 il urun kargosu",
-      "Sakarya ucretsiz kesif",
-      "Sakarya + Kocaeli kurulum plani"
+      primaryPower ? `${primaryPower} güç sinifi` : "",
+      connectorText ? `${connectorText} konnektör uyumu` : "",
+      phaseText ? `${phaseText} altyapı bilgisi` : "",
+      smartSummary ? `${smartSummary} özellikleri` : "",
+      "81 il ürün kargosu",
+      "Sakarya ücretsiz keşif",
+      "Sakarya + Kocaeli kurulum planı"
     ]);
     const descriptionHtml = [
       ...descriptionParagraphs.map((paragraph) => `<p>${escapeHtmlText(paragraph)}</p>`),
@@ -608,7 +608,7 @@ export function ProductForm({
     ].join("");
     const seoTitle = `${productName} | ParkChargeEV`;
     const seoDescription = shortDescription.slice(0, 310);
-    const aiSummary = `${productName}; ${primaryPower}, ${connectorText}, ${phaseText} ve kurulum/kargo kapsami net olan EV sarj cozumudur.`.slice(0, 178);
+    const aiSummary = `${productName}; ${primaryPower}, ${connectorText}, ${phaseText} ve kurulum/kargo kapsamı net olan EV şarj çözümüdür.`.slice(0, 178);
 
     setValue("shortDescription", shortDescription.slice(0, 360), {
       shouldDirty: true,
@@ -626,31 +626,31 @@ export function ProductForm({
     setValue(
       "detailContent.highlights",
       uniqueList([
-        `${primaryPower} guc sinifi ile net secim`,
-        `${connectorText} uyumlu araclar icin pratik kullanim`,
+        `${primaryPower} güç sinifi ile net secim`,
+        `${connectorText} uyumlu araçlar için pratik kullanım`,
         installRequiredValue
-          ? "Kesif ve kurulum planiyla altyapi riski azalir"
-          : "Kargo ile hizli teslimata uygun urun akisi",
-        "ParkChargeEV destek ekibiyle karar ve kurulum sureci netlesir"
+          ? "Keşif ve kurulum planıyla altyapı riski azalir"
+          : "Kargo ile hızlı teslimata uygun ürün akışı",
+        "ParkChargeEV destek ekibiyle karar ve kurulum süreci netleşir"
       ]),
       { shouldDirty: true, shouldValidate: true }
     );
     setValue(
       "detailContent.purchaseBenefits",
       uniqueList([
-        "Güvenli odeme ve siparis takibi",
-        "81 il urun kargosu",
-        "Sakarya icin ucretsiz kesif",
-        "Sakarya ve Kocaeli icin planli kurulum"
+        "Güvenli ödeme ve sipariş takibi",
+        "81 il ürün kargosu",
+        "Sakarya için ucretsiz keşif",
+        "Sakarya ve Kocaeli için planlı kurulum"
       ]),
       { shouldDirty: true, shouldValidate: true }
     );
     setValue(
       "detailContent.decisionChecks",
       uniqueList([
-        "Aracinizin konnektor ve AC/DC uyumunu kontrol edin.",
-        "Pano, faz ve kablo hatti durumunu kesif veya destekle netlestirin.",
-        "Ev, site veya isletme ihtiyacina gore guc sinifini secin."
+        "Araçinizin konnektör ve AC/DC uyumunu kontrol edin.",
+        "Pano, faz ve kablo hattı durumunu keşif veya destekle netleştirin.",
+        "Ev, site veya işletme ihtiyacına göre güç sinifini secin."
       ]),
       { shouldDirty: true, shouldValidate: true }
     );
@@ -658,9 +658,9 @@ export function ProductForm({
       "detailContent.seoIntents",
       uniqueList([
         `${productName} fiyat`,
-        `${powerText || chargeText} sarj cihazi`,
-        `${connectorText} sarj cihazi`,
-        "elektrikli arac sarj cihazi kurulumu"
+        `${powerText || chargeText} şarj cihazı`,
+        `${connectorText} şarj cihazı`,
+        "elektrikli araç şarj cihazı kurulumu"
       ]),
       { shouldDirty: true, shouldValidate: true }
     );
@@ -668,9 +668,9 @@ export function ProductForm({
       "detailContent.useCases",
       uniqueList([
         usageArea,
-        "evde gece sarji",
+        "evde gece şarji",
         "site ve apartman otoparki",
-        "isletme ve ofis otoparki"
+        "işletme ve ofis otoparki"
       ]),
       { shouldDirty: true, shouldValidate: true }
     );
@@ -694,7 +694,7 @@ export function ProductForm({
       }))) as { ok: boolean; url?: string; message?: string };
 
       if (!response.ok || !data.ok || !data.url) {
-        setUploadMessage(data.message ?? "Gorsel yuklenemedi.");
+        setUploadMessage(data.message ?? "Görsel yüklenemedi.");
         return;
       }
 
@@ -703,14 +703,14 @@ export function ProductForm({
       } else {
         mediaFields.append({
           url: data.url,
-          altText: watch("name") || "Urun gorseli",
+          altText: watch("name") || "Ürün görseli",
           isPrimary: mediaFields.fields.length === 0
         });
       }
 
-      setUploadMessage("Gorsel yuklendi.");
+      setUploadMessage("Görsel yüklendi.");
     } catch {
-      setUploadMessage("Gorsel yuklenirken sunucuya ulasilamadi.");
+      setUploadMessage("Görsel yüklenirken sunucuya ulaşılamadı.");
     } finally {
       setIsUploading(false);
     }
@@ -770,11 +770,11 @@ export function ProductForm({
               .map((issue) => issue.message)
               .join(" ")}`
           : "";
-        setErrorMessage(`${data.message ?? "Kayit islemi basarisiz."}${issueText}`);
+        setErrorMessage(`${data.message ?? "Kayit işlemi başarısız."}${issueText}`);
         return;
       }
 
-      setSuccessMessage(mode === "create" ? "Urun olusturuldu." : "Urun guncellendi.");
+      setSuccessMessage(mode === "create" ? "Ürün oluşturuldu." : "Ürün güncellendi.");
 
       if (mode === "create" && data.product?.id) {
         router.push(`/admin/urunler/${data.product.id}`);
@@ -782,7 +782,7 @@ export function ProductForm({
         router.refresh();
       }
     } catch {
-      setErrorMessage("Sunucuya ulasilamadi. Lutfen tekrar deneyin.");
+      setErrorMessage("Sunucuya ulaşılamadı. Lütfen tekrar deneyin.");
     }
   });
 
@@ -793,7 +793,7 @@ export function ProductForm({
           <div>
             <p className="text-sm font-semibold text-slate-950">Form bolumleri</p>
             <p className="text-xs text-slate-500">
-              {hasValidationErrors ? "Eksik alanlar var; bolumlerden hizlica kontrol edin." : "Urun kaydinda hizli gezinme."}
+              {hasValidationErrors ? "Eksik alanlar var; bolumlerden hızlıca kontrol edin." : "Ürün kaydında hızlı gezinme."}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -824,21 +824,21 @@ export function ProductForm({
         <div className="grid gap-6 xl:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)] xl:items-start">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.22em] text-emerald-700">
-              Urun icerik asistani
+              Ürün içerik asistani
             </p>
             <h2 className="mt-2 text-2xl font-semibold text-slate-950">
-              Aciklama, teknik ozellik, SEO ve AI metni eksiksiz ilerlesin.
+              Açıklama, teknik özellik, SEO ve AI metni eksiksiz ilerlesin.
             </h2>
             <p className="mt-3 text-sm leading-6 text-slate-600">
-              Urun metninde guc, faz, konnektor, akilli ozellikler, kurulum, kargo, uyumlu
-              araclar, garanti/destek ve SEO sinyalleri birlikte gorunmeli. Eksik alanlari
+              Ürün metninde güç, faz, konnektör, akıllı özellikler, kurulum, kargo, uyumlu
+              araçlar, garanti/destek ve SEO sinyalleri birlikte gorunmeli. Eksik alanlari
               kontrol edip tek tikla taslak metin uretebilirsiniz.
             </p>
             <div className="mt-5 rounded-3xl bg-[#063326] p-5 text-white">
               <div className="flex items-end justify-between gap-4">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.22em] text-white/76">
-                    Icerik hazirlik skoru
+                    İçerik hazırlik skoru
                   </p>
                   <p className="mt-2 text-4xl font-black tracking-[-0.04em]">
                     %{featureReadinessPercent}
@@ -861,14 +861,14 @@ export function ProductForm({
                 onClick={buildProductCopyFromFeatures}
                 className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
               >
-                Ozelliklerden metin olustur
+                Özelliklerden metin oluştur
               </button>
               <button
                 type="button"
                 onClick={appendCoreSpecsFromFields}
                 className="rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-3 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-100"
               >
-                Eksik teknik ozellikleri ekle
+                Eksik teknik özellikleri ekle
               </button>
             </div>
           </div>
@@ -1336,7 +1336,7 @@ export function ProductForm({
         </div>
       </section>
 
-      <section id="gorseller" className="surface-card scroll-mt-28 border border-slate-200 bg-white/95 p-6">
+      <section id="görseller" className="surface-card scroll-mt-28 border border-slate-200 bg-white/95 p-6">
         <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h2 className="text-xl font-semibold text-slate-950">Görseller</h2>
@@ -1419,7 +1419,7 @@ export function ProductForm({
         </div>
       </section>
 
-      <section id="ozellikler" className="surface-card scroll-mt-28 border border-slate-200 bg-white/95 p-6">
+      <section id="özellikler" className="surface-card scroll-mt-28 border border-slate-200 bg-white/95 p-6">
         <div className="mb-6 flex items-center justify-between">
           <div>
             <h2 className="text-xl font-semibold text-slate-950">Teknik özellikler</h2>

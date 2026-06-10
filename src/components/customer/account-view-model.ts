@@ -5,25 +5,25 @@ export type AccountOrder = AccountSnapshot["recentOrders"][number];
 
 export const orderStatusLabel: Record<string, string> = {
   draft: "Taslak",
-  pending_payment: "Odeme bekliyor",
-  payment_processing: "Odeme isleniyor",
+  pending_payment: "Ödeme bekliyor",
+  payment_processing: "Ödeme işleniyor",
   pending_confirmation: "Onay bekliyor",
-  paid: "Odendi",
-  confirmed: "Onaylandi",
+  paid: "Ödendi",
+  confirmed: "Onaylandı",
   shipped: "Kargoda",
   delivered: "Teslim edildi",
-  failed: "Basarisiz",
-  cancelled: "Iptal edildi",
-  refunded: "Iade edildi",
-  fulfilled: "Tamamlandi"
+  failed: "Başarısız",
+  cancelled: "İptal edildi",
+  refunded: "İade edildi",
+  fulfilled: "Tamamlandı"
 };
 
 export const paymentStatusLabel: Record<string, string> = {
-  pending: "Odeme bekliyor",
-  paid: "Odeme alindi",
-  success: "Odeme basarili",
-  failed: "Odeme basarisiz",
-  refunded: "Iade edildi"
+  pending: "Ödeme bekliyor",
+  paid: "Ödeme alindi",
+  success: "Ödeme başarılı",
+  failed: "Ödeme başarısız",
+  refunded: "İade edildi"
 };
 
 export function formatAccountDate(value: Date) {
@@ -86,24 +86,24 @@ export function getCustomerPanelStage(snapshot: AccountSnapshot) {
 
   if (openOrders.length > 0) {
     return {
-      label: "Siparis takipte",
-      detail: `${openOrders[0].orderNumber} icin odeme, kargo veya onay akisini izleyin.`,
+      label: "Sipariş takipte",
+      detail: `${openOrders[0].orderNumber} için ödeme, kargo veya onay akışını izleyin.`,
       href: "#siparisler"
     };
   }
 
   if (activeService) {
     return {
-      label: "Saha sureci acik",
-      detail: `${activeService.city ?? "Saha"} talebiniz kesif, servis veya kurulum ekibinde gorunur.`,
+      label: "Saha süreci açık",
+      detail: `${activeService.city ?? "Saha"} talebiniz keşif, servis veya kurulum ekibinde görünür.`,
       href: "#destek"
     };
   }
 
   if (activeQuote) {
     return {
-      label: "Teklif sureci acik",
-      detail: `${activeQuote.segment ?? "Cozum"} talebiniz teklif masasinda degerlendiriliyor.`,
+      label: "Teklif süreci açık",
+      detail: `${activeQuote.segment ?? "Çözüm"} talebiniz teklif masasinda değerlendiriliyor.`,
       href: "#destek"
     };
   }
@@ -111,14 +111,14 @@ export function getCustomerPanelStage(snapshot: AccountSnapshot) {
   if (getProfileScore(snapshot) < 100) {
     return {
       label: "Profil tamamlanmali",
-      detail: "Telefon ve kurulum adresi tamamlanirsa teklif ve saha planlama hizlanir.",
+      detail: "Telefon ve kurulum adresi tamamlanirsa teklif ve saha planlama hızlanır.",
       href: "#profil"
     };
   }
 
   return {
-    label: "Yeni cozum secilebilir",
-    detail: "Araciniz veya otoparkiniz icin dogru cihazi urun seciciyle netlestirin.",
+    label: "Yeni çözüm secilebilir",
+    detail: "Aracınız veya otoparkınız için doğru cihazı ürün seçiciyle netleştirin.",
     href: "/urun-secici"
   };
 }
@@ -132,7 +132,7 @@ export function getCustomerSegmentLabel(snapshot: AccountSnapshot) {
   }
 
   if (quoteSegment?.includes("kurumsal") || serviceProjectType?.includes("ofis")) {
-    return "KOBI / ofis kullanicisi";
+    return "KOBI / ofis kullanıcısı";
   }
 
   if (quoteSegment?.includes("ticari") || serviceProjectType?.includes("dc")) {
@@ -144,10 +144,10 @@ export function getCustomerSegmentLabel(snapshot: AccountSnapshot) {
       order.items.some((item) => item.productName.toLowerCase().includes("kablo"))
     )
   ) {
-    return "Aksesuar alicisi";
+    return "Aksesuar alıcısi";
   }
 
-  return "Ev tipi AC sarj alicisi";
+  return "Ev tipi AC şarj alıcısi";
 }
 
 export function getActionItems(snapshot: AccountSnapshot) {
@@ -156,7 +156,7 @@ export function getActionItems(snapshot: AccountSnapshot) {
 
   if (openOrders.length > 0) {
     actions.push({
-      title: "Acik siparisi takip et",
+      title: "Açık siparişi takip et",
       detail: `${openOrders[0].orderNumber} su an ${
         orderStatusLabel[openOrders[0].status] ?? openOrders[0].status
       }.`,
@@ -167,7 +167,7 @@ export function getActionItems(snapshot: AccountSnapshot) {
   if (snapshot.addresses.length === 0) {
     actions.push({
       title: "Kurulum adresi ekle",
-      detail: "Adres defteri bos oldugu icin checkout ve saha planlama yavaslayabilir.",
+      detail: "Adres defteri boş oldugu için checkout ve saha planlama yavaslayabilir.",
       href: "#adresler"
     });
   }
@@ -175,7 +175,7 @@ export function getActionItems(snapshot: AccountSnapshot) {
   if (!snapshot.customer.phone) {
     actions.push({
       title: "Telefon bilgisini tamamla",
-      detail: "Saha ekibi kesif ve teslimat icin telefon numarasina ihtiyac duyar.",
+      detail: "Saha ekibi keşif ve teslimat için telefon numarasina ihtiyac duyar.",
       href: "#profil"
     });
   }
@@ -183,15 +183,15 @@ export function getActionItems(snapshot: AccountSnapshot) {
   if (snapshot.recentQuoteRequests.some((quote) => quote.status === "new")) {
     actions.push({
       title: "Teklif talebini izle",
-      detail: "Yeni teklif talebiniz operasyon kuyrugunda gorunuyor.",
+      detail: "Yeni teklif talebiniz operasyon kuyrugunda görünüyor.",
       href: "#destek"
     });
   }
 
   if (actions.length === 0) {
     actions.push({
-      title: "Panel guncel",
-      detail: "Profil, adres ve siparis takip alanlarinda bekleyen kritik aksiyon yok.",
+      title: "Panel güncel",
+      detail: "Profil, adres ve sipariş takip alanlarinda bekleyen kritik aksiyon yok.",
       href: "/magaza"
     });
   }

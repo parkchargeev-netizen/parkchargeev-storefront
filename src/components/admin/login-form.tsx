@@ -59,7 +59,7 @@ export function LoginForm() {
     router.push("/admin");
     router.refresh();
     } catch {
-      setErrorMessage("Sunucuya ulasilamadi. Lutfen tekrar deneyin.");
+      setErrorMessage("Sunucuya ulaşılamadı. Lütfen tekrar deneyin.");
     }
   });
 

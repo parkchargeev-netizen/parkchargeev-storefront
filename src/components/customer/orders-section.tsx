@@ -20,10 +20,10 @@ import { formatPriceTRY } from "@/lib/format";
 
 function StatusStepper({ order }: { order: AccountOrder }) {
   const progress = getOrderProgress(order.status);
-  const steps = ["Odeme", "Onay", "Hazirlik", "Kargo", "Teslim"];
+  const steps = ["Ödeme", "Onay", "Hazirlik", "Kargo", "Teslim"];
 
   return (
-    <div className="mt-5 grid grid-cols-5 gap-2" aria-label="Siparis ilerleme durumu">
+    <div className="mt-5 grid grid-cols-5 gap-2" aria-label="Sipariş ilerleme durumu">
       {steps.map((step, index) => {
         const isActive = index + 1 <= progress;
 
@@ -74,13 +74,13 @@ export function OrdersSection({ orders }: { orders: AccountSnapshot["recentOrder
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
           <p className="text-sm font-black uppercase tracking-[0.28em] text-primary">
-            Siparisler
+            Siparişler
           </p>
           <h2 className="mt-3 text-3xl font-black tracking-[-0.05em] text-on-surface">
-            Siparis, kargo ve belgeler
+            Sipariş, kargo ve belgeler
           </h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-on-surface-variant">
-            Odeme, onay, kargo, fatura ve servis adimlari tek listede takip edilir.
+            Ödeme, onay, kargo, fatura ve servis adımlari tek listede takip edilir.
           </p>
         </div>
         <Link
@@ -166,7 +166,7 @@ export function OrdersSection({ orders }: { orders: AccountSnapshot["recentOrder
                   <OrderActionLink
                     href={`/iletisim?konu=iade&siparis=${order.orderNumber}`}
                     icon={<RotateCcw className="h-4 w-4" />}
-                    label="Iade / servis"
+                    label="İade / servis"
                   />
                 ) : null}
               </div>
@@ -174,16 +174,16 @@ export function OrdersSection({ orders }: { orders: AccountSnapshot["recentOrder
           ))
         ) : (
           <div className="rounded-[26px] bg-surface-container-low p-6">
-            <p className="font-black text-on-surface">Henuz siparis gorunmuyor.</p>
+            <p className="font-black text-on-surface">Henuz sipariş görünmüyor.</p>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-on-surface-variant">
-              Ayni e-posta adresiyle odeme yaptiginizda siparisler, odeme ve kargo durumuyla
+              Aynı e-posta adresiyle ödeme yaptığınızda siparişler, ödeme ve kargo durumuyla
               birlikte burada listelenir.
             </p>
             <Link
               href="/magaza"
               className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-black text-white"
             >
-              Magazaya git
+              Mağazaya git
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>

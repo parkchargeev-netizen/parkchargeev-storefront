@@ -245,7 +245,7 @@ export async function updateAdminOrder(
     entityType: "order",
     entityId: id,
     action: "update",
-    summary: `${before.orderNumber} siparisinin durumu guncellendi.`,
+    summary: `${before.orderNumber} siparişinin durumu güncellendi.`,
     beforePayload: before,
     afterPayload: after,
     ipAddress: requestMeta?.ipAddress,
@@ -371,7 +371,7 @@ export async function runAdminPaytrOperation(
           status:
             transaction.status === "callback_success" ? ("pending_confirmation" as const) : ("failed" as const),
           paymentStatus: transaction.status === "callback_success" ? "paid" : "failed",
-          statusNote: input.note || "PayTR islem durumuna gore manuel mutabakat yapildi.",
+          statusNote: input.note || "PayTR işlem durumuna göre manuel mutabakat yapıldı.",
           updatedAt: new Date()
         };
 

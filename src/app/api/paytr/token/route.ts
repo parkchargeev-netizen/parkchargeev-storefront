@@ -14,7 +14,7 @@ import { orders, paytrTransactions } from "@/server/db/schema";
 import { requestPaytrIframeToken } from "@/server/paytr/client";
 import {
   createPaytrCheckoutOrder,
-  isPaytrCheckoutPricingError,
+  isPaytrCheckoutPriçingError,
   paytrCheckoutRequestSchema
 } from "@/server/paytr/checkout-order";
 import {
@@ -169,14 +169,14 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           ok: false,
-          message: "Odeme bilgileri eksik veya gecersiz.",
+          message: "Ödeme bilgileri eksik veya geçersiz.",
           issues: error.flatten()
         },
         { status: 400 }
       );
     }
 
-    if (isPaytrCheckoutPricingError(error)) {
+    if (isPaytrCheckoutPriçingError(error)) {
       return NextResponse.json(
         {
           ok: false,

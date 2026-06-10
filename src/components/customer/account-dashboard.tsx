@@ -91,54 +91,54 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
     snapshot.recentServiceLeads.filter((lead) => !["won", "lost"].includes(lead.status)).length;
   const accountNavItems = [
     { href: "#genel", label: "Genel", icon: Home },
-    { href: "#siparisler", label: "Siparisler", icon: Package },
+    { href: "#siparisler", label: "Siparişler", icon: Package },
     { href: "#destek", label: "Teklif ve servis", icon: Headphones },
     { href: "#profil", label: "Profil", icon: UserRound },
     { href: "#adresler", label: "Adresler", icon: MapPin },
-    { href: "#guvenlik", label: "Guvenlik", icon: ShieldCheck }
+    { href: "#güvenlik", label: "Güvenlik", icon: ShieldCheck }
   ];
   const journeyCards = [
     {
       title: "Dogru urunu sec",
-      detail: "Arac, kullanim alani ve altyapiya gore wallbox veya aksesuar secin.",
+      detail: "Araç, kullanım alanı ve altyapıya göre wallbox veya aksesuar secin.",
       href: "/urun-secici",
       icon: Zap
     },
     {
-      title: "Hizmet kapsamni gor",
-      detail: "81 il kargo, Sakarya kesif, Sakarya + Kocaeli kurulum bilgisini kontrol edin.",
+      title: "Hizmet kapsamını gör",
+      detail: "81 il kargo, Sakarya keşif, Sakarya + Kocaeli kurulum bilgisini kontrol edin.",
       href: "/hizmetler",
       icon: Truck
     },
     {
       title: "Teklif ve kesfi izle",
-      detail: "Site, ofis ve kurulum talepleriniz destek alaninda listelenir.",
+      detail: "Site, ofis ve kurulum talepleriniz destek alanında listelenir.",
       href: "#destek",
       icon: ClipboardCheck
     },
     {
       title: "Servis destegi al",
-      detail: "Garanti, bakim ve teknik destek icin hizli talep olusturun.",
-      href: `/iletisim?konu=${encodeURIComponent("Teknik servis ve bakim")}`,
+      detail: "Garanti, bakım ve teknik destek için hızlı talep oluşturun.",
+      href: `/iletisim?konu=${encodeURIComponent("Teknik servis ve bakım")}`,
       icon: Wrench
     }
   ];
   const accountFlowCards = [
     {
-      label: "1. Ihtiyaci sec",
-      detail: "Ev, site, isletme veya aksesuar ihtiyacina gore urun secici ya da magazaya gidin.",
+      label: "1. İhtiyacı sec",
+      detail: "Ev, site, işletme veya aksesuar ihtiyacına göre ürün seçici ya da mağazaya gidin.",
       href: "/urun-secici",
       icon: Zap
     },
     {
       label: "2. Sureci takip et",
-      detail: "Siparis, kargo, teklif, kesif ve servis taleplerinizi tek ekrandan izleyin.",
+      detail: "Sipariş, kargo, teklif, keşif ve servis taleplerinizi tek ekrandan izleyin.",
       href: "#siparisler",
       icon: ClipboardCheck
     },
     {
-      label: "3. Eksigi tamamla",
-      detail: "Telefon, adres ve destek talepleri tamamlandikca operasyon daha hizli ilerler.",
+      label: "3. Eksiği tamamla",
+      detail: "Telefon, adres ve destek talepleri tamamlandikca operasyon daha hızlı ilerler.",
       href: "#profil",
       icon: UserRound
     }
@@ -160,13 +160,13 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
             </div>
             <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.12] p-4">
               <p className="text-xs font-black uppercase tracking-[0.2em] text-white/84">
-                Musteri segmenti
+                Müşteri segmenti
               </p>
               <p className="mt-2 text-sm font-black">{customerSegment}</p>
             </div>
           </div>
 
-          <nav className="mt-5 grid gap-2" aria-label="Musteri paneli">
+          <nav className="mt-5 grid gap-2" aria-label="Müşteri paneli">
             {accountNavItems.map((item) => {
               const Icon = item.icon;
 
@@ -189,13 +189,13 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
 
         <section className="surface-card p-5">
           <p className="text-xs font-black uppercase tracking-[0.22em] text-primary">
-            Hizli islemler
+            Hızlı islemler
           </p>
           <div className="mt-4 grid gap-2">
             {[
-              { href: "/magaza", label: "Magazaya git", icon: Package },
-              { href: "/urun-secici", label: "Urun secici", icon: Zap },
-              { href: "/karsilastir", label: "Karsilastir", icon: FileText },
+              { href: "/magaza", label: "Mağazaya git", icon: Package },
+              { href: "/urun-secici", label: "Ürün seçici", icon: Zap },
+              { href: "/karsilastir", label: "Karşılaştır", icon: FileText },
               {
                 href: `/iletisim?konu=${encodeURIComponent("Kurulum destegi")}`,
                 label: "Kurulum destegi",
@@ -224,14 +224,14 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
           <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px] xl:items-stretch">
             <div>
               <p className="text-sm font-black uppercase tracking-[0.28em] text-primary">
-                Musteri hesap merkezi
+                Müşteri hesap merkezi
               </p>
               <h1 className="mt-4 max-w-4xl text-3xl font-black tracking-[-0.05em] text-on-surface md:text-5xl">
-                {fullName ? `Merhaba ${fullName}` : "Hesabiniz hazir"}
+                {fullName ? `Merhaba ${fullName}` : "Hesabiniz hazır"}
               </h1>
               <p className="mt-4 max-w-2xl text-base leading-7 text-on-surface-variant">
-                Siparis, teklif, kesif, kurulum adresi ve servis desteklerinizi tek panelden takip
-                edin. Urunler 81 ile kargo; ucretsiz kesif Sakarya, kurulum Sakarya ve Kocaeli
+                Sipariş, teklif, keşif, kurulum adresi ve servis desteklerinizi tek panelden takip
+                edin. Ürünler 81 ile kargo; ucretsiz keşif Sakarya, kurulum Sakarya ve Kocaeli
                 odaklidir.
               </p>
               <div className="mt-5 flex flex-wrap gap-2">
@@ -253,11 +253,11 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
                   href="/urun-secici"
                   className="inline-flex items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-black text-white"
                 >
-                  Dogru cihazi sec
+                  Dogru cihazı sec
                   <Zap className="h-4 w-4" />
                 </Link>
                 <Link
-                  href={`/iletisim?reason=${encodeURIComponent("Ucretsiz kesif talebi")}`}
+                  href={`/iletisim?reason=${encodeURIComponent("Ücretsiz keşif talebi")}`}
                   className="inline-flex items-center justify-center gap-2 rounded-2xl border border-primary/20 bg-white px-5 py-3 text-sm font-black text-primary"
                 >
                   Sakarya kesfi iste
@@ -268,7 +268,7 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
 
             <div className="rounded-[30px] bg-[#063326] p-5 text-white">
               <p className="text-xs font-black uppercase tracking-[0.22em] text-emerald-200">
-                Siradaki en iyi adim
+                Sıradaki en iyi adım
               </p>
               <h2 className="mt-3 text-3xl font-black tracking-[-0.04em]">
                 {currentStage.label}
@@ -278,7 +278,7 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
                 href={currentStage.href}
                 className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-black text-primary"
               >
-                Siradaki adima git
+                Sıradaki adıma git
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
@@ -287,27 +287,27 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
 
         <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <PanelMetric
-            label="Acik siparis"
+            label="Açık sipariş"
             value={openOrders.length}
-            detail="Kargo, odeme veya onay sureci devam eden siparisler."
+            detail="Kargo, ödeme veya onay süreci devam eden siparişler."
             icon={<Package className="h-5 w-5" />}
           />
           <PanelMetric
-            label="Acik talep"
+            label="Açık talep"
             value={openRequests}
-            detail="Teklif, kesif, servis veya kurulum akislari."
+            detail="Teklif, keşif, servis veya kurulum akislari."
             icon={<Headphones className="h-5 w-5" />}
           />
           <PanelMetric
             label="Adres"
             value={addresses.length}
-            detail="Teslimat ve kurulum planinda kullanilacak adresler."
+            detail="Teslimat ve kurulum planında kullanilacak adresler."
             icon={<MapPin className="h-5 w-5" />}
           />
           <PanelMetric
             label="Profil"
             value={`%${profileScore}`}
-            detail="Telefon ve adres tamamlandikca operasyon hizlanir."
+            detail="Telefon ve adres tamamlandikca operasyon hızlanır."
             icon={<CreditCard className="h-5 w-5" />}
           />
         </section>
@@ -347,7 +347,7 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
                   Bugunun aksiyonlari
                 </h2>
                 <p className="mt-2 text-sm leading-6 text-on-surface-variant">
-                  Paneliniz siparis, adres ve destek kayitlarina gore yapilacaklari siralar.
+                  Paneliniz sipariş, adres ve destek kayıtlarına göre yapilacaklari sıralar.
                 </p>
               </div>
             </div>
@@ -380,7 +380,7 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
                   Self servis merkezi
                 </h2>
                 <p className="mt-2 text-sm leading-6 text-on-surface-variant">
-                  Dogru cihaz, sehir kapsami, siparis ve servis ihtiyacina gore hizli rota secin.
+                  Dogru cihaz, şehir kapsamı, sipariş ve servis ihtiyacına göre hızlı rota secin.
                 </p>
               </div>
             </div>
@@ -412,11 +412,11 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
             </span>
             <div>
               <h2 className="text-2xl font-black tracking-[-0.04em] text-on-surface">
-                Sarj yol haritaniz
+                Şarj yol haritaniz
               </h2>
               <p className="mt-2 text-sm leading-6 text-on-surface-variant">
-                Yeni EV sahibi, site yoneticisi veya isletme kullanicisi olun; sonraki adim burada
-                netlesir.
+                Yeni EV sahibi, site yöneticisi veya işletme kullanıcısı olun; sonraki adım burada
+                netleşir.
               </p>
             </div>
           </div>
@@ -453,10 +453,10 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
               </span>
               <div>
                 <h2 className="text-2xl font-black tracking-[-0.04em] text-on-surface">
-                  Guvenli sarj sureci
+                  Güvenli şarj süreci
                 </h2>
                 <p className="mt-2 text-sm leading-6 text-on-surface-variant">
-                  Urun, sepet, kargo, kesif ve kurulum adimlari karismadan takip edilir.
+                  Ürün, sepet, kargo, keşif ve kurulum adımlari karismadan takip edilir.
                 </p>
               </div>
             </div>
@@ -477,26 +477,26 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
           <aside className="space-y-5">
             <section className="surface-card p-5">
               <h2 className="text-xl font-black tracking-[-0.03em] text-on-surface">
-                Hizmet kapsami
+                Hizmet kapsamı
               </h2>
               <div className="mt-4 grid gap-3">
                 {[
                   {
-                    label: "Urun kargosu",
+                    label: "Ürün kargosu",
                     value: "81 il",
-                    detail: "Wallbox, Type 2 kablo ve aksesuarlar Turkiye geneline gonderilir.",
+                    detail: "Wallbox, Type 2 kablo ve aksesuarlar Türkiye geneline gönderilir.",
                     icon: Truck
                   },
                   {
-                    label: "Ucretsiz kesif",
+                    label: "Ücretsiz keşif",
                     value: "Sakarya",
-                    detail: "Pano, faz ve hat uygunlugu icin on degerlendirme planlanir.",
+                    detail: "Pano, faz ve hat uygunluğu için ön değerlendirme planlanır.",
                     icon: MapPin
                   },
                   {
                     label: "Kurulum",
                     value: "Sakarya + Kocaeli",
-                    detail: "Montaj, test ve teslim sureci planli ilerler.",
+                    detail: "Montaj, test ve teslim süreci planlı ilerler.",
                     icon: Building2
                   }
                 ].map((item) => {
@@ -522,16 +522,16 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
               </div>
             </section>
 
-            <section id="guvenlik" className="surface-card scroll-mt-28 p-5">
+            <section id="güvenlik" className="surface-card scroll-mt-28 p-5">
               <h2 className="text-xl font-black tracking-[-0.03em] text-on-surface">
-                Guvenlik ozeti
+                Güvenlik ozeti
               </h2>
               <div className="mt-4 grid gap-3 text-sm leading-6 text-on-surface-variant">
                 {[
-                  "httpOnly musteri oturumu",
+                  "httpOnly müşteri oturumu",
                   "SameSite cookie korumasi",
-                  "No-store ve noindex basliklari",
-                  "Profil ve adres islemlerinde oturum kontrolu"
+                  "No-store ve noindex başlıkları",
+                  "Profil ve adres işlemlerinde oturum kontrolu"
                 ].map((item) => (
                   <div key={item} className="flex gap-2">
                     <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />

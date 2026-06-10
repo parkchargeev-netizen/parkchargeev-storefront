@@ -32,11 +32,11 @@ export async function POST(request: Request) {
     const file = formData.get("file");
 
     if (!(file instanceof File)) {
-      return NextResponse.json({ ok: false, message: "Dosya bulunamadi." }, { status: 400 });
+      return NextResponse.json({ ok: false, message: "Dosya bulunamadı." }, { status: 400 });
     }
 
     if (!file.type.startsWith("image/")) {
-      return NextResponse.json({ ok: false, message: "Sadece gorsel dosyalari yuklenebilir." }, { status: 400 });
+      return NextResponse.json({ ok: false, message: "Sadece görsel dosyalari yüklenebilir." }, { status: 400 });
     }
 
     const config = getSupabaseServerConfig();
@@ -87,7 +87,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json(
-      { ok: false, message: "Medya yukleme tamamlanamadi." },
+      { ok: false, message: "Medya yükleme tamamlanamadi." },
       { status: 500 }
     );
   }

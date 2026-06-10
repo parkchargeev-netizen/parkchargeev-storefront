@@ -17,7 +17,7 @@ import { getDb } from "@/server/db/client";
 import { orders, paytrTransactions } from "@/server/db/schema";
 import {
   createPaytrCheckoutOrder,
-  isPaytrCheckoutPricingError,
+  isPaytrCheckoutPriçingError,
   paytrCheckoutRequestSchema
 } from "@/server/paytr/checkout-order";
 import {
@@ -39,7 +39,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           ok: false,
-          message: "Cok fazla odeme hazirlama denemesi yapildi. Lutfen biraz sonra tekrar deneyin."
+          message: "Çok fazla ödeme hazırlama denemesi yapildi. Lütfen biraz sonra tekrar deneyin."
         },
         {
           status: 429,
@@ -118,7 +118,7 @@ export async function POST(request: Request) {
           })
           .where(eq(orders.merchantOid, createdMerchantOid));
       } catch {
-        // Siparis kurulumunda hata olsa da asil hatayi bastirmiyoruz.
+        // Sipariş kurulumunda hata olsa da asil hatayi bastirmiyoruz.
       }
     }
 
@@ -139,14 +139,14 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           ok: false,
-          message: "Odeme bilgileri eksik veya gecersiz.",
+          message: "Ödeme bilgileri eksik veya geçersiz.",
           issues: error.flatten()
         },
         { status: 400 }
       );
     }
 
-    if (isPaytrCheckoutPricingError(error)) {
+    if (isPaytrCheckoutPriçingError(error)) {
       return NextResponse.json(
         {
           ok: false,

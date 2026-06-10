@@ -40,17 +40,17 @@ type PricedCheckoutItem = {
   lineTotalKurus: number;
 };
 
-export class PaytrCheckoutPricingError extends Error {
+export class PaytrCheckoutPriçingError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = "PaytrCheckoutPricingError";
+    this.name = "PaytrCheckoutPriçingError";
   }
 }
 
-export function isPaytrCheckoutPricingError(
+export function isPaytrCheckoutPriçingError(
   error: unknown
-): error is PaytrCheckoutPricingError {
-  return error instanceof PaytrCheckoutPricingError;
+): error is PaytrCheckoutPriçingError {
+  return error instanceof PaytrCheckoutPriçingError;
 }
 
 function splitFullName(fullName: string) {
@@ -92,14 +92,14 @@ async function priceCheckoutItems(items: PaytrCheckoutRequest["items"]) {
     const product = publicProducts.find((candidate) => candidate.id === item.productId);
 
     if (!product) {
-      throw new PaytrCheckoutPricingError(
-        "Sepetteki bir urun artik satis listesinde bulunamadi. Lutfen sepetinizi guncelleyin."
+      throw new PaytrCheckoutPriçingError(
+        "Sepetteki bir ürün artık satış listesinde bulunamadı. Lütfen sepetinizi güncelleyin."
       );
     }
 
     if (product.stockLabel === "Stokta Yok") {
-      throw new PaytrCheckoutPricingError(
-        `${product.name} urunu su anda stokta degil. Lutfen sepetinizi guncelleyin.`
+      throw new PaytrCheckoutPriçingError(
+        `${product.name} ürünü şu anda stokta değil. Lütfen sepetinizi güncelleyin.`
       );
     }
 
@@ -108,7 +108,7 @@ async function priceCheckoutItems(items: PaytrCheckoutRequest["items"]) {
     );
 
     if (!selectedOption) {
-      throw new PaytrCheckoutPricingError(
+      throw new PaytrCheckoutPriçingError(
         `${product.name} için seçilen kablo varyantı artık kullanılamıyor. Lütfen sepetinizi güncelleyin.`
       );
     }
@@ -118,13 +118,13 @@ async function priceCheckoutItems(items: PaytrCheckoutRequest["items"]) {
     );
 
     if (selectedVariant && selectedVariant.stockQuantity <= 0) {
-      throw new PaytrCheckoutPricingError(
-        `${product.name} - ${selectedOption.label} varyanti stokta degil. Lutfen sepetinizi guncelleyin.`
+      throw new PaytrCheckoutPriçingError(
+        `${product.name} - ${selectedOption.label} varyantı stokta değil. Lütfen sepetinizi güncelleyin.`
       );
     }
 
     if (selectedOption.priceKurus <= 0) {
-      throw new PaytrCheckoutPricingError(
+      throw new PaytrCheckoutPriçingError(
         `${product.name} için geçerli bir fiyat bulunamadı. Lütfen sepetinizi güncelleyin.`
       );
     }
