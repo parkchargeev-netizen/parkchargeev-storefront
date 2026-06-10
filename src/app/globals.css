@@ -1749,16 +1749,17 @@ body {
 }
 
 .surface-card {
-  border: 1px solid color-mix(in srgb, var(--color-outline-variant) 60%, white);
+  color: var(--color-on-surface);
+  border: 1px solid color-mix(in srgb, var(--color-outline-variant) 72%, white);
   box-shadow:
     0 16px 44px rgba(19, 27, 46, 0.07),
-    inset 0 1px 0 rgba(255, 255, 255, 0.68);
+    inset 0 1px 0 rgba(255, 255, 255, 0.82);
   border-radius: 28px;
   background:
-    radial-gradient(circle at 92% 0%, rgba(126, 236, 201, 0.08), transparent 11rem),
-    radial-gradient(circle at 0% 100%, rgba(6, 51, 38, 0.08), transparent 12rem),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(248, 251, 255, 0.82));
-  backdrop-filter: blur(16px);
+    radial-gradient(circle at 92% 0%, rgba(126, 236, 201, 0.06), transparent 11rem),
+    radial-gradient(circle at 0% 100%, rgba(6, 51, 38, 0.055), transparent 12rem),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(248, 251, 255, 0.94));
+  backdrop-filter: blur(12px);
   transition:
     transform 180ms ease,
     border-color 180ms ease,
@@ -1769,6 +1770,42 @@ body {
 .surface-card:hover {
   border-color: color-mix(in srgb, var(--color-primary) 20%, var(--color-outline-variant));
   box-shadow: 0 22px 64px rgba(19, 27, 46, 0.1);
+}
+
+:where(input, textarea, select) {
+  color: var(--color-on-surface);
+}
+
+:where(input, textarea, select)::placeholder {
+  color: #5f7068;
+  opacity: 1;
+}
+
+:where(input, textarea, select):focus-visible {
+  outline: 2px solid rgba(15, 143, 111, 0.45);
+  outline-offset: 2px;
+}
+
+:where(.text-slate-400) {
+  color: #64756f;
+}
+
+:where(.text-slate-500) {
+  color: #52645c;
+}
+
+:where(.text-slate-600) {
+  color: #41534b;
+}
+
+:where(a, button, summary, [role="button"]):focus-visible {
+  outline: 2px solid rgba(15, 143, 111, 0.65);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: rgba(126, 236, 201, 0.46);
+  color: #063326;
 }
 
 .surface-card,

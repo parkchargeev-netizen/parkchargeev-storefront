@@ -225,14 +225,14 @@ export default async function StorePage({ searchParams }: StorePageProps) {
             <h1 className="mt-4 max-w-4xl text-4xl font-black leading-tight text-white md:text-6xl">
               Aracınız ve otoparkınız için doğru şarj ürününü seçin.
             </h1>
-            <p className="mt-5 max-w-2xl text-base leading-7 text-white/68">
+            <p className="mt-5 max-w-2xl text-base leading-7 text-white/80">
               Ev tipi wallbox, site/ofis çözümleri, DC üniteler ve Type 2 aksesuarları uyum, güç ve kurulum bilgisiyle karşılaştırın.
             </p>
-            <p className="mt-4 inline-flex rounded-full border border-white/12 bg-white/10 px-4 py-2 text-sm font-black text-[#7eecc9] backdrop-blur">
+            <p className="mt-4 inline-flex rounded-full border border-white/12 bg-white/[0.14] px-4 py-2 text-sm font-black text-[#7eecc9] backdrop-blur">
               {serviceCoverageSummary.shipping}
             </p>
           </div>
-          <div className="rounded-[24px] border border-white/12 bg-white/10 p-5 text-white backdrop-blur">
+          <div className="rounded-[24px] border border-white/12 bg-white/[0.14] p-5 text-white backdrop-blur">
             {[
               ["Ürün", `${products.length} seçenek`],
               ["Filtre", `${activeFilterCount} aktif`],
@@ -240,7 +240,7 @@ export default async function StorePage({ searchParams }: StorePageProps) {
               ["Aralık", `${formatPriceTRY(minPrice)} - ${formatPriceTRY(maxPrice)}`]
             ].map(([label, value]) => (
               <div key={label} className="flex items-center justify-between gap-4 py-2">
-                <span className="text-sm text-white/58">{label}</span>
+                <span className="text-sm text-white/76">{label}</span>
                 <span className="text-sm font-black">{value}</span>
               </div>
             ))}
@@ -251,16 +251,16 @@ export default async function StorePage({ searchParams }: StorePageProps) {
           {quickSegments.map((segment) => (
             <Link key={segment.label} href={segment.href} className="store-segment-card">
               <span className="text-base font-black">{segment.label}</span>
-              <span className="text-xs font-bold text-white/58">{segment.detail}</span>
+              <span className="text-xs font-bold text-white/76">{segment.detail}</span>
             </Link>
           ))}
         </div>
 
         <div className="relative z-10 mt-5 grid gap-3 md:grid-cols-3">
           {storeDecisionCards.map(([title, detail]) => (
-            <div key={title} className="rounded-[22px] border border-white/12 bg-white/[0.08] p-4 text-white backdrop-blur">
+            <div key={title} className="rounded-[22px] border border-white/12 bg-white/[0.12] p-4 text-white backdrop-blur">
               <p className="text-sm font-black">{title}</p>
-              <p className="mt-2 text-xs leading-5 text-white/58">{detail}</p>
+              <p className="mt-2 text-xs leading-5 text-white/76">{detail}</p>
             </div>
           ))}
         </div>

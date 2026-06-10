@@ -837,7 +837,7 @@ export function ProductForm({
             <div className="mt-5 rounded-3xl bg-[#063326] p-5 text-white">
               <div className="flex items-end justify-between gap-4">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-white/60">
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-white/76">
                     Icerik hazirlik skoru
                   </p>
                   <p className="mt-2 text-4xl font-black tracking-[-0.04em]">
@@ -1346,7 +1346,7 @@ export function ProductForm({
             <ExampleHint>Örnek URL: https://site.com/homecharge-pro.jpg; alt text: HomeCharge Pro 11kW ön görünüm.</ExampleHint>
           </div>
           <div className="flex flex-wrap gap-3">
-            <label className="inline-flex cursor-pointer rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-medium text-blue-700">
+            <label className="inline-flex cursor-pointer rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-800">
               {isUploading ? "Yükleniyor..." : "Dosya yükle"}
               <input
                 type="file"
@@ -1394,7 +1394,7 @@ export function ProductForm({
                   <input type="checkbox" {...register(`media.${index}.isPrimary`)} />
                   Ana görsel
                 </label>
-                <label className="cursor-pointer rounded-full border border-blue-200 px-3 py-2 text-sm text-blue-700">
+                <label className="cursor-pointer rounded-full border border-emerald-200 px-3 py-2 text-sm text-emerald-800">
                   Değiştir
                   <input
                     type="file"

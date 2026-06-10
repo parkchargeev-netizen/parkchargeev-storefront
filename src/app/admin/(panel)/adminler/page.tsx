@@ -102,7 +102,7 @@ export default async function AdminUsersPage({ searchParams }: AdminUsersPagePro
                 <div className="flex flex-wrap items-center gap-3">
                   <p className="text-sm font-semibold text-slate-950">{user.fullName}</p>
                   <AdminStatusBadge label={user.status} tone={user.status === "active" ? "success" : user.status === "disabled" ? "danger" : "warning"} />
-                  <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
+                  <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800">
                     {adminRoleLabels[user.role]}
                   </span>
                 </div>

@@ -74,7 +74,7 @@ export function LoginForm() {
           type="email"
           autoComplete="username"
           disabled={!isHydrated || isSubmitting}
-          className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-500"
+          className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-emerald-600"
           {...register("email")}
         />
         {errors.email ? (
@@ -91,7 +91,7 @@ export function LoginForm() {
           type="password"
           autoComplete="current-password"
           disabled={!isHydrated || isSubmitting}
-          className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-500"
+          className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-emerald-600"
           {...register("password")}
         />
         {errors.password ? (

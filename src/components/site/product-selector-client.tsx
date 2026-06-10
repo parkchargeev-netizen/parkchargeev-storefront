@@ -267,30 +267,30 @@ export function ProductSelectorClient({ products }: { products: ProductModel[] }
       <section className="space-y-5">
         {topRecommendation ? (
           <article className="selector-result-card overflow-hidden rounded-[28px] bg-slate-950 p-7 text-white">
-            <p className="text-sm font-semibold uppercase tracking-[0.28em] text-blue-200">
+            <p className="text-sm font-semibold uppercase tracking-[0.28em] text-emerald-200">
               En güçlü öneri
             </p>
             <h2 className="mt-4 text-4xl font-black tracking-[-0.06em]">
               {topRecommendation.product.name}
             </h2>
-            <p className="mt-4 max-w-2xl text-sm leading-7 text-white/75">
+            <p className="mt-4 max-w-2xl text-sm leading-7 text-white/84">
               {topRecommendation.product.summary}
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
-              <span className="rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">
+              <span className="rounded-full bg-white/[0.14] px-4 py-2 text-sm font-semibold">
                 {topRecommendation.product.powerLabel}
               </span>
-              <span className="rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">
+              <span className="rounded-full bg-white/[0.14] px-4 py-2 text-sm font-semibold">
                 {formatPriceTRY(topRecommendation.product.priceKurus)}
               </span>
-              <span className="rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">
+              <span className="rounded-full bg-white/[0.14] px-4 py-2 text-sm font-semibold">
                 Uygunluk {topRecommendation.score}
               </span>
             </div>
             <div className="mt-6 grid gap-2">
               {topRecommendation.reasons.map((reason) => (
                 <div key={reason} className="flex items-center gap-2 text-sm text-white/80">
-                  <CheckCircle2 className="h-4 w-4 text-blue-200" />
+                  <CheckCircle2 className="h-4 w-4 text-emerald-200" />
                   {reason}
                 </div>
               ))}

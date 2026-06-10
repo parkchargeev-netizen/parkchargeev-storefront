@@ -210,7 +210,7 @@ export function SitePageForm({ mode, page }: SitePageFormProps) {
               key={template.label}
               type="button"
               onClick={() => setValue("body", template.body, { shouldDirty: true, shouldValidate: true })}
-              className="rounded-full border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+              className="rounded-full border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-emerald-200 hover:bg-emerald-50 hover:text-[#063326]"
             >
               {template.label}
             </button>

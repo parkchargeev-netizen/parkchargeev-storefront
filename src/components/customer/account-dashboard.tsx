@@ -150,16 +150,16 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
         <section className="surface-card overflow-hidden p-5">
           <div className="rounded-[26px] bg-[#063326] p-5 text-white">
             <div className="flex items-center gap-3">
-              <span className="grid h-12 w-12 place-items-center rounded-2xl bg-white/12 text-sm font-black">
+              <span className="grid h-12 w-12 place-items-center rounded-2xl bg-white/[0.16] text-sm font-black">
                 {initials}
               </span>
               <div className="min-w-0">
                 <p className="truncate text-sm font-black">{fullName || customer.email}</p>
-                <p className="truncate text-xs text-white/60">{customer.email}</p>
+                <p className="truncate text-xs text-white/76">{customer.email}</p>
               </div>
             </div>
-            <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.08] p-4">
-              <p className="text-xs font-black uppercase tracking-[0.2em] text-white/55">
+            <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.12] p-4">
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-white/84">
                 Musteri segmenti
               </p>
               <p className="mt-2 text-sm font-black">{customerSegment}</p>
@@ -273,7 +273,7 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
               <h2 className="mt-3 text-3xl font-black tracking-[-0.04em]">
                 {currentStage.label}
               </h2>
-              <p className="mt-3 text-sm leading-6 text-white/70">{currentStage.detail}</p>
+              <p className="mt-3 text-sm leading-6 text-white/82">{currentStage.detail}</p>
               <Link
                 href={currentStage.href}
                 className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-black text-primary"

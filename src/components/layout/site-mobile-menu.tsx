@@ -60,7 +60,7 @@ export function SiteMobileMenu({ navigation }: SiteMobileMenuProps) {
                     setIsOpen(false);
                     router.push(item.href);
                   }}
-                  className="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm font-black text-white/80 transition hover:border-primary/35 hover:text-white"
+                  className="rounded-2xl border border-white/10 bg-white/[0.14] px-4 py-3 text-sm font-black text-white/80 transition hover:border-primary/35 hover:text-white"
                 >
                   {item.label}
                 </Link>

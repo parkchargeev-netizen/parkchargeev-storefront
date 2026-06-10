@@ -27,7 +27,7 @@ export function ProductGallery({
         <div className="relative grid aspect-[4/3] min-h-[340px] overflow-hidden rounded-[24px] bg-slate-950 px-6 py-7 text-white md:grid-cols-[1fr_0.8fr]">
           <div className="relative z-10 flex flex-col justify-between">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.28em] text-white/60">
+              <p className="text-sm font-semibold uppercase tracking-[0.28em] text-white/76">
                 {activeItem}
               </p>
               <p className="mt-4 max-w-md text-3xl font-bold tracking-[-0.05em]">
@@ -40,7 +40,7 @@ export function ProductGallery({
                   key={label}
                   className="rounded-2xl border border-white/10 bg-white/8 px-3 py-3"
                 >
-                  <p className="text-xs font-semibold text-white/70">{label}</p>
+                  <p className="text-xs font-semibold text-white/82">{label}</p>
                 </div>
               ))}
             </div>
@@ -71,7 +71,7 @@ export function ProductGallery({
                 <div className="absolute -right-8 bottom-8 h-24 w-24 rounded-full border-[12px] border-secondary/80 border-l-transparent border-t-transparent" />
               </div>
             )}
-            <div className="absolute bottom-2 right-2 rounded-2xl bg-white/10 px-3 py-2 text-xs font-semibold text-white/80">
+            <div className="absolute bottom-2 right-2 rounded-2xl bg-white/[0.14] px-3 py-2 text-xs font-semibold text-white/80">
               {deviceCaption}
             </div>
           </div>

@@ -103,7 +103,7 @@ export default async function AdminBlogPage({ searchParams }: AdminBlogPageProps
               {result.items.map((post) => (
                 <tr key={post.id}>
                   <td className="px-3 py-4">
-                    <Link href={`/admin/blog/${post.id}`} className="font-semibold text-slate-950 transition hover:text-blue-700">
+                    <Link href={`/admin/blog/${post.id}`} className="font-semibold text-slate-950 transition hover:text-[#063326]">
                       {post.title}
                     </Link>
                     <p className="mt-1 text-xs text-slate-500">{post.slug}</p>
@@ -115,7 +115,7 @@ export default async function AdminBlogPage({ searchParams }: AdminBlogPageProps
                   <td className="px-3 py-4 text-slate-600">{new Date(post.updatedAt).toLocaleDateString("tr-TR")}</td>
                   <td className="px-3 py-4">
                     <div className="flex flex-wrap gap-2">
-                      <Link href={`/admin/blog/${post.id}`} className="rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700">
+                      <Link href={`/admin/blog/${post.id}`} className="rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-emerald-200 hover:bg-emerald-50 hover:text-[#063326]">
                         Düzenle
                       </Link>
                       {post.publishedAt ? (

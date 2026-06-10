@@ -192,19 +192,19 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
               <section className="surface-card overflow-hidden border border-white/70 p-5">
                 <div className="rounded-[26px] bg-[#063326] p-5 text-white">
                   <div className="flex items-center gap-3">
-                    <span className="grid h-12 w-12 place-items-center rounded-2xl bg-white/12 text-sm font-black">
+                    <span className="grid h-12 w-12 place-items-center rounded-2xl bg-white/[0.16] text-sm font-black">
                       {getAdminInitials(admin.fullName)}
                     </span>
                     <div className="min-w-0">
                       <p className="truncate text-sm font-semibold">{admin.fullName}</p>
-                      <p className="truncate text-xs text-white/60">{admin.email}</p>
+                      <p className="truncate text-xs text-white/76">{admin.email}</p>
                     </div>
                   </div>
                   <div className="mt-5 flex flex-wrap gap-2">
                     <span className="rounded-full bg-white px-3 py-1 text-xs font-black text-[#063326]">
                       {adminRoleLabels[admin.role]}
                     </span>
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-white/[0.14] px-3 py-1 text-xs font-semibold text-white">
                       <Database className="h-3.5 w-3.5" />
                       {databaseEnabled ? "Canli veri" : "Yerel veri"}
                     </span>

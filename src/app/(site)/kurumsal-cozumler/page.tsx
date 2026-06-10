@@ -112,7 +112,7 @@ export default function CorporateSolutionsPage() {
         <div className="relative z-10 grid gap-10 lg:grid-cols-[0.85fr_1.15fr]">
           <div className="flex flex-col justify-between">
             <div>
-              <p className="inline-flex rounded-full border border-white/10 bg-white/10 px-4 py-2 text-sm font-semibold uppercase tracking-[0.34em] text-white/70 backdrop-blur">
+              <p className="inline-flex rounded-full border border-white/10 bg-white/[0.14] px-4 py-2 text-sm font-semibold uppercase tracking-[0.34em] text-white/82 backdrop-blur">
                 Teklif süreci
               </p>
 
@@ -120,14 +120,14 @@ export default function CorporateSolutionsPage() {
                 Kurumsal projede karar nasıl hızlanır?
               </h2>
 
-              <p className="mt-5 max-w-md text-base leading-8 text-white/65">
+              <p className="mt-5 max-w-md text-base leading-8 text-white/78">
                 İhtiyaçtan keşfe, tekliften bakım planına kadar tüm adımlar net,
                 ölçülebilir ve hızlı ilerler.
               </p>
             </div>
 
-            <div className="mt-8 hidden rounded-[28px] border border-white/10 bg-white/10 p-5 backdrop-blur md:block">
-              <p className="text-sm text-white/60">Ortalama süreç</p>
+            <div className="mt-8 hidden rounded-[28px] border border-white/10 bg-white/[0.14] p-5 backdrop-blur md:block">
+              <p className="text-sm text-white/76">Ortalama süreç</p>
               <p className="mt-2 text-3xl font-black text-emerald-300">
                 4 adımda net teklif
               </p>

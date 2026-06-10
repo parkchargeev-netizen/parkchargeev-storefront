@@ -534,7 +534,7 @@ export function AdminDashboardView({
           <div className="rounded-[30px] bg-[#063326] p-5 text-white">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.22em] text-white/55">
+                <p className="text-xs font-black uppercase tracking-[0.22em] text-white/84">
                   Aylik hedef
                 </p>
                 <p className="mt-3 text-5xl font-black tracking-[-0.05em]">
@@ -746,7 +746,7 @@ export function AdminDashboardView({
                 icon: <LockKeyhole className="h-4 w-4" />
               }
             ].map((item) => (
-              <div key={item.label} className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.08] px-4 py-3">
+              <div key={item.label} className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.12] px-4 py-3">
                 <span className="flex items-center gap-3 text-sm font-semibold">
                   {item.icon}
                   {item.label}
@@ -953,9 +953,9 @@ export function AdminDashboardView({
           </div>
           <div className="mt-5 grid gap-3">
             {marketPanelInsights.map((insight) => (
-              <div key={insight.label} className="rounded-2xl border border-white/10 bg-white/[0.08] p-4">
+              <div key={insight.label} className="rounded-2xl border border-white/10 bg-white/[0.12] p-4">
                 <p className="text-sm font-black">{insight.label}</p>
-                <p className="mt-2 text-xs leading-5 text-white/68">{insight.detail}</p>
+                <p className="mt-2 text-xs leading-5 text-white/80">{insight.detail}</p>
                 <p className="mt-3 text-[11px] font-black uppercase tracking-[0.18em] text-emerald-200">
                   {insight.source}
                 </p>

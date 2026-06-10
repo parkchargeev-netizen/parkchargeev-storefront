@@ -167,7 +167,7 @@ export default async function ProductDetailPage({
                 {detailContent.seoIntents.map((intent) => (
                   <span
                     key={intent}
-                    className="rounded-full bg-white/12 px-4 py-3 text-sm font-semibold text-white"
+                    className="rounded-full bg-white/[0.16] px-4 py-3 text-sm font-semibold text-white"
                   >
                     {intent}
                   </span>

@@ -120,7 +120,7 @@ export function AdminCommandMenu({
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="flex min-h-12 w-full items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-left shadow-sm transition hover:border-blue-200 hover:bg-blue-50/50 lg:w-[420px]"
+        className="flex min-h-12 w-full items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-left shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50/70 lg:w-[420px]"
       >
         <span className="flex min-w-0 items-center gap-3">
           <Search className="h-4 w-4 shrink-0 text-slate-400" />
@@ -169,14 +169,14 @@ export function AdminCommandMenu({
                 </button>
               </div>
               <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold">
-                <span className="rounded-full bg-blue-50 px-3 py-1 text-blue-700">
+                <span className="rounded-full bg-emerald-50 px-3 py-1 text-emerald-800">
                   {roleLabel}
                 </span>
                 <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-700">
                   {databaseEnabled ? "Canlı veri" : "Yerel yedek veri"}
                 </span>
                 {isSearching ? (
-                  <span className="rounded-full bg-blue-50 px-3 py-1 text-blue-700">
+                  <span className="rounded-full bg-emerald-50 px-3 py-1 text-emerald-800">
                     Aranıyor
                   </span>
                 ) : null}
@@ -196,7 +196,7 @@ export function AdminCommandMenu({
                           key={`${item.href}-${item.label}`}
                           href={item.href}
                           onClick={() => setIsOpen(false)}
-                          className="flex items-center justify-between gap-4 rounded-2xl px-3 py-3 transition hover:bg-blue-50"
+                          className="flex items-center justify-between gap-4 rounded-2xl px-3 py-3 transition hover:bg-emerald-50"
                         >
                           <span className="min-w-0">
                             <span className="block text-sm font-semibold text-slate-950">

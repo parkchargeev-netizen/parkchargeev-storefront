@@ -128,7 +128,7 @@ function PremiumHero({ whatsappHref }: { whatsappHref: string }) {
           <h1 className="mt-4 max-w-[38rem] text-[2.55rem] font-black leading-[0.98] tracking-normal text-white sm:text-6xl lg:text-[3.95rem]">
             Elektrikli aracınız için net ve güvenli şarj çözümü.
           </h1>
-          <p className="mt-6 max-w-xl text-base leading-7 text-white/72 sm:text-lg">
+          <p className="mt-6 max-w-xl text-base leading-7 text-white/84 sm:text-lg">
             Aracınızı, otoparkınızı ve elektrik altyapınızı birlikte değerlendirerek ev, site veya işletme için doğru ürüne yönlendiren şarj platformu.
           </p>
 
@@ -154,11 +154,11 @@ function PremiumHero({ whatsappHref }: { whatsappHref: string }) {
             {heroStats.map((stat) => (
               <div key={stat.label} className="premium-hero-stat">
                 <p className="text-lg font-black text-white md:text-2xl">{stat.value}</p>
-                <p className="mt-1 text-xs font-bold text-white/58">{stat.label}</p>
+                <p className="mt-1 text-xs font-bold text-white/76">{stat.label}</p>
               </div>
             ))}
           </div>
-          <p className="mt-4 text-xs font-bold leading-5 text-white/58">
+          <p className="mt-4 text-xs font-bold leading-5 text-white/76">
             {serviceCoverageSummary.shipping} · {serviceCoverageSummary.freeSurvey} ·{" "}
             {serviceCoverageSummary.installation}
           </p>
@@ -366,7 +366,7 @@ function InstallationFlow() {
           <h2 className="mt-3 text-2xl font-black leading-tight tracking-normal text-white md:text-4xl">
             Cihaz seçimi, teknik keşifle güvenli karara dönüşür.
           </h2>
-          <p className="mt-4 max-w-xl text-sm leading-7 text-white/68 md:text-base">
+          <p className="mt-4 max-w-xl text-sm leading-7 text-white/80 md:text-base">
             Yanlış cihaz, eksik kablo hattı veya uygunsuz pano riskini keşif ve kurulum planıyla azaltın.
           </p>
           <Link href="/hizmetler" className="premium-btn premium-btn--primary mt-7">
@@ -378,11 +378,11 @@ function InstallationFlow() {
           {installationSteps.map((item) => (
             <article key={item.step} className="premium-install-card">
               <div className="flex items-center justify-between">
-                <IconBadge icon={item.icon} className="h-11 w-11 bg-white/10 text-emerald-300" />
-                <span className="text-sm font-black text-white/36">{item.step}</span>
+                <IconBadge icon={item.icon} className="h-11 w-11 bg-white/[0.14] text-emerald-300" />
+                <span className="text-sm font-black text-white/76">{item.step}</span>
               </div>
               <h3 className="mt-5 text-xl font-black text-white">{item.title}</h3>
-              <p className="mt-2 text-sm leading-6 text-white/64">{item.body}</p>
+              <p className="mt-2 text-sm leading-6 text-white/76">{item.body}</p>
             </article>
           ))}
         </div>

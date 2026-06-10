@@ -7,7 +7,7 @@ export default async function NewAdminProductPage() {
   return (
     <div className="space-y-6">
       <section className="surface-card border border-slate-200 bg-white/95 p-8">
-        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-blue-600">
+        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#0f8f6f]">
           Yeni Ürün
         </p>
         <h1 className="mt-3 text-3xl font-semibold text-slate-950">Katalog kaydı oluştur</h1>

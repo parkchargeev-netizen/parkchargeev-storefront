@@ -139,7 +139,7 @@ export default async function AdminPaytrPage({ searchParams }: AdminPaytrPagePro
                     <dt className="text-xs uppercase tracking-[0.16em] text-slate-500">Sipariş</dt>
                     <dd className="mt-1 text-sm text-slate-700">
                       {transaction.orderId ? (
-                        <Link href={`/admin/siparisler/${transaction.orderId}`} className="font-semibold text-blue-700">
+                        <Link href={`/admin/siparisler/${transaction.orderId}`} className="font-semibold text-emerald-800">
                           {transaction.orderNumber ?? transaction.orderId}
                         </Link>
                       ) : (

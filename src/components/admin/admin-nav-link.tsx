@@ -24,7 +24,7 @@ export function AdminNavLink({ href, icon, label }: AdminNavLinkProps) {
       className={clsx(
         "group flex items-center justify-between rounded-2xl border px-4 py-3 text-sm font-medium transition",
         isActive
-          ? "border-blue-200 bg-blue-50 text-blue-800"
+          ? "border-emerald-200 bg-emerald-50 text-[#063326]"
           : "border-transparent text-slate-700 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-950"
       )}
     >
@@ -33,8 +33,8 @@ export function AdminNavLink({ href, icon, label }: AdminNavLinkProps) {
           className={clsx(
             "rounded-2xl p-2 transition",
             isActive
-              ? "bg-white text-blue-700 shadow-sm"
-              : "bg-slate-100 text-slate-500 group-hover:bg-blue-50 group-hover:text-blue-700"
+              ? "bg-white text-emerald-800 shadow-sm"
+              : "bg-slate-100 text-slate-500 group-hover:bg-emerald-50 group-hover:text-[#063326]"
           )}
         >
           {icon}
@@ -44,7 +44,7 @@ export function AdminNavLink({ href, icon, label }: AdminNavLinkProps) {
       <ArrowUpRight
         className={clsx(
           "h-4 w-4 transition",
-          isActive ? "text-blue-500" : "text-slate-300 group-hover:text-slate-500"
+          isActive ? "text-[#0f8f6f]" : "text-slate-300 group-hover:text-slate-500"
         )}
       />
     </AdminPrefetchLink>

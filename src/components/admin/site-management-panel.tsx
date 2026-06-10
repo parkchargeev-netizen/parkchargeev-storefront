@@ -98,7 +98,7 @@ export async function SiteManagementPanel({
             <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
               {navigation.items.length} link
             </span>
-            <span className="inline-flex rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
+            <span className="inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800">
               {pages.items.length} sayfa
             </span>
           </>
@@ -135,7 +135,7 @@ export async function SiteManagementPanel({
           <AdminPrefetchLink
             key={item.href}
             href={item.href}
-            className="surface-card border border-slate-200 bg-white/95 p-5 transition hover:border-blue-200 hover:bg-blue-50/70"
+            className="surface-card border border-slate-200 bg-white/95 p-5 transition hover:border-emerald-200 hover:bg-emerald-50/70"
           >
             <p className="text-sm font-medium text-slate-500">{item.label}</p>
             <p className="mt-3 text-3xl font-semibold text-slate-950">{item.value}</p>
@@ -182,7 +182,7 @@ export async function SiteManagementPanel({
           <AdminPrefetchLink
             key={item.href}
             href={item.href}
-            className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-center text-sm font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+            className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-center text-sm font-semibold text-slate-700 transition hover:border-emerald-200 hover:bg-emerald-50 hover:text-[#063326]"
           >
             {item.label}
           </AdminPrefetchLink>
@@ -237,10 +237,10 @@ export async function SiteManagementPanel({
       </div>
 
       {selectedNavigationItem ? (
-        <section id="navigation-editor" className="surface-card scroll-mt-6 border border-blue-200 bg-blue-50/60 p-5 lg:p-6">
+        <section id="navigation-editor" className="surface-card scroll-mt-6 border border-emerald-200 bg-emerald-50/80 p-5 lg:p-6">
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-700">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-800">
                 Navigasyon düzenle
               </p>
               <h2 className="mt-2 text-xl font-semibold text-slate-950">
@@ -249,7 +249,7 @@ export async function SiteManagementPanel({
             </div>
             <AdminPrefetchLink
               href={`${basePath}#site-management`}
-              className="rounded-full border border-blue-200 bg-white px-3 py-1.5 text-xs font-semibold text-blue-700"
+              className="rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-xs font-semibold text-emerald-800"
             >
               Kapat
             </AdminPrefetchLink>
@@ -272,10 +272,10 @@ export async function SiteManagementPanel({
       ) : null}
 
       {selectedPage ? (
-        <section id="site-page-editor" className="surface-card scroll-mt-6 border border-blue-200 bg-blue-50/60 p-5 lg:p-6">
+        <section id="site-page-editor" className="surface-card scroll-mt-6 border border-emerald-200 bg-emerald-50/80 p-5 lg:p-6">
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-700">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-800">
                 Sayfa düzenle
               </p>
               <h2 className="mt-2 text-xl font-semibold text-slate-950">{selectedPage.title}</h2>
@@ -283,7 +283,7 @@ export async function SiteManagementPanel({
             <div className="flex flex-wrap items-center gap-2">
               <AdminPrefetchLink
                 href={`${basePath}#site-management`}
-                className="rounded-full border border-blue-200 bg-white px-3 py-1.5 text-xs font-semibold text-blue-700"
+                className="rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-xs font-semibold text-emerald-800"
               >
                 Kapat
               </AdminPrefetchLink>
@@ -333,7 +333,7 @@ export async function SiteManagementPanel({
                   <AdminStatusBadge label={item.isActive ? "Aktif" : "Pasif"} tone={item.isActive ? "success" : "neutral"} />
                   <AdminPrefetchLink
                     href={editHref(basePath, "editNav", item.id)}
-                    className="rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                    className="rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-emerald-200 hover:bg-emerald-50 hover:text-[#063326]"
                   >
                     Düzenle
                   </AdminPrefetchLink>
@@ -367,7 +367,7 @@ export async function SiteManagementPanel({
                   </AdminPrefetchLink>
                   <AdminPrefetchLink
                     href={editHref(basePath, "editPage", page.id)}
-                    className="rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                    className="rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-emerald-200 hover:bg-emerald-50 hover:text-[#063326]"
                   >
                     Düzenle
                   </AdminPrefetchLink>

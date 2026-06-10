@@ -52,7 +52,7 @@ export default async function AdminAccessMapPage() {
                 <>
                   <p className="text-sm font-semibold text-slate-950">{link.label}</p>
                   <p className="mt-2 text-sm leading-6 text-slate-600">{link.description}</p>
-                  <p className="mt-4 text-xs font-semibold uppercase tracking-[0.16em] text-blue-600">
+                  <p className="mt-4 text-xs font-semibold uppercase tracking-[0.16em] text-[#0f8f6f]">
                     {link.href.startsWith("/api/") ? "İndir" : "Aç"}
                   </p>
                 </>
@@ -63,7 +63,7 @@ export default async function AdminAccessMapPage() {
                   <a
                     key={link.href}
                     href={link.href}
-                    className="rounded-3xl border border-slate-200 bg-slate-50 p-5 transition hover:border-blue-200 hover:bg-blue-50"
+                    className="rounded-3xl border border-slate-200 bg-slate-50 p-5 transition hover:border-emerald-200 hover:bg-emerald-50"
                   >
                     {content}
                   </a>
@@ -74,7 +74,7 @@ export default async function AdminAccessMapPage() {
                 <AdminPrefetchLink
                   key={link.href}
                   href={link.href}
-                  className="rounded-3xl border border-slate-200 bg-slate-50 p-5 transition hover:border-blue-200 hover:bg-blue-50"
+                  className="rounded-3xl border border-slate-200 bg-slate-50 p-5 transition hover:border-emerald-200 hover:bg-emerald-50"
                 >
                   {content}
                 </AdminPrefetchLink>

@@ -108,7 +108,7 @@ const columns: Array<ColumnDef<OrderRow>> = [
       <div className="min-w-[240px]">
         <Link
           href={`/admin/siparisler/${row.original.id}`}
-          className="text-sm font-semibold text-slate-950 transition hover:text-blue-700"
+          className="text-sm font-semibold text-slate-950 transition hover:text-[#063326]"
         >
           {row.original.orderNumber}
         </Link>
@@ -165,7 +165,7 @@ const columns: Array<ColumnDef<OrderRow>> = [
     cell: ({ row }) => (
       <Link
         href={`/admin/siparisler/${row.original.id}`}
-        className="inline-flex rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+        className="inline-flex rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-emerald-200 hover:bg-emerald-50 hover:text-[#063326]"
       >
         Detay
       </Link>

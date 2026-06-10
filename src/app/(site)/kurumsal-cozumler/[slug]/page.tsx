@@ -146,12 +146,12 @@ export default async function SolutionDetailPage({
       </section>
 
       <section className="mt-12 overflow-hidden rounded-[32px] bg-linear-to-br from-primary to-primary-container p-8 text-white shadow-[0_24px_80px_rgba(6,51,38,0.24)] lg:p-12">
-        <p className="text-sm font-semibold uppercase tracking-[0.34em] text-white/70">
+        <p className="text-sm font-semibold uppercase tracking-[0.34em] text-white/82">
           Kullanım senaryoları
         </p>
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           {solution.useCases.map((item) => (
-            <div key={item} className="rounded-[24px] bg-white/10 p-5">
+            <div key={item} className="rounded-[24px] bg-white/[0.14] p-5">
               <p className="text-xl font-semibold">{item}</p>
             </div>
           ))}

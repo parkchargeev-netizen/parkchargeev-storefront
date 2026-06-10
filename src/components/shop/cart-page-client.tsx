@@ -103,7 +103,7 @@ export function CartPageClient() {
             <h1 className="mt-4 text-4xl font-black leading-tight text-white md:text-6xl">
               Doğru şarj çözümünü mağazadan seçin.
             </h1>
-            <p className="mt-4 max-w-2xl text-base leading-7 text-white/68">
+            <p className="mt-4 max-w-2xl text-base leading-7 text-white/80">
               Ev tipi wallbox, site/ofis AC istasyonları ve Type 2 aksesuarları kısa kartlarla karşılaştırın.
             </p>
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
@@ -127,7 +127,7 @@ export function CartPageClient() {
           <div>
             <Link
               href="/magaza"
-              className="inline-flex items-center gap-2 text-sm font-black text-white/68 transition hover:text-white"
+              className="inline-flex items-center gap-2 text-sm font-black text-white/80 transition hover:text-white"
             >
               <ArrowLeft className="h-4 w-4" aria-hidden />
               Alışverişe devam et
@@ -135,12 +135,12 @@ export function CartPageClient() {
             <h1 className="mt-5 text-4xl font-black leading-tight text-white md:text-6xl">
               Sepetin hazır. Kurulum adımını netleştirelim.
             </h1>
-            <p className="mt-4 max-w-2xl text-base leading-7 text-white/68">
+            <p className="mt-4 max-w-2xl text-base leading-7 text-white/80">
               Ürün, 81 il kargo, KDV ve keşif kararını tek ekranda görüp güvenli ödeme akışına geçin.
             </p>
           </div>
 
-          <div className="rounded-[24px] border border-white/12 bg-white/10 p-4 backdrop-blur">
+          <div className="rounded-[24px] border border-white/12 bg-white/[0.14] p-4 backdrop-blur">
             <div className="flex flex-wrap gap-2">
               {checkoutSteps.map((step, index) => (
                 <span key={step} className="cart-step-pill" data-active={index === 0}>

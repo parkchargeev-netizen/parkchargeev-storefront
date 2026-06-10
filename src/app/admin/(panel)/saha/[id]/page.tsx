@@ -43,7 +43,7 @@ export default async function ServiceLeadDetailPage({ params }: ServiceLeadDetai
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_420px]">
       <section className="space-y-6">
         <div className="surface-card border border-slate-200 bg-white/95 p-8">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-blue-600">
+          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#0f8f6f]">
             Saha Talebi
           </p>
           <h1 className="mt-3 text-3xl font-semibold text-slate-950">{lead.fullName}</h1>
