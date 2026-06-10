@@ -44,7 +44,7 @@ export function AdminNavLink({ href, icon, label }: AdminNavLinkProps) {
       <ArrowUpRight
         className={clsx(
           "h-4 w-4 transition",
-          isActive ? "text-[#0f8f6f]" : "text-slate-300 group-hover:text-slate-500"
+          isActive ? "text-[#0f8f6f]" : "text-slate-500 group-hover:text-[#063326]"
         )}
       />
     </AdminPrefetchLink>

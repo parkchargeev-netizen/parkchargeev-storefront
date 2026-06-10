@@ -153,7 +153,7 @@ export default function CorporateSolutionsPage() {
                   </div>
 
                   <div>
-                    <p className="text-sm font-semibold uppercase tracking-[0.28em] text-white/45">
+                    <p className="text-sm font-semibold uppercase tracking-[0.28em] text-white/72">
                       Adım {index + 1}
                     </p>
 
