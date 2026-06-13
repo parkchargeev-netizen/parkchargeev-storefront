@@ -14,7 +14,7 @@ export async function PATCH(request: Request, { params }: AdminUserRouteProps) {
   const authenticatedAdmin = await requireAdminRole(["superadmin"]);
 
   if (!authenticatedAdmin) {
-    return NextResponse.json({ ok: false, message: "Yetkisiz erisim." }, { status: 401 });
+    return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });
   }
 
   const { id } = await params;
@@ -26,7 +26,7 @@ export async function PATCH(request: Request, { params }: AdminUserRouteProps) {
   const adminUser = await upsertAdminUser(payload, authenticatedAdmin.session, requestMeta);
 
   if (!adminUser) {
-    return NextResponse.json({ ok: false, message: "Admin kullanici bulunamadi." }, { status: 404 });
+    return NextResponse.json({ ok: false, message: "Admin kullanıcı bulunamadı." }, { status: 404 });
   }
 
   return NextResponse.json({ ok: true, adminUser });

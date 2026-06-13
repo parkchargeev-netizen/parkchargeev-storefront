@@ -15,7 +15,7 @@ export async function GET(_request: Request, { params }: OrderRouteProps) {
   const authenticatedAdmin = await requireAdminRole(["superadmin", "sales"]);
 
   if (!authenticatedAdmin) {
-    return NextResponse.json({ ok: false, message: "Yetkisiz erisim." }, { status: 401 });
+    return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });
   }
 
   const { id } = await params;
@@ -32,7 +32,7 @@ export async function PATCH(request: Request, { params }: OrderRouteProps) {
   const authenticatedAdmin = await requireAdminRole(["superadmin", "sales"]);
 
   if (!authenticatedAdmin) {
-    return NextResponse.json({ ok: false, message: "Yetkisiz erisim." }, { status: 401 });
+    return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });
   }
 
   const { id } = await params;

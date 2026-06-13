@@ -852,7 +852,7 @@ function createSeedQuotes(): FallbackQuoteRecord[] {
       phone: "05550010001",
       city: "Sakarya",
       district: "Serdivan",
-      estimatedLocation: "Kapali otopark blok A",
+      estimatedLocation: "Kapalı otopark blok A",
       requestNotes: "20 araçlık otopark için ilk faz kurulum talebi.",
       status: "reviewing",
       assignedAdminId: salesAdmin.id,
@@ -892,7 +892,7 @@ function createSeedQuotes(): FallbackQuoteRecord[] {
       phone: "05550010002",
       city: "Istanbul",
       district: "Maslak",
-      estimatedLocation: "Açık ofis otoparki",
+      estimatedLocation: "Açık ofis otoparkı",
       requestNotes: "Çalışan ve misafir kullanımı ayrılabilen sistem aranıyor.",
       status: "proposal_sent",
       assignedAdminId: salesAdmin.id,
@@ -936,7 +936,7 @@ function createSeedQuotes(): FallbackQuoteRecord[] {
           adminUserId: salesAdmin.id,
           adminName: salesAdmin.fullName,
           activityType: "status_change",
-          note: "Teknik sorular sonrasi muzakere aşamasına gecti.",
+          note: "Teknik sorular sonrası müzakere aşamasına geçti.",
           payload: {
             fromStatus: "proposal_sent",
             toStatus: "negotiation"

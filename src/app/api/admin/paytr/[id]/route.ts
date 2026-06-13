@@ -15,7 +15,7 @@ export async function PATCH(request: Request, { params }: PaytrRouteProps) {
   const authenticatedAdmin = await requireAdminRole(["superadmin", "sales"]);
 
   if (!authenticatedAdmin) {
-    return NextResponse.json({ ok: false, message: "Yetkisiz erisim." }, { status: 401 });
+    return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });
   }
 
   const { id } = await params;
@@ -25,7 +25,7 @@ export async function PATCH(request: Request, { params }: PaytrRouteProps) {
     const order = await runAdminPaytrOperation(id, payload, authenticatedAdmin.session, requestMeta);
 
     if (!order) {
-      return NextResponse.json({ ok: false, message: "PayTR kaydi bulunamadi." }, { status: 404 });
+      return NextResponse.json({ ok: false, message: "PayTR kaydı bulunamadı." }, { status: 404 });
     }
 
     return NextResponse.json({ ok: true, order });

@@ -125,9 +125,9 @@ function checkPackageScripts() {
 
   for (const script of requiredScripts) {
     if (typeof scripts[script] === "string" && scripts[script].trim().length > 0) {
-      pass("scripts", `${script} tanimli.`);
+      pass("scripts", `${script} tanımlı.`);
     } else {
-      fail("scripts", `${script} script'i tanimli degil.`);
+      fail("scripts", `${script} script'i tanımlı değil.`);
     }
   }
 
@@ -151,7 +151,7 @@ function checkApiRoutes() {
   const routeFiles = walk(apiDir).filter((file) => file.endsWith("route.ts"));
 
   if (routeFiles.length < 10) {
-    fail("api", `API route sayisi beklenenden dusuk: ${routeFiles.length}.`);
+    fail("api", `API route sayısı beklenenden düşük: ${routeFiles.length}.`);
     return;
   }
 

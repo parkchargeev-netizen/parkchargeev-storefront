@@ -15,63 +15,63 @@ const databaseUrl = process.env.DIRECT_URL?.trim() || process.env.DATABASE_URL?.
 
 const navigationSeed = [
   ["primary", "Ana Sayfa", "/", 0],
-  ["primary", "Magaza", "/magaza", 10],
-  ["primary", "Kurumsal Cozumler", "/kurumsal-cozumler", 20],
+  ["primary", "Mağaza", "/magaza", 10],
+  ["primary", "Kurumsal Çözümler", "/kurumsal-cozumler", 20],
   ["primary", "Hizmetler", "/hizmetler", 30],
   ["primary", "Blog", "/blog", 50],
-  ["primary", "Iletisim", "/iletisim", 60],
-  ["footer", "Hakkimizda", "/hakkimizda", 0],
-  ["footer", "Kurumsal Cozumler", "/kurumsal-cozumler", 10],
-  ["footer", "Magaza", "/magaza", 20],
+  ["primary", "İletişim", "/iletisim", 60],
+  ["footer", "Hakkımızda", "/hakkimizda", 0],
+  ["footer", "Kurumsal Çözümler", "/kurumsal-cozumler", 10],
+  ["footer", "Mağaza", "/magaza", 20],
   ["footer", "Blog", "/blog", 30],
-  ["footer", "Iletisim", "/iletisim", 50],
+  ["footer", "İletişim", "/iletisim", 50],
   ["legal", "Destek Merkezi", "/iletisim", 0],
-  ["legal", "Musteri Girisi", "/giris", 10],
-  ["legal", "Odeme", "/odeme", 20],
+  ["legal", "Müşteri Girişi", "/giris", 10],
+  ["legal", "Ödeme", "/odeme", 20],
   ["legal", "Sepet", "/sepet", 30]
 ];
 
 const pageSeed = [
   {
     slug: "hakkimizda",
-    title: "Hakkimizda",
+    title: "Hakkımızda",
     eyebrow: "Marka",
     excerpt:
-      "ParkChargeEV marka yaklasimini, uzmanlik alanlarini ve elektrikli arac sarj ekosistemindeki hizmet modelini yonetin.",
+      "ParkChargeEV marka yaklaşımını, uzmanlık alanlarını ve elektrikli araç şarj ekosistemindeki hizmet modelini yönetin.",
     body:
-      "<p>Bu sayfa admin panelindeki Site modulu uzerinden yayinlandiginda statik hakkimizda sayfasinin yerine gecer.</p>",
-    seoTitle: "ParkChargeEV Hakkimizda",
+      "<p>Bu sayfa admin panelindeki Site modülü üzerinden yayınlandığında statik hakkımızda sayfasının yerine geçer.</p>",
+    seoTitle: "ParkChargeEV Hakkımızda",
     seoDescription:
-      "ParkChargeEV'in elektrikli arac sarj urunleri, kurulum ve teknik servis yaklasimini kesfedin."
+      "ParkChargeEV'in elektrikli araç şarj ürünleri, kurulum ve teknik servis yaklaşımını keşfedin."
   },
   {
     slug: "hizmetler",
     title: "Hizmetler",
-    eyebrow: "Cozumler",
+    eyebrow: "Çözümler",
     excerpt:
-      "Kurulum, kesif, teknik servis ve kurumsal EV sarj altyapisi hizmetlerini admin panelinden yonetin.",
+      "Kurulum, keşif, teknik servis ve kurumsal EV şarj altyapısı hizmetlerini admin panelinden yönetin.",
     body:
-      "<p>Bu sayfa yayinlandiginda hizmetler sayfasinin icerigi ve SEO bilgileri admin panelinden kontrol edilir.</p>",
-    seoTitle: "EV Sarj Hizmetleri",
+      "<p>Bu sayfa yayınlandığında hizmetler sayfasının içeriği ve SEO bilgileri admin panelinden kontrol edilir.</p>",
+    seoTitle: "EV Şarj Hizmetleri",
     seoDescription:
-      "Elektrikli arac sarj kurulumu, kesif, teknik servis ve kurumsal altyapi hizmetleri."
+      "Elektrikli araç şarj kurulumu, keşif, teknik servis ve kurumsal altyapı hizmetleri."
   },
   {
     slug: "iletisim",
-    title: "Iletisim",
-    eyebrow: "Basvuru",
+    title: "İletişim",
+    eyebrow: "Başvuru",
     excerpt:
-      "Teklif, kesif, kurulum, servis ve is ortakligi talepleri icin iletisim sayfasini yonetin.",
+      "Teklif, keşif, kurulum, servis ve iş ortaklığı talepleri için iletişim sayfasını yönetin.",
     body:
-      "<p>Bu sayfa yayinlandiginda iletisim sayfasinin icerigi admin panelindeki Site modulu uzerinden guncellenir.</p>",
-    seoTitle: "ParkChargeEV Iletisim",
+      "<p>Bu sayfa yayınlandığında iletişim sayfasının içeriği admin panelindeki Site modülü üzerinden güncellenir.</p>",
+    seoTitle: "ParkChargeEV İletişim",
     seoDescription:
-      "Teklif, kesif, kurulum, servis ve is ortakligi talepleri icin ParkChargeEV ile iletisime gecin."
+      "Teklif, keşif, kurulum, servis ve iş ortaklığı talepleri için ParkChargeEV ile iletişime geçin."
   }
 ];
 
 if (!databaseUrl) {
-  console.error("DIRECT_URL veya DATABASE_URL tanimli degil.");
+  console.error("DIRECT_URL veya DATABASE_URL tanımlı değil.");
   process.exit(1);
 }
 
@@ -196,7 +196,7 @@ try {
     `;
   }
 
-  console.log("Site CMS migration hazir: navigation_items ve site_pages aktif.");
+  console.log("Site CMS migration hazır: navigation_items ve site_pages aktif.");
 } catch (error) {
   console.error("Site CMS migration sirasinda hata olustu.");
   console.error(error instanceof Error ? error.message : error);

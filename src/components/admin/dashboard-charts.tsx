@@ -5,7 +5,7 @@ const chartColors = ["#063326", "#0f8f6f", "#7eecc9", "#f97316", "#ef4444", "#14
 const quoteStatusLabels: Record<string, string> = {
   new: "Yeni Talep",
   reviewing: "İnceleniyor",
-  proposal_sent: "Teklif Gonderildi",
+  proposal_sent: "Teklif Gönderildi",
   negotiation: "Müzakere",
   won: "Kazandi",
   lost: "Kaybetti"
@@ -13,7 +13,7 @@ const quoteStatusLabels: Record<string, string> = {
 
 const orderStatusLabels: Record<string, string> = {
   pending_payment: "Ödeme Bekliyor",
-  pending_confirmation: "Ödeme Alindi",
+  pending_confirmation: "Ödeme Alındı",
   confirmed: "Onaylandı",
   shipped: "Kargoya Verildi",
   delivered: "Teslim Edildi",
@@ -44,7 +44,7 @@ type DashboardChartsProps = {
 function ChartEmptyState() {
   return (
     <div className="flex h-full min-h-48 items-center justify-center rounded-3xl bg-white/70 text-sm font-bold text-slate-500">
-      Henuz veri yok
+      Henüz veri yok
     </div>
   );
 }

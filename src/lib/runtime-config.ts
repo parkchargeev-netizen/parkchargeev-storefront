@@ -65,7 +65,7 @@ export function assertDatabaseConfig() {
   assertConfig(
     databaseEnvKeys,
     "database",
-    "Veritabani baglantisi kurulamadı. DATABASE_URL tanimli ve erisilebilir bir PostgreSQL ya da Supabase baglantisini isaret etmelidir."
+    "Veritabanı bağlantısı kurulamadı. DATABASE_URL tanımlı ve erişilebilir bir PostgreSQL ya da Supabase bağlantısını işaret etmelidir."
   );
 }
 
@@ -81,7 +81,7 @@ export function getPaytrConfig() {
   assertConfig(
     paytrEnvKeys,
     "paytr",
-    "PayTR yapilandirmasi eksik. PAYTR_MERCHANT_ID, PAYTR_MERCHANT_KEY ve PAYTR_MERCHANT_SALT tanimlanmalidir."
+    "PayTR yapılandırması eksik. PAYTR_MERCHANT_ID, PAYTR_MERCHANT_KEY ve PAYTR_MERCHANT_SALT tanımlanmalıdır."
   );
 
   return {
@@ -115,7 +115,7 @@ export function getSupabaseServerConfig() {
   assertConfig(
     supabaseServerEnvKeys,
     "supabase",
-    "Supabase sunucu baglantisi eksik. NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY ve SUPABASE_SERVICE_ROLE_KEY tanimlanmalidir."
+    "Supabase sunucu bağlantısı eksik. NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY ve SUPABASE_SERVICE_ROLE_KEY tanımlanmalıdır."
   );
 
   return {

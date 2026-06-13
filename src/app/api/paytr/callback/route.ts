@@ -218,7 +218,7 @@ export async function POST(request: Request) {
           toStatus: nextOrderStatus,
           note:
             payload.status === "success"
-              ? "PayTR callback ile ödeme onayi alindi."
+              ? "PayTR callback ile ödeme onayı alındı."
               : payload.failed_reason_msg || "PayTR callback ödeme hatasi bildirdi."
         });
       }

@@ -106,7 +106,7 @@ function PremiumHero({ whatsappHref }: { whatsappHref: string }) {
       <div className="premium-hero__inner relative z-10 mx-auto flex max-w-7xl flex-col justify-center px-4 py-12 sm:px-6 lg:px-8">
         <div className="premium-hero__copy max-w-[42rem]">
           <p className="premium-hero__eyebrow">ParkChargeEV şarj çözümleri</p>
-          <div className="flex flex-wrap gap-2">
+          <div className="premium-hero__mobile-trust">
             {heroTrustSignals.slice(0, 3).map((item) => {
               const Icon = iconMap[item.icon];
 

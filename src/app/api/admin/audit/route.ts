@@ -23,7 +23,7 @@ export async function GET(request: Request) {
   const authenticatedAdmin = await requireAdminRole(["superadmin"]);
 
   if (!authenticatedAdmin) {
-    return NextResponse.json({ ok: false, message: "Yetkisiz erisim." }, { status: 401 });
+    return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });
   }
 
   const query = parseListQuery(request);
@@ -35,7 +35,7 @@ export async function GET(request: Request) {
       { header: "Varlik", value: (item) => item.entityType },
       { header: "Varlik ID", value: (item) => item.entityId },
       { header: "Aksiyon", value: (item) => item.action },
-      { header: "Ozet", value: (item) => item.summary },
+      { header: "Özet", value: (item) => item.summary },
       { header: "Tarih", value: (item) => item.createdAt }
     ]);
   }

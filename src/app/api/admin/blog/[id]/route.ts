@@ -18,7 +18,7 @@ export async function GET(_request: Request, { params }: BlogPostRouteProps) {
   const authenticatedAdmin = await requireAdminRole(["superadmin", "editor"]);
 
   if (!authenticatedAdmin) {
-    return NextResponse.json({ ok: false, message: "Yetkisiz erisim." }, { status: 401 });
+    return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });
   }
 
   let id: string;
@@ -46,7 +46,7 @@ export async function PATCH(request: Request, { params }: BlogPostRouteProps) {
   const authenticatedAdmin = await requireAdminRole(["superadmin", "editor"]);
 
   if (!authenticatedAdmin) {
-    return NextResponse.json({ ok: false, message: "Yetkisiz erisim." }, { status: 401 });
+    return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });
   }
 
   try {

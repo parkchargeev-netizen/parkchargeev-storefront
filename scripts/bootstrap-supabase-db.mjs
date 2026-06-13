@@ -52,7 +52,7 @@ const requiredTables = [
 ];
 
 if (!databaseUrl) {
-  console.error("DIRECT_URL veya DATABASE_URL tanimli degil.");
+  console.error("DIRECT_URL veya DATABASE_URL tanımlı değil.");
   console.error(
     "Ornek: DIRECT_URL=postgresql://postgres:[PASSWORD]@db.<project-ref>.supabase.co:5432/postgres"
   );
@@ -79,22 +79,22 @@ try {
   const missingTables = await listMissingTables(client);
 
   if (missingTables.length === 0) {
-    console.log("Supabase semasi zaten hazir, migration atlandi.");
+    console.log("Supabase şeması zaten hazır, migration atlandı.");
   } else {
     if (missingTables.length !== requiredTables.length) {
       console.log(
-        `Eksik tablo sayisi: ${missingTables.length}. Migration kalan semayi tamamlamayi deneyecek.`
+        `Eksik tablo sayısı: ${missingTables.length}. Migration kalan şemayı tamamlamayı deneyecek.`
       );
     }
 
     console.log(`Supabase schema bootstrap basliyor: ${migrationPath}`);
 
     for (const [index, statement] of statements.entries()) {
-      console.log(`Statement ${index + 1}/${statements.length} calistiriliyor...`);
+      console.log(`Statement ${index + 1}/${statements.length} çalıştırılıyor...`);
       await client.unsafe(statement);
     }
 
-    console.log("Supabase veritabani semasi basariyla olusturuldu.");
+    console.log("Supabase veritabanı şeması başarıyla oluşturuldu.");
   }
 
   await ensureBootstrapAdmin(client);
@@ -130,7 +130,7 @@ async function ensureBootstrapAdmin(sql) {
 
   if (!email || !password) {
     console.log(
-      "Bootstrap admin atlandi: ADMIN_BOOTSTRAP_EMAIL veya ADMIN_BOOTSTRAP_PASSWORD eksik."
+      "Bootstrap admin atlandı: ADMIN_BOOTSTRAP_EMAIL veya ADMIN_BOOTSTRAP_PASSWORD eksik."
     );
     return;
   }
@@ -154,7 +154,7 @@ async function ensureBootstrapAdmin(sql) {
     returning id, email, role
   `;
 
-  console.log(`Bootstrap admin hazir: ${admin.email} (${admin.role})`);
+  console.log(`Bootstrap admin hazır: ${admin.email} (${admin.role})`);
 }
 
 function hashPassword(password) {

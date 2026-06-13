@@ -45,7 +45,7 @@ export function OrderStatusForm({
 
       const data = (await response.json().catch(() => ({
         ok: false,
-        message: "Sunucu yaniti okunamadi."
+        message: "Sunucu yanıtı okunamadı."
       }))) as { ok: boolean; message?: string };
     setFeedback(data.ok ? "Sipariş güncellendi." : data.message ?? "İşlem başarısız.");
 

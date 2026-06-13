@@ -67,7 +67,7 @@ for (const file of requiredFiles) {
 }
 
 if (!process.env.DATABASE_URL) {
-  throw new Error("DATABASE_URL tanimli degil; admin smoke test canli veritabani olmadan kosamaz.");
+  throw new Error("DATABASE_URL tanımlı değil; admin smoke test canlı veritabanı olmadan koşamaz.");
 }
 
 const sql = postgres(process.env.DATABASE_URL, {
@@ -115,17 +115,17 @@ try {
   `;
 
   if (!adminCount || Number(adminCount.total) < 1) {
-    throw new Error("admin_users tablosunda aktif panel kullanicisi bulunamadi.");
+    throw new Error("admin_users tablosunda aktif panel kullanıcısı bulunamadı.");
   }
 
   if (!superadminCount || Number(superadminCount.total) < 1) {
-    throw new Error("Tum admin alanlarina erisim icin aktif superadmin kullanicisi bulunamadi.");
+    throw new Error("Tüm admin alanlarına erişim için aktif superadmin kullanıcısı bulunamadı.");
   }
 
-  console.log("Admin smoke test basarili.");
-  console.log(`Dogrulanan tablo sayisi: ${requiredTables.length}`);
-  console.log(`Admin kullanici sayisi: ${adminCount.total}`);
-  console.log(`Aktif superadmin sayisi: ${superadminCount.total}`);
+  console.log("Admin smoke test başarılı.");
+  console.log(`Doğrulanan tablo sayısı: ${requiredTables.length}`);
+  console.log(`Admin kullanıcı sayısı: ${adminCount.total}`);
+  console.log(`Aktif superadmin sayısı: ${superadminCount.total}`);
 } finally {
   await sql.end();
 }

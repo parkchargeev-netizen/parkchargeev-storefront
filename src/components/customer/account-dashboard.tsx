@@ -99,8 +99,8 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
   ];
   const journeyCards = [
     {
-      title: "Dogru urunu sec",
-      detail: "Araç, kullanım alanı ve altyapıya göre wallbox veya aksesuar secin.",
+      title: "Doğru ürünü seç",
+      detail: "Araç, kullanım alanı ve altyapıya göre wallbox veya aksesuar seçin.",
       href: "/urun-secici",
       icon: Zap
     },
@@ -111,13 +111,13 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
       icon: Truck
     },
     {
-      title: "Teklif ve kesfi izle",
+      title: "Teklif ve keşfi izle",
       detail: "Site, ofis ve kurulum talepleriniz destek alanında listelenir.",
       href: "#destek",
       icon: ClipboardCheck
     },
     {
-      title: "Servis destegi al",
+      title: "Servis desteği al",
       detail: "Garanti, bakım ve teknik destek için hızlı talep oluşturun.",
       href: `/iletisim?konu=${encodeURIComponent("Teknik servis ve bakım")}`,
       icon: Wrench
@@ -125,7 +125,7 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
   ];
   const accountFlowCards = [
     {
-      label: "1. İhtiyacı sec",
+      label: "1. İhtiyacı seç",
       detail: "Ev, site, işletme veya aksesuar ihtiyacına göre ürün seçici ya da mağazaya gidin.",
       href: "/urun-secici",
       icon: Zap
@@ -189,7 +189,7 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
 
         <section className="surface-card p-5">
           <p className="text-xs font-black uppercase tracking-[0.22em] text-primary">
-            Hızlı islemler
+            Hızlı işlemler
           </p>
           <div className="mt-4 grid gap-2">
             {[
@@ -197,8 +197,8 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
               { href: "/urun-secici", label: "Ürün seçici", icon: Zap },
               { href: "/karsilastir", label: "Karşılaştır", icon: FileText },
               {
-                href: `/iletisim?konu=${encodeURIComponent("Kurulum destegi")}`,
-                label: "Kurulum destegi",
+                href: `/iletisim?konu=${encodeURIComponent("Kurulum desteği")}`,
+                label: "Kurulum desteği",
                 icon: Headphones
               }
             ].map((item) => {
@@ -253,7 +253,7 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
                   href="/urun-secici"
                   className="inline-flex items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-black text-white"
                 >
-                  Dogru cihazı sec
+                  Doğru cihazı seç
                   <Zap className="h-4 w-4" />
                 </Link>
                 <Link
@@ -295,7 +295,7 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
           <PanelMetric
             label="Açık talep"
             value={openRequests}
-            detail="Teklif, keşif, servis veya kurulum akislari."
+            detail="Teklif, keşif, servis veya kurulum akışları."
             icon={<Headphones className="h-5 w-5" />}
           />
           <PanelMetric
@@ -380,7 +380,7 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
                   Self servis merkezi
                 </h2>
                 <p className="mt-2 text-sm leading-6 text-on-surface-variant">
-                  Dogru cihaz, şehir kapsamı, sipariş ve servis ihtiyacına göre hızlı rota secin.
+                  Doğru cihaz, şehir kapsamı, sipariş ve servis ihtiyacına göre hızlı rota seçin.
                 </p>
               </div>
             </div>
@@ -456,7 +456,7 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
                   Güvenli şarj süreci
                 </h2>
                 <p className="mt-2 text-sm leading-6 text-on-surface-variant">
-                  Ürün, sepet, kargo, keşif ve kurulum adımlari karismadan takip edilir.
+                  Ürün, sepet, kargo, keşif ve kurulum adımları karışmadan takip edilir.
                 </p>
               </div>
             </div>
@@ -524,14 +524,14 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
 
             <section id="güvenlik" className="surface-card scroll-mt-28 p-5">
               <h2 className="text-xl font-black tracking-[-0.03em] text-on-surface">
-                Güvenlik ozeti
+                Güvenlik özeti
               </h2>
               <div className="mt-4 grid gap-3 text-sm leading-6 text-on-surface-variant">
                 {[
                   "httpOnly müşteri oturumu",
                   "SameSite cookie korumasi",
                   "No-store ve noindex başlıkları",
-                  "Profil ve adres işlemlerinde oturum kontrolu"
+                  "Profil ve adres işlemlerinde oturum kontrolü"
                 ].map((item) => (
                   <div key={item} className="flex gap-2">
                     <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />

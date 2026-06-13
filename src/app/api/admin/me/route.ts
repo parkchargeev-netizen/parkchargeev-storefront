@@ -9,7 +9,7 @@ export async function GET() {
     return NextResponse.json(
       {
         ok: false,
-        message: "Oturum bulunamadi."
+        message: "Oturum bulunamadı."
       },
       { status: 401 }
     );

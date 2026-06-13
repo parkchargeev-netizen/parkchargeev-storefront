@@ -23,7 +23,7 @@ export async function GET(request: Request) {
   const authenticatedAdmin = await requireAdminRole(["superadmin", "sales"]);
 
   if (!authenticatedAdmin) {
-    return NextResponse.json({ ok: false, message: "Yetkisiz erisim." }, { status: 401 });
+    return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });
   }
 
   const query = parseListQuery(request);

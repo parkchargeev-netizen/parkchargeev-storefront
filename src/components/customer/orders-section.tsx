@@ -80,7 +80,7 @@ export function OrdersSection({ orders }: { orders: AccountSnapshot["recentOrder
             Sipariş, kargo ve belgeler
           </h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-on-surface-variant">
-            Ödeme, onay, kargo, fatura ve servis adımlari tek listede takip edilir.
+            Ödeme, onay, kargo, fatura ve servis adımları tek listede takip edilir.
           </p>
         </div>
         <Link
@@ -174,7 +174,7 @@ export function OrdersSection({ orders }: { orders: AccountSnapshot["recentOrder
           ))
         ) : (
           <div className="rounded-[26px] bg-surface-container-low p-6">
-            <p className="font-black text-on-surface">Henuz sipariş görünmüyor.</p>
+            <p className="font-black text-on-surface">Henüz sipariş görünmüyor.</p>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-on-surface-variant">
               Aynı e-posta adresiyle ödeme yaptığınızda siparişler, ödeme ve kargo durumuyla
               birlikte burada listelenir.

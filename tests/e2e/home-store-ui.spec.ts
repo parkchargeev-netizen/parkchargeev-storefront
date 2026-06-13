@@ -8,6 +8,12 @@ test("@e2e ana sayfa sade karar akisini gosterir", async ({ page }) => {
   ).toBeVisible();
   await expect(page.locator(".premium-hero-route")).toHaveCount(3);
 
+  const viewportHeight = page.viewportSize()?.height ?? 0;
+  const heroHeight = await page.locator(".premium-hero").evaluate((element) => {
+    return element.getBoundingClientRect().height;
+  });
+  expect(heroHeight).toBeGreaterThanOrEqual(viewportHeight - 76);
+
   for (const label of [
     "Pazar momentumu",
     "Ürün kargosu",
@@ -20,6 +26,8 @@ test("@e2e ana sayfa sade karar akisini gosterir", async ({ page }) => {
   const viewportWidth = page.viewportSize()?.width ?? 0;
   if (viewportWidth <= 767) {
     await expect(page.locator(".premium-hero > .real-charger-media")).toBeHidden();
+    await expect(page.locator(".premium-hero__mobile-trust")).toBeVisible();
+    await expect(page.locator(".premium-hero__mobile-trust .premium-trust-pill")).toHaveCount(3);
 
     const homepageCards = page.locator(".premium-product-spotlight__grid .premium-product-card");
     expect(await homepageCards.count()).toBeGreaterThan(1);
@@ -27,6 +35,8 @@ test("@e2e ana sayfa sade karar akisini gosterir", async ({ page }) => {
       return element.getBoundingClientRect().width;
     });
     expect(firstCardWidth).toBeLessThan(190);
+  } else {
+    await expect(page.locator(".premium-hero__mobile-trust")).toBeHidden();
   }
 
   const hasPageOverflow = await page.evaluate(() => {
@@ -88,6 +98,12 @@ test("@e2e magaza acik renkli e-ticaret girisi ve kayan urun vitrini sunar", asy
   } else {
     await expect(page.locator(".store-mobile-tools")).toBeHidden();
     await expect(page.locator(".store-filter-sidebar")).toBeVisible();
+
+    const railCoverage = await productRail.evaluate((element) => {
+      const parentWidth = element.parentElement?.getBoundingClientRect().width ?? 0;
+      return element.getBoundingClientRect().width / parentWidth;
+    });
+    expect(railCoverage).toBeGreaterThan(0.98);
   }
 
   const hasPageOverflow = await page.evaluate(() => {

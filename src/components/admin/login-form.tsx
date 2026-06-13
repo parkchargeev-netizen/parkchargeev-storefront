@@ -48,7 +48,7 @@ export function LoginForm() {
 
       const data = (await response.json().catch(() => ({
         ok: false,
-        message: "Sunucu yaniti okunamadi."
+        message: "Sunucu yanıtı okunamadı."
       }))) as { ok: boolean; message?: string };
 
     if (!response.ok || !data.ok) {

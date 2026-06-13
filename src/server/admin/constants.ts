@@ -124,7 +124,7 @@ export const orderStatusOptions: Array<{
   label: string;
 }> = [
   { value: "pending_payment", label: "Beklemede" },
-  { value: "pending_confirmation", label: "Ödeme Alindi" },
+  { value: "pending_confirmation", label: "Ödeme Alındı" },
   { value: "confirmed", label: "Onaylandı" },
   { value: "shipped", label: "Kargoya Verildi" },
   { value: "delivered", label: "Teslim Edildi" },
@@ -143,7 +143,7 @@ export const quoteStatusOptions: Array<{
 }> = [
   { value: "new", label: "Yeni Talep" },
   { value: "reviewing", label: "İnceleniyor" },
-  { value: "proposal_sent", label: "Teklif Gonderildi" },
+  { value: "proposal_sent", label: "Teklif Gönderildi" },
   { value: "negotiation", label: "Müzakere" },
   { value: "won", label: "Kazandi" },
   { value: "lost", label: "Kaybetti" }

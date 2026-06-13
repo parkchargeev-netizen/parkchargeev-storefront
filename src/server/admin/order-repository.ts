@@ -364,7 +364,7 @@ export async function runAdminPaytrOperation(
       ? {
           status: "refunded" as const,
           paymentStatus: "refunded",
-          statusNote: input.note || "Admin tarafindan iade olarak isaretlendi.",
+          statusNote: input.note || "Admin tarafından iade olarak işaretlendi.",
           updatedAt: new Date()
         }
       : {

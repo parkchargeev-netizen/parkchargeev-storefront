@@ -89,7 +89,7 @@ const personaCards: Array<{
     href: "/admin/teklifler",
     label: "Ev tipi AC alıcısi",
     detail: "7.4/11 kW wallbox, araç uyumu sağlar.",
-    signal: "Hızlı donusum",
+    signal: "Hızlı dönüşüm",
     tone: "success",
     icon: <Home className="h-5 w-5" />
   },
@@ -103,7 +103,7 @@ const personaCards: Array<{
   },
   {
     href: "/admin/teklifler",
-    label: "KOBI / ofis",
+    label: "KOBİ / ofis",
     detail: "22 kW AC, misafir deneyimi, servis ve fatura akışı birlikte sunulur.",
     signal: "Kurumsal teklif",
     tone: "warning",
@@ -112,7 +112,7 @@ const personaCards: Array<{
   {
     href: "/admin/saha",
     label: "Ticari lokasyon",
-    detail: "DC veya coklu AC saha için enerji kapasitesi ve fizibilite notu gerekir.",
+    detail: "DC veya çoklu AC saha için enerji kapasitesi ve fizibilite notu gerekir.",
     signal: "Fizibilite",
     tone: "danger",
     icon: <MapPin className="h-5 w-5" />
@@ -120,8 +120,8 @@ const personaCards: Array<{
   {
     href: "/admin/urunler",
     label: "Kablo / aksesuar",
-    detail: "Type 2 uyum, stok görünürlugu ve hızlı sepet donusumu takip edilir.",
-    signal: "Hızlı satis",
+    detail: "Type 2 uyumu, stok görünürlüğü ve hızlı sepet dönüşümü takip edilir.",
+    signal: "Hızlı satış",
     tone: "neutral",
     icon: <Cable className="h-5 w-5" />
   }
@@ -144,35 +144,35 @@ const moduleCards: Array<{
   {
     href: "/admin/siparisler",
     label: "Sipariş operasyonu",
-    detail: "Ödeme, kargo, fatura, not ve teslimat adımlarini takip et.",
+    detail: "Ödeme, kargo, fatura, not ve teslimat adımlarını takip et.",
     icon: <ShoppingCart className="h-5 w-5" />,
     roles: ["superadmin", "sales"]
   },
   {
     href: "/admin/teklifler",
     label: "Teklif CRM",
-    detail: "Bireysel, site, işletme ve filo taleplerini aksiyona cevir.",
+    detail: "Bireysel, site, işletme ve filo taleplerini aksiyona çevir.",
     icon: <FileText className="h-5 w-5" />,
     roles: ["superadmin", "sales"]
   },
   {
     href: "/admin/saha",
     label: "Saha planlama",
-    detail: "Keşif, kurulum, servis ve lokasyon kapsamlarini netleştir.",
+    detail: "Keşif, kurulum, servis ve lokasyon kapsamlarını netleştir.",
     icon: <Wrench className="h-5 w-5" />,
     roles: ["superadmin", "operations", "technician"]
   },
   {
     href: "/admin/blog",
     label: "İçerik ve SEO",
-    detail: "Blog, rehber, arama niyeti ve satis destekli içerikleri yayinla.",
+    detail: "Blog, rehber, arama niyeti ve satış destekli içerikleri yayınla.",
     icon: <BookOpen className="h-5 w-5" />,
     roles: ["superadmin", "editor"]
   },
   {
     href: "/admin/paytr",
     label: "Ödeme merkezi",
-    detail: "PayTR kayıtları, callback ve ödeme kontrolunu incele.",
+    detail: "PayTR kayıtları, callback ve ödeme kontrolünü incele.",
     icon: <CreditCard className="h-5 w-5" />,
     roles: ["superadmin", "sales"]
   }
@@ -186,12 +186,12 @@ const adminWorkflowCards = [
   },
   {
     label: "2. Onceliklendir",
-    detail: "Bekleyen sipariş, teklif ve saha taleplerini açık kuyruk kartlarindan secin.",
+    detail: "Bekleyen sipariş, teklif ve saha taleplerini açık kuyruk kartlarından seçin.",
     icon: <Target className="h-5 w-5" />
   },
   {
-    label: "3. Guncelle",
-    detail: "Durum, not, stok, fiyat, kargo, teklif veya servis adımini tek kayıtta güncelleyin.",
+    label: "3. Güncelle",
+    detail: "Durum, not, stok, fiyat, kargo, teklif veya servis adımını tek kayıtta güncelleyin.",
     icon: <CheckCircle2 className="h-5 w-5" />
   },
   {
@@ -212,7 +212,7 @@ const commerceAdminStandards: Array<{
   {
     href: "/admin/urunler",
     label: "Katalog kalitesi",
-    detail: "Baslik, fiyat, stok, varyant, medya, SEO, AI ve teknik özellikler eksiksiz tutulur.",
+    detail: "Başlık, fiyat, stok, varyant, medya, SEO, AI ve teknik özellikler eksiksiz tutulur.",
     proof: "Shopify + Woo ürün standardı",
     icon: <Package className="h-5 w-5" />,
     roles: ["superadmin", "sales"]
@@ -228,7 +228,7 @@ const commerceAdminStandards: Array<{
   {
     href: "/admin/teklifler",
     label: "Müşteri ve segment",
-    detail: "Ev, site, KOBI ve ticari lokasyon talepleri persona bazlı takip edilir.",
+    detail: "Ev, site, KOBİ ve ticari lokasyon talepleri persona bazlı takip edilir.",
     proof: "CRM + segment",
     icon: <Users className="h-5 w-5" />,
     roles: ["superadmin", "sales"]
@@ -237,14 +237,14 @@ const commerceAdminStandards: Array<{
     href: "/admin/saha",
     label: "Keşif ve kurulum",
     detail: "Türkiye geneli keşif, kurulum ve servis aksiyonları saha uygunluğuna göre ayrışır.",
-    proof: "Saha is emri",
+    proof: "Saha iş emri",
     icon: <Wrench className="h-5 w-5" />,
     roles: ["superadmin", "operations", "technician"]
   },
   {
     href: "/admin/blog",
     label: "İçerik ve pazarlama",
-    detail: "Blog, rehber, kampanya metni ve satis destekli açıklamalar zengin editorle uretilir.",
+    detail: "Blog, rehber, kampanya metni ve satış destekli açıklamalar zengin editörle üretilir.",
     proof: "SEO + CRO içerik",
     icon: <BookOpen className="h-5 w-5" />,
     roles: ["superadmin", "editor", "sales"]
@@ -268,7 +268,7 @@ const commerceAdminStandards: Array<{
   {
     href: "/admin/audit",
     label: "Rol ve denetim",
-    detail: "Rol bazlı erisim, oturum, audit ve güvenlik kayıtları is sürecine baglanir.",
+    detail: "Rol bazlı erişim, oturum, audit ve güvenlik kayıtları iş sürecine bağlanır.",
     proof: "Admin güvenligi",
     icon: <ShieldCheck className="h-5 w-5" />,
     roles: ["superadmin"]
@@ -411,10 +411,10 @@ export function AdminDashboardView({
   const queueCards = [
     {
       href: "/admin/siparisler?status=pending_confirmation",
-      label: "Sipariş onayi",
+      label: "Sipariş onayı",
       value: snapshot.kpis.pendingOrders,
-      detail: "Ödeme, stok, kargo ve fatura kontrolu bekleyen kayıtlar.",
-      action: "Siparişleri ac",
+      detail: "Ödeme, stok, kargo ve fatura kontrolü bekleyen kayıtlar.",
+      action: "Siparişleri aç",
       icon: <ShoppingCart className="h-5 w-5" />,
       tone: snapshot.kpis.pendingOrders > 0 ? "warning" : "success",
       roles: ["superadmin", "sales"] as AdminRole[]
@@ -423,8 +423,8 @@ export function AdminDashboardView({
       href: "/admin/teklifler",
       label: "Teklif aksiyonu",
       value: snapshot.kpis.pendingQuotes,
-      detail: "Yeni, inceleme veya muzakeredeki satis firsatlari.",
-      action: "Teklif masasina git",
+      detail: "Yeni, inceleme veya müzakeredeki satış fırsatları.",
+      action: "Teklif masasına git",
       icon: <FileText className="h-5 w-5" />,
       tone: snapshot.kpis.pendingQuotes > 0 ? "info" : "success",
       roles: ["superadmin", "sales"] as AdminRole[]
@@ -433,8 +433,8 @@ export function AdminDashboardView({
       href: "/admin/saha",
       label: "Saha planlama",
       value: snapshot.kpis.openServiceRequests,
-      detail: "Keşif, kurulum ve teknik servis ekibine aktarilacak işler.",
-      action: "Saha taleplerini ac",
+      detail: "Keşif, kurulum ve teknik servis ekibine aktarılacak işler.",
+      action: "Saha taleplerini aç",
       icon: <Wrench className="h-5 w-5" />,
       tone: snapshot.kpis.openServiceRequests > 0 ? "warning" : "success",
       roles: ["superadmin", "operations", "technician"] as AdminRole[]
@@ -455,13 +455,13 @@ export function AdminDashboardView({
   const visibleCommerceStandards = commerceAdminStandards.filter((card) => canSee(card.roles));
   const todayActions = [
     {
-      label: "Ödeme ve sipariş onayi",
+      label: "Ödeme ve sipariş onayı",
       count: snapshot.kpis.pendingOrders,
       href: "/admin/siparisler?status=pending_confirmation",
-      detail: "Müşteri bekletmeden ödeme ve stok kontrolunu kapat."
+      detail: "Müşteri bekletmeden ödeme ve stok kontrolünü kapat."
     },
     {
-      label: "Teklif donusu",
+      label: "Teklif dönüşü",
       count: snapshot.kpis.pendingQuotes,
       href: "/admin/teklifler",
       detail: "Ev, site ve işletme taleplerinde hızlı ilk temas kur."
@@ -482,7 +482,7 @@ export function AdminDashboardView({
             Yerel yedek mod
           </p>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-700">
-            Veritabani baglantisi olmadiginda panel yerel yedek veriyle acilir. Canlı operasyon için
+            Veritabanı bağlantısı olmadığında panel yerel yedek veriyle açılır. Canlı operasyon için
             Supabase ortam degiskenlerini kontrol edin.
           </p>
         </section>
@@ -584,7 +584,7 @@ export function AdminDashboardView({
               E-ticaret admin standardı
             </p>
             <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-slate-950">
-              Panel, satisin butun arka ofisini tek akista toplar.
+              Panel, satışın bütün arka ofisini tek akışta toplar.
             </h2>
             <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">
               Ürün katalog kalitesi, sipariş/fulfillment, müşteri segmentleri, pazarlama içeriği,
@@ -681,7 +681,7 @@ export function AdminDashboardView({
               href="/admin/erisim"
               className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-center text-sm font-black text-slate-800 transition hover:border-emerald-200 hover:bg-emerald-50"
             >
-              Tum moduller
+              Tüm modüller
             </AdminPrefetchLink>
           </div>
           <div className="mt-5 grid gap-3 md:grid-cols-3">
@@ -734,7 +734,7 @@ export function AdminDashboardView({
                 icon: <CreditCard className="h-4 w-4" />
               },
               {
-                label: "Rol bazlı erisim",
+                label: "Rol bazlı erişim",
                 status: "Aktif",
                 tone: "success",
                 icon: <ShieldCheck className="h-4 w-4" />
@@ -764,10 +764,10 @@ export function AdminDashboardView({
         <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-sm font-black uppercase tracking-[0.24em] text-[#0f8f6f]">
-              Persona satis rotalari
+              Persona satış rotaları
             </p>
             <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-slate-950">
-              Her müşteri tipi doğru modüle dussun.
+              Her müşteri tipi doğru modüle düşsün.
             </h2>
           </div>
         </div>
@@ -879,7 +879,7 @@ export function AdminDashboardView({
                 </AdminPrefetchLink>
               ))
             ) : (
-              <EmptyState label="Henuz sipariş hareketi yok." />
+              <EmptyState label="Henüz sipariş hareketi yok." />
             )}
           </div>
         </div>
@@ -904,7 +904,7 @@ export function AdminDashboardView({
                 </AdminPrefetchLink>
               ))
             ) : (
-              <EmptyState label="Henuz teklif hareketi yok." />
+              <EmptyState label="Henüz teklif hareketi yok." />
             )}
           </div>
         </div>
@@ -932,7 +932,7 @@ export function AdminDashboardView({
                 </AdminPrefetchLink>
               ))
             ) : (
-              <EmptyState label="Henuz saha talebi yok." />
+              <EmptyState label="Henüz saha talebi yok." />
             )}
           </div>
         </div>

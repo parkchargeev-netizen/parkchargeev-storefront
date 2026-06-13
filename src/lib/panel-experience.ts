@@ -45,7 +45,7 @@ export const adminRevenuePlays: PanelActionCard[] = [
     tone: "info"
   },
   {
-    label: "KOBI ve ofis otoparki",
+    label: "KOBİ ve ofis otoparkı",
     detail: "22 kW AC, misafir/filo deneyimi, fatura ve servis planı birlikte sunulur.",
     signal: "Kurumsal teklif",
     href: "/admin/teklifler",
@@ -53,7 +53,7 @@ export const adminRevenuePlays: PanelActionCard[] = [
   },
   {
     label: "Ticari lokasyon yatirimcisi",
-    detail: "DC veya coklu AC saha için trafo, enerji kapasitesi ve ROI on fizibilitesi istenir.",
+    detail: "DC veya çoklu AC saha için trafo, enerji kapasitesi ve ROI ön fizibilitesi istenir.",
     signal: "Fizibilite",
     href: "/admin/saha",
     tone: "danger"
@@ -85,8 +85,8 @@ export const adminOpsChecklist = [
 
 export const customerSelfServiceCards: PanelActionCard[] = [
   {
-    label: "Dogru cihazı bul",
-    detail: "Araç, kullanım alanı, faz ve günlük ihtiyaca göre en uygun wallbox secilir.",
+    label: "Doğru cihazı bul",
+    detail: "Araç, kullanım alanı, faz ve günlük ihtiyaca göre en uygun wallbox seçilir.",
     signal: "Ürün secici",
     href: "/urun-secici",
     tone: "success"
@@ -116,12 +116,12 @@ export const customerSelfServiceCards: PanelActionCard[] = [
 
 export const customerTrustTimeline = [
   {
-    label: "1. Uygünlük",
+    label: "1. Uygunluk",
     detail: "Araç, konnektör, güç ve kurulum alanı netleşir."
   },
   {
     label: "2. Teklif / sepet",
-    detail: "Ürün, aksesuar ve kurulum ihtiyacı birlikte secilir."
+    detail: "Ürün, aksesuar ve kurulum ihtiyacı birlikte seçilir."
   },
   {
     label: "3. Kargo / keşif",

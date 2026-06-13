@@ -354,29 +354,29 @@ export function ProductForm({
   const phaseText = phaseLabel(phaseTypeValue);
   const featureAuditItems = [
     {
-      label: "Ürün adi",
+      label: "Ürün adı",
       ok: cleanText(currentName).length > 2,
-      detail: "Baslik karar verme ve SEO için net olmali."
+      detail: "Başlık karar verme ve SEO için net olmalı."
     },
     {
-      label: "Kisa açıklama",
+      label: "Kısa açıklama",
       ok: cleanText(shortDescriptionValue).length >= 70,
       detail: "Kullanım alanı, güç, uyum ve kurulum bilgisi özetlenmeli."
     },
     {
       label: "Uzun açıklama",
       ok: cleanText(descriptionValue).replace(/<[^>]+>/g, "").length >= 180,
-      detail: "Fayda, teknik detay, kurulum, teslimat ve güven bilgisi olmali."
+      detail: "Fayda, teknik detay, kurulum, teslimat ve güven bilgisi olmalı."
     },
     {
       label: "Güç + şarj tipi",
       ok: Boolean(powerText && chargeText),
-      detail: "7.4/11/22 kW veya DC güç sinifi net olmali."
+      detail: "7.4/11/22 kW veya DC güç sınıfı net olmalı."
     },
     {
       label: "Faz + konnektör",
       ok: Boolean(connectorText && phaseTypeValue),
-      detail: "Type 2/CCS2 ve monofaz/trifaz bilgisi yazilmali."
+      detail: "Type 2/CCS2 ve monofaz/trifaz bilgisi yazılmalı."
     },
     {
       label: "Akıllı özellikler",
@@ -386,12 +386,12 @@ export function ProductForm({
     {
       label: "Kurulum bilgisi",
       ok: installRequiredValue || cleanText(descriptionValue).toLocaleLowerCase("tr-TR").includes("kurulum"),
-      detail: "Keşif, pano, faz, kablo hattı veya montaj notu olmali."
+      detail: "Keşif, pano, faz, kablo hattı veya montaj notu olmalı."
     },
     {
       label: "Teknik tablo",
       ok: specValues.filter((item) => cleanText(item.label) && cleanText(item.value)).length >= 6,
-      detail: "Güç, faz, konnektör, IP, akıllı özellik ve kapsam maddeleri olmali."
+      detail: "Güç, faz, konnektör, IP, akıllı özellik ve kapsam maddeleri olmalı."
     },
     {
       label: "Görsel + alt text",
@@ -521,20 +521,20 @@ export function ProductForm({
       },
       {
         groupName: "Teknik",
-        label: "IP sinifi",
+        label: "IP sınıfı",
         value: cleanText(ipClassValue)
       },
       {
         groupName: "Akıllı özellik",
-        label: "Baglanti ve erisim",
+        label: "Bağlantı ve erişim",
         value: smartSummary
       },
       {
         groupName: "Kurulum",
         label: "Kurulum gereksinimi",
         value: installRequiredValue
-          ? "Keşif ve profesyonel kurulum onerilir"
-          : "Ürün kargo ile teslim edilir; uygünlük destekle netleşir"
+          ? "Keşif ve profesyonel kurulum önerilir"
+          : "Ürün kargo ile teslim edilir; uygunluk destekle netleşir"
       },
       {
         groupName: "Kurulum",
@@ -548,7 +548,7 @@ export function ProductForm({
       },
       {
         groupName: "Varyant",
-        label: "Varyant ozeti",
+        label: "Varyant özeti",
         value: variantSummary || cleanText(cableLengthValue)
       },
       {
@@ -556,7 +556,7 @@ export function ProductForm({
         label: "Yönetim özellikleri",
         value: specValues.some((item) => /ocpp|yük|yük|load/i.test(`${item.label} ${item.value}`))
           ? ""
-          : "OCPP, yük dengeleme veya RFID ihtiyacı varsa teklif asamasinda netleştirilir"
+          : "OCPP, yük dengeleme veya RFID ihtiyacı varsa teklif aşamasında netleştirilir"
       }
     ];
 
@@ -567,34 +567,34 @@ export function ProductForm({
   }
 
   function buildProductCopyFromFeatures() {
-    const productName = cleanText(currentName) || "ParkChargeEV şarj çözümu";
+    const productName = cleanText(currentName) || "ParkChargeEV şarj çözümü";
     const usageArea = selectedCategories.includes("aksesuar")
       ? "aksesuar ihtiyacı"
       : selectedCategories.includes("dc-hizli-sarj")
-        ? "ticari lokasyon ve hızlı şarj yatirimi"
+        ? "ticari lokasyon ve hızlı şarj yatırımı"
         : selectedCategories.includes("is-yeri-tipi")
-          ? "işletme, ofis ve otopark kullanımi"
-          : "ev tipi AC şarj kullanımi";
+          ? "işletme, ofis ve otopark kullanımı"
+          : "ev tipi AC şarj kullanımı";
     const smartSummary = smartFeatureLabels.length
       ? smartFeatureLabels.join(", ")
-      : "net teknik secim";
+      : "net teknik seçim";
     const vehicleSummary = selectedVehicles.length
       ? selectedVehicles.join(", ")
       : `${connectorText} uyumlu elektrikli araçlar`;
     const installSummary = installRequiredValue
-      ? "Kurulum oncesi pano, faz, kablo hattı ve koruma ekipmani kontrol edilerek ilerlenir."
-      : "Ürün kargo ile teslim edilir; uyumluluk veya montaj sorulari destek ekibiyle netleştirilebilir.";
+      ? "Kurulum öncesi pano, faz, kablo hattı ve koruma ekipmanı kontrol edilerek ilerlenir."
+      : "Ürün kargo ile teslim edilir; uyumluluk veya montaj soruları destek ekibiyle netleştirilebilir.";
     const primaryPower = powerText || `${chargeText} şarj`;
     const shortDescription =
-      `${productName}, ${usageArea} için ${primaryPower} güç sinifi, ${connectorText} konnektör, ${phaseText} altyapı ve ${smartSummary} özelliklerini tek pakette sunar.`;
+      `${productName}, ${usageArea} için ${primaryPower} güç sınıfı, ${connectorText} konnektör, ${phaseText} altyapı ve ${smartSummary} özelliklerini tek pakette sunar.`;
     const descriptionParagraphs = [
       `${productName}, ${usageArea} için doğru cihaz, doğru altyapı ve güvenli kullanım odağıyla hazırlanmış bir ParkChargeEV çözümüdür.`,
-      `Teknik tarafta ${primaryPower}, ${connectorText} konnektör, ${phaseText} faz yapisi${ipClassValue ? `, ${ipClassValue} koruma sinifi` : ""} ve ${smartSummary} bilgisi one cikar.`,
-      `Uyum tarafinda ${vehicleSummary} için karar vermeyi kolaylastirir. ${installSummary}`,
+      `Teknik tarafta ${primaryPower}, ${connectorText} konnektör, ${phaseText} faz yapısı${ipClassValue ? `, ${ipClassValue} koruma sınıfı` : ""} ve ${smartSummary} bilgisi öne çıkar.`,
+      `Uyum tarafında ${vehicleSummary} için karar vermeyi kolaylaştırır. ${installSummary}`,
       "Ürünler Türkiye genelinde 81 ile kargolanır."
     ];
     const featureBullets = uniqueList([
-      primaryPower ? `${primaryPower} güç sinifi` : "",
+      primaryPower ? `${primaryPower} güç sınıfı` : "",
       connectorText ? `${connectorText} konnektör uyumu` : "",
       phaseText ? `${phaseText} altyapı bilgisi` : "",
       smartSummary ? `${smartSummary} özellikleri` : "",
@@ -626,10 +626,10 @@ export function ProductForm({
     setValue(
       "detailContent.highlights",
       uniqueList([
-        `${primaryPower} güç sinifi ile net secim`,
+        `${primaryPower} güç sınıfı ile net seçim`,
         `${connectorText} uyumlu araçlar için pratik kullanım`,
         installRequiredValue
-          ? "Keşif ve kurulum planıyla altyapı riski azalir"
+          ? "Keşif ve kurulum planıyla altyapı riski azalır"
           : "Kargo ile hızlı teslimata uygun ürün akışı",
         "ParkChargeEV destek ekibiyle karar ve kurulum süreci netleşir"
       ]),
@@ -648,9 +648,9 @@ export function ProductForm({
     setValue(
       "detailContent.decisionChecks",
       uniqueList([
-        "Araçinizin konnektör ve AC/DC uyumunu kontrol edin.",
+        "Aracınızın konnektör ve AC/DC uyumunu kontrol edin.",
         "Pano, faz ve kablo hattı durumunu keşif veya destekle netleştirin.",
-        "Ev, site veya işletme ihtiyacına göre güç sinifini secin."
+        "Ev, site veya işletme ihtiyacına göre güç sınıfını seçin."
       ]),
       { shouldDirty: true, shouldValidate: true }
     );
@@ -668,9 +668,9 @@ export function ProductForm({
       "detailContent.useCases",
       uniqueList([
         usageArea,
-        "evde gece şarji",
-        "site ve apartman otoparki",
-        "işletme ve ofis otoparki"
+        "evde planlı şarj",
+        "site ve apartman otoparkı",
+        "işletme ve ofis otoparkı"
       ]),
       { shouldDirty: true, shouldValidate: true }
     );
@@ -690,7 +690,7 @@ export function ProductForm({
       });
       const data = (await response.json().catch(() => ({
         ok: false,
-        message: "Sunucu yaniti okunamadi."
+        message: "Sunucu yanıtı okunamadı."
       }))) as { ok: boolean; url?: string; message?: string };
 
       if (!response.ok || !data.ok || !data.url) {
@@ -760,7 +760,7 @@ export function ProductForm({
 
       const data = (await response.json().catch(() => ({
         ok: false,
-        message: "Sunucu yaniti okunamadi."
+        message: "Sunucu yanıtı okunamadı."
       }))) as ProductMutationResponse;
 
       if (!response.ok || !data.ok) {
@@ -824,21 +824,21 @@ export function ProductForm({
         <div className="grid gap-6 xl:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)] xl:items-start">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.22em] text-emerald-700">
-              Ürün içerik asistani
+              Ürün içerik asistanı
             </p>
             <h2 className="mt-2 text-2xl font-semibold text-slate-950">
               Açıklama, teknik özellik, SEO ve AI metni eksiksiz ilerlesin.
             </h2>
             <p className="mt-3 text-sm leading-6 text-slate-600">
               Ürün metninde güç, faz, konnektör, akıllı özellikler, kurulum, kargo, uyumlu
-              araçlar, garanti/destek ve SEO sinyalleri birlikte gorunmeli. Eksik alanlari
-              kontrol edip tek tikla taslak metin uretebilirsiniz.
+              araçlar, garanti/destek ve SEO sinyalleri birlikte görünmeli. Eksik alanları
+              kontrol edip tek tıkla taslak metin üretebilirsiniz.
             </p>
             <div className="mt-5 rounded-3xl bg-[#063326] p-5 text-white">
               <div className="flex items-end justify-between gap-4">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.22em] text-white/76">
-                    İçerik hazırlik skoru
+                    İçerik hazırlık skoru
                   </p>
                   <p className="mt-2 text-4xl font-black tracking-[-0.04em]">
                     %{featureReadinessPercent}

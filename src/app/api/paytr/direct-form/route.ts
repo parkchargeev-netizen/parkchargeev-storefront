@@ -118,7 +118,7 @@ export async function POST(request: Request) {
           })
           .where(eq(orders.merchantOid, createdMerchantOid));
       } catch {
-        // Sipariş kurulumunda hata olsa da asil hatayi bastirmiyoruz.
+        // Sipariş kurulumunda hata olsa da asıl hatayı bastırmıyoruz.
       }
     }
 
@@ -165,7 +165,7 @@ export async function POST(request: Request) {
       {
         ok: false,
         message:
-          error instanceof Error ? error.message : "Beklenmeyen bir hata olustu."
+          error instanceof Error ? error.message : "Beklenmeyen bir hata oluştu."
       },
       { status: 500 }
     );

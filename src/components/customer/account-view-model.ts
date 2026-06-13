@@ -20,7 +20,7 @@ export const orderStatusLabel: Record<string, string> = {
 
 export const paymentStatusLabel: Record<string, string> = {
   pending: "Ödeme bekliyor",
-  paid: "Ödeme alindi",
+  paid: "Ödeme alındı",
   success: "Ödeme başarılı",
   failed: "Ödeme başarısız",
   refunded: "İade edildi"
@@ -103,7 +103,7 @@ export function getCustomerPanelStage(snapshot: AccountSnapshot) {
   if (activeQuote) {
     return {
       label: "Teklif süreci açık",
-      detail: `${activeQuote.segment ?? "Çözüm"} talebiniz teklif masasinda değerlendiriliyor.`,
+      detail: `${activeQuote.segment ?? "Çözüm"} talebiniz teklif masasında değerlendiriliyor.`,
       href: "#destek"
     };
   }
@@ -111,7 +111,7 @@ export function getCustomerPanelStage(snapshot: AccountSnapshot) {
   if (getProfileScore(snapshot) < 100) {
     return {
       label: "Profil tamamlanmali",
-      detail: "Telefon ve kurulum adresi tamamlanirsa teklif ve saha planlama hızlanır.",
+      detail: "Telefon ve kurulum adresi tamamlanırsa teklif ve saha planlama hızlanır.",
       href: "#profil"
     };
   }
@@ -132,7 +132,7 @@ export function getCustomerSegmentLabel(snapshot: AccountSnapshot) {
   }
 
   if (quoteSegment?.includes("kurumsal") || serviceProjectType?.includes("ofis")) {
-    return "KOBI / ofis kullanıcısı";
+    return "KOBİ / ofis kullanıcısı";
   }
 
   if (quoteSegment?.includes("ticari") || serviceProjectType?.includes("dc")) {
@@ -175,7 +175,7 @@ export function getActionItems(snapshot: AccountSnapshot) {
   if (!snapshot.customer.phone) {
     actions.push({
       title: "Telefon bilgisini tamamla",
-      detail: "Saha ekibi keşif ve teslimat için telefon numarasina ihtiyac duyar.",
+      detail: "Saha ekibi keşif ve teslimat için telefon numarasına ihtiyaç duyar.",
       href: "#profil"
     });
   }
@@ -183,7 +183,7 @@ export function getActionItems(snapshot: AccountSnapshot) {
   if (snapshot.recentQuoteRequests.some((quote) => quote.status === "new")) {
     actions.push({
       title: "Teklif talebini izle",
-      detail: "Yeni teklif talebiniz operasyon kuyrugunda görünüyor.",
+      detail: "Yeni teklif talebiniz operasyon kuyruğunda görünüyor.",
       href: "#destek"
     });
   }
@@ -191,7 +191,7 @@ export function getActionItems(snapshot: AccountSnapshot) {
   if (actions.length === 0) {
     actions.push({
       title: "Panel güncel",
-      detail: "Profil, adres ve sipariş takip alanlarinda bekleyen kritik aksiyon yok.",
+      detail: "Profil, adres ve sipariş takip alanlarında bekleyen kritik aksiyon yok.",
       href: "/magaza"
     });
   }

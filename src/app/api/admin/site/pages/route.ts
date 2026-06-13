@@ -28,7 +28,7 @@ async function handleUpsert(request: Request, status = 200) {
   const authenticatedAdmin = await requireAdminRole(["superadmin", "editor"]);
 
   if (!authenticatedAdmin) {
-    return NextResponse.json({ ok: false, message: "Yetkisiz erisim." }, { status: 401 });
+    return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });
   }
 
   const payload = adminSitePageSchema.parse(await request.json());
@@ -42,7 +42,7 @@ export async function GET(request: Request) {
   const authenticatedAdmin = await requireAdminRole(["superadmin", "editor"]);
 
   if (!authenticatedAdmin) {
-    return NextResponse.json({ ok: false, message: "Yetkisiz erisim." }, { status: 401 });
+    return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });
   }
 
   const result = await listAdminSitePages(parseListQuery(request));

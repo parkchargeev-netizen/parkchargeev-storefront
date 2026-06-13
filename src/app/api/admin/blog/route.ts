@@ -24,7 +24,7 @@ export async function GET(request: Request) {
   const authenticatedAdmin = await requireAdminRole(["superadmin", "editor"]);
 
   if (!authenticatedAdmin) {
-    return NextResponse.json({ ok: false, message: "Yetkisiz erisim." }, { status: 401 });
+    return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });
   }
 
   let query: ReturnType<typeof parseListQuery>;
@@ -43,9 +43,9 @@ export async function GET(request: Request) {
 
   if (query.format === "csv") {
     return csvResponse("blog-posts.csv", result.items, [
-      { header: "Baslik", value: (item) => item.title },
+      { header: "Başlık", value: (item) => item.title },
       { header: "Slug", value: (item) => item.slug },
-      { header: "Yayin", value: (item) => item.publishedAt },
+      { header: "Yayın", value: (item) => item.publishedAt },
       { header: "Guncelleme", value: (item) => item.updatedAt }
     ]);
   }
@@ -57,7 +57,7 @@ export async function POST(request: Request) {
   const authenticatedAdmin = await requireAdminRole(["superadmin", "editor"]);
 
   if (!authenticatedAdmin) {
-    return NextResponse.json({ ok: false, message: "Yetkisiz erisim." }, { status: 401 });
+    return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });
   }
 
   try {

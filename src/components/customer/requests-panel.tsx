@@ -51,7 +51,7 @@ export function RequestsPanel({ snapshot }: { snapshot: AccountSnapshot }) {
               Keşif, kurulum ve destek talepleri
             </h2>
             <p className="mt-2 text-sm leading-6 text-on-surface-variant">
-              Talep durumlari, lokasyon ve son hareket tarihi tek listede görünür.
+              Talep durumları, lokasyon ve son hareket tarihi tek listede görünür.
             </p>
           </div>
         </div>

@@ -79,7 +79,7 @@ export function RichTextEditor({
     }
 
     const previousUrl = editor.getAttributes("link").href as string | undefined;
-    const url = window.prompt("Baglanti URL'si", previousUrl ?? "https://");
+    const url = window.prompt("Bağlantı URL'si", previousUrl ?? "https://");
 
     if (url === null) {
       return;
@@ -104,14 +104,14 @@ export function RichTextEditor({
       },
       {
         label: "H2",
-        title: "Baslik 2",
+        title: "Başlık 2",
         icon: Heading2,
         action: (currentEditor) => currentEditor.chain().focus().toggleHeading({ level: 2 }).run(),
         active: (currentEditor) => currentEditor.isActive("heading", { level: 2 })
       },
       {
         label: "H3",
-        title: "Baslik 3",
+        title: "Başlık 3",
         icon: Heading3,
         action: (currentEditor) => currentEditor.chain().focus().toggleHeading({ level: 3 }).run(),
         active: (currentEditor) => currentEditor.isActive("heading", { level: 3 })
@@ -136,7 +136,7 @@ export function RichTextEditor({
     [
       {
         label: "Liste",
-        title: "Madde isaretli liste",
+        title: "Madde işaretli liste",
         icon: List,
         action: (currentEditor) => currentEditor.chain().focus().toggleBulletList().run(),
         active: (currentEditor) => currentEditor.isActive("bulletList")
@@ -149,8 +149,8 @@ export function RichTextEditor({
         active: (currentEditor) => currentEditor.isActive("orderedList")
       },
       {
-        label: "Alinti",
-        title: "Alinti blogu",
+        label: "Alıntı",
+        title: "Alıntı bloğu",
         icon: Quote,
         action: (currentEditor) => currentEditor.chain().focus().toggleBlockquote().run(),
         active: (currentEditor) => currentEditor.isActive("blockquote")
@@ -159,14 +159,14 @@ export function RichTextEditor({
     [
       {
         label: "Link",
-        title: "Baglanti ekle",
+        title: "Bağlantı ekle",
         icon: LinkIcon,
         action: () => setLink(),
         active: (currentEditor) => currentEditor.isActive("link")
       },
       {
         label: "Unlink",
-        title: "Baglantiyi kaldir",
+        title: "Bağlantıyı kaldır",
         icon: Unlink,
         action: (currentEditor) => currentEditor.chain().focus().unsetLink().run()
       }

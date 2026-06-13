@@ -6,12 +6,12 @@ export default function ApiDocsPage() {
           API Service Doc
         </p>
         <h1 className="mt-4 text-4xl font-black tracking-[-0.07em] text-on-surface">
-          ParkChargeEV servis dokumani
+          ParkChargeEV servis dokümanı
         </h1>
         <p className="mt-5 max-w-3xl text-base leading-8 text-on-surface-variant">
-          Bu dokuman, AI agent ve arama motoru odakli servis kesfini desteklemek için
+          Bu doküman, AI agent ve arama motoru odaklı servis keşfini desteklemek için
           yayınlanır. Faz 1 kapsamında sağlık, admin oturum ve katalog keşif endpoint&apos;leri
-          burada referanslanir.
+          burada referanslanır.
         </p>
 
         <div className="mt-8 grid gap-4 md:grid-cols-3">
