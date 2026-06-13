@@ -63,7 +63,7 @@ export default async function SolutionDetailPage({
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
+    <main className="corporate-detail-page mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: stringifyJsonLd(breadcrumbJsonLd) }}
@@ -73,7 +73,7 @@ export default async function SolutionDetailPage({
         dangerouslySetInnerHTML={{ __html: stringifyJsonLd(faqJsonLd) }}
       />
 
-      <div className="mb-8 flex flex-wrap items-center gap-2 text-sm text-on-surface-variant">
+      <div className="mb-6 flex flex-wrap items-center gap-2 text-xs text-on-surface-variant sm:text-sm">
         <Link href="/" className="transition hover:text-primary">
           Ana Sayfa
         </Link>
@@ -85,59 +85,59 @@ export default async function SolutionDetailPage({
         <span className="text-on-surface">{solution.title}</span>
       </div>
 
-      <section className="grid gap-8 lg:grid-cols-[1fr_360px]">
+      <section className="grid gap-6 lg:grid-cols-[1fr_300px] lg:items-start">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.34em] text-primary">
+          <p className="text-xs font-semibold uppercase text-primary">
             {solution.segment}
           </p>
-          <h1 className="mt-5 text-5xl font-black tracking-[-0.08em] text-on-surface">
+          <h1 className="mt-3 max-w-4xl text-3xl font-black leading-tight text-on-surface md:text-5xl">
             {solution.title}
           </h1>
-          <p className="mt-6 max-w-3xl text-lg leading-8 text-on-surface-variant">
+          <p className="mt-4 max-w-3xl text-base leading-7 text-on-surface-variant">
             {solution.introduction}
           </p>
         </div>
 
-        <aside className="surface-card h-fit p-8">
-          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-secondary">
+        <aside className="surface-card h-fit p-5">
+          <p className="text-xs font-semibold uppercase text-secondary">
             Ana metrik
           </p>
-          <p className="mt-4 text-4xl font-black tracking-[-0.06em] text-primary">
+          <p className="mt-3 text-3xl font-black text-primary">
             {solution.heroMetric}
           </p>
-          <p className="mt-3 text-base leading-7 text-on-surface-variant">
+          <p className="mt-2 text-sm leading-6 text-on-surface-variant">
             {solution.heroLabel}
           </p>
           <Link
             href="/iletisim"
-            className="mt-8 inline-block rounded-2xl bg-primary px-5 py-4 text-sm font-semibold text-white"
+            className="mt-5 inline-flex min-h-11 items-center rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-white"
           >
             Projeyi Değerlendir
           </Link>
         </aside>
       </section>
 
-      <section className="mt-12 grid gap-8 lg:grid-cols-2">
-        <div className="surface-card p-8">
-          <h2 className="text-3xl font-bold tracking-[-0.05em] text-on-surface">
+      <section className="mt-9 grid gap-5 lg:grid-cols-2">
+        <div className="surface-card p-5">
+          <h2 className="text-2xl font-bold text-on-surface">
             Çözüm kapsamı
           </h2>
-          <div className="mt-6 space-y-4">
+          <div className="mt-4 grid gap-3">
             {solution.features.map((feature) => (
-              <div key={feature} className="rounded-[22px] bg-surface-container-low px-5 py-5 text-sm leading-7 text-on-surface-variant">
+              <div key={feature} className="rounded-2xl bg-surface-container-low px-4 py-3 text-sm leading-6 text-on-surface-variant">
                 {feature}
               </div>
             ))}
           </div>
         </div>
 
-        <div className="surface-card p-8">
-          <h2 className="text-3xl font-bold tracking-[-0.05em] text-on-surface">
+        <div className="surface-card p-5">
+          <h2 className="text-2xl font-bold text-on-surface">
             Beklenen çıktılar
           </h2>
-          <div className="mt-6 space-y-4">
+          <div className="mt-4 grid gap-3">
             {solution.outcomes.map((outcome) => (
-              <div key={outcome} className="rounded-[22px] bg-surface-container-low px-5 py-5 text-sm leading-7 text-on-surface-variant">
+              <div key={outcome} className="rounded-2xl bg-surface-container-low px-4 py-3 text-sm leading-6 text-on-surface-variant">
                 {outcome}
               </div>
             ))}
@@ -145,29 +145,29 @@ export default async function SolutionDetailPage({
         </div>
       </section>
 
-      <section className="mt-12 overflow-hidden rounded-[32px] bg-linear-to-br from-primary to-primary-container p-8 text-white shadow-[0_24px_80px_rgba(6,51,38,0.24)] lg:p-12">
-        <p className="text-sm font-semibold uppercase tracking-[0.34em] text-white/82">
+      <section className="mt-9 overflow-hidden rounded-[24px] bg-linear-to-br from-primary to-primary-container p-5 text-white shadow-[0_20px_60px_rgba(6,51,38,0.2)] sm:p-7">
+        <p className="text-xs font-semibold uppercase text-white/82">
           Kullanım senaryoları
         </p>
-        <div className="mt-8 grid gap-4 md:grid-cols-3">
+        <div className="mt-4 grid gap-3 md:grid-cols-3">
           {solution.useCases.map((item) => (
-            <div key={item} className="rounded-[24px] bg-white/[0.14] p-5">
-              <p className="text-xl font-semibold">{item}</p>
+            <div key={item} className="rounded-2xl bg-white/[0.12] p-4">
+              <p className="text-base font-semibold">{item}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="mt-12 grid gap-8 lg:grid-cols-[1fr_0.9fr]">
-        <div className="surface-card p-8">
-          <h2 className="text-3xl font-bold tracking-[-0.05em] text-on-surface">
+      <section className="mt-9 grid gap-5 lg:grid-cols-[1fr_0.9fr] lg:items-start">
+        <div className="surface-card p-5">
+          <h2 className="text-2xl font-bold text-on-surface">
             Sık sorulan sorular
           </h2>
-          <div className="mt-6 space-y-4">
+          <div className="mt-4 grid gap-3">
             {solution.faq.map((item) => (
-              <article key={item.question} className="rounded-[24px] bg-surface-container-low p-5">
-                <h3 className="text-lg font-semibold text-on-surface">{item.question}</h3>
-                <p className="mt-3 text-sm leading-7 text-on-surface-variant">
+              <article key={item.question} className="rounded-2xl bg-surface-container-low p-4">
+                <h3 className="text-base font-semibold text-on-surface">{item.question}</h3>
+                <p className="mt-2 text-sm leading-6 text-on-surface-variant">
                   {item.answer}
                 </p>
               </article>
@@ -184,25 +184,25 @@ export default async function SolutionDetailPage({
       </section>
 
       {relatedArticles.length > 0 ? (
-        <section className="mt-14">
+        <section className="mt-10">
           <div className="flex items-end justify-between gap-4">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.34em] text-secondary">
+              <p className="text-xs font-semibold uppercase text-secondary">
                 İçerik kümeleri
               </p>
-              <h2 className="mt-4 text-4xl font-black tracking-[-0.07em] text-on-surface">
+              <h2 className="mt-3 text-2xl font-black text-on-surface md:text-3xl">
                 Bu çözüme bağlı rehber içerikler
               </h2>
             </div>
           </div>
 
-          <div className="mt-8 grid gap-6 lg:grid-cols-2">
+          <div className="mt-5 grid gap-5 lg:grid-cols-2">
             {relatedArticles.map((article) => (
               <ArticleCard key={article.id} article={article} />
             ))}
           </div>
         </section>
       ) : null}
-    </div>
+    </main>
   );
 }

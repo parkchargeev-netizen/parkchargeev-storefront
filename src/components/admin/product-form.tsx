@@ -539,7 +539,7 @@ export function ProductForm({
       {
         groupName: "Kurulum",
         label: "Hizmet kapsamı",
-        value: "81 il ürün kargosu; ücretsiz keşif Sakarya; kurulum Sakarya + Kocaeli"
+        value: "81 il ürün kargosu; Türkiye geneli keşif ve kurulum talebi"
       },
       {
         groupName: "Uyum",
@@ -591,7 +591,7 @@ export function ProductForm({
       `${productName}, ${usageArea} için doğru cihaz, doğru altyapı ve güvenli kullanım odağıyla hazırlanmış bir ParkChargeEV çözümüdür.`,
       `Teknik tarafta ${primaryPower}, ${connectorText} konnektör, ${phaseText} faz yapisi${ipClassValue ? `, ${ipClassValue} koruma sinifi` : ""} ve ${smartSummary} bilgisi one cikar.`,
       `Uyum tarafinda ${vehicleSummary} için karar vermeyi kolaylastirir. ${installSummary}`,
-      "Ürünler Türkiye genelinde 81 ile kargolanır. Ücretsiz keşif Sakarya için, planlı kurulum ise Sakarya ve Kocaeli için organize edilir."
+      "Ürünler Türkiye genelinde 81 ile kargolanır."
     ];
     const featureBullets = uniqueList([
       primaryPower ? `${primaryPower} güç sinifi` : "",
@@ -599,8 +599,8 @@ export function ProductForm({
       phaseText ? `${phaseText} altyapı bilgisi` : "",
       smartSummary ? `${smartSummary} özellikleri` : "",
       "81 il ürün kargosu",
-      "Sakarya ücretsiz keşif",
-      "Sakarya + Kocaeli kurulum planı"
+      "Türkiye geneli keşif talebi",
+      "Saha uygunluğuna göre kurulum planı"
     ]);
     const descriptionHtml = [
       ...descriptionParagraphs.map((paragraph) => `<p>${escapeHtmlText(paragraph)}</p>`),
@@ -639,9 +639,9 @@ export function ProductForm({
       "detailContent.purchaseBenefits",
       uniqueList([
         "Güvenli ödeme ve sipariş takibi",
-        "81 il ürün kargosu",
-        "Sakarya için ucretsiz keşif",
-        "Sakarya ve Kocaeli için planlı kurulum"
+        "Kurulum: Sakarya ve Kocaeli",
+        "Türkiye geneli keşif talebi",
+        "Saha uygunluğuna göre planlı kurulum"
       ]),
       { shouldDirty: true, shouldValidate: true }
     );

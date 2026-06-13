@@ -1,15 +1,96 @@
-export const freeSurveyCities = ["Sakarya"] as const;
-export const installationCities = ["Sakarya", "Kocaeli"] as const;
-export const leadCityOptions = Array.from(
-  new Set([...freeSurveyCities, ...installationCities])
-);
+export const leadCityOptions = [
+  "Adana",
+  "Adıyaman",
+  "Afyonkarahisar",
+  "Ağrı",
+  "Aksaray",
+  "Amasya",
+  "Ankara",
+  "Antalya",
+  "Ardahan",
+  "Artvin",
+  "Aydın",
+  "Balıkesir",
+  "Bartın",
+  "Batman",
+  "Bayburt",
+  "Bilecik",
+  "Bingöl",
+  "Bitlis",
+  "Bolu",
+  "Burdur",
+  "Bursa",
+  "Çanakkale",
+  "Çankırı",
+  "Çorum",
+  "Denizli",
+  "Diyarbakır",
+  "Düzce",
+  "Edirne",
+  "Elazığ",
+  "Erzincan",
+  "Erzurum",
+  "Eskişehir",
+  "Gaziantep",
+  "Giresun",
+  "Gümüşhane",
+  "Hakkâri",
+  "Hatay",
+  "Iğdır",
+  "Isparta",
+  "İstanbul",
+  "İzmir",
+  "Kahramanmaraş",
+  "Karabük",
+  "Karaman",
+  "Kars",
+  "Kastamonu",
+  "Kayseri",
+  "Kırıkkale",
+  "Kırklareli",
+  "Kırşehir",
+  "Kilis",
+  "Kocaeli",
+  "Konya",
+  "Kütahya",
+  "Malatya",
+  "Manisa",
+  "Mardin",
+  "Mersin",
+  "Muğla",
+  "Muş",
+  "Nevşehir",
+  "Niğde",
+  "Ordu",
+  "Osmaniye",
+  "Rize",
+  "Sakarya",
+  "Samsun",
+  "Siirt",
+  "Sinop",
+  "Sivas",
+  "Şanlıurfa",
+  "Şırnak",
+  "Tekirdağ",
+  "Tokat",
+  "Trabzon",
+  "Tunceli",
+  "Uşak",
+  "Van",
+  "Yalova",
+  "Yozgat",
+  "Zonguldak"
+] as const;
+
+export const freeSurveyCities = leadCityOptions;
+export const installationCities = leadCityOptions;
 
 export const serviceCoverageSummary = {
   shipping: "Ürün kargosu: 81 il",
   freeSurvey: "Ücretsiz keşif: Sakarya",
   installation: "Kurulum: Sakarya ve Kocaeli",
   note:
-    "Ürün kargosu Türkiye'nin 81 iline yapılır; ücretsiz keşif yalnızca Sakarya, kurulum hizmeti Sakarya ve Kocaeli için planlanır."
+    "Türkiye'nin 81 ilinden ürün, keşif ve kurulum talebi oluşturabilirsiniz. Saha uygunluğu ve takvim ekip tarafından teyit edilir."
 } as const;
 
 function normalizeText(value: string) {
@@ -26,17 +107,14 @@ function normalizeSearchText(value: string) {
     .replace(/ç/g, "c");
 }
 
-function matchesCity(value: string, cities: readonly string[]) {
-  const normalizedCity = normalizeText(value);
-  return cities.some((city) => normalizeText(city) === normalizedCity);
-}
-
 export function isFreeSurveyCity(value: string) {
-  return matchesCity(value, freeSurveyCities);
+  const normalizedCity = normalizeText(value);
+  return freeSurveyCities.some((city) => normalizeText(city) === normalizedCity);
 }
 
 export function isInstallationCity(value: string) {
-  return matchesCity(value, installationCities);
+  const normalizedCity = normalizeText(value);
+  return installationCities.some((city) => normalizeText(city) === normalizedCity);
 }
 
 export function isFreeSurveyReason(reason: string) {
@@ -49,20 +127,11 @@ export function isInstallationReason(reason: string) {
   return normalized.includes("kurulum") || normalized.includes("montaj");
 }
 
-export function validateLeadServiceCoverage(reason: string, city: string) {
-  if (isFreeSurveyReason(reason) && !isFreeSurveyCity(city)) {
+export function validateLeadServiceCoverage(_reason: string, city: string) {
+  if (!city.trim()) {
     return {
       ok: false,
-      message:
-        "Ücretsiz keşif talebi şu an yalnızca Sakarya için alınabiliyor. Ürün kargosu 81 ile yapılır; kurulum talepleri Sakarya ve Kocaeli için değerlendiriliyor."
-    };
-  }
-
-  if (isInstallationReason(reason) && !isInstallationCity(city)) {
-    return {
-      ok: false,
-      message:
-        "Kurulum hizmeti şu an Sakarya ve Kocaeli için planlanıyor. Ürün kargosu 81 ile yapılır; satın alma ve genel bilgi talepleriniz için bize yazabilirsiniz."
+      message: "Lütfen talebinizin değerlendirileceği ili belirtin."
     };
   }
 
@@ -71,12 +140,11 @@ export function validateLeadServiceCoverage(reason: string, city: string) {
 
 export function getLeadCoverageHelp(reason: string) {
   if (isFreeSurveyReason(reason)) {
-    return "Ücretsiz keşif yalnızca Sakarya için planlanır.";
+    return "Keşif talebinizi Türkiye'nin 81 ilinden iletebilirsiniz.";
   }
 
   if (isInstallationReason(reason)) {
-    return "Kurulum hizmeti Sakarya ve Kocaeli için planlanır.";
+    return "Kurulum talebinizi Türkiye'nin 81 ilinden iletebilirsiniz.";
   }
 
-  return serviceCoverageSummary.note;
 }

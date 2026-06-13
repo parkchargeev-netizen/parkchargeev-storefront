@@ -66,7 +66,7 @@ export function SiteMobileMenu({ navigation }: SiteMobileMenuProps) {
                 </Link>
               ))}
             </nav>
-            <SiteHeaderActions className="grid grid-cols-5 gap-2" />
+            <SiteHeaderActions className="grid grid-cols-2 gap-2 sm:grid-cols-5 [&>*]:w-full" />
           </div>
         </div>
       ) : null}

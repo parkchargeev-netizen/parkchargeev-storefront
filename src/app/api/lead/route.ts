@@ -2,22 +2,23 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import {
-  getRuntimeConfigErrorPayload,
   isRuntimeConfigError
 } from "@/lib/runtime-config";
-import { validateLeadServiceCoverage } from "@/lib/service-coverage";
+import { logError } from "@/lib/server-logger";
 import { getDb } from "@/server/db/client";
 import { quoteRequests, serviceLeads } from "@/server/db/schema";
 
 const leadSchema = z.object({
-  fullName: z.string().min(3),
+  fullName: z.string().trim().min(3, "Ad soyad en az 3 karakter olmalı."),
   company: z.string().optional().or(z.literal("")),
-  email: z.string().email(),
-  phone: z.string().min(10),
-  city: z.string().min(2),
-  reason: z.string().min(3),
-  message: z.string().min(10),
-  privacyConsent: z.string().refine((value) => value === "true")
+  email: z.string().trim().email("Geçerli bir e-posta adresi yazın."),
+  phone: z.string().trim().min(10, "Telefon numarası en az 10 haneli olmalı."),
+  city: z.string().trim().min(2, "Lütfen ilinizi belirtin."),
+  reason: z.string().trim().min(3, "Lütfen talep tipini seçin."),
+  message: z.string().trim().min(10, "İhtiyaç özeti en az 10 karakter olmalı."),
+  privacyConsent: z
+    .string()
+    .refine((value) => value === "true", "İletişim iznini onaylamanız gerekiyor.")
 });
 
 function getQuoteSegment(reason: string) {
@@ -51,18 +52,6 @@ function isServiceLead(reason: string) {
 export async function POST(request: Request) {
   try {
     const body = leadSchema.parse(await request.json());
-    const coverageValidation = validateLeadServiceCoverage(body.reason, body.city);
-
-    if (!coverageValidation.ok) {
-      return NextResponse.json(
-        {
-          ok: false,
-          message: coverageValidation.message
-        },
-        { status: 400 }
-      );
-    }
-
     const db = getDb();
 
     await db.insert(serviceLeads).values({
@@ -103,22 +92,47 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     if (isRuntimeConfigError(error)) {
-      return NextResponse.json(getRuntimeConfigErrorPayload(error), {
-        status: 503
-      });
+      logError("lead.create.runtime_configuration", error);
+      return NextResponse.json(
+        {
+          ok: false,
+          message:
+            "Talep sistemi geçici olarak kullanılamıyor. Lütfen kısa süre sonra yeniden deneyin."
+        },
+        { status: 503 }
+      );
     }
 
-    const status = error instanceof z.ZodError ? 400 : 500;
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        {
+          ok: false,
+          message:
+            error.issues[0]?.message ??
+            "Formdaki eksik veya hatalı alanları kontrol edip yeniden deneyin."
+        },
+        { status: 400 }
+      );
+    }
 
+    if (error instanceof SyntaxError) {
+      return NextResponse.json(
+        {
+          ok: false,
+          message: "Gönderilen form bilgileri okunamadı. Lütfen yeniden deneyin."
+        },
+        { status: 400 }
+      );
+    }
+
+    logError("lead.create.failed", error);
     return NextResponse.json(
       {
         ok: false,
         message:
-          error instanceof Error
-            ? error.message
-            : "Talep işlenirken beklenmeyen bir hata oluştu."
+          "Talep kaydedilirken beklenmeyen bir sorun oluştu. Lütfen kısa süre sonra yeniden deneyin."
       },
-      { status }
+      { status: 500 }
     );
   }
 }

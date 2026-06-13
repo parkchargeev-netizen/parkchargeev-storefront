@@ -125,7 +125,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             Ürün, çözüm ve blog sayfaları arasında arama yapmak için bir ifade girin.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
-            {["ev tipi şarj", "22 kW", "Sakarya kurulum", "apartman çözümü"].map((item) => (
+            {["ev tipi şarj", "22 kW", "kurulum talebi", "apartman çözümü"].map((item) => (
               <Link
                 key={item}
                 href={`/arama?q=${encodeURIComponent(item)}`}
@@ -145,7 +145,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             Farklı bir ifade deneyin veya aşağıdaki popüler aramaları kullanın.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
-            {["ev tipi şarj", "22 kW", "site çözümü", "Sakarya", "Kocaeli kurulum"].map((item) => (
+            {["ev tipi şarj", "22 kW", "site çözümü", "keşif", "kurulum talebi"].map((item) => (
               <Link
                 key={item}
                 href={`/arama?q=${encodeURIComponent(item)}`}

@@ -1,5 +1,5 @@
 import { PremiumHomepage } from "@/components/home/premium-homepage";
-import { products, testimonials, trustMetrics } from "@/lib/mock-data";
+import { products, testimonials } from "@/lib/mock-data";
 import { siteConfig } from "@/lib/site";
 import { listPublicBlogArticles } from "@/server/blog/repository";
 
@@ -15,7 +15,6 @@ export default async function HomePage() {
       featuredProducts={featuredProducts}
       featuredArticles={featuredArticles}
       testimonials={testimonials}
-      trustMetrics={trustMetrics}
       whatsappHref={whatsappHref}
     />
   );

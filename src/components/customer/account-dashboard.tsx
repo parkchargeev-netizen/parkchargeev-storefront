@@ -106,7 +106,7 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
     },
     {
       title: "Hizmet kapsamını gör",
-      detail: "81 il kargo, Sakarya keşif, Sakarya + Kocaeli kurulum bilgisini kontrol edin.",
+      detail: "81 il kargo, keşif ve kurulum talebi kapsamını kontrol edin.",
       href: "/hizmetler",
       icon: Truck
     },
@@ -231,8 +231,8 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
               </h1>
               <p className="mt-4 max-w-2xl text-base leading-7 text-on-surface-variant">
                 Sipariş, teklif, keşif, kurulum adresi ve servis desteklerinizi tek panelden takip
-                edin. Ürünler 81 ile kargo; ucretsiz keşif Sakarya, kurulum Sakarya ve Kocaeli
-                odaklidir.
+                edin. Ürün, keşif ve kurulum taleplerinizi Türkiye&apos;nin 81 ilinden iletin; saha
+                uygunluğu ve planlama ekip tarafından teyit edilsin.
               </p>
               <div className="mt-5 flex flex-wrap gap-2">
                 {[
@@ -260,7 +260,7 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
                   href={`/iletisim?reason=${encodeURIComponent("Ücretsiz keşif talebi")}`}
                   className="inline-flex items-center justify-center gap-2 rounded-2xl border border-primary/20 bg-white px-5 py-3 text-sm font-black text-primary"
                 >
-                  Sakarya kesfi iste
+                  Keşif talebi oluştur
                   <MapPin className="h-4 w-4" />
                 </Link>
               </div>
@@ -489,14 +489,14 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
                   },
                   {
                     label: "Ücretsiz keşif",
-                    value: "Sakarya",
-                    detail: "Pano, faz ve hat uygunluğu için ön değerlendirme planlanır.",
+                    value: "81 il talep",
+                    detail: "Pano, faz ve hat uygunluğu için ön değerlendirme yapılır.",
                     icon: MapPin
                   },
                   {
                     label: "Kurulum",
-                    value: "Sakarya + Kocaeli",
-                    detail: "Montaj, test ve teslim süreci planlı ilerler.",
+                    value: "81 il talep",
+                    detail: "Saha uygunluğu teyit edilen lokasyonlarda planlama yapılır.",
                     icon: Building2
                   }
                 ].map((item) => {

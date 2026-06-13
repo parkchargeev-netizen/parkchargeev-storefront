@@ -47,7 +47,7 @@ export default async function ServicesPage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
       <section className="mx-auto max-w-4xl text-center">
         <p className="text-sm font-semibold uppercase tracking-[0.34em] text-primary">
           Kurulum ve teknik destek
@@ -106,7 +106,7 @@ export default async function ServicesPage() {
               step: "Adım 01",
               title: "Ücretsiz keşif",
               summary:
-                "Sakarya içindeki taleplerde mevcut altyapı, pano mesafesi, enerji kapasitesi ve cihaz lokasyonu analiz edilir."
+                "Türkiye genelinden alınan taleplerde mevcut altyapı, pano mesafesi, enerji kapasitesi ve cihaz lokasyonu ön değerlendirmeye alınır."
             },
             {
               step: "Adım 02",
@@ -118,7 +118,7 @@ export default async function ServicesPage() {
               step: "Adım 03",
               title: "Profesyonel kurulum",
               summary:
-                "Sakarya ve Kocaeli için standartlara uygun montaj, bağlantı ve kullanıcı eğitimi birlikte tamamlanır."
+                "Saha uygunluğu teyit edilen lokasyonlarda standartlara uygun montaj, bağlantı ve kullanıcı eğitimi birlikte tamamlanır."
             },
             {
               step: "Adım 04",

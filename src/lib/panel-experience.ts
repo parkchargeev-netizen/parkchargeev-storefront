@@ -32,7 +32,7 @@ export const marketPanelInsights = [
 export const adminRevenuePlays: PanelActionCard[] = [
   {
     label: "Ev tipi AC alıcısi",
-    detail: "7.4/11 kW wallbox, araç uyumu ve Sakarya ücretsiz keşif talebi hızlı kapanir.",
+    detail: "7.4/11 kW wallbox, araç uyumu ve Türkiye geneli keşif talebi hızlı kapanır.",
     signal: "Hızlı teklif",
     href: "/admin/teklifler",
     tone: "success"
@@ -68,7 +68,7 @@ export const adminOpsChecklist = [
   },
   {
     label: "Keşif planlama",
-    detail: "Ücretsiz keşif yalnızca Sakarya; kurulum Sakarya ve Kocaeli olacak şekilde etiketle.",
+    detail: "Türkiye genelinden gelen keşif ve kurulum taleplerini saha uygunluğuna göre etiketle.",
     href: "/admin/saha"
   },
   {
@@ -93,8 +93,8 @@ export const customerSelfServiceCards: PanelActionCard[] = [
   },
   {
     label: "Keşif uygunluğunu kontrol et",
-    detail: "Sakarya için ucretsiz keşif, Sakarya ve Kocaeli için kurulum planı görünür.",
-    signal: "Sehir kapsamı",
+    detail: "Türkiye'nin 81 ilinden keşif ve kurulum talebi oluşturun; uygunluğu ekip teyit etsin.",
+    signal: "81 il talep",
     href: "/iletisim?reason=%C3%9Ccretsiz%20ke%C5%9Fif%20talebi",
     tone: "info"
   },
@@ -125,10 +125,10 @@ export const customerTrustTimeline = [
   },
   {
     label: "3. Kargo / keşif",
-    detail: "Ürün 81 ile kargolanır; Sakarya keşif kaydı planlanır."
+    detail: "Ürün 81 ile kargolanır; keşif talebi saha uygunluğuna göre planlanır."
   },
   {
     label: "4. Kurulum / destek",
-    detail: "Sakarya ve Kocaeli kurulumlari randevu ve servis notuyla takip edilir."
+    detail: "Kurulum talepleri randevu, saha uygunluğu ve servis notlarıyla takip edilir."
   }
 ] as const;

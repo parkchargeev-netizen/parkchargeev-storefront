@@ -179,7 +179,7 @@ export function AddressManager({ addresses }: { addresses: CustomerAddressFormMo
             name="city"
             required
             autoComplete="address-level1"
-            placeholder="Sakarya veya Kocaeli"
+            placeholder="İlinizi yazın"
             className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 outline-none transition focus:border-primary"
           />
         </label>

@@ -21,7 +21,7 @@ export const siteConfig = {
     facebook: process.env.NEXT_PUBLIC_FACEBOOK_URL ?? ""
   },
   supportHours: "Mo-Sa 09:00-18:00",
-  serviceAreas: ["Sakarya", "Kocaeli"],
+  serviceAreas: ["Türkiye geneli"],
   primaryNavigation: [
     { href: "/", label: "Ana Sayfa" },
     { href: "/magaza", label: "Mağaza" },

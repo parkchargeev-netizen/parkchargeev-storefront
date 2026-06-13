@@ -88,7 +88,7 @@ const personaCards: Array<{
   {
     href: "/admin/teklifler",
     label: "Ev tipi AC alıcısi",
-    detail: "7.4/11 kW wallbox, araç uyumu ve Sakarya kesfiyle hızlı kapanir.",
+    detail: "7.4/11 kW wallbox, araç uyumu sağlar.",
     signal: "Hızlı donusum",
     tone: "success",
     icon: <Home className="h-5 w-5" />
@@ -236,7 +236,7 @@ const commerceAdminStandards: Array<{
   {
     href: "/admin/saha",
     label: "Keşif ve kurulum",
-    detail: "Sakarya ücretsiz keşif, Sakarya + Kocaeli kurulum ve servis aksiyonlari ayrisir.",
+    detail: "Türkiye geneli keşif, kurulum ve servis aksiyonları saha uygunluğuna göre ayrışır.",
     proof: "Saha is emri",
     icon: <Wrench className="h-5 w-5" />,
     roles: ["superadmin", "operations", "technician"]
@@ -470,7 +470,7 @@ export function AdminDashboardView({
       label: "Saha takvimi",
       count: snapshot.kpis.openServiceRequests,
       href: "/admin/saha",
-      detail: "Sakarya keşif ve Sakarya + Kocaeli kurulum kapsamlarini ayir."
+      detail: "Keşif ve kurulum taleplerini saha uygunluğu ve planlama durumuna göre ayır."
     }
   ].filter((action) => action.count > 0);
 
@@ -498,8 +498,8 @@ export function AdminDashboardView({
               Satılabilir ürün, doğru teklif ve saha aksiyonu tek masada.
             </h1>
             <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-600">
-              ParkChargeEV paneli; e-ticaret siparişlerini, teklif CRM akışını, Sakarya/Kocaeli saha
-              planıni, içerik operasyonunu ve güvenlik sinyallerini ayni karar ekraninda toplar.
+              ParkChargeEV paneli; e-ticaret siparişlerini, teklif CRM akışını, Türkiye geneli saha
+              taleplerini, içerik operasyonunu ve güvenlik sinyallerini aynı karar ekranında toplar.
             </p>
             <div className="mt-6 grid gap-3 sm:grid-cols-3">
               <div className="rounded-3xl border border-slate-200 bg-white/70 p-4">

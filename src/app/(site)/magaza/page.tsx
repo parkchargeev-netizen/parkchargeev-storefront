@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
+import { Headphones, Search, ShieldCheck, Truck } from "lucide-react";
 import Link from "next/link";
 
 import { ProductCard } from "@/components/shop/product-card";
-import { formatPriceTRY } from "@/lib/format";
 import { absoluteUrl } from "@/lib/site";
 import { getProductStoreProfile, getStoreFilterOptions } from "@/lib/shop-merchandising";
 import {
@@ -10,7 +10,6 @@ import {
   getProductImageUrl,
   stringifyJsonLd
 } from "@/lib/structured-data";
-import { serviceCoverageSummary } from "@/lib/service-coverage";
 import { listPublicProducts } from "@/server/admin/repository";
 
 export const metadata: Metadata = {
@@ -43,10 +42,10 @@ const quickSegments = [
   { label: "Type 2 aksesuar", href: "/magaza?category=Aksesuar", detail: "Kablo ve uyum" }
 ] as const;
 
-const storeDecisionCards = [
-  ["Yanlış ürün riskini azaltın", "Güç, faz, konnektör ve kullanım alanını aynı kartta görün."],
-  ["Kurulumu baştan planlayın", "Pano, kablo hattı ve koruma ekipmanı keşif sürecinde netleşir."],
-  ["Fiyatı güvenle karşılaştırın", "Stok, kurulum ihtiyacı ve destek bilgisini karar anında görün."]
+const storeAssuranceItems = [
+  { icon: ShieldCheck, title: "Güvenli ödeme", detail: "PayTR altyapısı" },
+  { icon: Truck, title: "81 ile gönderim", detail: "Takipli ürün kargosu" },
+  { icon: Headphones, title: "Uzman desteği", detail: "Ürün ve kurulum danışmanlığı" }
 ] as const;
 
 type StorePageProps = {
@@ -154,13 +153,6 @@ export default async function StorePage({ searchParams }: StorePageProps) {
     }
   });
 
-  const visiblePriceSource = sortedProducts.length ? sortedProducts : products;
-  const minPrice = visiblePriceSource.length
-    ? Math.min(...visiblePriceSource.map((product) => product.priceKurus))
-    : 0;
-  const maxPrice = visiblePriceSource.length
-    ? Math.max(...visiblePriceSource.map((product) => product.priceKurus))
-    : 0;
   const activeFilterCount = [
     selectedCategory,
     query,
@@ -169,6 +161,7 @@ export default async function StorePage({ searchParams }: StorePageProps) {
     selectedView !== "grid" ? selectedView : "",
     selectedSort !== "recommended" ? selectedSort : ""
   ].filter(Boolean).length;
+  const featuredProducts = products.slice(0, 6);
   const categoryFilters = [
     { label: "Tümü", value: "", count: optionScopedProducts.length, active: !selectedCategory },
     ...categoryLabels.map((label) => ({
@@ -218,83 +211,73 @@ export default async function StorePage({ searchParams }: StorePageProps) {
         dangerouslySetInnerHTML={{ __html: stringifyJsonLd(breadcrumbJsonLd) }}
       />
 
-      <section className="store-hero">
-        <div className="relative z-10 grid gap-8 lg:grid-cols-[1fr_360px] lg:items-end">
+      <section className="store-commerce-header">
+        <div className="store-commerce-header__top">
           <div>
-            <p className="premium-eyebrow text-emerald-300">EV şarj mağazası</p>
-            <h1 className="mt-4 max-w-4xl text-4xl font-black leading-tight text-white md:text-6xl">
-              Aracınız ve otoparkınız için doğru şarj ürününü seçin.
-            </h1>
-            <p className="mt-5 max-w-2xl text-base leading-7 text-white/80">
-              Ev tipi wallbox, site/ofis çözümleri, DC üniteler ve Type 2 aksesuarları uyum, güç ve kurulum bilgisiyle karşılaştırın.
-            </p>
-            <p className="mt-4 inline-flex rounded-full border border-white/12 bg-white/[0.14] px-4 py-2 text-sm font-black text-[#7eecc9] backdrop-blur">
-              {serviceCoverageSummary.shipping}
-            </p>
+            <p className="premium-eyebrow">ParkChargeEV mağaza</p>
+            <h1>Şarj ürünlerini bulun ve karşılaştırın.</h1>
           </div>
-          <div className="rounded-[24px] border border-white/12 bg-white/[0.14] p-5 text-white backdrop-blur">
-            {[
-              ["Ürün", `${products.length} seçenek`],
-              ["Filtre", `${activeFilterCount} aktif`],
-              ["Kargo", "81 il"],
-              ["Aralık", `${formatPriceTRY(minPrice)} - ${formatPriceTRY(maxPrice)}`]
-            ].map(([label, value]) => (
-              <div key={label} className="flex items-center justify-between gap-4 py-2">
-                <span className="text-sm text-white/76">{label}</span>
-                <span className="text-sm font-black">{value}</span>
-              </div>
-            ))}
-          </div>
+
+          <form action="/magaza" className="store-hero-search">
+              <Search className="h-5 w-5 shrink-0 text-primary" aria-hidden />
+              <input
+                name="q"
+                defaultValue={query}
+                aria-label="Mağazada ürün ara"
+                placeholder="Ürün, güç, Type 2 veya RFID ara"
+              />
+              <button type="submit">Ara</button>
+          </form>
         </div>
 
-        <div className="relative z-10 mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="store-commerce-header__nav">
+          <div className="store-segment-grid">
           {quickSegments.map((segment) => (
             <Link key={segment.label} href={segment.href} className="store-segment-card">
               <span className="text-base font-black">{segment.label}</span>
-              <span className="text-xs font-bold text-white/76">{segment.detail}</span>
+              <span className="text-xs font-bold text-on-surface-variant">{segment.detail}</span>
             </Link>
           ))}
-        </div>
+          </div>
 
-        <div className="relative z-10 mt-5 grid gap-3 md:grid-cols-3">
-          {storeDecisionCards.map(([title, detail]) => (
-            <div key={title} className="rounded-[22px] border border-white/12 bg-white/[0.12] p-4 text-white backdrop-blur">
-              <p className="text-sm font-black">{title}</p>
-              <p className="mt-2 text-xs leading-5 text-white/76">{detail}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+          <div className="store-inline-assurance" aria-label="Mağaza güvenceleri">
+            {storeAssuranceItems.map((item) => {
+              const Icon = item.icon;
 
-      <section className="store-commerce-strip mt-6">
-        <div>
-          <p className="text-xs font-black uppercase text-primary">Hızlı kategori</p>
-          <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
-            {categoryFilters.map((filter) => (
-              <Link
-                key={`strip-${filter.label}`}
-                href={buildStoreHref({
-                  category: filter.value || undefined,
-                  q: query || undefined,
-                  sort: selectedSort,
-                  power: selectedPower || undefined,
-                  installation: selectedInstallation || undefined,
-                  view: selectedView
-                })}
-                className={`store-category-chip ${filter.active ? "store-category-chip--active" : ""}`}
-              >
-                {filter.label}
-                <span>{filter.count}</span>
-              </Link>
-            ))}
+              return (
+                <span key={item.title}>
+                  <Icon className="h-4 w-4" aria-hidden />
+                  {item.title}
+                </span>
+              );
+            })}
           </div>
         </div>
-        <div className="store-commerce-strip__badges">
-          <span>{serviceCoverageSummary.shipping}</span>
-          <span>PayTR güvenli ödeme</span>
-          <span>Keşifle kurulum netliği</span>
-        </div>
       </section>
+
+      {activeFilterCount === 0 && featuredProducts.length > 0 ? (
+        <section className="store-featured mt-6" aria-labelledby="store-featured-title">
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <p className="premium-eyebrow">Öne çıkanlar</p>
+              <h2 id="store-featured-title" className="mt-2 text-2xl font-black text-on-surface md:text-3xl">
+                Popüler şarj ürünleri
+              </h2>
+            </div>
+            <a href="#urun-listesi" className="btn-secondary shrink-0">
+              Tüm ürünler
+            </a>
+          </div>
+
+          <div className="store-product-rail mt-5" aria-label="Öne çıkan ürünler">
+            {featuredProducts.map((product) => (
+              <div key={`featured-${product.id}`} className="store-product-slide">
+                <ProductCard product={product} />
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[300px_1fr]">
         <aside className="w-full lg:sticky lg:top-24 lg:h-fit">
@@ -388,7 +371,7 @@ export default async function StorePage({ searchParams }: StorePageProps) {
           </div>
         </aside>
 
-        <section className="store-results min-w-0">
+        <section id="urun-listesi" className="store-results min-w-0 scroll-mt-28">
           <header className="store-results__header mb-6 rounded-[24px] border border-outline-variant/40 bg-white/88 p-5 shadow-[0_16px_44px_rgba(19,27,46,0.06)] backdrop-blur">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
@@ -396,6 +379,11 @@ export default async function StorePage({ searchParams }: StorePageProps) {
                 <h2 className="mt-2 text-3xl font-black text-on-surface">
                   {sortedProducts.length} uygun seçenek
                 </h2>
+                <p className="mt-2 text-sm text-on-surface-variant">
+                  {activeFilterCount > 0
+                    ? `${activeFilterCount} filtre uygulanıyor.`
+                    : "Filtreleyin, karşılaştırın ve doğru ürünü seçin."}
+                </p>
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <Link
@@ -435,19 +423,6 @@ export default async function StorePage({ searchParams }: StorePageProps) {
               </div>
             </div>
 
-            <div className="mt-5 grid gap-3 md:grid-cols-4">
-              {[
-                ["Ödeme", "PayTR güvenli altyapı"],
-                ["Kargo", "Türkiye'nin 81 iline ürün gönderimi"],
-                ["Kurulum", "Keşifle kapsam netleşir"],
-                ["Destek", "Garanti ve servis süreci"]
-              ].map(([label, detail]) => (
-                <div key={label} className="rounded-2xl bg-surface-container-low px-4 py-3">
-                  <p className="text-sm font-black text-on-surface">{label}</p>
-                  <p className="mt-1 text-xs text-on-surface-variant">{detail}</p>
-                </div>
-              ))}
-            </div>
           </header>
 
           {sortedProducts.length === 0 ? (

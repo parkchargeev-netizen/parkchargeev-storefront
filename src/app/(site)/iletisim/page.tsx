@@ -111,11 +111,7 @@ function ContactOnePage({ defaultReason }: { defaultReason?: string }) {
 
       <section className="contact-onepage-shell">
         <div className="contact-onepage-intro">
-          <div className="contact-onepage-coverage">
-            <span>{serviceCoverageSummary.shipping}</span>
-            <span>{serviceCoverageSummary.freeSurvey}</span>
-            <span>{serviceCoverageSummary.installation}</span>
-          </div>
+
           <ContactInfoCards />
         </div>
 

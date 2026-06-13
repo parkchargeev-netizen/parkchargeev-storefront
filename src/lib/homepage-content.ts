@@ -24,9 +24,9 @@ export const heroTrustSignals = [
 ] as const;
 
 export const heroStats = [
-  { value: "7.4 / 11 kW", label: "Evde gece şarjı" },
-  { value: "22 kW", label: "Site ve ofis" },
-  { value: "AC / DC", label: "Ticari lokasyon" }
+  { value: "7.4 / 11 kW"},
+  { value: "22 kW"},
+  { value: "AC / DC"}
 ] as const;
 
 export const conversionRoutes = [

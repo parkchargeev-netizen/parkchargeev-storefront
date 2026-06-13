@@ -44,7 +44,7 @@ export function SiteHeader({ navigation = siteConfig.primaryNavigation }: SiteHe
             href={`/iletisim?reason=${encodeURIComponent("Ücretsiz keşif talebi")}`}
             className="inline-flex items-center gap-1 text-[#7eecc9]"
           >
-            Sakarya keşif talebi
+            Türkiye geneli keşif talebi
             <ChevronRight className="h-3.5 w-3.5" aria-hidden />
           </Link>
         </div>

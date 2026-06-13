@@ -124,7 +124,7 @@ const commandActionItems: Array<AdminCommandItem & { roles: AdminRole[]; require
   {
     href: "/admin/saha",
     label: "Saha planını kontrol et",
-    detail: "Sakarya keşif, Sakarya + Kocaeli kurulum taleplerini yönet",
+    detail: "Türkiye genelinden gelen keşif ve kurulum taleplerini yönet",
     group: "Operasyon",
     roles: ["superadmin", "operations", "technician"],
     requiresDatabase: true

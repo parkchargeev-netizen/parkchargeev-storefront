@@ -6,8 +6,7 @@ import { contactReasons } from "@/lib/contact-reasons";
 import {
   getLeadCoverageHelp,
   leadCityOptions,
-  serviceCoverageSummary,
-  validateLeadServiceCoverage
+  serviceCoverageSummary
 } from "@/lib/service-coverage";
 
 type LeadFormProps = {
@@ -16,6 +15,49 @@ type LeadFormProps = {
   compact?: boolean;
   defaultReason?: string;
 };
+
+type LeadApiResponse = {
+  ok: boolean;
+  message?: string;
+};
+
+function getLeadRequestError(status: number, message?: string) {
+  if (message) {
+    return message;
+  }
+
+  if (status === 400) {
+    return "Formdaki bilgileri kontrol edip yeniden deneyin.";
+  }
+
+  if (status === 429) {
+    return "Çok fazla talep gönderildi. Lütfen birkaç dakika sonra yeniden deneyin.";
+  }
+
+  if (status >= 500) {
+    return "Talep sistemi şu anda yanıt veremiyor. Lütfen kısa süre sonra yeniden deneyin.";
+  }
+
+  return "Talep gönderilemedi. Lütfen yeniden deneyin.";
+}
+
+function getSubmissionErrorMessage(error: unknown) {
+  if (!(error instanceof Error)) {
+    return "Talep gönderilirken beklenmeyen bir hata oluştu.";
+  }
+
+  const normalizedMessage = error.message.toLocaleLowerCase("tr-TR");
+
+  if (
+    normalizedMessage.includes("failed to fetch") ||
+    normalizedMessage.includes("networkerror") ||
+    normalizedMessage.includes("network request failed")
+  ) {
+    return "Sunucuya ulaşılamadı. İnternet bağlantınızı kontrol edip yeniden deneyin.";
+  }
+
+  return error.message || "Talep gönderilirken beklenmeyen bir hata oluştu.";
+}
 
 export function LeadForm({
   title = "Teklif ve keşif talebi",
@@ -48,16 +90,13 @@ export function LeadForm({
         body: JSON.stringify(payload)
       });
 
-      const result = (await response.json()) as {
-        ok: boolean;
-        message: string;
-      };
+      const result = (await response.json().catch(() => null)) as LeadApiResponse | null;
 
-      if (!response.ok || !result.ok) {
-        throw new Error(result.message || "Talep gönderilemedi.");
+      if (!response.ok || !result?.ok) {
+        throw new Error(getLeadRequestError(response.status, result?.message));
       }
 
-      setMessage(result.message);
+      setMessage(result.message || "Talebiniz alındı. Ekibimiz en kısa sürede dönüş yapacak.");
       form.reset();
       setSelectedCity("");
       if (defaultReason) {
@@ -70,11 +109,7 @@ export function LeadForm({
         setSelectedReason("");
       }
     } catch (submissionError) {
-      setError(
-        submissionError instanceof Error
-          ? submissionError.message
-          : "Talep gönderilirken beklenmeyen bir hata oluştu."
-      );
+      setError(getSubmissionErrorMessage(submissionError));
     } finally {
       setIsSubmitting(false);
     }
@@ -99,16 +134,6 @@ export function LeadForm({
           const form = event.currentTarget;
           const formData = new FormData(form);
           const payload = Object.fromEntries(formData.entries());
-          const coverageValidation = validateLeadServiceCoverage(
-            String(payload.reason ?? ""),
-            String(payload.city ?? "")
-          );
-
-          if (!coverageValidation.ok) {
-            setError(coverageValidation.message);
-            return;
-          }
-
           void submitLead(payload, form);
         }}
       >
@@ -165,7 +190,8 @@ export function LeadForm({
           <input
             required
             name="city"
-            placeholder="Sakarya veya Kocaeli"
+            autoComplete="address-level1"
+            placeholder="İlinizi yazın veya listeden seçin"
             list="lead-city-options"
             value={selectedCity}
             onChange={(event) => setSelectedCity(event.target.value)}
@@ -201,8 +227,9 @@ export function LeadForm({
         <div className={`${compact ? "px-4 py-3 text-xs leading-5" : "px-4 py-4 text-sm leading-6"} md:col-span-2 rounded-2xl border border-primary/15 bg-primary/5 text-on-surface-variant`}>
           <span className="font-black text-primary">{coverageHelp}</span>
           <span className="mt-1 block">
-            {serviceCoverageSummary.shipping} · {serviceCoverageSummary.freeSurvey} ·{" "}
-            {serviceCoverageSummary.installation}
+            Ürün kargosu Türkiye&apos;nin 81 iline yapılır; ücretsiz keşif yalnızca Sakarya, kurulum hizmeti Sakarya ve Kocaeli için planlanır.
+          </span>
+          <span className="mt-1 block">
           </span>
         </div>
 
@@ -245,9 +272,15 @@ export function LeadForm({
           </button>
 
           {message ? (
-            <p className="text-sm font-medium text-secondary">{message}</p>
+            <p role="status" aria-live="polite" className="text-sm font-medium text-secondary">
+              {message}
+            </p>
           ) : null}
-          {error ? <p className="text-sm font-medium text-red-600">{error}</p> : null}
+          {error ? (
+            <p role="alert" aria-live="assertive" className="text-sm font-medium text-red-600">
+              {error}
+            </p>
+          ) : null}
         </div>
       </form>
     </div>

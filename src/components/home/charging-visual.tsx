@@ -1,7 +1,5 @@
 "use client";
 
-import Image from "next/image";
-
 const energyParticles = [
   { left: "18%", top: "24%", delay: "0s" },
   { left: "42%", top: "62%", delay: "0.7s" },
@@ -13,14 +11,7 @@ export function ChargingVisual() {
   return (
     <div className="real-charger-media" aria-hidden>
       <div className="real-charger-media__frame">
-        <Image
-          src="/images/hero-realistic-ev-charging.png"
-          alt=""
-          fill
-          priority
-          sizes="(min-width: 1024px) 46vw, 100vw"
-          className="real-charger-media__photo"
-        />
+        <span className="real-charger-media__photo" />
         <span className="real-charger-media__shade" />
         <span className="real-charger-media__scan" />
         <span className="real-charger-media__charger-pulse" />

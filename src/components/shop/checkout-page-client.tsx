@@ -319,7 +319,7 @@ export function CheckoutPageClient({
   }
 
   return (
-    <div className="mx-auto grid max-w-7xl gap-8 px-6 py-12 lg:grid-cols-[1fr_360px] lg:px-8">
+    <div className="mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:px-6 sm:py-12 lg:grid-cols-[1fr_360px] lg:px-8">
       {iframeToken ? (
         <Script src="https://www.paytr.com/js/iframeResizer.min.js" strategy="afterInteractive" />
       ) : null}
