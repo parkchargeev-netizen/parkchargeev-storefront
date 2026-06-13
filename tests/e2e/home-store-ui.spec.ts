@@ -12,7 +12,9 @@ test("@e2e ana sayfa sade karar akisini gosterir", async ({ page }) => {
   const heroHeight = await page.locator(".premium-hero").evaluate((element) => {
     return element.getBoundingClientRect().height;
   });
-  expect(heroHeight).toBeGreaterThanOrEqual(viewportHeight - 76);
+  const viewportWidth = page.viewportSize()?.width ?? 0;
+  const expectedHeaderOffset = viewportWidth >= 768 ? 110 : 76;
+  expect(heroHeight).toBeGreaterThanOrEqual(viewportHeight - expectedHeaderOffset);
 
   for (const label of [
     "Pazar momentumu",
@@ -23,7 +25,6 @@ test("@e2e ana sayfa sade karar akisini gosterir", async ({ page }) => {
     await expect(page.getByText(label, { exact: true })).toHaveCount(0);
   }
 
-  const viewportWidth = page.viewportSize()?.width ?? 0;
   if (viewportWidth <= 767) {
     await expect(page.locator(".premium-hero > .real-charger-media")).toBeHidden();
     await expect(page.locator(".premium-hero__mobile-trust")).toBeVisible();
@@ -36,6 +37,11 @@ test("@e2e ana sayfa sade karar akisini gosterir", async ({ page }) => {
     });
     expect(firstCardWidth).toBeLessThan(190);
   } else {
+    await expect(page.locator("header").getByText("PayTR güvenli ödeme")).toBeVisible();
+    await expect(page.locator("header").getByText("Ürün kargosu: 81 il")).toBeVisible();
+    await expect(page.locator("header").getByText("Ücretsiz keşif: Sakarya")).toBeVisible();
+    await expect(page.locator("header").getByText("Kurulum: Sakarya ve Kocaeli")).toBeVisible();
+    await expect(page.locator("header").getByRole("link", { name: /Türkiye geneli keşif talebi/i })).toBeVisible();
     await expect(page.locator(".premium-hero__mobile-trust")).toBeHidden();
   }
 
@@ -105,6 +111,31 @@ test("@e2e magaza acik renkli e-ticaret girisi ve kayan urun vitrini sunar", asy
     });
     expect(railCoverage).toBeGreaterThan(0.98);
   }
+
+  const hasPageOverflow = await page.evaluate(() => {
+    return document.documentElement.scrollWidth > document.documentElement.clientWidth + 1;
+  });
+  expect(hasPageOverflow).toBe(false);
+});
+
+test("@e2e mobil urun detay sayfasi kompakt e-ticaret akisi sunar", async ({ page }) => {
+  const viewportWidth = page.viewportSize()?.width ?? 0;
+  test.skip(viewportWidth > 767, "Mobil kompakt ürün detay kontrolü.");
+
+  await page.goto("/urun/homecharge-pro-11kw", { waitUntil: "domcontentloaded" });
+
+  const buybox = page.locator(".product-detail-buybox");
+  await expect(buybox.locator("h1")).toBeVisible();
+
+  const titleSize = await buybox.locator("h1").evaluate((element) => {
+    return Number.parseFloat(window.getComputedStyle(element).fontSize);
+  });
+  expect(titleSize).toBeLessThanOrEqual(26);
+
+  const galleryHeight = await page.locator(".product-gallery-premium").evaluate((element) => {
+    return element.getBoundingClientRect().height;
+  });
+  expect(galleryHeight).toBeLessThan(560);
 
   const hasPageOverflow = await page.evaluate(() => {
     return document.documentElement.scrollWidth > document.documentElement.clientWidth + 1;

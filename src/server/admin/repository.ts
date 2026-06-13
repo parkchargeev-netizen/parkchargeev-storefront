@@ -656,27 +656,32 @@ async function loadPublicProducts() {
     return marketingProducts;
   }
 
-  const db = getDb();
-  const rows = await db
-    .select()
-    .from(products)
-    .where(eq(products.status, "active"))
-    .orderBy(desc(products.updatedAt), desc(products.id));
+  try {
+    const db = getDb();
+    const rows = await db
+      .select()
+      .from(products)
+      .where(eq(products.status, "active"))
+      .orderBy(desc(products.updatedAt), desc(products.id));
 
-  if (rows.length === 0) {
+    if (rows.length === 0) {
+      return marketingProducts;
+    }
+
+    const collections = await hydrateProductCollections(rows.map((row) => row.id), {
+      includeSpecs: false
+    });
+    const mappedProducts = rows.map((row) => mapAdminProductToPublicProduct(row, collections));
+    const mappedSlugs = new Set(mappedProducts.map((product) => product.slug));
+
+    return [
+      ...mappedProducts,
+      ...marketingProducts.filter((product) => !mappedSlugs.has(product.slug))
+    ];
+  } catch {
+    console.warn("Public products could not be loaded. Falling back to marketing products.");
     return marketingProducts;
   }
-
-  const collections = await hydrateProductCollections(rows.map((row) => row.id), {
-    includeSpecs: false
-  });
-  const mappedProducts = rows.map((row) => mapAdminProductToPublicProduct(row, collections));
-  const mappedSlugs = new Set(mappedProducts.map((product) => product.slug));
-
-  return [
-    ...mappedProducts,
-    ...marketingProducts.filter((product) => !mappedSlugs.has(product.slug))
-  ];
 }
 
 export const listPublicProducts = unstable_cache(
@@ -695,19 +700,24 @@ async function loadPublicProductSlugs() {
     return fallbackSlugs;
   }
 
-  const db = getDb();
-  const rows = await db
-    .select({ slug: products.slug })
-    .from(products)
-    .where(eq(products.status, "active"))
-    .orderBy(desc(products.updatedAt), desc(products.id));
-  const slugs = new Set(rows.map((row) => row.slug));
+  try {
+    const db = getDb();
+    const rows = await db
+      .select({ slug: products.slug })
+      .from(products)
+      .where(eq(products.status, "active"))
+      .orderBy(desc(products.updatedAt), desc(products.id));
+    const slugs = new Set(rows.map((row) => row.slug));
 
-  for (const slug of fallbackSlugs) {
-    slugs.add(slug);
+    for (const slug of fallbackSlugs) {
+      slugs.add(slug);
+    }
+
+    return [...slugs];
+  } catch {
+    console.warn("Public product slugs could not be loaded. Falling back to marketing slugs.");
+    return fallbackSlugs;
   }
-
-  return [...slugs];
 }
 
 export const listPublicProductSlugs = unstable_cache(
@@ -726,20 +736,25 @@ async function loadPublicProductBySlug(slug: string) {
     return fallbackProduct;
   }
 
-  const db = getDb();
-  const [row] = await db
-    .select()
-    .from(products)
-    .where(and(eq(products.slug, slug), eq(products.status, "active")))
-    .limit(1);
+  try {
+    const db = getDb();
+    const [row] = await db
+      .select()
+      .from(products)
+      .where(and(eq(products.slug, slug), eq(products.status, "active")))
+      .limit(1);
 
-  if (!row) {
+    if (!row) {
+      return fallbackProduct;
+    }
+
+    const collections = await hydrateProductCollections([row.id]);
+
+    return mapAdminProductToPublicProduct(row, collections);
+  } catch {
+    console.warn(`Public product "${slug}" could not be loaded. Falling back to marketing data.`);
     return fallbackProduct;
   }
-
-  const collections = await hydrateProductCollections([row.id]);
-
-  return mapAdminProductToPublicProduct(row, collections);
 }
 
 export const getPublicProductBySlug = unstable_cache(
