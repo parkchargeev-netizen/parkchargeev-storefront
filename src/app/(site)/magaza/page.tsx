@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Headphones, Search, ShieldCheck, Truck } from "lucide-react";
+import { Headphones, Search, ShieldCheck, SlidersHorizontal, Truck, X } from "lucide-react";
 import Link from "next/link";
 
 import { ProductCard } from "@/components/shop/product-card";
@@ -35,7 +35,6 @@ const sortOptions = [
 ] as const;
 
 const quickSegments = [
-  { label: "Evde gece şarjı", href: "/magaza?category=Ev%20Tipi", detail: "7.4 / 11 kW wallbox" },
   { label: "Site yönetimi", href: "/magaza?power=22%20kW", detail: "RFID + ortak kullanım" },
   { label: "Ofis otoparkı", href: "/magaza?installation=Sabit%20kurulum", detail: "22 kW AC + servis" },
   { label: "Ticari saha", href: "/magaza?category=DC%20Hızlı%20Şarj", detail: "DC yatırım planı" },
@@ -199,6 +198,54 @@ export default async function StorePage({ searchParams }: StorePageProps) {
     { name: "Ana Sayfa", path: "/" },
     { name: "Mağaza", path: "/magaza" }
   ]);
+  const renderFilterFields = (compact = false) => (
+    <>
+      <label className="store-filter-field">
+        <span>Arama</span>
+        <input
+          name="q"
+          defaultValue={query}
+          placeholder="Araç, güç, RFID, Type 2"
+        />
+      </label>
+      {selectedCategory ? <input type="hidden" name="category" value={selectedCategory} /> : null}
+      <label className="store-filter-field">
+        <span>Güç</span>
+        <select name="power" defaultValue={selectedPower}>
+          <option value="">Tüm güç seviyeleri</option>
+          {filterOptions.powerTiers.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className="store-filter-field">
+        <span>Kurulum</span>
+        <select name="installation" defaultValue={selectedInstallation}>
+          <option value="">Tüm kurulum seçenekleri</option>
+          {filterOptions.installationModes.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className="store-filter-field">
+        <span>Sıralama</span>
+        <select name="sort" defaultValue={selectedSort}>
+          {sortOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </label>
+      <button type="submit" className="store-filter-submit">
+        {compact ? "Sonuçları Göster" : "Filtreleri Uygula"}
+      </button>
+    </>
+  );
 
   return (
     <div className="store-page mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -279,75 +326,81 @@ export default async function StorePage({ searchParams }: StorePageProps) {
         </section>
       ) : null}
 
-      <div className="mt-8 grid gap-8 lg:grid-cols-[300px_1fr]">
-        <aside className="w-full lg:sticky lg:top-24 lg:h-fit">
-          <form action="/magaza" className="surface-card p-5">
-            <p className="text-sm font-black uppercase text-primary">Doğru ürünü filtrele</p>
-            <label className="mt-5 grid gap-2">
-              <span className="text-sm text-on-surface-variant">Arama</span>
-              <input
-                name="q"
-                defaultValue={query}
-                placeholder="Araç, güç, RFID, Type 2"
-                className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 outline-none transition focus:border-primary"
-              />
-            </label>
-            {selectedCategory ? <input type="hidden" name="category" value={selectedCategory} /> : null}
-            <label className="mt-4 grid gap-2">
-              <span className="text-sm text-on-surface-variant">Güç</span>
-              <select
-                name="power"
-                defaultValue={selectedPower}
-                className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 outline-none transition focus:border-primary"
-              >
-                <option value="">Tüm güç seviyeleri</option>
-                {filterOptions.powerTiers.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
+      <div className="store-mobile-tools">
+        <details className="store-mobile-filter">
+          <summary>
+            <SlidersHorizontal className="store-mobile-filter__filter-icon" aria-hidden />
+            <X className="store-mobile-filter__close-icon" aria-hidden />
+            <span className="store-mobile-filter__open-label">Filtrele ve Sırala</span>
+            <span className="store-mobile-filter__close-label">Filtreleri Kapat</span>
+            {activeFilterCount > 0 ? <b>{activeFilterCount}</b> : null}
+          </summary>
+          <span className="store-mobile-filter__backdrop" aria-hidden />
+          <div className="store-mobile-filter__panel">
+            <div className="store-mobile-filter__heading">
+              <p>Ürünleri daraltın</p>
+              <span>{sortedProducts.length} seçenek</span>
+            </div>
+            <form action="/magaza" className="store-filter-form store-filter-form--mobile">
+              {renderFilterFields(true)}
+            </form>
+
+            <div className="store-mobile-filter__categories">
+              <p>Kullanım alanı</p>
+              <div>
+                {categoryFilters.map((filter) => (
+                  <Link
+                    key={`mobile-filter-${filter.label}`}
+                    href={buildStoreHref({
+                      category: filter.value || undefined,
+                      q: query || undefined,
+                      sort: selectedSort,
+                      power: selectedPower || undefined,
+                      installation: selectedInstallation || undefined,
+                      view: selectedView
+                    })}
+                    className={filter.active ? "is-active" : ""}
+                  >
+                    <span>{filter.label}</span>
+                    <b>{filter.count}</b>
+                  </Link>
                 ))}
-              </select>
-            </label>
-            <label className="mt-4 grid gap-2">
-              <span className="text-sm text-on-surface-variant">Kurulum</span>
-              <select
-                name="installation"
-                defaultValue={selectedInstallation}
-                className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 outline-none transition focus:border-primary"
-              >
-                <option value="">Tüm kurulum seçenekleri</option>
-                {filterOptions.installationModes.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="mt-4 grid gap-2">
-              <span className="text-sm text-on-surface-variant">Sıralama</span>
-              <select
-                name="sort"
-                defaultValue={selectedSort}
-                className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 outline-none transition focus:border-primary"
-              >
-                {sortOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <button
-              type="submit"
-              className="mt-5 w-full rounded-2xl bg-primary px-5 py-3 text-sm font-black text-white"
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <div className="store-mobile-category-strip" aria-label="Kullanım alanına göre filtrele">
+          {categoryFilters.map((filter) => (
+            <Link
+              key={`mobile-category-${filter.label}`}
+              href={buildStoreHref({
+                category: filter.value || undefined,
+                q: query || undefined,
+                sort: selectedSort,
+                power: selectedPower || undefined,
+                installation: selectedInstallation || undefined,
+                view: selectedView
+              })}
+              className={filter.active ? "is-active" : ""}
             >
-              Uygula
-            </button>
+              {filter.label}
+              <span>{filter.count}</span>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      <div className="store-catalog-layout">
+        <aside className="store-filter-sidebar">
+          <form action="/magaza" className="store-filter-form surface-card">
+            <p className="store-filter-title">Ürünleri filtrele</p>
+            {renderFilterFields()}
           </form>
 
-          <div className="surface-card mt-5 p-5">
-            <p className="text-sm font-black uppercase text-primary">Kullanım alanı</p>
-            <div className="mt-4 grid gap-2">
+          <div className="store-usage-filter surface-card">
+            <p className="store-filter-title">Kullanım alanı</p>
+            <div>
               {categoryFilters.map((filter) => (
                 <Link
                   key={filter.label}
@@ -359,12 +412,10 @@ export default async function StorePage({ searchParams }: StorePageProps) {
                     installation: selectedInstallation || undefined,
                     view: selectedView
                   })}
-                  className={`flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition ${
-                    filter.active ? "bg-surface-container-low text-primary" : "hover:bg-surface-container-low"
-                  }`}
+                  className={filter.active ? "is-active" : ""}
                 >
-                  <span className="font-black">{filter.label}</span>
-                  <span className="text-xs font-black text-outline">{filter.count}</span>
+                  <span>{filter.label}</span>
+                  <b>{filter.count}</b>
                 </Link>
               ))}
             </div>
@@ -372,14 +423,14 @@ export default async function StorePage({ searchParams }: StorePageProps) {
         </aside>
 
         <section id="urun-listesi" className="store-results min-w-0 scroll-mt-28">
-          <header className="store-results__header mb-6 rounded-[24px] border border-outline-variant/40 bg-white/88 p-5 shadow-[0_16px_44px_rgba(19,27,46,0.06)] backdrop-blur">
+          <header className="store-results__header">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
-                <p className="text-sm font-black uppercase text-primary">Sonuçlar</p>
-                <h2 className="mt-2 text-3xl font-black text-on-surface">
+                <p className="store-results__eyebrow">Sonuçlar</p>
+                <h2>
                   {sortedProducts.length} uygun seçenek
                 </h2>
-                <p className="mt-2 text-sm text-on-surface-variant">
+                <p className="store-results__summary">
                   {activeFilterCount > 0
                     ? `${activeFilterCount} filtre uygulanıyor.`
                     : "Filtreleyin, karşılaştırın ve doğru ürünü seçin."}

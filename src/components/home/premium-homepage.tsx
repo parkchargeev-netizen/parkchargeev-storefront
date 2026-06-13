@@ -164,7 +164,7 @@ function PremiumHero({ whatsappHref }: { whatsappHref: string }) {
 
 function ProductSpotlight({ products }: { products: ProductModel[] }) {
   return (
-    <section className="premium-section">
+    <section className="premium-section premium-product-spotlight">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <SectionHeading
@@ -177,7 +177,7 @@ function ProductSpotlight({ products }: { products: ProductModel[] }) {
           </Link>
         </div>
 
-        <div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+        <div className="premium-product-spotlight__grid mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           {products.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}

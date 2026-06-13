@@ -20,6 +20,13 @@ test("@e2e ana sayfa sade karar akisini gosterir", async ({ page }) => {
   const viewportWidth = page.viewportSize()?.width ?? 0;
   if (viewportWidth <= 767) {
     await expect(page.locator(".premium-hero > .real-charger-media")).toBeHidden();
+
+    const homepageCards = page.locator(".premium-product-spotlight__grid .premium-product-card");
+    expect(await homepageCards.count()).toBeGreaterThan(1);
+    const firstCardWidth = await homepageCards.first().evaluate((element) => {
+      return element.getBoundingClientRect().width;
+    });
+    expect(firstCardWidth).toBeLessThan(190);
   }
 
   const hasPageOverflow = await page.evaluate(() => {
@@ -38,6 +45,7 @@ test("@e2e magaza acik renkli e-ticaret girisi ve kayan urun vitrini sunar", asy
   ).toBeVisible();
   await expect(page.getByRole("textbox", { name: "Mağazada ürün ara" })).toBeVisible();
   await expect(page.locator(".store-hero")).toHaveCount(0);
+  await expect(page.getByText("Evde gece şarjı", { exact: true })).toHaveCount(0);
 
   const productRail = page.locator(".store-product-rail");
   await expect(productRail).toBeVisible();
@@ -52,6 +60,35 @@ test("@e2e magaza acik renkli e-ticaret girisi ve kayan urun vitrini sunar", asy
     return element.scrollWidth > element.clientWidth;
   });
   expect(isScrollable).toBe(true);
+
+  const viewportWidth = page.viewportSize()?.width ?? 0;
+  if (viewportWidth <= 1024) {
+    const mobileFilter = page.locator(".store-mobile-filter");
+    await expect(mobileFilter).toBeVisible();
+    await expect(page.locator(".store-filter-sidebar")).toBeHidden();
+    await expect(page.locator(".store-mobile-category-strip")).toBeVisible();
+
+    const filterTriggerHeight = await mobileFilter.locator("summary").evaluate((element) => {
+      return element.getBoundingClientRect().height;
+    });
+    expect(filterTriggerHeight).toBeGreaterThanOrEqual(44);
+
+    await mobileFilter.locator("summary").click();
+    await expect(page.locator(".store-mobile-filter__panel")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Sonuçları Göster" })).toBeVisible();
+    await mobileFilter.locator("summary").click();
+
+    const storeCards = page.locator(".store-product-grid--commerce .premium-product-card");
+    if ((await storeCards.count()) > 1) {
+      const firstStoreCardWidth = await storeCards.first().evaluate((element) => {
+        return element.getBoundingClientRect().width;
+      });
+      expect(firstStoreCardWidth).toBeLessThan(200);
+    }
+  } else {
+    await expect(page.locator(".store-mobile-tools")).toBeHidden();
+    await expect(page.locator(".store-filter-sidebar")).toBeVisible();
+  }
 
   const hasPageOverflow = await page.evaluate(() => {
     return document.documentElement.scrollWidth > document.documentElement.clientWidth + 1;

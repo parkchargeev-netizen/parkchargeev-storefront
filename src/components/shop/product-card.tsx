@@ -57,7 +57,7 @@ export function ProductCard({ product, layout = "standard" }: ProductCardProps) 
               className="h-full min-h-44 transition duration-300 group-hover:scale-[1.03]"
             />
           )}
-          <div className="absolute left-3 top-3 z-10 flex items-center gap-2">
+          <div className="premium-product-card__badges absolute left-3 top-3 z-10 flex items-center gap-2">
             {product.badge ? (
               <span className="rounded-full bg-[#7eecc9] px-3 py-1 text-xs font-black text-[#063326]">
                 {product.badge}
@@ -164,7 +164,7 @@ export function ProductCard({ product, layout = "standard" }: ProductCardProps) 
             className="transition duration-300 group-hover:scale-[1.02]"
           />
         )}
-        <div className="absolute left-3 top-3 flex items-center gap-2">
+        <div className="premium-product-card__badges absolute left-3 top-3 flex items-center gap-2">
           {product.badge ? (
             <span className="rounded-full bg-[#7eecc9] px-3 py-1 text-xs font-black text-[#063326]">
               {product.badge}
@@ -179,7 +179,7 @@ export function ProductCard({ product, layout = "standard" }: ProductCardProps) 
           {product.category}
         </p>
         <span
-          className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-black ${
+          className={`premium-product-card__stock shrink-0 rounded-full px-2.5 py-1 text-[11px] font-black ${
             isOutOfStock ? "bg-red-50 text-red-600" : "bg-[#e5fff5] text-[#063326]"
           }`}
         >
@@ -203,19 +203,19 @@ export function ProductCard({ product, layout = "standard" }: ProductCardProps) 
         ))}
       </div>
 
-      <div className="mt-4 flex items-end justify-between gap-3">
-        <div>
+      <div className="premium-product-card__price-row mt-4 flex items-end justify-between gap-3">
+        <div className="premium-product-card__price">
           <p className="text-2xl font-black text-primary">{formatPriceTRY(product.priceKurus)}</p>
           <p className="mt-1 text-[11px] font-black uppercase text-on-surface-variant">
             {product.powerLabel}
           </p>
         </div>
-        <span className="rounded-full bg-[#063326] px-3 py-1.5 text-[11px] font-black text-[#7eecc9]">
+        <span className="premium-product-card__decision rounded-full bg-[#063326] px-3 py-1.5 text-[11px] font-black text-[#7eecc9]">
           {profile.decisionBadge}
         </span>
       </div>
 
-      <div className="mt-4 grid grid-cols-2 gap-2">
+      <div className="premium-product-card__actions mt-4 grid grid-cols-2 gap-2">
         <Link
           href={`/urun/${product.slug}`}
           className="inline-flex min-h-11 items-center justify-center rounded-2xl bg-primary px-4 py-3 text-sm font-black text-white transition hover:bg-primary-container"
