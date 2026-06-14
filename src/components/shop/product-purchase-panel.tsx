@@ -73,8 +73,8 @@ export function ProductPurchasePanel({
   }
 
   return (
-    <>
-      <div className="mt-8 flex flex-wrap items-end gap-4">
+    <div className="product-purchase-panel">
+      <div className="product-purchase-panel__price mt-8 flex flex-wrap items-end gap-4">
         <p className="text-5xl font-black text-primary">
           {formatPriceTRY(selectedOption.priceKurus)}
         </p>
@@ -181,7 +181,7 @@ export function ProductPurchasePanel({
 
         <div className="mt-6">
           <p className="text-sm font-medium text-on-surface-variant">Miktar</p>
-          <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-center">
+          <div className="product-purchase-panel__action-row mt-3 flex flex-col gap-4 sm:flex-row sm:items-center">
             <div className="flex items-center gap-4 rounded-2xl bg-white px-4 py-3">
               <button
                 type="button"
@@ -208,7 +208,7 @@ export function ProductPurchasePanel({
               onClick={handleAddToCart}
               disabled={isAddDisabled}
               aria-busy={!isHydrated}
-              className="flex-1 rounded-2xl bg-linear-to-r from-primary to-secondary px-6 py-4 text-center text-base font-semibold text-white shadow-[0_18px_50px_rgba(6,51,38,0.22)] disabled:cursor-not-allowed disabled:opacity-60"
+              className="product-purchase-panel__add-button flex-1 rounded-2xl bg-linear-to-r from-primary to-secondary px-6 py-4 text-center text-base font-semibold text-white shadow-[0_18px_50px_rgba(6,51,38,0.22)] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isOutOfStock ? "Stokta Yok" : "Sepete Ekle"}
             </button>
@@ -261,6 +261,21 @@ export function ProductPurchasePanel({
           ))}
         </div>
       </div>
-    </>
+
+      <div className="product-mobile-sticky-atc" aria-label="Mobil hızlı satın alma">
+        <div>
+          <span>Sepet toplamı</span>
+          <strong>{formatPriceTRY(estimatedLineTotal)}</strong>
+        </div>
+        <button
+          type="button"
+          onClick={handleAddToCart}
+          disabled={isAddDisabled}
+          aria-busy={!isHydrated}
+        >
+          {isOutOfStock ? "Stokta Yok" : "Sepete Ekle"}
+        </button>
+      </div>
+    </div>
   );
 }

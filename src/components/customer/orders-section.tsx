@@ -20,7 +20,7 @@ import { formatPriceTRY } from "@/lib/format";
 
 function StatusStepper({ order }: { order: AccountOrder }) {
   const progress = getOrderProgress(order.status);
-  const steps = ["Ödeme", "Onay", "Hazirlik", "Kargo", "Teslim"];
+  const steps = ["Ödeme", "Onay", "Hazırlık", "Kargo", "Teslim"];
 
   return (
     <div className="mt-5 grid grid-cols-5 gap-2" aria-label="Sipariş ilerleme durumu">
@@ -87,7 +87,7 @@ export function OrdersSection({ orders }: { orders: AccountSnapshot["recentOrder
           href="/magaza"
           className="inline-flex items-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-black text-white"
         >
-          Tekrar alisveris yap
+          Tekrar alışveriş yap
           <ArrowRight className="h-4 w-4" />
         </Link>
       </div>

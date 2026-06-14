@@ -70,7 +70,7 @@ const quoteStatusLabels: Record<string, string> = {
 
 const leadStatusLabels: Record<string, string> = {
   new: "Yeni",
-  contacted: "Iletisime gecildi",
+  contacted: "İletişime geçildi",
   qualified: "Nitelikli",
   scheduled: "Planlandı",
   won: "Kazanıldı",

@@ -83,7 +83,7 @@ export const adminRoleLabels: Record<AdminRole, string> = {
   sales: "Satış",
   operations: "Operasyon",
   technician: "Saha Teknisyeni",
-  editor: "İçerik Editoru"
+  editor: "İçerik Editörü"
 };
 
 export const productCategoryOptions = [
@@ -133,7 +133,7 @@ export const orderStatusOptions: Array<{
   { value: "failed", label: "Başarısız" },
   { value: "paid", label: "Ödendi (Eski)" },
   { value: "fulfilled", label: "Tamamlandı" },
-  { value: "payment_processing", label: "Ödeme Isleniyor" },
+  { value: "payment_processing", label: "Ödeme İşleniyor" },
   { value: "draft", label: "Taslak" }
 ];
 
@@ -145,7 +145,7 @@ export const quoteStatusOptions: Array<{
   { value: "reviewing", label: "İnceleniyor" },
   { value: "proposal_sent", label: "Teklif Gönderildi" },
   { value: "negotiation", label: "Müzakere" },
-  { value: "won", label: "Kazandi" },
+  { value: "won", label: "Kazandı" },
   { value: "lost", label: "Kaybetti" }
 ];
 
@@ -161,7 +161,7 @@ export const quoteSegmentOptions: Array<{
 
 export const leadStatusOptions = [
   { value: "new", label: "Yeni" },
-  { value: "contacted", label: "Iletisime Gecildi" },
+  { value: "contacted", label: "İletişime Geçildi" },
   { value: "qualified", label: "Nitelikli" },
   { value: "won", label: "Kazanıldı" },
   { value: "lost", label: "Kaybedildi" }

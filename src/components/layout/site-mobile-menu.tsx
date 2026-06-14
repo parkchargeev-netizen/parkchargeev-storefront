@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { SiteHeaderActions } from "@/components/layout/site-header-actions";
+import { formatPublicNavigationLabel } from "@/lib/public-navigation-labels";
 import type { PublicNavigationItem } from "@/server/site/repository";
 
 type SiteMobileMenuProps = {
@@ -62,7 +63,7 @@ export function SiteMobileMenu({ navigation }: SiteMobileMenuProps) {
                   }}
                   className="rounded-2xl border border-white/10 bg-white/[0.14] px-4 py-3 text-sm font-black text-white/80 transition hover:border-primary/35 hover:text-white"
                 >
-                  {item.label}
+                  {formatPublicNavigationLabel(item)}
                 </Link>
               ))}
             </nav>

@@ -7,7 +7,6 @@ import { CheckoutEmptyCartPanel, CheckoutLoadingPanel } from "@/components/shop/
 import { CheckoutOrderSummary } from "@/components/shop/checkout-order-summary";
 import { CheckoutResultPanel } from "@/components/shop/checkout-result-panel";
 import { CheckoutStatusSummary } from "@/components/shop/checkout-status-summary";
-import { PaytrDirectPaymentPanel } from "@/components/shop/paytr-direct-payment-panel";
 import { PaytrIframePanel } from "@/components/shop/paytr-iframe-panel";
 import { useCart } from "@/components/providers/cart-provider";
 import {
@@ -37,8 +36,6 @@ type CheckoutDraft = {
   city: string;
   address: string;
 };
-
-type PaymentMethod = "iframe" | "direct_api";
 
 const CHECKOUT_STORAGE_KEY = "parkchargeev-checkout-draft-v1";
 const ACTIVE_ORDER_STORAGE_KEY = "parkchargeev-active-order-v1";
@@ -71,7 +68,6 @@ export function CheckoutPageClient({
     initialMerchantOid ?? null
   );
   const [orderStatus, setOrderStatus] = useState<OrderStatusResponse | null>(null);
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("iframe");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCheckingStatus, setIsCheckingStatus] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -240,22 +236,6 @@ export function CheckoutPageClient({
         quantity: item.quantity
       }))
     };
-  }
-
-  function selectPaymentMethod(nextMethod: PaymentMethod) {
-    setPaymentMethod(nextMethod);
-    setError(null);
-
-    if (nextMethod === "direct_api") {
-      setIframeToken(null);
-    }
-  }
-
-  function handleDirectPaymentStarted(nextMerchantOid: string) {
-    setIframeToken(null);
-    setOrderStatus(null);
-    setMerchantOid(nextMerchantOid);
-    window.sessionStorage.setItem(ACTIVE_ORDER_STORAGE_KEY, nextMerchantOid);
   }
 
   async function handlePreparePayment() {
@@ -434,75 +414,26 @@ export function CheckoutPageClient({
           </div>
 
           <div className="mt-8 grid gap-4">
-            <div className="flex flex-col gap-3 rounded-[24px] bg-surface-container-low p-5">
-              <p className="text-lg font-bold text-on-surface">PayTR Ödeme Yöntemi</p>
-              <div className="grid gap-3 md:grid-cols-2">
-                <button
-                  type="button"
-                  aria-pressed={paymentMethod === "iframe"}
-                  onClick={() => selectPaymentMethod("iframe")}
-                  className={`rounded-2xl border px-5 py-4 text-left transition ${
-                    paymentMethod === "iframe"
-                      ? "border-primary bg-white text-on-surface"
-                      : "border-outline-variant/50 bg-transparent text-on-surface-variant"
-                  }`}
-                >
-                  <span className="block text-base font-bold">PayTR iFrame</span>
-                  <span className="mt-1 block text-sm">
-                    Varsayılan hızlı akış; kart girişi PayTR güvenli alanında tamamlanır.
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  aria-pressed={paymentMethod === "direct_api"}
-                  onClick={() => selectPaymentMethod("direct_api")}
-                  className={`rounded-2xl border px-5 py-4 text-left transition ${
-                    paymentMethod === "direct_api"
-                      ? "border-primary bg-white text-on-surface"
-                      : "border-outline-variant/50 bg-transparent text-on-surface-variant"
-                  }`}
-                >
-                  <span className="block text-base font-bold">Direkt API 3D Secure</span>
-                  <span className="mt-1 block text-sm">
-                    Kart formu sitede gösterilir, veriler bizim sunucuya uğramadan PayTR’a post edilir.
-                  </span>
-                </button>
+            <div className="grid gap-4 rounded-[24px] bg-surface-container-low p-5 md:grid-cols-[1fr_auto] md:items-center">
+              <div>
+                <p className="text-lg font-bold text-on-surface">PayTR güvenli ödeme</p>
+                <p className="mt-2 text-sm leading-7 text-on-surface-variant">
+                  Kart bilgileri ParkChargeEV formunda istenmez ve sunucularımıza gönderilmez.
+                  Ödeme, PayTR tarafından oluşturulan güvenli ödeme alanında tamamlanır.
+                </p>
               </div>
+              <button
+                type="button"
+                onClick={() => void handlePreparePayment()}
+                disabled={isSubmitting || !isCheckoutInfoComplete}
+                className="rounded-2xl bg-primary px-6 py-4 text-base font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isSubmitting ? "PayTR hazırlanıyor..." : "PayTR ile Güvenli Öde"}
+              </button>
+              {error ? (
+                <p className="text-sm font-medium text-red-600 md:col-span-2">{error}</p>
+              ) : null}
             </div>
-
-            {paymentMethod === "iframe" ? (
-              <div className="flex flex-col gap-4 rounded-[24px] bg-surface-container-low p-5">
-                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                  <div>
-                    <p className="text-lg font-bold text-on-surface">PayTR iFrame hazırlığı</p>
-                    <p className="mt-2 text-sm leading-7 text-on-surface-variant">
-                      Siparişiniz veritabanında pending_payment olarak açılır, ardından güvenli
-                      iframe token talebi yapılır.
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => void handlePreparePayment()}
-                    disabled={isSubmitting || !isCheckoutInfoComplete}
-                    className="rounded-2xl bg-primary px-6 py-4 text-base font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    {isSubmitting ? "Hazırlanıyor..." : "Ödemeyi Hazırla"}
-                  </button>
-                </div>
-                {error ? <p className="text-sm font-medium text-red-600">{error}</p> : null}
-              </div>
-            ) : (
-              <PaytrDirectPaymentPanel
-                customer={getPaytrCheckoutPayload()}
-                disabled={!isCheckoutInfoComplete}
-                onPaymentStarted={handleDirectPaymentStarted}
-                onError={setError}
-              />
-            )}
-
-            {paymentMethod === "direct_api" && error ? (
-              <p className="text-sm font-medium text-red-600">{error}</p>
-            ) : null}
           </div>
         </div>
 

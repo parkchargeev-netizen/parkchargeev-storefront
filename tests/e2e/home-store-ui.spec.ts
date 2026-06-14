@@ -130,17 +130,80 @@ test("@e2e mobil urun detay sayfasi kompakt e-ticaret akisi sunar", async ({ pag
   const titleSize = await buybox.locator("h1").evaluate((element) => {
     return Number.parseFloat(window.getComputedStyle(element).fontSize);
   });
-  expect(titleSize).toBeLessThanOrEqual(26);
+  expect(titleSize).toBeLessThanOrEqual(23);
 
   const galleryHeight = await page.locator(".product-gallery-premium").evaluate((element) => {
     return element.getBoundingClientRect().height;
   });
-  expect(galleryHeight).toBeLessThan(560);
+  expect(galleryHeight).toBeLessThan(470);
+
+  const stickyAddToCart = page.locator(".product-mobile-sticky-atc");
+  await expect(stickyAddToCart).toBeVisible();
+  await expect(stickyAddToCart.getByRole("button", { name: "Sepete Ekle" })).toBeVisible();
 
   const hasPageOverflow = await page.evaluate(() => {
     return document.documentElement.scrollWidth > document.documentElement.clientWidth + 1;
   });
   expect(hasPageOverflow).toBe(false);
+});
+
+test("@e2e urun detay galerisi thumbnail kartlarini gorselli gosterir", async ({ page }) => {
+  await page.goto("/urun/homecharge-pro-11kw", { waitUntil: "domcontentloaded" });
+
+  const thumbnailVisuals = page.locator(
+    ".product-gallery-premium > .mt-5 button img, .product-gallery-premium > .mt-5 button .product-gallery-thumbnail-visual"
+  );
+  expect(await thumbnailVisuals.count()).toBeGreaterThan(1);
+  await expect(thumbnailVisuals.first()).toBeVisible();
+});
+
+test("@e2e mobil urun secici sade ve kompakt gorunur", async ({ page }) => {
+  const viewportWidth = page.viewportSize()?.width ?? 0;
+  test.skip(viewportWidth > 767, "Mobil kompakt ürün seçici kontrolü.");
+
+  await page.goto("/urun-secici", { waitUntil: "domcontentloaded" });
+
+  const titleSize = await page.locator(".selector-config-panel h1").evaluate((element) => {
+    return Number.parseFloat(window.getComputedStyle(element).fontSize);
+  });
+  expect(titleSize).toBeLessThanOrEqual(23);
+
+  const resultTitleSize = await page.locator(".selector-result-card h2").evaluate((element) => {
+    return Number.parseFloat(window.getComputedStyle(element).fontSize);
+  });
+  expect(resultTitleSize).toBeLessThanOrEqual(24);
+
+  const firstOptionHeight = await page.locator(".selector-option").first().evaluate((element) => {
+    return element.getBoundingClientRect().height;
+  });
+  expect(firstOptionHeight).toBeLessThanOrEqual(92);
+
+  const hasPageOverflow = await page.evaluate(() => {
+    return document.documentElement.scrollWidth > document.documentElement.clientWidth + 1;
+  });
+  expect(hasPageOverflow).toBe(false);
+});
+
+test("@e2e odeme sayfasi kart bilgisini lokal formda istemez", async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem(
+      "parkchargeev-cart-v1",
+      JSON.stringify([
+        {
+          productId: "prod_homecharge_pro_11",
+          cableOption: "5 Metre",
+          quantity: 1
+        }
+      ])
+    );
+  });
+
+  await page.goto("/odeme", { waitUntil: "domcontentloaded" });
+
+  await expect(page.getByRole("main").getByText("PayTR güvenli ödeme", { exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "PayTR ile Güvenli Öde" })).toBeVisible();
+  await expect(page.locator('input[autocomplete^="cc"]')).toHaveCount(0);
+  await expect(page.getByText("Direkt API", { exact: false })).toHaveCount(0);
 });
 
 test("@e2e kurumsal sayfa kompakt teklif formu ve responsive akisi sunar", async ({ page }) => {

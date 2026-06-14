@@ -7,7 +7,7 @@ const quoteStatusLabels: Record<string, string> = {
   reviewing: "İnceleniyor",
   proposal_sent: "Teklif Gönderildi",
   negotiation: "Müzakere",
-  won: "Kazandi",
+  won: "Kazandı",
   lost: "Kaybetti"
 };
 
@@ -22,7 +22,7 @@ const orderStatusLabels: Record<string, string> = {
   failed: "Başarısız",
   paid: "Ödendi",
   fulfilled: "Tamamlandı",
-  payment_processing: "Ödeme Isleniyor",
+  payment_processing: "Ödeme İşleniyor",
   draft: "Taslak"
 };
 

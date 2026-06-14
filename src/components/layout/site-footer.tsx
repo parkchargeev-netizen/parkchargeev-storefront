@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { BrandLogo } from "@/components/layout/brand-logo";
+import { formatPublicNavigationLabel } from "@/lib/public-navigation-labels";
 import { serviceCoverageSummary } from "@/lib/service-coverage";
 import { siteConfig } from "@/lib/site";
 import type { PublicSiteNavigation } from "@/server/site/repository";
@@ -52,7 +53,7 @@ export function SiteFooter({
                   rel={item.rel ?? (item.opensInNewTab ? "noopener noreferrer" : undefined)}
                   className="transition hover:text-primary"
                 >
-                  {item.label}
+                  {formatPublicNavigationLabel(item)}
                 </Link>
               ))}
             </div>
@@ -71,7 +72,7 @@ export function SiteFooter({
                   rel={item.rel ?? (item.opensInNewTab ? "noopener noreferrer" : undefined)}
                   className="transition hover:text-primary"
                 >
-                  {item.label}
+                  {formatPublicNavigationLabel(item)}
                 </Link>
               ))}
             </div>

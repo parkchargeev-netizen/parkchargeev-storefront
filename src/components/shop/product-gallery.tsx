@@ -11,6 +11,24 @@ type ProductGalleryProps = {
   deviceCaption?: string;
 };
 
+function ProductThumbnailFallback({ label }: { label: string }) {
+  return (
+    <div className="product-gallery-thumbnail-visual relative h-full w-full overflow-hidden bg-linear-to-br from-primary/14 via-white to-secondary/24">
+      <span className="absolute left-2 top-2 h-2 w-2 rounded-full bg-secondary shadow-[0_0_14px_rgba(126,236,201,0.9)]" />
+      <span className="absolute left-3 right-8 top-1/2 h-0.5 -translate-y-1/2 rounded-full bg-linear-to-r from-secondary/80 via-primary/45 to-transparent" />
+      <span className="absolute bottom-6 left-1/2 h-10 w-14 -translate-x-1/2 rounded-t-[28px] bg-primary shadow-[0_14px_28px_rgba(6,51,38,0.18)]" />
+      <span className="absolute right-4 top-5 flex h-14 w-10 items-center justify-center rounded-[16px] bg-white shadow-[0_16px_32px_rgba(15,23,42,0.16)]">
+        <span className="flex h-6 w-6 items-center justify-center rounded-full border-[5px] border-primary">
+          <span className="h-2 w-2 rounded-full bg-secondary" />
+        </span>
+      </span>
+      <span className="absolute left-3 top-4 rounded-full bg-white/86 px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-primary">
+        {label === "Video" ? "Play" : "EV"}
+      </span>
+    </div>
+  );
+}
+
 export function ProductGallery({
   productName,
   items,
@@ -86,14 +104,28 @@ export function ProductGallery({
             key={item}
             type="button"
             onClick={() => setActiveIndex(index)}
-            className={`rounded-[20px] p-3 text-left transition ${
+            className={`group overflow-hidden rounded-[20px] p-2 text-left transition ${
               index === activeIndex
-                ? "border-2 border-primary bg-surface-container-low"
+                ? "border-2 border-primary bg-white shadow-[0_16px_36px_rgba(6,51,38,0.12)]"
                 : "border border-outline-variant/30 bg-white hover:border-primary/25"
             }`}
           >
-            <div className="flex aspect-square items-center justify-center rounded-[16px] bg-surface-container-high text-center text-xs font-semibold text-on-surface-variant">
-              {item}
+            <div className="relative aspect-square overflow-hidden rounded-[16px] bg-surface-container-high">
+              {imageUrl ? (
+                <Image
+                  src={imageUrl}
+                  alt={`${productName} ${item}`}
+                  fill
+                  unoptimized
+                  sizes="(min-width: 1024px) 120px, 24vw"
+                  className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                />
+              ) : (
+                <ProductThumbnailFallback label={item} />
+              )}
+              <span className="absolute inset-x-2 bottom-2 rounded-full bg-white/86 px-2 py-1 text-center text-[11px] font-black text-on-surface shadow-[0_8px_18px_rgba(15,23,42,0.12)] backdrop-blur">
+                {item}
+              </span>
             </div>
           </button>
         ))}

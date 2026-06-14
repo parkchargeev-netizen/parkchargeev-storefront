@@ -4,6 +4,7 @@ import { BadgeCheck, ChevronRight } from "lucide-react";
 import { BrandLogo } from "@/components/layout/brand-logo";
 import { SiteHeaderActions } from "@/components/layout/site-header-actions";
 import { SiteMobileMenu } from "@/components/layout/site-mobile-menu";
+import { formatPublicNavigationLabel } from "@/lib/public-navigation-labels";
 import { serviceCoverageSummary } from "@/lib/service-coverage";
 import { siteConfig } from "@/lib/site";
 import type { PublicNavigationItem } from "@/server/site/repository";
@@ -75,7 +76,7 @@ export function SiteHeader({ navigation = siteConfig.primaryNavigation }: SiteHe
                   : ""
               }`}
             >
-              {navLabelMap[item.href] ?? item.label}
+              {navLabelMap[item.href] ?? formatPublicNavigationLabel(item)}
             </Link>
           ))}
         </nav>

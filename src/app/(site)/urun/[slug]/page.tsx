@@ -127,7 +127,7 @@ export default async function ProductDetailPage({
       </div>
 
       <div className="product-detail-hero grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
-        <section>
+        <section className="product-detail-gallery-column">
           <ProductGallery
             productName={product.name}
             items={mediaItems}
@@ -135,119 +135,6 @@ export default async function ProductDetailPage({
             featureLabels={detailContent.galleryFeatureLabels}
             deviceCaption={detailContent.galleryDeviceCaption}
           />
-
-          <div className="mt-8 grid gap-6 lg:grid-cols-2">
-            <div className="surface-card p-8">
-              <h2 className="text-3xl font-bold tracking-[-0.05em] text-on-surface">
-                {detailContent.specsHeading}
-              </h2>
-              <div className="mt-6 space-y-4">
-                {product.specs.map((spec) => (
-                  <div
-                    key={spec.label}
-                    className="flex items-center justify-between gap-6 border-b border-outline-variant/30 pb-4"
-                  >
-                    <span className="text-sm text-on-surface-variant">{spec.label}</span>
-                    <span className="text-right font-semibold text-on-surface">
-                      {spec.value}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="overflow-hidden rounded-[28px] bg-linear-to-br from-primary to-primary-container p-8 text-white shadow-[0_24px_80px_rgba(6,51,38,0.26)]">
-              <h2 className="text-3xl font-bold tracking-[-0.05em]">
-                {detailContent.intentHeading}
-              </h2>
-              <p className="mt-4 text-base leading-7 text-white/80">
-                {detailContent.intentBody}
-              </p>
-              <div className="mt-8 flex flex-wrap gap-3">
-                {detailContent.seoIntents.map((intent) => (
-                  <span
-                    key={intent}
-                    className="rounded-full bg-white/[0.16] px-4 py-3 text-sm font-semibold text-white"
-                  >
-                    {intent}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-8 grid gap-6 lg:grid-cols-2">
-            <div className="surface-card p-8">
-              <h2 className="text-3xl font-bold tracking-[-0.05em] text-on-surface">
-                {detailContent.useCasesHeading}
-              </h2>
-              <div className="mt-6 flex flex-wrap gap-3">
-                {detailContent.useCases.map((useCase) => (
-                  <span
-                    key={useCase}
-                    className="rounded-full bg-surface-container-low px-4 py-3 text-sm font-semibold text-on-surface"
-                  >
-                    {useCase}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div className="surface-card p-8">
-              <h2 className="text-3xl font-bold tracking-[-0.05em] text-on-surface">
-                {detailContent.highlightsHeading}
-              </h2>
-              <ul className="mt-4 space-y-3 text-sm leading-7 text-on-surface-variant">
-                {detailContent.highlights.map((highlight) => (
-                  <li key={highlight}>{highlight}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-            <div className="mt-8 surface-card p-8">
-              <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-                <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.3em] text-primary">
-                  Uygunluk kontrolü
-                  </p>
-                  <h2 className="mt-3 text-3xl font-bold tracking-[-0.05em] text-on-surface">
-                  Bu ürün sizin senaryonuza uyuyor mu?
-                  </h2>
-                </div>
-                <Link href="/urun-secici" className="text-sm font-semibold text-primary">
-                Akıllı seçiciye git
-              </Link>
-            </div>
-            <div className="mt-6 grid gap-4 md:grid-cols-3">
-              {[
-                ["Güç sınıfı", storeProfile.powerTier, storeProfile.chargeSpeedHint],
-                ["Elektrik altyapısı", storeProfile.phaseHint, storeProfile.installationHint],
-                ["Araç uyumu", storeProfile.connectorHint, storeProfile.primaryFit]
-              ].map(([label, value, detail]) => (
-                <div
-                  key={label}
-                  className="rounded-[22px] border border-outline-variant/35 bg-surface-container-low p-5"
-                >
-                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-on-surface-variant">
-                    {label}
-                  </p>
-                  <p className="mt-3 text-xl font-bold text-on-surface">{value}</p>
-                  <p className="mt-2 text-sm leading-6 text-on-surface-variant">
-                    {detail}
-                  </p>
-                </div>
-              ))}
-            </div>
-            <div className="mt-5 rounded-[22px] border border-primary/15 bg-primary/5 p-5">
-              <p className="text-sm font-semibold text-primary">
-                Karar notu
-              </p>
-              <p className="mt-2 text-sm leading-7 text-on-surface-variant">
-                {decisionNote}
-              </p>
-            </div>
-          </div>
         </section>
 
         <aside className="product-detail-buybox surface-card h-fit p-8">
@@ -349,6 +236,117 @@ export default async function ProductDetailPage({
           </div>
         </aside>
       </div>
+
+      <section className="product-detail-info-grid mt-8 grid gap-6 lg:grid-cols-2">
+        <div className="surface-card p-8">
+          <h2 className="text-3xl font-bold tracking-[-0.05em] text-on-surface">
+            {detailContent.specsHeading}
+          </h2>
+          <div className="mt-6 space-y-4">
+            {product.specs.map((spec) => (
+              <div
+                key={spec.label}
+                className="flex items-center justify-between gap-6 border-b border-outline-variant/30 pb-4"
+              >
+                <span className="text-sm text-on-surface-variant">{spec.label}</span>
+                <span className="text-right font-semibold text-on-surface">
+                  {spec.value}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="overflow-hidden rounded-[28px] bg-linear-to-br from-primary to-primary-container p-8 text-white shadow-[0_24px_80px_rgba(6,51,38,0.26)]">
+          <h2 className="text-3xl font-bold tracking-[-0.05em]">
+            {detailContent.intentHeading}
+          </h2>
+          <p className="mt-4 text-base leading-7 text-white/80">
+            {detailContent.intentBody}
+          </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            {detailContent.seoIntents.map((intent) => (
+              <span
+                key={intent}
+                className="rounded-full bg-white/[0.16] px-4 py-3 text-sm font-semibold text-white"
+              >
+                {intent}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="product-detail-info-grid mt-8 grid gap-6 lg:grid-cols-2">
+        <div className="surface-card p-8">
+          <h2 className="text-3xl font-bold tracking-[-0.05em] text-on-surface">
+            {detailContent.useCasesHeading}
+          </h2>
+          <div className="mt-6 flex flex-wrap gap-3">
+            {detailContent.useCases.map((useCase) => (
+              <span
+                key={useCase}
+                className="rounded-full bg-surface-container-low px-4 py-3 text-sm font-semibold text-on-surface"
+              >
+                {useCase}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div className="surface-card p-8">
+          <h2 className="text-3xl font-bold tracking-[-0.05em] text-on-surface">
+            {detailContent.highlightsHeading}
+          </h2>
+          <ul className="mt-4 space-y-3 text-sm leading-7 text-on-surface-variant">
+            {detailContent.highlights.map((highlight) => (
+              <li key={highlight}>{highlight}</li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <section className="mt-8 surface-card p-8">
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-primary">
+              Uygunluk kontrolü
+            </p>
+            <h2 className="mt-3 text-3xl font-bold tracking-[-0.05em] text-on-surface">
+              Bu ürün sizin senaryonuza uyuyor mu?
+            </h2>
+          </div>
+          <Link href="/urun-secici" className="text-sm font-semibold text-primary">
+            Akıllı seçiciye git
+          </Link>
+        </div>
+        <div className="mt-6 grid gap-4 md:grid-cols-3">
+          {[
+            ["Güç sınıfı", storeProfile.powerTier, storeProfile.chargeSpeedHint],
+            ["Elektrik altyapısı", storeProfile.phaseHint, storeProfile.installationHint],
+            ["Araç uyumu", storeProfile.connectorHint, storeProfile.primaryFit]
+          ].map(([label, value, detail]) => (
+            <div
+              key={label}
+              className="rounded-[22px] border border-outline-variant/35 bg-surface-container-low p-5"
+            >
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-on-surface-variant">
+                {label}
+              </p>
+              <p className="mt-3 text-xl font-bold text-on-surface">{value}</p>
+              <p className="mt-2 text-sm leading-6 text-on-surface-variant">
+                {detail}
+              </p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-5 rounded-[22px] border border-primary/15 bg-primary/5 p-5">
+          <p className="text-sm font-semibold text-primary">Karar notu</p>
+          <p className="mt-2 text-sm leading-7 text-on-surface-variant">
+            {decisionNote}
+          </p>
+        </div>
+      </section>
 
       <section className="mt-12">
         <div className="surface-card p-8">

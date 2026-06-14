@@ -8,7 +8,7 @@ import {
 
 const requestStatusLabels: Record<string, string> = {
   new: "Yeni",
-  contacted: "Iletisime gecildi",
+  contacted: "İletişime geçildi",
   qualified: "Nitelikli",
   scheduled: "Planlandı",
   reviewing: "İnceleniyor",

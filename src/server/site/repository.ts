@@ -2,6 +2,7 @@ import { unstable_cache } from "next/cache";
 import { desc, eq, and } from "drizzle-orm";
 
 import { hasDatabaseConfig } from "@/lib/runtime-config";
+import { formatPublicNavigationLabel } from "@/lib/public-navigation-labels";
 import { siteConfig } from "@/lib/site";
 import { getDb } from "@/server/db/client";
 import { navigationItems, sitePages } from "@/server/db/schema";
@@ -65,7 +66,7 @@ async function loadPublicSiteNavigation(): Promise<PublicSiteNavigation> {
 
       navigation[row.area].push({
         id: row.id,
-        label: row.label,
+        label: formatPublicNavigationLabel({ href: row.href, label: row.label }),
         href: row.href,
         opensInNewTab: row.opensInNewTab,
         rel: row.rel
