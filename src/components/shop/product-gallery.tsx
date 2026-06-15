@@ -205,40 +205,38 @@ export function ProductGallery({
     <div className="product-gallery-premium surface-card p-5">
       <div className="overflow-hidden rounded-[28px] bg-linear-to-br from-secondary-container/20 via-white to-primary/12 p-6">
         <div
-          className={`relative min-h-[340px] overflow-hidden rounded-[24px] bg-slate-950 px-6 py-7 text-white ${
+          className={`relative min-h-[340px] overflow-hidden rounded-[24px] bg-slate-950 ${
             hasRealMedia
               ? "product-gallery-stage--cover flex aspect-[4/3]"
-              : "grid aspect-[4/3] md:grid-cols-[1fr_0.8fr]"
+              : "grid aspect-[4/3] px-6 py-7 text-white md:grid-cols-[1fr_0.8fr]"
           }`}
         >
           {activeMedia ? (
-            <>
-              <ProductGalleryStageMedia media={activeMedia} productName={productName} />
-              <div className="pointer-events-none absolute inset-0 bg-linear-to-r from-slate-950/92 via-slate-950/50 to-slate-950/12" />
-              <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-slate-950/74 via-transparent to-slate-950/30" />
-            </>
+            <ProductGalleryStageMedia media={activeMedia} productName={productName} />
           ) : null}
 
-          <div className="relative z-10 flex min-h-[286px] flex-1 flex-col justify-between">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.28em] text-white/76">
-                {activeItem}
-              </p>
-              <p className="mt-4 max-w-md text-3xl font-bold tracking-[-0.05em]">
-                {productName}
-              </p>
+          {activeMedia ? null : (
+            <div className="relative z-10 flex min-h-[286px] flex-1 flex-col justify-between">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.28em] text-white/76">
+                  {activeItem}
+                </p>
+                <p className="mt-4 max-w-md text-3xl font-bold tracking-[-0.05em]">
+                  {productName}
+                </p>
+              </div>
+              <div className="grid max-w-md gap-3 sm:grid-cols-3">
+                {featureLabels.map((label) => (
+                  <div
+                    key={label}
+                    className="rounded-2xl border border-white/10 bg-white/8 px-3 py-3"
+                  >
+                    <p className="text-xs font-semibold text-white/82">{label}</p>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="grid max-w-md gap-3 sm:grid-cols-3">
-              {featureLabels.map((label) => (
-                <div
-                  key={label}
-                  className="rounded-2xl border border-white/10 bg-white/8 px-3 py-3"
-                >
-                  <p className="text-xs font-semibold text-white/82">{label}</p>
-                </div>
-              ))}
-            </div>
-          </div>
+          )}
 
           {activeMedia ? null : (
             <div className="relative z-10 mt-8 flex items-center justify-center md:mt-0">
@@ -246,11 +244,15 @@ export function ProductGallery({
             </div>
           )}
 
-          <div className="absolute bottom-6 right-6 z-20 rounded-2xl bg-slate-950/45 px-3 py-2 text-xs font-semibold text-white/84 backdrop-blur">
-            {deviceCaption}
-          </div>
+          {activeMedia ? null : (
+            <div className="absolute bottom-6 right-6 z-20 rounded-2xl bg-slate-950/45 px-3 py-2 text-xs font-semibold text-white/84 backdrop-blur">
+              {deviceCaption}
+            </div>
+          )}
 
-          <div className="absolute inset-x-0 bottom-0 h-28 bg-linear-to-t from-slate-900 to-transparent" />
+          {activeMedia ? null : (
+            <div className="absolute inset-x-0 bottom-0 h-28 bg-linear-to-t from-slate-900 to-transparent" />
+          )}
         </div>
       </div>
 
