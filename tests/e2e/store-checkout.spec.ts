@@ -48,11 +48,16 @@ test("@e2e magaza -> urun -> sepet -> odeme akisi PayTR mock ile tamamlanir", as
 test("@e2e kablo uzunlugu fiyat ve sepet tutarini gunceller", async ({ page }) => {
   await page.goto("/urun/homecharge-pro-11kw", { waitUntil: "domcontentloaded" });
 
-  await expect(page.getByText(/12\.490/).first()).toBeVisible();
+  const priceScope =
+    (page.viewportSize()?.width ?? 0) <= 767
+      ? page.locator(".product-mobile-summary-atc")
+      : page.locator(".product-purchase-panel__price");
+
+  await expect(priceScope.getByText(/12\.490/)).toBeVisible();
   const extendedCableButton = page.getByRole("button", { name: /7\.5 Metre/i });
   await extendedCableButton.click();
   await expect(extendedCableButton).toHaveAttribute("aria-pressed", "true");
-  await expect(page.getByText(/13\.290/).first()).toBeVisible();
+  await expect(priceScope.getByText(/13\.290/)).toBeVisible();
 
   await page.getByRole("button", { name: /Sepete Ekle/i }).first().click();
   await expect(page.getByText(/sepete eklendi/i)).toBeVisible();
@@ -85,6 +90,43 @@ test("@e2e PayTR Direkt API kart formu devre disi ve odeme sayfasi kart istemez"
   await expect(page.getByRole("button", { name: "PayTR ile Güvenli Öde" })).toBeVisible();
   await expect(page.locator('input[autocomplete^="cc"]')).toHaveCount(0);
   await expect(page.getByText("Direkt API", { exact: false })).toHaveCount(0);
+});
+
+test("@e2e PayTR bos cevapta teknik JSON hatasi yerine Turkce mesaj gosterir", async ({ page }) => {
+  await page.route("**/api/paytr/token", async (route) => {
+    await route.fulfill({
+      status: 502,
+      body: ""
+    });
+  });
+
+  await page.addInitScript(() => {
+    window.localStorage.setItem(
+      "parkchargeev-cart-v1",
+      JSON.stringify([
+        {
+          productId: "prod_homecharge_pro_11",
+          cableOption: "5 Metre",
+          quantity: 1
+        }
+      ])
+    );
+  });
+
+  await page.goto("/odeme", { waitUntil: "domcontentloaded" });
+
+  await page.locator('input[autocomplete="name"]').fill("ParkChargeEV Test");
+  await page.locator('input[autocomplete="email"]').fill("qa@parkchargeev.com");
+  await page.locator('input[autocomplete="tel"]').fill("05555555555");
+  await page.locator('input[autocomplete="address-level1"]').fill("Istanbul");
+  await page.locator('textarea[autocomplete="street-address"]').fill("Test Mahallesi, Test Sokak No: 1");
+
+  await page.getByRole("button", { name: "PayTR ile Güvenli Öde" }).click();
+
+  await expect(
+    page.getByText("PayTR ödeme oturumu başlatılamadı. Lütfen tekrar deneyin.")
+  ).toBeVisible();
+  await expect(page.getByText(/Unexpected end of JSON input/i)).toHaveCount(0);
 });
 
 test("@a11y kritik magaza ve odeme ekranlarinda accessibility smoke temiz", async ({ page }) => {

@@ -14,6 +14,48 @@ function getPaytrRequestTimeoutMs() {
   return Math.min(configuredValue, 20000);
 }
 
+async function readPaytrTokenResponse(response: Response): Promise<PaytrTokenResponse> {
+  const rawBody = await response.text();
+
+  if (!rawBody.trim()) {
+    return {
+      status: "failed",
+      reason: "PayTR token servisi boş yanıt döndürdü."
+    };
+  }
+
+  try {
+    const body = JSON.parse(rawBody) as Record<string, unknown>;
+
+    if (body.status === "success" && typeof body.token === "string") {
+      return {
+        status: "success",
+        token: body.token
+      };
+    }
+
+    if (body.status === "failed") {
+      return {
+        status: "failed",
+        reason:
+          typeof body.reason === "string" && body.reason
+            ? body.reason
+            : "PayTR token servisi işlemi reddetti."
+      };
+    }
+
+    return {
+      status: "failed",
+      reason: "PayTR token servisi geçersiz yanıt döndürdü."
+    };
+  } catch {
+    return {
+      status: "failed",
+      reason: "PayTR token servisi okunamayan bir yanıt döndürdü."
+    };
+  }
+}
+
 export async function requestPaytrIframeToken(payload: Record<string, string>) {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), getPaytrRequestTimeoutMs());
@@ -28,7 +70,7 @@ export async function requestPaytrIframeToken(payload: Record<string, string>) {
       cache: "no-store",
       signal: controller.signal
     });
-    const body = (await response.json()) as PaytrTokenResponse;
+    const body = await readPaytrTokenResponse(response);
 
     if (!response.ok) {
       return {

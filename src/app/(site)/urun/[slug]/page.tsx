@@ -233,7 +233,7 @@ export default async function ProductDetailPage({
             {product.description}
           </p>
 
-          <div className="mt-6 grid gap-3 sm:grid-cols-3">
+          <div className="product-detail-feature-strip mt-6 grid gap-3 sm:grid-cols-3">
             {[
               ["Güç", storeProfile.powerTier],
               ["Kurulum", storeProfile.installationMode],

@@ -37,6 +37,11 @@ type CheckoutDraft = {
   address: string;
 };
 
+type CheckoutApiResponse<T extends object> = T & {
+  ok?: boolean;
+  message?: string;
+};
+
 const CHECKOUT_STORAGE_KEY = "parkchargeev-checkout-draft-v1";
 const ACTIVE_ORDER_STORAGE_KEY = "parkchargeev-active-order-v1";
 const CART_INTENT_STORAGE_KEY = "parkchargeev-cart-intent-v1";
@@ -48,6 +53,29 @@ const initialDraft: CheckoutDraft = {
   city: "",
   address: ""
 };
+
+async function readCheckoutApiResponse<T extends object>(
+  response: Response,
+  fallbackMessage: string
+): Promise<CheckoutApiResponse<T>> {
+  const rawBody = await response.text();
+
+  if (!rawBody.trim()) {
+    return {
+      ok: false,
+      message: fallbackMessage
+    } as CheckoutApiResponse<T>;
+  }
+
+  try {
+    return JSON.parse(rawBody) as CheckoutApiResponse<T>;
+  } catch {
+    return {
+      ok: false,
+      message: fallbackMessage
+    } as CheckoutApiResponse<T>;
+  }
+}
 
 export function CheckoutPageClient({
   initialStatus,
@@ -153,9 +181,10 @@ export function CheckoutPageClient({
         const response = await fetch(`/api/orders/${targetMerchantOid}`, {
           cache: "no-store"
         });
-        const result = (await response.json()) as OrderStatusResponse & {
-          message?: string;
-        };
+        const result = await readCheckoutApiResponse<OrderStatusResponse>(
+          response,
+          "Sipariş durumu şu anda okunamadı. Lütfen birkaç saniye sonra tekrar deneyin."
+        );
 
         if (!response.ok || !result.ok) {
           throw new Error(result.message || "Sipariş durumu alınamadı.");
@@ -253,12 +282,15 @@ export function CheckoutPageClient({
         body: JSON.stringify(getPaytrCheckoutPayload())
       });
 
-      const result = (await response.json()) as {
+      const result = await readCheckoutApiResponse<{
         ok: boolean;
         iframeToken?: string;
         merchantOid?: string;
         message?: string;
-      };
+      }>(
+        response,
+        "PayTR ödeme oturumu başlatılamadı. Lütfen tekrar deneyin."
+      );
 
       if (!response.ok || !result.ok || !result.iframeToken || !result.merchantOid) {
         throw new Error(result.message || "Ödeme oturumu başlatılamadı.");

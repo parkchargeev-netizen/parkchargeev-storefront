@@ -137,25 +137,25 @@ test("@e2e mobil urun detay sayfasi kompakt e-ticaret akisi sunar", async ({ pag
   });
   expect(galleryHeight).toBeLessThan(470);
 
-  const stickyAddToCart = page.locator(".product-mobile-sticky-atc");
+  const stickyAddToCart = page.locator(".product-mobile-summary-atc");
+  await stickyAddToCart.scrollIntoViewIfNeeded();
   await expect(stickyAddToCart).toBeVisible();
   await expect(stickyAddToCart.getByRole("button", { name: "Sepete Ekle" })).toBeVisible();
   await expect(page.locator(".product-purchase-panel__add-button")).toBeHidden();
+  await expect(page.locator(".product-mobile-sticky-atc")).toBeHidden();
 
   const viewportHeight = page.viewportSize()?.height ?? 0;
   const initialStickyBox = await stickyAddToCart.boundingBox();
   expect(initialStickyBox).not.toBeNull();
-  expect((initialStickyBox?.y ?? 0) + (initialStickyBox?.height ?? 0)).toBeGreaterThanOrEqual(
-    viewportHeight - 2
-  );
+  expect(initialStickyBox?.y ?? 0).toBeGreaterThanOrEqual(0);
+  expect(initialStickyBox?.y ?? 0).toBeLessThan(viewportHeight);
 
-  await page.evaluate(() => window.scrollTo(0, 900));
+  await page.evaluate(() => window.scrollBy(0, 320));
   await expect(stickyAddToCart).toBeVisible();
   const scrolledStickyBox = await stickyAddToCart.boundingBox();
   expect(scrolledStickyBox).not.toBeNull();
-  expect((scrolledStickyBox?.y ?? 0) + (scrolledStickyBox?.height ?? 0)).toBeGreaterThanOrEqual(
-    viewportHeight - 2
-  );
+  expect(scrolledStickyBox?.y ?? 0).toBeGreaterThanOrEqual(0);
+  expect(scrolledStickyBox?.y ?? 0).toBeLessThanOrEqual(initialStickyBox?.y ?? 0);
 
   const hasPageOverflow = await page.evaluate(() => {
     return document.documentElement.scrollWidth > document.documentElement.clientWidth + 1;
