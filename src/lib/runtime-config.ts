@@ -7,7 +7,6 @@ const paytrEnvKeys = [
 const adminAuthEnvKeys = ["ADMIN_JWT_SECRET"] as const;
 const supabaseServerEnvKeys = [
   "NEXT_PUBLIC_SUPABASE_URL",
-  "NEXT_PUBLIC_SUPABASE_ANON_KEY",
   "SUPABASE_SERVICE_ROLE_KEY"
 ] as const;
 
@@ -115,12 +114,12 @@ export function getSupabaseServerConfig() {
   assertConfig(
     supabaseServerEnvKeys,
     "supabase",
-    "Supabase sunucu bağlantısı eksik. NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY ve SUPABASE_SERVICE_ROLE_KEY tanımlanmalıdır."
+    "Supabase sunucu bağlantısı eksik. NEXT_PUBLIC_SUPABASE_URL ve SUPABASE_SERVICE_ROLE_KEY tanımlanmalıdır."
   );
 
   return {
     url: process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-    anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string,
+    anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
     serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY as string
   };
 }

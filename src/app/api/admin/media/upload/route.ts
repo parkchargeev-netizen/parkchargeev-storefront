@@ -1,12 +1,18 @@
+import { mkdir, writeFile } from "node:fs/promises";
+import path from "node:path";
+
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 
+import { inferProductMediaType } from "@/lib/product-media";
 import {
   getRuntimeConfigErrorPayload,
   getSupabaseServerConfig,
   isRuntimeConfigError
 } from "@/lib/runtime-config";
 import { requireAdminRole } from "@/server/auth/guards";
+
+export const runtime = "nodejs";
 
 function sanitizeFileName(name: string) {
   const extension = name.split(".").pop()?.toLowerCase() ?? "bin";
@@ -18,6 +24,30 @@ function sanitizeFileName(name: string) {
     .slice(0, 80);
 
   return `${base || "media"}-${crypto.randomUUID()}.${extension}`;
+}
+
+function isSupportedMedia(file: File) {
+  return file.type.startsWith("image/") || file.type.startsWith("video/");
+}
+
+async function uploadToLocalPublic(file: File, request: Request) {
+  const fileName = sanitizeFileName(file.name);
+  const dateFolder = new Date().toISOString().slice(0, 10);
+  const publicPath = `/uploads/admin/${dateFolder}/${fileName}`;
+  const diskPath = path.join(process.cwd(), "public", "uploads", "admin", dateFolder, fileName);
+  const bytes = Buffer.from(await file.arrayBuffer());
+
+  await mkdir(path.dirname(diskPath), { recursive: true });
+  await writeFile(diskPath, bytes);
+
+  return {
+    ok: true,
+    url: publicPath,
+    absoluteUrl: new URL(publicPath, request.url).toString(),
+    path: publicPath,
+    bucket: "local-public",
+    mediaType: inferProductMediaType(publicPath, file.type)
+  };
 }
 
 export async function POST(request: Request) {
@@ -35,11 +65,29 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, message: "Dosya bulunamadı." }, { status: 400 });
     }
 
-    if (!file.type.startsWith("image/")) {
-      return NextResponse.json({ ok: false, message: "Sadece görsel dosyalari yüklenebilir." }, { status: 400 });
+    if (!isSupportedMedia(file)) {
+      return NextResponse.json(
+        { ok: false, message: "Sadece görsel veya video dosyaları yüklenebilir." },
+        { status: 400 }
+      );
     }
 
-    const config = getSupabaseServerConfig();
+    let config: ReturnType<typeof getSupabaseServerConfig>;
+
+    try {
+      config = getSupabaseServerConfig();
+    } catch (error) {
+      if (isRuntimeConfigError(error) && process.env.VERCEL !== "1") {
+        return NextResponse.json(await uploadToLocalPublic(file, request));
+      }
+
+      if (isRuntimeConfigError(error)) {
+        return NextResponse.json(getRuntimeConfigErrorPayload(error), { status: 503 });
+      }
+
+      throw error;
+    }
+
     const bucket = process.env.SUPABASE_STORAGE_BUCKET?.trim() || "admin-media";
     const supabase = createClient(config.url, config.serviceRoleKey, {
       auth: {
@@ -63,8 +111,8 @@ export async function POST(request: Request) {
       }
     }
 
-    const path = `admin/${new Date().toISOString().slice(0, 10)}/${sanitizeFileName(file.name)}`;
-    const upload = await supabase.storage.from(bucket).upload(path, file, {
+    const uploadPath = `admin/${new Date().toISOString().slice(0, 10)}/${sanitizeFileName(file.name)}`;
+    const upload = await supabase.storage.from(bucket).upload(uploadPath, file, {
       contentType: file.type,
       upsert: false
     });
@@ -73,13 +121,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, message: upload.error.message }, { status: 500 });
     }
 
-    const publicUrl = supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl;
+    const publicUrl = supabase.storage.from(bucket).getPublicUrl(uploadPath).data.publicUrl;
 
     return NextResponse.json({
       ok: true,
       url: publicUrl,
-      path,
-      bucket
+      path: uploadPath,
+      bucket,
+      mediaType: inferProductMediaType(publicUrl, file.type)
     });
   } catch (error) {
     if (isRuntimeConfigError(error)) {
@@ -87,7 +136,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json(
-      { ok: false, message: "Medya yükleme tamamlanamadi." },
+      { ok: false, message: "Medya yükleme tamamlanamadı." },
       { status: 500 }
     );
   }

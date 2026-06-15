@@ -16,8 +16,10 @@ import { z } from "zod";
 import { hasDatabaseConfig } from "@/lib/runtime-config";
 import {
   products as marketingProducts,
+  type ProductMediaModel,
   type ProductModel
 } from "@/lib/mock-data";
+import { inferProductMediaType } from "@/lib/product-media";
 import {
   getDefaultProductDetailContent,
   getProductDetailContent,
@@ -151,8 +153,11 @@ function buildProductSchemaJsonLd(input: ProductInput) {
 function revalidateProductSurfaces(slug: string) {
   revalidateTag("admin-product-lookup");
   revalidateTag("public-products");
+  revalidatePath("/");
   revalidatePath("/magaza");
   revalidatePath(`/urun/${slug}`);
+  revalidatePath("/arama");
+  revalidatePath("/llms.txt");
   revalidatePath("/sitemap.xml");
 }
 
@@ -581,7 +586,9 @@ function mapAdminProductToPublicProduct(
   const tags = collections.tags.get(row.id) ?? [];
   const categorySlugs = collections.categories.get(row.id) ?? [];
   const specRows = collections.specs.get(row.id) ?? [];
-  const mediaRows = collections.media.get(row.id) ?? [];
+  const mediaRows = [...(collections.media.get(row.id) ?? [])].sort(
+    (left, right) => left.sortOrder - right.sortOrder
+  );
   const priceKurus = defaultVariant?.priceKurus ?? row.defaultPriceKurus;
   const compareAtKurus =
     defaultVariant?.compareAtKurus ??
@@ -598,7 +605,15 @@ function mapAdminProductToPublicProduct(
     specRows.length > 0
       ? specRows.map((spec) => ({ label: spec.label, value: spec.value }))
       : base?.specs ?? [];
-  const primaryMedia = mediaRows.find((item) => item.isPrimary) ?? mediaRows[0];
+  const media: ProductMediaModel[] = mediaRows.map((item) => ({
+    url: item.url,
+    altText: item.altText,
+    mediaType: inferProductMediaType(item.url, item.mediaType),
+    isPrimary: item.isPrimary
+  }));
+  const primaryImage =
+    media.find((item) => item.isPrimary && item.mediaType === "image") ??
+    media.find((item) => item.mediaType === "image");
   const publicBase: ProductModel = {
     id: base?.id ?? row.id,
     slug: row.slug,
@@ -625,9 +640,10 @@ function mapAdminProductToPublicProduct(
           isDefault: variant.isDefault
         }))
       : base?.variants,
-    imageUrl: primaryMedia?.url ?? base?.imageUrl,
-    galleryItems: mediaRows.length
-      ? mediaRows.map((item) => item.altText)
+    imageUrl: primaryImage?.url ?? base?.imageUrl,
+    media: media.length ? media : base?.media,
+    galleryItems: media.length
+      ? media.map((item) => item.altText)
       : base?.galleryItems,
     specs,
     highlights: base?.highlights ?? [],
@@ -1208,6 +1224,7 @@ async function writeProductCollections(
     await db.insert(productMedia).values(
       input.media.map((item, index) => ({
         productId,
+        mediaType: item.mediaType ?? inferProductMediaType(item.url),
         url: item.url,
         altText: item.altText,
         isPrimary: item.isPrimary || index === 0,

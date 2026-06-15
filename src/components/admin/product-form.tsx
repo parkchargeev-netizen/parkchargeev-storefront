@@ -9,6 +9,7 @@ import { Controller, type Resolver, useFieldArray, useForm } from "react-hook-fo
 import type { z } from "zod";
 
 import { normalizeAdminProductPayload } from "@/lib/admin-product-payload";
+import { inferProductMediaType } from "@/lib/product-media";
 import {
   productCategoryOptions,
   productStatusOptions,
@@ -691,7 +692,7 @@ export function ProductForm({
       const data = (await response.json().catch(() => ({
         ok: false,
         message: "Sunucu yanıtı okunamadı."
-      }))) as { ok: boolean; url?: string; message?: string };
+      }))) as { ok: boolean; url?: string; mediaType?: "image" | "video"; message?: string };
 
       if (!response.ok || !data.ok || !data.url) {
         setUploadMessage(data.message ?? "Görsel yüklenemedi.");
@@ -700,8 +701,12 @@ export function ProductForm({
 
       if (typeof targetIndex === "number") {
         setValue(`media.${targetIndex}.url`, data.url, { shouldValidate: true });
+        setValue(`media.${targetIndex}.mediaType`, data.mediaType ?? inferProductMediaType(data.url), {
+          shouldValidate: true
+        });
       } else {
         mediaFields.append({
+          mediaType: data.mediaType ?? inferProductMediaType(data.url),
           url: data.url,
           altText: watch("name") || "Ürün görseli",
           isPrimary: mediaFields.fields.length === 0
@@ -1350,7 +1355,7 @@ export function ProductForm({
               {isUploading ? "Yükleniyor..." : "Dosya yükle"}
               <input
                 type="file"
-                accept="image/*"
+                accept="image/*,video/mp4,video/webm,video/ogg"
                 className="sr-only"
                 disabled={isUploading}
                 onChange={(event) => {
@@ -1364,7 +1369,14 @@ export function ProductForm({
             </label>
             <button
               type="button"
-              onClick={() => mediaFields.append({ url: "", altText: "", isPrimary: mediaFields.fields.length === 0 })}
+              onClick={() =>
+                mediaFields.append({
+                  mediaType: "image",
+                  url: "",
+                  altText: "",
+                  isPrimary: mediaFields.fields.length === 0
+                })
+              }
               className="rounded-full border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700"
             >
               URL ekle
@@ -1378,11 +1390,33 @@ export function ProductForm({
         ) : null}
         <div className="space-y-4">
           {mediaFields.fields.map((field, index) => (
-            <div key={field.fieldId} className="grid gap-4 rounded-3xl border border-slate-200 bg-slate-50 p-4 lg:grid-cols-[1fr_240px_auto]">
+            <div key={field.fieldId} className="grid gap-4 rounded-3xl border border-slate-200 bg-slate-50 p-4 lg:grid-cols-[160px_1fr_220px_auto]">
+              <select
+                className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm"
+                {...register(`media.${index}.mediaType`)}
+                onChange={(event) => {
+                  setValue(`media.${index}.mediaType`, event.target.value as "image" | "video", {
+                    shouldDirty: true,
+                    shouldValidate: true
+                  });
+                }}
+              >
+                <option value="image">Görsel</option>
+                <option value="video">Video</option>
+              </select>
               <input
                 className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
-                placeholder="https://..."
+                placeholder="https://... veya /uploads/..."
                 {...register(`media.${index}.url`)}
+                onBlur={(event) => {
+                  const inferredType = inferProductMediaType(event.currentTarget.value);
+                  if (inferredType === "video") {
+                    setValue(`media.${index}.mediaType`, inferredType, {
+                      shouldDirty: true,
+                      shouldValidate: true
+                    });
+                  }
+                }}
               />
               <input
                 className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
@@ -1398,7 +1432,7 @@ export function ProductForm({
                   Değiştir
                   <input
                     type="file"
-                    accept="image/*"
+                    accept="image/*,video/mp4,video/webm,video/ogg"
                     className="sr-only"
                     disabled={isUploading}
                     onChange={(event) => {

@@ -96,6 +96,7 @@ export default async function EditAdminProductPage({ params }: EditProductPagePr
           })),
           media: product.media.map((item) => ({
             id: item.id,
+            mediaType: item.mediaType === "video" ? "video" : "image",
             url: item.url,
             altText: item.altText,
             isPrimary: item.isPrimary

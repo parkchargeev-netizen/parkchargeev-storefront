@@ -14,6 +14,15 @@ import {
 } from "@/server/db/schema";
 
 const positiveCurrencySchema = z.coerce.number().int().min(0);
+const publicOrRemoteUrlSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .max(500)
+  .refine(
+    (value) => value.startsWith("/") || value.startsWith("http://") || value.startsWith("https://"),
+    "URL /, http:// veya https:// ile baÅŸlamalÄ±dÄ±r."
+  );
 
 export const adminLoginSchema = z.object({
   email: z.string().trim().email(),
@@ -29,7 +38,8 @@ export const productSpecSchema = z.object({
 
 export const productMediaSchema = z.object({
   id: z.string().optional(),
-  url: z.string().trim().url(),
+  mediaType: z.enum(["image", "video"]).default("image"),
+  url: publicOrRemoteUrlSchema,
   altText: z.string().trim().min(2).max(255),
   isPrimary: z.boolean().default(false)
 });

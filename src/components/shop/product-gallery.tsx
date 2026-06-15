@@ -3,13 +3,47 @@
 import Image from "next/image";
 import { useState } from "react";
 
+import type { ProductMediaModel } from "@/lib/mock-data";
+
 type ProductGalleryProps = {
   productName: string;
   items: string[];
   imageUrl?: string;
+  mediaItems?: ProductMediaModel[];
   featureLabels?: string[];
   deviceCaption?: string;
 };
+
+type ProductGalleryThumbnail = ProductMediaModel | { altText: string };
+
+function isProductMediaItem(item: ProductGalleryThumbnail): item is ProductMediaModel {
+  return "url" in item && typeof item.url === "string";
+}
+
+function getEmbeddableVideoUrl(url: string) {
+  try {
+    const parsedUrl = new URL(url);
+
+    if (parsedUrl.hostname.includes("youtu.be")) {
+      const id = parsedUrl.pathname.replace("/", "");
+      return id ? `https://www.youtube-nocookie.com/embed/${id}` : null;
+    }
+
+    if (parsedUrl.hostname.includes("youtube.com")) {
+      const id = parsedUrl.searchParams.get("v") || parsedUrl.pathname.split("/").pop();
+      return id ? `https://www.youtube-nocookie.com/embed/${id}` : null;
+    }
+
+    if (parsedUrl.hostname.includes("vimeo.com")) {
+      const id = parsedUrl.pathname.split("/").filter(Boolean).pop();
+      return id ? `https://player.vimeo.com/video/${id}` : null;
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
 
 function ProductThumbnailFallback({ label }: { label: string }) {
   return (
@@ -29,21 +63,163 @@ function ProductThumbnailFallback({ label }: { label: string }) {
   );
 }
 
+function ProductGalleryMedia({
+  media,
+  productName
+}: {
+  media?: ProductMediaModel;
+  productName: string;
+}) {
+  if (!media) {
+    return (
+      <div className="relative h-72 w-48 rounded-[34px] border border-white/20 bg-white p-5 shadow-[0_30px_80px_rgba(0,0,0,0.35)]">
+        <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full border-[14px] border-primary bg-primary/10">
+          <span className="h-8 w-8 rounded-full bg-secondary" />
+        </div>
+        <div className="mt-8 space-y-3">
+          <span className="block h-3 rounded-full bg-slate-200" />
+          <span className="block h-3 w-2/3 rounded-full bg-slate-200" />
+          <span className="block h-3 w-1/2 rounded-full bg-slate-200" />
+        </div>
+        <div className="absolute -right-8 bottom-8 h-24 w-24 rounded-full border-[12px] border-secondary/80 border-l-transparent border-t-transparent" />
+      </div>
+    );
+  }
+
+  if (media.mediaType === "video") {
+    const embeddedUrl = getEmbeddableVideoUrl(media.url);
+
+    return (
+      <div className="relative aspect-[4/3] w-full max-w-sm overflow-hidden rounded-[24px] border border-white/15 bg-black shadow-[0_30px_80px_rgba(0,0,0,0.35)]">
+        {embeddedUrl ? (
+          <iframe
+            src={embeddedUrl}
+            title={media.altText || productName}
+            className="h-full w-full"
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+          />
+        ) : (
+          <video
+            src={media.url}
+            className="h-full w-full object-cover"
+            controls
+            playsInline
+            preload="metadata"
+          />
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative aspect-[4/3] w-full max-w-sm overflow-hidden rounded-[24px] border border-white/15 bg-white shadow-[0_30px_80px_rgba(0,0,0,0.35)]">
+      <Image
+        src={media.url}
+        alt={media.altText || productName}
+        fill
+        unoptimized
+        sizes="(min-width: 1024px) 360px, 90vw"
+        className="h-full w-full object-cover"
+      />
+    </div>
+  );
+}
+
+function ProductGalleryStageMedia({
+  media,
+  productName
+}: {
+  media: ProductMediaModel;
+  productName: string;
+}) {
+  if (media.mediaType === "video") {
+    const embeddedUrl = getEmbeddableVideoUrl(media.url);
+
+    if (embeddedUrl) {
+      return (
+        <iframe
+          src={embeddedUrl}
+          title={media.altText || productName}
+          className="absolute inset-0 h-full w-full"
+          loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+        />
+      );
+    }
+
+    return (
+      <video
+        src={media.url}
+        className="absolute inset-0 h-full w-full object-cover"
+        controls
+        playsInline
+        preload="metadata"
+      />
+    );
+  }
+
+  return (
+    <Image
+      src={media.url}
+      alt={media.altText || productName}
+      fill
+      unoptimized
+      priority={false}
+      sizes="(min-width: 1024px) 760px, 92vw"
+      className="object-cover"
+    />
+  );
+}
+
 export function ProductGallery({
   productName,
   items,
   imageUrl,
+  mediaItems,
   featureLabels = ["IP koruma", "Type 2", "Kurulum"],
   deviceCaption = "Ölçekli cihaz temsili"
 }: ProductGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0);
-  const activeItem = items[activeIndex] ?? items[0];
+  const galleryMedia =
+    mediaItems?.length
+      ? mediaItems
+      : imageUrl
+        ? items.map((item, index) => ({
+            url: imageUrl,
+            altText: item,
+            mediaType: "image" as const,
+            isPrimary: index === 0
+          }))
+        : [];
+  const thumbnailItems: ProductGalleryThumbnail[] = galleryMedia.length
+    ? galleryMedia
+    : items.map((item) => ({ altText: item }));
+  const activeMedia = galleryMedia[activeIndex];
+  const activeItem = activeMedia?.altText ?? items[activeIndex] ?? items[0];
+  const hasRealMedia = Boolean(activeMedia);
 
   return (
     <div className="product-gallery-premium surface-card p-5">
       <div className="overflow-hidden rounded-[28px] bg-linear-to-br from-secondary-container/20 via-white to-primary/12 p-6">
-        <div className="relative grid aspect-[4/3] min-h-[340px] overflow-hidden rounded-[24px] bg-slate-950 px-6 py-7 text-white md:grid-cols-[1fr_0.8fr]">
-          <div className="relative z-10 flex flex-col justify-between">
+        <div
+          className={`relative min-h-[340px] overflow-hidden rounded-[24px] bg-slate-950 px-6 py-7 text-white ${
+            hasRealMedia
+              ? "product-gallery-stage--cover flex aspect-[4/3]"
+              : "grid aspect-[4/3] md:grid-cols-[1fr_0.8fr]"
+          }`}
+        >
+          {activeMedia ? (
+            <>
+              <ProductGalleryStageMedia media={activeMedia} productName={productName} />
+              <div className="pointer-events-none absolute inset-0 bg-linear-to-r from-slate-950/92 via-slate-950/50 to-slate-950/12" />
+              <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-slate-950/74 via-transparent to-slate-950/30" />
+            </>
+          ) : null}
+
+          <div className="relative z-10 flex min-h-[286px] flex-1 flex-col justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.28em] text-white/76">
                 {activeItem}
@@ -64,34 +240,14 @@ export function ProductGallery({
             </div>
           </div>
 
-          <div className="relative z-10 mt-8 flex items-center justify-center md:mt-0">
-            {imageUrl ? (
-              <div className="relative aspect-[4/3] w-full max-w-sm overflow-hidden rounded-[24px] border border-white/15 bg-white shadow-[0_30px_80px_rgba(0,0,0,0.35)]">
-                <Image
-                  src={imageUrl}
-                  alt={productName}
-                  fill
-                  unoptimized
-                  sizes="(min-width: 1024px) 360px, 90vw"
-                  className="h-full w-full object-cover"
-                />
-              </div>
-            ) : (
-              <div className="relative h-72 w-48 rounded-[34px] border border-white/20 bg-white p-5 shadow-[0_30px_80px_rgba(0,0,0,0.35)]">
-                <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full border-[14px] border-primary bg-primary/10">
-                  <span className="h-8 w-8 rounded-full bg-secondary" />
-                </div>
-                <div className="mt-8 space-y-3">
-                  <span className="block h-3 rounded-full bg-slate-200" />
-                  <span className="block h-3 w-2/3 rounded-full bg-slate-200" />
-                  <span className="block h-3 w-1/2 rounded-full bg-slate-200" />
-                </div>
-                <div className="absolute -right-8 bottom-8 h-24 w-24 rounded-full border-[12px] border-secondary/80 border-l-transparent border-t-transparent" />
-              </div>
-            )}
-            <div className="absolute bottom-2 right-2 rounded-2xl bg-white/[0.14] px-3 py-2 text-xs font-semibold text-white/80">
-              {deviceCaption}
+          {activeMedia ? null : (
+            <div className="relative z-10 mt-8 flex items-center justify-center md:mt-0">
+              <ProductGalleryMedia media={activeMedia} productName={productName} />
             </div>
+          )}
+
+          <div className="absolute bottom-6 right-6 z-20 rounded-2xl bg-slate-950/45 px-3 py-2 text-xs font-semibold text-white/84 backdrop-blur">
+            {deviceCaption}
           </div>
 
           <div className="absolute inset-x-0 bottom-0 h-28 bg-linear-to-t from-slate-900 to-transparent" />
@@ -99,36 +255,40 @@ export function ProductGallery({
       </div>
 
       <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-4">
-        {items.map((item, index) => (
-          <button
-            key={item}
-            type="button"
-            onClick={() => setActiveIndex(index)}
-            className={`group overflow-hidden rounded-[20px] p-2 text-left transition ${
-              index === activeIndex
-                ? "border-2 border-primary bg-white shadow-[0_16px_36px_rgba(6,51,38,0.12)]"
-                : "border border-outline-variant/30 bg-white hover:border-primary/25"
-            }`}
-          >
-            <div className="relative aspect-square overflow-hidden rounded-[16px] bg-surface-container-high">
-              {imageUrl ? (
-                <Image
-                  src={imageUrl}
-                  alt={`${productName} ${item}`}
-                  fill
-                  unoptimized
-                  sizes="(min-width: 1024px) 120px, 24vw"
-                  className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-                />
-              ) : (
-                <ProductThumbnailFallback label={item} />
-              )}
-              <span className="absolute inset-x-2 bottom-2 rounded-full bg-white/86 px-2 py-1 text-center text-[11px] font-black text-on-surface shadow-[0_8px_18px_rgba(15,23,42,0.12)] backdrop-blur">
-                {item}
-              </span>
-            </div>
-          </button>
-        ))}
+        {thumbnailItems.map((item, index) => {
+          const hasImage = isProductMediaItem(item) && item.mediaType === "image";
+
+          return (
+            <button
+              key={`${item.altText}-${index}`}
+              type="button"
+              onClick={() => setActiveIndex(index)}
+              className={`group overflow-hidden rounded-[20px] p-2 text-left transition ${
+                index === activeIndex
+                  ? "border-2 border-primary bg-white shadow-[0_16px_36px_rgba(6,51,38,0.12)]"
+                  : "border border-outline-variant/30 bg-white hover:border-primary/25"
+              }`}
+            >
+              <div className="relative aspect-square overflow-hidden rounded-[16px] bg-surface-container-high">
+                {hasImage ? (
+                  <Image
+                    src={item.url}
+                    alt={`${productName} ${item.altText}`}
+                    fill
+                    unoptimized
+                    sizes="(min-width: 1024px) 120px, 24vw"
+                    className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                  />
+                ) : (
+                  <ProductThumbnailFallback label={item.altText} />
+                )}
+                <span className="absolute inset-x-2 bottom-2 rounded-full bg-white/86 px-2 py-1 text-center text-[11px] font-black text-on-surface shadow-[0_8px_18px_rgba(15,23,42,0.12)] backdrop-blur">
+                  {item.altText}
+                </span>
+              </div>
+            </button>
+          );
+        })}
       </div>
     </div>
   );

@@ -201,6 +201,7 @@ export default async function ProductDetailPage({
             productName={product.name}
             items={mediaItems}
             imageUrl={productImageUrl}
+            mediaItems={product.media}
             featureLabels={detailContent.galleryFeatureLabels}
             deviceCaption={detailContent.galleryDeviceCaption}
           />

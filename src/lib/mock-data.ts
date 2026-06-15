@@ -1,4 +1,5 @@
 import type { ProductDetailContentInput } from "@/lib/product-detail-content";
+import type { ProductMediaKind } from "@/lib/product-media";
 
 export type ProductSpec = {
   label: string;
@@ -15,6 +16,13 @@ export type ProductVariantModel = {
   priceKurus: number;
   compareAtKurus?: number;
   isDefault?: boolean;
+};
+
+export type ProductMediaModel = {
+  url: string;
+  altText: string;
+  mediaType: ProductMediaKind;
+  isPrimary?: boolean;
 };
 
 export type FaqItem = {
@@ -37,6 +45,7 @@ export type ProductModel = {
   cableOptions: string[];
   variants?: ProductVariantModel[];
   imageUrl?: string;
+  media?: ProductMediaModel[];
   galleryItems?: string[];
   detailContent?: ProductDetailContentInput;
   specs: ProductSpec[];

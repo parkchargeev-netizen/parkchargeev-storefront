@@ -9,7 +9,7 @@ const contentSecurityPolicy = [
   "base-uri 'self'",
   "form-action 'self' https://www.paytr.com",
   "frame-ancestors 'self'",
-  "frame-src 'self' https://www.paytr.com https://www.google.com https://maps.google.com",
+  "frame-src 'self' https://www.paytr.com https://www.google.com https://maps.google.com https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com",
   `connect-src 'self' https://www.paytr.com ${sentryIngestOrigin}${isProduction ? "" : " ws: http: https:"}`,
   "img-src 'self' data: blob: https:",
   "font-src 'self' data: https://fonts.gstatic.com",

@@ -1,3 +1,5 @@
+import { inferProductMediaType } from "@/lib/product-media";
+
 function getText(value: unknown, field: string) {
   if (!value || typeof value !== "object") {
     return "";
@@ -45,6 +47,28 @@ function normalizeDetailContent(detailContent: unknown) {
   };
 }
 
+function normalizeMediaRows(value: unknown) {
+  return filterRows(
+    value,
+    (row) => hasAnyText(row, ["url", "altText"])
+  ).map((row) => {
+    if (!row || typeof row !== "object") {
+      return row;
+    }
+
+    const media = row as Record<string, unknown>;
+    const url = getText(media, "url");
+    const mediaType = getText(media, "mediaType");
+
+    return {
+      ...media,
+      mediaType: mediaType === "video" || mediaType === "image"
+        ? mediaType
+        : inferProductMediaType(url)
+    };
+  });
+}
+
 export function normalizeAdminProductPayload<T>(payload: T): T {
   if (!payload || typeof payload !== "object") {
     return payload;
@@ -61,10 +85,7 @@ export function normalizeAdminProductPayload<T>(payload: T): T {
         getNumber(row, "priceKurus") > 0 ||
         getNumber(row, "stockQuantity") > 0
     ),
-    media: filterRows(
-      product.media,
-      (row) => hasAnyText(row, ["url", "altText"])
-    ),
+    media: normalizeMediaRows(product.media),
     specs: filterRows(
       product.specs,
       (row) => hasAnyText(row, ["label", "value"])

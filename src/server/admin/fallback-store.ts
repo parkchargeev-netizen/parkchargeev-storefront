@@ -3,6 +3,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { products as marketingProducts } from "@/lib/mock-data";
+import { inferProductMediaType, type ProductMediaKind } from "@/lib/product-media";
 import {
   getProductDetailContent,
   getProductDetailContentFromSchemaJsonLd,
@@ -51,6 +52,7 @@ type FallbackAdminSummary = {
 
 type FallbackProductMedia = {
   id: string;
+  mediaType: ProductMediaKind;
   url: string;
   altText: string;
   isPrimary: boolean;
@@ -546,6 +548,7 @@ function createSeedProducts(): FallbackProductRecord[] {
       media: [
         {
           id: randomUUID(),
+          mediaType: "image",
           url: `https://placehold.co/1200x900/png?text=${encodeURIComponent(source.name)}`,
           altText: source.name,
           isPrimary: true
@@ -1142,6 +1145,7 @@ function normalizeProductRecord(
 
   const media = input.media.map((item, index) => ({
     id: item.id ?? randomUUID(),
+    mediaType: item.mediaType ?? inferProductMediaType(item.url),
     url: item.url,
     altText: item.altText,
     isPrimary: primaryMedia ? primaryMedia.url === item.url : index === 0
