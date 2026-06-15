@@ -140,6 +140,22 @@ test("@e2e mobil urun detay sayfasi kompakt e-ticaret akisi sunar", async ({ pag
   const stickyAddToCart = page.locator(".product-mobile-sticky-atc");
   await expect(stickyAddToCart).toBeVisible();
   await expect(stickyAddToCart.getByRole("button", { name: "Sepete Ekle" })).toBeVisible();
+  await expect(page.locator(".product-purchase-panel__add-button")).toBeHidden();
+
+  const viewportHeight = page.viewportSize()?.height ?? 0;
+  const initialStickyBox = await stickyAddToCart.boundingBox();
+  expect(initialStickyBox).not.toBeNull();
+  expect((initialStickyBox?.y ?? 0) + (initialStickyBox?.height ?? 0)).toBeGreaterThanOrEqual(
+    viewportHeight - 2
+  );
+
+  await page.evaluate(() => window.scrollTo(0, 900));
+  await expect(stickyAddToCart).toBeVisible();
+  const scrolledStickyBox = await stickyAddToCart.boundingBox();
+  expect(scrolledStickyBox).not.toBeNull();
+  expect((scrolledStickyBox?.y ?? 0) + (scrolledStickyBox?.height ?? 0)).toBeGreaterThanOrEqual(
+    viewportHeight - 2
+  );
 
   const hasPageOverflow = await page.evaluate(() => {
     return document.documentElement.scrollWidth > document.documentElement.clientWidth + 1;
@@ -155,6 +171,22 @@ test("@e2e urun detay galerisi thumbnail kartlarini gorselli gosterir", async ({
   );
   expect(await thumbnailVisuals.count()).toBeGreaterThan(1);
   await expect(thumbnailVisuals.first()).toBeVisible();
+
+  const viewportWidth = page.viewportSize()?.width ?? 0;
+  if (viewportWidth >= 1024) {
+    const gallery = page.locator(".product-gallery-premium");
+    const desktopFill = page.locator(".product-detail-desktop-under-gallery");
+
+    await expect(desktopFill).toBeVisible();
+    const galleryBox = await gallery.boundingBox();
+    const desktopFillBox = await desktopFill.boundingBox();
+
+    expect(galleryBox).not.toBeNull();
+    expect(desktopFillBox).not.toBeNull();
+    expect((desktopFillBox?.y ?? 0) - ((galleryBox?.y ?? 0) + (galleryBox?.height ?? 0))).toBeLessThan(
+      40
+    );
+  }
 });
 
 test("@e2e mobil urun secici sade ve kompakt gorunur", async ({ page }) => {
