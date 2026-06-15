@@ -74,22 +74,6 @@ export function ProductPurchasePanel({
 
   return (
     <div className="product-purchase-panel">
-      <div className="product-mobile-summary-atc" aria-label="Mobil hızlı sepete ekle">
-        <div>
-          <span>Sepet toplamı</span>
-          <strong>{formatPriceTRY(estimatedLineTotal)}</strong>
-          <small>{purchaseMode === "survey" ? "Keşif ile ilerle" : "81 il kargo"}</small>
-        </div>
-        <button
-          type="button"
-          onClick={handleAddToCart}
-          disabled={isAddDisabled}
-          aria-busy={!isHydrated}
-        >
-          {isOutOfStock ? "Stokta Yok" : "Sepete Ekle"}
-        </button>
-      </div>
-
       <div className="product-purchase-panel__price mt-8 flex flex-wrap items-end gap-4">
         <p className="text-5xl font-black text-primary">
           {formatPriceTRY(selectedOption.priceKurus)}
