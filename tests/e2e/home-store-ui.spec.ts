@@ -137,25 +137,17 @@ test("@e2e mobil urun detay sayfasi kompakt e-ticaret akisi sunar", async ({ pag
   });
   expect(galleryHeight).toBeLessThan(470);
 
-  const stickyAddToCart = page.locator(".product-mobile-sticky-atc");
-  await expect(stickyAddToCart).toBeVisible();
-  await expect(stickyAddToCart.getByRole("button", { name: "Sepete Ekle" })).toBeVisible();
+  const inlineAddToCart = page.locator(".product-mobile-inline-atc");
+  await expect(inlineAddToCart).toBeVisible();
+  await expect(inlineAddToCart.getByRole("button", { name: "Sepete Ekle" })).toBeVisible();
   await expect(page.locator(".product-purchase-panel__add-button")).toBeHidden();
+  await expect(page.locator(".product-mobile-sticky-atc")).toBeHidden();
 
   const viewportHeight = page.viewportSize()?.height ?? 0;
-  const initialStickyBox = await stickyAddToCart.boundingBox();
-  expect(initialStickyBox).not.toBeNull();
-  expect((initialStickyBox?.y ?? 0) + (initialStickyBox?.height ?? 0)).toBeGreaterThanOrEqual(
-    viewportHeight - 2
-  );
-
-  await page.evaluate(() => window.scrollTo(0, 900));
-  await expect(stickyAddToCart).toBeVisible();
-  const scrolledStickyBox = await stickyAddToCart.boundingBox();
-  expect(scrolledStickyBox).not.toBeNull();
-  expect((scrolledStickyBox?.y ?? 0) + (scrolledStickyBox?.height ?? 0)).toBeGreaterThanOrEqual(
-    viewportHeight - 2
-  );
+  const inlineBox = await inlineAddToCart.boundingBox();
+  expect(inlineBox).not.toBeNull();
+  expect(inlineBox?.y ?? 0).toBeGreaterThanOrEqual(0);
+  expect(inlineBox?.y ?? 0).toBeLessThan(viewportHeight);
 
   const hasPageOverflow = await page.evaluate(() => {
     return document.documentElement.scrollWidth > document.documentElement.clientWidth + 1;
@@ -176,8 +168,10 @@ test("@e2e urun detay galerisi thumbnail kartlarini gorselli gosterir", async ({
   if (viewportWidth >= 1024) {
     const gallery = page.locator(".product-gallery-premium");
     const desktopFill = page.locator(".product-detail-desktop-under-gallery");
+    const desktopSupport = page.locator(".product-detail-desktop-support-grid");
 
     await expect(desktopFill).toBeVisible();
+    await expect(desktopSupport).toBeVisible();
     const galleryBox = await gallery.boundingBox();
     const desktopFillBox = await desktopFill.boundingBox();
 

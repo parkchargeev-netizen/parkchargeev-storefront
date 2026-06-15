@@ -50,7 +50,7 @@ test("@e2e kablo uzunlugu fiyat ve sepet tutarini gunceller", async ({ page }) =
 
   const priceScope =
     (page.viewportSize()?.width ?? 0) <= 767
-      ? page.locator(".product-mobile-sticky-atc")
+      ? page.locator(".product-mobile-inline-atc")
       : page.locator(".product-purchase-panel__price");
 
   await expect(priceScope.getByText(/12\.490/)).toBeVisible();

@@ -211,6 +211,42 @@ export default async function ProductDetailPage({
               {renderUseCasesCard()}
               {renderHighlightsCard()}
             </div>
+            <div className="product-detail-desktop-support-grid grid gap-6 xl:grid-cols-3">
+              {detailContent.purchaseReadiness.map((item) => (
+                <div
+                  key={item.label}
+                  className="surface-card p-6"
+                >
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary">
+                    {item.label}
+                  </p>
+                  <p className="mt-3 text-base font-bold leading-7 text-on-surface">
+                    {item.value}
+                  </p>
+                </div>
+              ))}
+            </div>
+            <div className="surface-card p-8">
+              <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
+                <div className="max-w-xl">
+                  <p className="text-sm font-semibold uppercase tracking-[0.28em] text-primary">
+                    Satış öncesi netlik
+                  </p>
+                  <h2 className="mt-3 text-3xl font-bold tracking-[-0.05em] text-on-surface">
+                    Uygunluk, teslimat ve destek bilgileri aynı ekranda.
+                  </h2>
+                  <p className="mt-4 text-sm leading-7 text-on-surface-variant">
+                    {decisionNote}
+                  </p>
+                </div>
+                <Link
+                  href={detailContent.support.href}
+                  className="rounded-2xl bg-surface-container-high px-5 py-4 text-center text-sm font-semibold text-primary"
+                >
+                  {detailContent.support.ctaLabel}
+                </Link>
+              </div>
+            </div>
           </div>
         </section>
 
