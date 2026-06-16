@@ -53,6 +53,24 @@ function countWords(value?: string) {
     .filter(Boolean).length;
 }
 
+function GuidanceList({ title, items }: { title: string; items: string[] }) {
+  return (
+    <div className="mt-4 rounded-2xl border border-emerald-100 bg-emerald-50/70 p-4">
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-800">
+        {title}
+      </p>
+      <ul className="mt-2 grid gap-2 text-xs leading-5 text-slate-600 sm:grid-cols-2">
+        {items.map((item) => (
+          <li key={item} className="flex gap-2">
+            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export function SitePageForm({ mode, page }: SitePageFormProps) {
   const router = useRouter();
   const [feedback, setFeedback] = useState<string | null>(null);
@@ -135,6 +153,25 @@ export function SitePageForm({ mode, page }: SitePageFormProps) {
 
   return (
     <form className="space-y-5" onSubmit={onSubmit}>
+      <section className="rounded-2xl border border-slate-200 bg-slate-950 p-4 text-white">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-200">
+          İçerik editörü
+        </p>
+        <h3 className="mt-2 text-lg font-semibold">Bu sayfa nasıl hazırlanmalı?</h3>
+        <div className="mt-4 grid gap-3 md:grid-cols-3">
+          {[
+            ["1. Niyet", "Sayfanın hangi müşteri sorusunu çözdüğünü ilk cümlede netleştirin."],
+            ["2. Güven", "Kurulum, garanti, ödeme, kargo ve destek bilgisini kısa cümlelerle verin."],
+            ["3. Aksiyon", "Sayfa sonunda tek ana CTA bırakın: teklif al, keşif iste veya mağazaya git."]
+          ].map(([title, body]) => (
+            <div key={title} className="rounded-2xl bg-white/8 p-3">
+              <p className="text-sm font-semibold text-white">{title}</p>
+              <p className="mt-2 text-xs leading-5 text-white/70">{body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <section className="rounded-2xl border border-slate-200 bg-white p-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
@@ -170,6 +207,15 @@ export function SitePageForm({ mode, page }: SitePageFormProps) {
             <FieldError message={errors.slug?.message} />
           </label>
         </div>
+        <GuidanceList
+          title="Başlık ve URL önerisi"
+          items={[
+            "Başlık 45-70 karakter aralığında, ürün veya hizmet niyetini açık söylesin.",
+            "Slug kısa ve Türkçe karakter içermeyen okunabilir kelimelerden oluşsun.",
+            "Önizleme linkini açıp sayfanın yayında nasıl görüneceğini kontrol edin.",
+            "Ana menüye eklenecek sayfalarda başlık ve menü etiketi aynı olmak zorunda değildir."
+          ]}
+        />
       </section>
 
       <section className="rounded-2xl border border-slate-200 bg-white p-4">
@@ -190,6 +236,15 @@ export function SitePageForm({ mode, page }: SitePageFormProps) {
             <FieldError message={errors.excerpt?.message} />
           </label>
         </div>
+        <GuidanceList
+          title="Hero metni önerisi"
+          items={[
+            "Üst etiket kısa kategori gibi çalışsın: Kurulum, Site çözümü, Ticari şarj.",
+            "Kısa özet tek paragraf olsun; kime uygun, ne sağlar, nasıl ilerlenir sorularını yanıtlasın.",
+            "Fiyat, şehir veya teslimat kapsamı kritikse bu alanda saklamayın, açık yazın.",
+            "Uzun açıklamaları gövdeye bırakın; hero metni satış kapısı gibi çalışmalı."
+          ]}
+        />
       </section>
 
       <section className="rounded-2xl border border-slate-200 bg-white p-4">
@@ -223,6 +278,15 @@ export function SitePageForm({ mode, page }: SitePageFormProps) {
           {...register("body")}
         />
         <FieldError message={errors.body?.message} />
+        <GuidanceList
+          title="Gövde içeriği önerisi"
+          items={[
+            "Her bölümde tek fikir anlatın; H2 başlıkları taranabilir olsun.",
+            "Madde listeleriyle kurulum adımı, garanti, uyumluluk ve sık itirazları netleştirin.",
+            "HTML kullanırken h2, h3, p, ul, li ve strong etiketleri yeterlidir.",
+            "Script, iframe veya karmaşık stil eklemeyin; yayın tarafı performans için temizlenir."
+          ]}
+        />
       </section>
 
       <section className="rounded-2xl border border-slate-200 bg-white p-4">
@@ -253,6 +317,15 @@ export function SitePageForm({ mode, page }: SitePageFormProps) {
           </span>
           <input className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="https://..." {...register("ogImageUrl")} />
         </label>
+        <GuidanceList
+          title="SEO kontrol listesi"
+          items={[
+            "SEO title anahtar kelimeyi ve marka adını doğal biçimde taşısın.",
+            "SEO description 140-160 karakter civarında, tıklama vaadini net versin.",
+            "Canonical URL yalnızca özel bir gereklilik varsa doldurulsun.",
+            "Sosyal görsel yüksek kaliteli ve mümkünse 1200x630 oranında olsun."
+          ]}
+        />
       </section>
 
       <section className="rounded-2xl border border-slate-200 bg-white p-4">
@@ -287,6 +360,15 @@ export function SitePageForm({ mode, page }: SitePageFormProps) {
             Noindex aktifse sayfa sitemap listesinde görünmez ve arama motorlarına indexlenmemesi söylenir.
           </p>
         ) : null}
+        <GuidanceList
+          title="Yayın kararı"
+          items={[
+            "Taslak içerik ziyaretçiye görünmez; yayın için Published durumunu seçin.",
+            "Satışa destek veren sayfalar sitemap içinde kalmalı.",
+            "Teşekkür, test veya kampanya sonrası kapanan sayfalarda noindex kullanılabilir.",
+            "Öncelik değeri ana hizmet sayfalarında yüksek, destek sayfalarında orta tutulabilir."
+          ]}
+        />
       </section>
 
       {feedback ? <p className="text-sm text-slate-600">{feedback}</p> : null}

@@ -136,36 +136,6 @@ export default async function ProductDetailPage({
       </div>
     </div>
   );
-  const renderUseCasesCard = () => (
-    <div className="surface-card p-8">
-      <h2 className="text-3xl font-bold tracking-[-0.05em] text-on-surface">
-        {detailContent.useCasesHeading}
-      </h2>
-      <div className="mt-6 flex flex-wrap gap-3">
-        {detailContent.useCases.map((useCase) => (
-          <span
-            key={useCase}
-            className="rounded-full bg-surface-container-low px-4 py-3 text-sm font-semibold text-on-surface"
-          >
-            {useCase}
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-  const renderHighlightsCard = () => (
-    <div className="surface-card p-8">
-      <h2 className="text-3xl font-bold tracking-[-0.05em] text-on-surface">
-        {detailContent.highlightsHeading}
-      </h2>
-      <ul className="mt-4 space-y-3 text-sm leading-7 text-on-surface-variant">
-        {detailContent.highlights.map((highlight) => (
-          <li key={highlight}>{highlight}</li>
-        ))}
-      </ul>
-    </div>
-  );
-
   return (
     <div className="product-detail-page mx-auto max-w-7xl px-6 py-10 lg:px-8">
       <script
@@ -205,27 +175,10 @@ export default async function ProductDetailPage({
             featureLabels={detailContent.galleryFeatureLabels}
             deviceCaption={detailContent.galleryDeviceCaption}
           />
-          <div className="product-detail-desktop-under-gallery mt-6 hidden gap-6 lg:grid">
-            {renderSpecsCard()}
-            {renderIntentCard()}
-            <div className="grid gap-6 xl:grid-cols-2">
-              {renderUseCasesCard()}
-              {renderHighlightsCard()}
-            </div>
-            <div className="product-detail-desktop-support-grid grid gap-6 xl:grid-cols-3">
-              {detailContent.purchaseReadiness.map((item) => (
-                <div
-                  key={item.label}
-                  className="surface-card p-6"
-                >
-                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary">
-                    {item.label}
-                  </p>
-                  <p className="mt-3 text-base font-bold leading-7 text-on-surface">
-                    {item.value}
-                  </p>
-                </div>
-              ))}
+          <div className="product-detail-desktop-under-gallery mt-5 hidden gap-4 lg:grid">
+            <div className="grid gap-4 xl:grid-cols-2">
+              {renderSpecsCard()}
+              {renderIntentCard()}
             </div>
             <div className="surface-card p-8">
               <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
@@ -354,11 +307,6 @@ export default async function ProductDetailPage({
       <section className="product-detail-info-grid mt-8 grid gap-6 lg:hidden">
         {renderSpecsCard()}
         {renderIntentCard()}
-      </section>
-
-      <section className="product-detail-info-grid mt-8 grid gap-6 lg:hidden">
-        {renderUseCasesCard()}
-        {renderHighlightsCard()}
       </section>
 
       <section className="mt-8 surface-card p-8">

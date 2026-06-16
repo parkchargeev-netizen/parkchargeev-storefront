@@ -25,6 +25,13 @@ function FieldError({ message }: { message?: string }) {
   return message ? <p className="text-xs font-medium text-red-600">{message}</p> : null;
 }
 
+const navigationGuide = [
+  "Üst menüde 5-7 ana link yeterlidir; fazla link mobilde kalabalık yaratır.",
+  "Etiket kısa olmalı: Mağaza, Kurulum, Blog, İletişim gibi.",
+  "Site içi linkler /magaza gibi / ile başlamalı; dış linklerde tam https adresi kullanılmalı.",
+  "Yeni sekme yalnızca dış bağlantılar veya dokümanlar için tercih edilmeli."
+];
+
 export function NavigationItemForm({ mode, item }: NavigationItemFormProps) {
   const router = useRouter();
   const [feedback, setFeedback] = useState<string | null>(null);
@@ -81,6 +88,19 @@ export function NavigationItemForm({ mode, item }: NavigationItemFormProps) {
 
   return (
     <form className="grid gap-4" onSubmit={onSubmit}>
+      <div className="rounded-2xl border border-emerald-100 bg-emerald-50/70 p-4">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-800">
+          Menü yazım rehberi
+        </p>
+        <ul className="mt-2 grid gap-2 text-xs leading-5 text-slate-600 md:grid-cols-2">
+          {navigationGuide.map((item) => (
+            <li key={item} className="flex gap-2">
+              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
       <div className="grid gap-3 lg:grid-cols-[170px_minmax(0,1fr)_minmax(0,1fr)_120px]">
         <label className="grid gap-1.5">
           <span className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">

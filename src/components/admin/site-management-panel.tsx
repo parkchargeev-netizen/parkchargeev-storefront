@@ -86,6 +86,51 @@ export async function SiteManagementPanel({
   const draftPageCount = pages.items.filter((page) => page.status === "draft").length;
   const showNewNavigationForm = query.newNav === "1";
   const showNewPageForm = query.newPage === "1";
+  const globalControlLinks = [
+    {
+      href: createHref(basePath, "newNav"),
+      title: "Menü ve footer",
+      body: "Üst menü, footer ve destek linklerini düzenleyin. Kısa etiket, doğru URL ve sıralama yeterlidir.",
+      action: "Link yönet"
+    },
+    {
+      href: createHref(basePath, "newPage"),
+      title: "Sayfa ve SEO",
+      body: "Hakkımızda, hizmet, kampanya ve özel landing sayfalarının başlık, içerik, SEO ve sitemap kararlarını yönetin.",
+      action: "Sayfa yönet"
+    },
+    {
+      href: "/admin/urunler",
+      title: "Ürün vitrini",
+      body: "Ürün adı, fiyat, stok, teknik özellik, görsel, video, araç uyumu ve detay sayfası içeriklerini güncelleyin.",
+      action: "Ürünlere git"
+    },
+    {
+      href: "/admin/blog",
+      title: "Blog ve rehberler",
+      body: "SEO odaklı rehberleri, satın alma itirazlarını azaltan içerikleri ve yayın durumunu düzenleyin.",
+      action: "İçerikleri yönet"
+    },
+    {
+      href: "/admin/siparisler",
+      title: "Sipariş ve ödeme",
+      body: "Sepet sonrası siparişleri, ödeme akışını ve PayTR durumlarını operasyon ekranlarından takip edin.",
+      action: "Siparişlere git"
+    },
+    {
+      href: "/admin/teklifler",
+      title: "Keşif ve teklif",
+      body: "Ücretsiz keşif, kurumsal teklif, saha planı ve müşteri taleplerini satış sürecine bağlayın.",
+      action: "Talepleri yönet"
+    }
+  ];
+  const adminWritingGuide = [
+    "Menü etiketi 1-2 kelime olsun: Mağaza, Kurulum, Blog gibi.",
+    "Sayfa başlığı müşterinin aradığı niyeti söylesin: Ev tipi şarj cihazı kurulumu gibi.",
+    "Kısa özet tek paragraf olsun; kim için, ne fayda sağlar ve sonraki adım nedir cevaplasın.",
+    "SEO açıklaması 140-160 karakter aralığında, şehir/hizmet/ürün niyetini net taşısın.",
+    "Yayınlamadan önce önizleme, sitemap ve noindex kararlarını mutlaka kontrol edin."
+  ];
 
   return (
     <section id="site-management" className="scroll-mt-6 space-y-6">
@@ -104,6 +149,57 @@ export async function SiteManagementPanel({
           </>
         }
       />
+
+      <div className="grid gap-4 xl:grid-cols-[1.35fr_0.65fr]">
+        <section className="surface-card border border-emerald-100 bg-white/95 p-5 lg:p-6">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-emerald-700">
+                Site genel kontrol merkezi
+              </p>
+              <h2 className="mt-2 text-2xl font-semibold text-slate-950">
+                Tüm siteye buradan müdahale edin.
+              </h2>
+            </div>
+            <AdminPrefetchLink
+              href="/admin/audit"
+              className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-800"
+            >
+              Değişiklik geçmişi
+            </AdminPrefetchLink>
+          </div>
+          <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {globalControlLinks.map((item) => (
+              <AdminPrefetchLink
+                key={item.href}
+                href={item.href}
+                className="rounded-[22px] border border-slate-200 bg-slate-50/80 p-4 transition hover:border-emerald-200 hover:bg-emerald-50"
+              >
+                <p className="text-sm font-semibold text-slate-950">{item.title}</p>
+                <p className="mt-2 text-xs leading-5 text-slate-600">{item.body}</p>
+                <span className="mt-4 inline-flex text-xs font-semibold text-emerald-800">
+                  {item.action}
+                </span>
+              </AdminPrefetchLink>
+            ))}
+          </div>
+        </section>
+
+        <aside className="surface-card border border-slate-200 bg-slate-950 p-5 text-white lg:p-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-emerald-200">
+            Yazım rehberi
+          </p>
+          <h2 className="mt-2 text-xl font-semibold">Nereye, ne, nasıl yazılır?</h2>
+          <ul className="mt-4 space-y-3 text-sm leading-6 text-white/78">
+            {adminWritingGuide.map((item) => (
+              <li key={item} className="flex gap-2">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-300" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </aside>
+      </div>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {[
