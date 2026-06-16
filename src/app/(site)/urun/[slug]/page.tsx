@@ -97,7 +97,7 @@ export default async function ProductDetailPage({
   ]);
   const faqJsonLd = getFaqJsonLd(detailContent.faqs);
   const renderSpecsCard = () => (
-    <div className="surface-card p-8">
+    <div className="product-detail-spec-card surface-card p-8">
       <h2 className="text-3xl font-bold tracking-[-0.05em] text-on-surface">
         {detailContent.specsHeading}
       </h2>
@@ -117,7 +117,7 @@ export default async function ProductDetailPage({
     </div>
   );
   const renderIntentCard = () => (
-    <div className="overflow-hidden rounded-[28px] bg-linear-to-br from-primary to-primary-container p-8 text-white shadow-[0_24px_80px_rgba(6,51,38,0.26)]">
+    <div className="product-detail-intent-card overflow-hidden rounded-[28px] bg-linear-to-br from-primary to-primary-container p-8 text-white shadow-[0_24px_80px_rgba(6,51,38,0.26)]">
       <h2 className="text-3xl font-bold tracking-[-0.05em]">
         {detailContent.intentHeading}
       </h2>
@@ -176,7 +176,7 @@ export default async function ProductDetailPage({
             deviceCaption={detailContent.galleryDeviceCaption}
           />
           <div className="product-detail-desktop-under-gallery mt-5 hidden gap-4 lg:grid">
-            <div className="grid gap-4 xl:grid-cols-2">
+            <div className="grid gap-4">
               {renderSpecsCard()}
               {renderIntentCard()}
             </div>

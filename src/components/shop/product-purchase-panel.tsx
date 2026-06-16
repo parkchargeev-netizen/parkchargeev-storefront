@@ -107,7 +107,7 @@ export function ProductPurchasePanel({
         ) : null}
       </div>
 
-      <div className="mt-5 grid gap-2 sm:grid-cols-3">
+      <div className="product-purchase-panel__trust mt-5 grid gap-2 sm:grid-cols-3">
         {purchaseTrustSignals.map((signal) => (
           <div key={signal.label} className="rounded-2xl border border-outline-variant/35 bg-white px-4 py-3">
             <p className="text-[10px] font-semibold uppercase text-on-surface-variant">
@@ -117,11 +117,11 @@ export function ProductPurchasePanel({
           </div>
         ))}
       </div>
-      <p className="mt-3 rounded-2xl bg-surface-container-low px-4 py-3 text-xs leading-5 text-on-surface-variant">
+      <p className="product-purchase-panel__fit-note mt-3 rounded-2xl bg-surface-container-low px-4 py-3 text-xs leading-5 text-on-surface-variant">
         Emin değilseniz ürünle birlikte keşif akışını seçin; pano, faz, kablo hattı ve koruma ekipmanı netleştirilir.
       </p>
 
-      <div className="mt-8 rounded-[24px] bg-surface-container-low p-6">
+      <div className="product-purchase-panel__route mt-8 rounded-[24px] bg-surface-container-low p-6">
         <p className="text-sm font-semibold uppercase text-on-surface-variant">
           Satın alma yolu
         </p>
@@ -270,7 +270,7 @@ export function ProductPurchasePanel({
           </Link>
         ) : null}
 
-        <div className="mt-6 space-y-3 text-sm text-on-surface-variant">
+        <div className="product-purchase-panel__benefits mt-6 space-y-3 text-sm text-on-surface-variant">
           {benefits.map((benefit) => (
             <p key={benefit}>{benefit}</p>
           ))}

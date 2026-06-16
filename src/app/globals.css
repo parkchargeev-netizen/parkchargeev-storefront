@@ -4245,10 +4245,25 @@ body {
     padding: 1.15rem !important;
   }
 
+  .product-detail-desktop-under-gallery .product-detail-intent-card {
+    border-radius: 1.25rem;
+    padding: 1.15rem !important;
+  }
+
   .product-detail-desktop-under-gallery h2 {
     font-size: 1.25rem;
     line-height: 1.18;
     letter-spacing: -0.02em;
+  }
+
+  .product-detail-intent-card p {
+    font-size: 0.92rem;
+    line-height: 1.58;
+  }
+
+  .product-detail-intent-card span {
+    padding: 0.55rem 0.7rem;
+    font-size: 0.72rem;
   }
 
   .product-detail-desktop-under-gallery :where(.mt-6, .mt-8) {
@@ -8137,37 +8152,54 @@ body {
 
 @media (max-width: 767px) {
   .product-detail-page {
-    padding-bottom: calc(6.25rem + env(safe-area-inset-bottom));
+    padding-bottom: calc(5.6rem + env(safe-area-inset-bottom));
   }
 
   .product-mobile-inline-atc {
-    display: none !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(7.65rem, 0.86fr);
+    gap: 0.5rem;
+    margin-top: 0.55rem;
+    border-radius: 0.86rem;
+    padding: 0.5rem;
+    box-shadow: 0 10px 24px rgba(6, 51, 38, 0.13);
   }
 
   .product-mobile-sticky-atc {
     position: fixed;
     right: max(0.75rem, env(safe-area-inset-right));
-    bottom: max(0.75rem, env(safe-area-inset-bottom));
+    bottom: max(1.05rem, env(safe-area-inset-bottom));
     left: max(0.75rem, env(safe-area-inset-left));
     z-index: 70;
     display: grid !important;
-    grid-template-columns: minmax(0, 1fr) minmax(8.75rem, 0.95fr);
+    grid-template-columns: minmax(0, 1fr) minmax(8rem, 0.9fr);
     align-items: center;
-    gap: 0.72rem;
+    gap: 0.55rem;
     border: 1px solid rgba(6, 51, 38, 0.16);
-    border-radius: 1rem;
+    border-radius: 0.92rem;
     background:
       linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(230, 255, 247, 0.96)),
       radial-gradient(circle at 14% 20%, rgba(126, 236, 201, 0.2), transparent 8rem);
-    padding: 0.65rem;
+    padding: 0.52rem;
     box-shadow: 0 18px 52px rgba(6, 51, 38, 0.2);
     backdrop-filter: blur(12px);
   }
 
+  .product-mobile-inline-atc span,
+  .product-mobile-sticky-atc span {
+    font-size: 0.58rem;
+  }
+
+  .product-mobile-inline-atc strong,
+  .product-mobile-sticky-atc strong {
+    font-size: 0.94rem;
+  }
+
+  .product-mobile-inline-atc button,
   .product-mobile-sticky-atc button {
-    min-height: 2.65rem;
-    border-radius: 0.82rem;
-    font-size: 0.86rem;
+    min-height: 2.35rem;
+    border-radius: 0.76rem;
+    font-size: 0.78rem;
   }
 
   .product-detail-buybox .mt-6.grid.gap-3,
@@ -8176,11 +8208,11 @@ body {
   }
 
   .product-detail-buybox .mt-8.rounded-\[24px\] {
-    padding: 0.85rem !important;
+    padding: 0.68rem !important;
   }
 
   .product-gallery-stage--cover {
-    min-height: 13.75rem !important;
+    min-height: 12.9rem !important;
   }
 
   .product-gallery-premium > .mt-5 {
@@ -8188,7 +8220,74 @@ body {
   }
 
   .product-gallery-premium button {
-    flex-basis: 5.15rem;
+    flex-basis: 4.65rem;
+  }
+
+  .product-detail-page .product-detail-buybox h1 {
+    font-size: 1.14rem !important;
+    line-height: 1.08;
+  }
+
+  .product-detail-buybox > p {
+    -webkit-line-clamp: 1;
+    font-size: 0.76rem;
+  }
+
+  .product-detail-buybox .product-purchase-panel__trust,
+  .product-detail-buybox .product-purchase-panel__fit-note,
+  .product-detail-buybox .product-purchase-panel__benefits {
+    display: none;
+  }
+
+  .product-detail-buybox .product-purchase-panel__route {
+    margin-top: 0.55rem !important;
+    border-radius: 0.9rem;
+    padding: 0.65rem !important;
+  }
+
+  .product-detail-buybox .product-purchase-panel__route > p:first-child {
+    font-size: 0.66rem;
+  }
+
+  .product-detail-buybox .product-purchase-panel__route :where(.mt-5, .mt-6) {
+    margin-top: 0.65rem;
+  }
+
+  .product-detail-buybox .product-purchase-panel__route button {
+    padding: 0.48rem 0.58rem;
+    font-size: 0.72rem;
+  }
+
+  .product-detail-buybox .product-purchase-panel__route button span:last-child {
+    font-size: 0.62rem;
+  }
+
+  .product-detail-buybox .product-purchase-panel__route .text-sm {
+    font-size: 0.72rem;
+  }
+
+  .product-detail-info-grid {
+    gap: 0.7rem;
+  }
+
+  .product-detail-info-grid .product-detail-intent-card {
+    display: none;
+  }
+
+  .product-detail-info-grid .product-detail-spec-card {
+    padding: 0.74rem !important;
+  }
+
+  .product-detail-info-grid .product-detail-spec-card h2 {
+    font-size: 1.02rem;
+  }
+
+  .product-detail-info-grid .product-detail-spec-card .space-y-4 > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 0.48rem;
+  }
+
+  .product-detail-info-grid .product-detail-spec-card span {
+    font-size: 0.7rem;
   }
 
   .store-product-grid--commerce {
