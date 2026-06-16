@@ -276,21 +276,6 @@ export function ProductPurchasePanel({
           ))}
         </div>
       </div>
-
-      <div className="product-mobile-sticky-atc" aria-label="Mobil hızlı satın alma">
-        <div>
-          <span>Sepet toplamı</span>
-          <strong>{formatPriceTRY(estimatedLineTotal)}</strong>
-        </div>
-        <button
-          type="button"
-          onClick={handleAddToCart}
-          disabled={isAddDisabled}
-          aria-busy={!isHydrated}
-        >
-          {isOutOfStock ? "Stokta Yok" : "Sepete Ekle"}
-        </button>
-      </div>
     </div>
   );
 }

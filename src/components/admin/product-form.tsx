@@ -143,6 +143,57 @@ function ExampleHint({ children }: { children: string }) {
   return <p className="mt-2 text-xs leading-5 text-slate-500">{children}</p>;
 }
 
+function TechnicalFieldExamples() {
+  const examples = [
+    {
+      title: "Ev tipi wallbox",
+      body: "Güç: 11 | Tip: AC | Konnektör: Type 2 | Faz: Trifaz | IP: IP54 | Kablo: Soketli veya 5 m"
+    },
+    {
+      title: "Site / ofis cihazı",
+      body: "Güç: 22 | Tip: AC | Konnektör: Type 2 | Faz: Trifaz | IP: IP65 | Akıllı: RFID, OCPP, yük dengeleme"
+    },
+    {
+      title: "Aksesuar / kablo",
+      body: "Güç: 22 kW uyumlu | Konnektör: Type 2 - Type 2 | Faz: Trifaz | Kablo: 5 m veya 7 m"
+    }
+  ];
+
+  return (
+    <div className="mb-5 grid gap-3 md:grid-cols-3">
+      {examples.map((example) => (
+        <div key={example.title} className="rounded-2xl border border-emerald-100 bg-emerald-50/70 p-4">
+          <p className="text-sm font-black text-[#063326]">{example.title}</p>
+          <p className="mt-2 text-xs leading-5 text-slate-600">{example.body}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function TechnicalSpecExamples() {
+  const examples = [
+    ["Teknik", "Maksimum güç", "22 kW"],
+    ["Teknik", "Konnektör", "Type 2"],
+    ["Kurulum", "Faz yapısı", "Trifaz"],
+    ["Akıllı özellik", "Uzaktan yönetim", "RFID / OCPP uyumlu"]
+  ];
+
+  return (
+    <div className="mb-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+      {examples.map(([groupName, label, value]) => (
+        <div key={`${groupName}-${label}`} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+          <p className="text-[11px] font-black uppercase tracking-[0.16em] text-slate-500">
+            Grup: {groupName}
+          </p>
+          <p className="mt-2 text-sm font-semibold text-slate-950">Başlık: {label}</p>
+          <p className="mt-1 text-xs font-semibold text-emerald-800">Değer: {value}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function cleanText(value: unknown) {
   return String(value ?? "").trim();
 }
@@ -1306,6 +1357,8 @@ export function ProductForm({
           <ExampleHint>Örnek: Güç 11, konnektör Type 2, IP sınıfı IP54, kablo uzunluğu 5 Metre.</ExampleHint>
         </div>
 
+        <TechnicalFieldExamples />
+
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           <input className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="Güç (kW)" {...register("powerKw")} />
           <select className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" {...register("chargeType")}>
@@ -1467,6 +1520,7 @@ export function ProductForm({
             Özellik ekle
           </button>
         </div>
+        <TechnicalSpecExamples />
         <div className="space-y-4">
           {specFields.fields.map((field, index) => (
             <div key={field.fieldId} className="grid gap-4 rounded-3xl border border-slate-200 bg-slate-50 p-4 lg:grid-cols-[180px_1fr_1fr_auto]">
