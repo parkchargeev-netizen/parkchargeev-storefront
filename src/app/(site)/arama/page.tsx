@@ -107,7 +107,11 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           Ne arıyorsunuz?
         </h1>
         <form action="/arama" className="mt-8 flex flex-col gap-4 sm:flex-row">
+          <label htmlFor="site-search-query" className="sr-only">
+            Site içinde ara
+          </label>
           <input
+            id="site-search-query"
             name="q"
             defaultValue={q}
             placeholder="Örn: 11 kW, apartman, kurulum, wallbox..."

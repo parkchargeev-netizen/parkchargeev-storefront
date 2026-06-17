@@ -629,6 +629,7 @@ function mapAdminProductToPublicProduct(
     cableOptions: cableOptions.length > 0 ? cableOptions : base?.cableOptions ?? ["Standart"],
     variants: variants.length
       ? variants.map((variant) => ({
+          id: variant.id,
           sku: variant.sku,
           title: variant.title,
           powerLabel: variant.powerLabel ?? undefined,

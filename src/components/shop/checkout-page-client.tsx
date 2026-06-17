@@ -46,6 +46,20 @@ const CHECKOUT_STORAGE_KEY = "parkchargeev-checkout-draft-v1";
 const ACTIVE_ORDER_STORAGE_KEY = "parkchargeev-active-order-v1";
 const CART_INTENT_STORAGE_KEY = "parkchargeev-cart-intent-v1";
 
+function isPaidOrderStatus(orderStatus: OrderStatusResponse | null) {
+  return orderStatus?.paymentStatus === "paid";
+}
+
+function isTerminalOrderStatus(orderStatus: OrderStatusResponse | null) {
+  return (
+    orderStatus?.paymentStatus === "paid" ||
+    orderStatus?.paymentStatus === "failed" ||
+    orderStatus?.orderStatus === "failed" ||
+    orderStatus?.orderStatus === "cancelled" ||
+    orderStatus?.orderStatus === "refunded"
+  );
+}
+
 const initialDraft: CheckoutDraft = {
   fullName: "",
   email: "",
@@ -109,6 +123,8 @@ export function CheckoutPageClient({
       draft.city &&
       draft.address
   );
+  const hasPaidOrderStatus = isPaidOrderStatus(orderStatus);
+  const hasTerminalOrderStatus = isTerminalOrderStatus(orderStatus);
 
   useEffect(() => {
     try {
@@ -169,7 +185,7 @@ export function CheckoutPageClient({
       return;
     }
 
-    if (orderStatus?.orderStatus === "paid" || orderStatus?.orderStatus === "failed") {
+    if (hasTerminalOrderStatus) {
       return;
     }
 
@@ -219,18 +235,18 @@ export function CheckoutPageClient({
       isCancelled = true;
       window.clearInterval(interval);
     };
-  }, [merchantOid, orderStatus?.orderStatus]);
+  }, [hasTerminalOrderStatus, merchantOid]);
 
   useEffect(() => {
     if (
-      orderStatus?.orderStatus === "paid" &&
+      hasPaidOrderStatus &&
       merchantOid &&
       window.sessionStorage.getItem(ACTIVE_ORDER_STORAGE_KEY) === merchantOid
     ) {
       clearCart();
       window.sessionStorage.removeItem(ACTIVE_ORDER_STORAGE_KEY);
     }
-  }, [clearCart, merchantOid, orderStatus]);
+  }, [clearCart, hasPaidOrderStatus, merchantOid]);
 
   useEffect(() => {
     if (!iframeToken || typeof window === "undefined") {

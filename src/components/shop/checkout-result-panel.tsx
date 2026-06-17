@@ -1,5 +1,10 @@
 import Link from "next/link";
 
+import {
+  formatOrderStatusLabel,
+  formatPaymentStatusLabel
+} from "@/lib/order-status-labels";
+
 type CheckoutResultPanelProps = {
   merchantOid: string;
   initialStatus?: string;
@@ -49,13 +54,13 @@ export function CheckoutResultPanel({
           <div className="rounded-[24px] bg-surface-container-low p-5">
             <p className="text-sm font-medium text-on-surface-variant">Sipariş durumu</p>
             <p className="mt-2 text-lg font-semibold text-on-surface">
-              {orderStatus?.orderStatus ?? "Kontrol ediliyor"}
+              {formatOrderStatusLabel(orderStatus?.orderStatus, "Kontrol ediliyor")}
             </p>
           </div>
           <div className="rounded-[24px] bg-surface-container-low p-5">
             <p className="text-sm font-medium text-on-surface-variant">Ödeme durumu</p>
             <p className="mt-2 text-lg font-semibold text-on-surface">
-              {orderStatus?.paymentStatus ?? "Bekleniyor"}
+              {formatPaymentStatusLabel(orderStatus?.paymentStatus)}
             </p>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { and, desc, eq, inArray, or } from "drizzle-orm";
+import { and, desc, eq, inArray } from "drizzle-orm";
 import { z } from "zod";
 
 import { hasDatabaseConfig } from "@/lib/runtime-config";
@@ -83,12 +83,8 @@ export async function getCustomerAccountSnapshot() {
   }
 
   const { db, session, customer } = context;
-  const quoteFilter = customer.phone
-    ? or(eq(quoteRequests.email, customer.email), eq(quoteRequests.phone, customer.phone))
-    : eq(quoteRequests.email, customer.email);
-  const serviceFilter = customer.phone
-    ? or(eq(serviceLeads.email, customer.email), eq(serviceLeads.phone, customer.phone))
-    : eq(serviceLeads.email, customer.email);
+  const quoteFilter = eq(quoteRequests.email, customer.email);
+  const serviceFilter = eq(serviceLeads.email, customer.email);
 
   const [addresses, recentOrders, recentQuoteRequests, recentServiceLeads] =
     await Promise.all([

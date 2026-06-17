@@ -7,6 +7,7 @@ export type ProductSpec = {
 };
 
 export type ProductVariantModel = {
+  id?: string;
   sku: string;
   title: string;
   powerLabel?: string;

@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 
+import { eq } from "drizzle-orm";
 import { z } from "zod";
 
 import { CART_TAX_RATE } from "@/lib/cart-core";
@@ -32,8 +33,11 @@ export type PaytrCheckoutFlow = "iframe" | "direct_api";
 
 type PricedCheckoutItem = {
   productId: string;
+  productDbId: string | null;
+  variantId: string | null;
   productName: string;
   variantName: string;
+  sku: string | null;
   title: string;
   quantity: number;
   unitPriceKurus: number;
@@ -86,6 +90,14 @@ function limitText(value: string, maxLength: number) {
   return value.length > maxLength ? value.slice(0, maxLength) : value;
 }
 
+function isUuid(value?: string | null) {
+  return Boolean(
+    value?.match(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+    )
+  );
+}
+
 async function priceCheckoutItems(items: PaytrCheckoutRequest["items"]) {
   const publicProducts = await listPublicProducts();
   const pricedItems = items.map((item): PricedCheckoutItem => {
@@ -133,8 +145,11 @@ async function priceCheckoutItems(items: PaytrCheckoutRequest["items"]) {
 
     return {
       productId: product.id,
+      productDbId: isUuid(product.id) ? product.id : null,
+      variantId: isUuid(selectedVariant?.id) ? selectedVariant?.id ?? null : null,
       productName: product.name,
       variantName: selectedOption.label,
+      sku: selectedVariant?.sku ?? null,
       title: limitText(`${product.name} - ${selectedOption.label}`, 180),
       quantity: item.quantity,
       unitPriceKurus: selectedOption.priceKurus,
@@ -184,7 +199,7 @@ export async function createPaytrCheckoutOrder({
   const merchantOid = generateMerchantOid();
 
   const { order } = await db.transaction(async (tx) => {
-    const [customer] = await tx
+    const [insertedCustomer] = await tx
       .insert(customers)
       .values({
         email: body.email,
@@ -193,17 +208,25 @@ export async function createPaytrCheckoutOrder({
         phone: body.userPhone,
         role: "guest"
       })
-      .onConflictDoUpdate({
-        target: customers.email,
-        set: {
-          firstName,
-          lastName,
-          phone: body.userPhone
-        }
+      .onConflictDoNothing({
+        target: customers.email
       })
       .returning({
         id: customers.id
       });
+    const customer =
+      insertedCustomer ??
+      (
+        await tx
+          .select({ id: customers.id })
+          .from(customers)
+          .where(eq(customers.email, body.email))
+          .limit(1)
+      )[0];
+
+    if (!customer) {
+      throw new Error("Müşteri kaydı oluşturulamadı.");
+    }
 
     const [createdOrder] = await tx
       .insert(orders)
@@ -230,8 +253,11 @@ export async function createPaytrCheckoutOrder({
     await tx.insert(orderItems).values(
       pricedItems.map((item) => ({
         orderId: createdOrder.id,
+        productId: item.productDbId,
+        variantId: item.variantId,
         productName: limitText(item.productName, 180),
         variantName: limitText(item.variantName, 180),
+        sku: item.sku ? limitText(item.sku, 120) : null,
         quantity: item.quantity,
         unitPriceKurus: item.unitPriceKurus,
         lineTotalKurus: item.lineTotalKurus

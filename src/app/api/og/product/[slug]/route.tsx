@@ -2,8 +2,8 @@ import { ImageResponse } from "next/og";
 import { NextResponse } from "next/server";
 
 import { formatPriceTRY } from "@/lib/format";
-import { getProductBySlug } from "@/lib/mock-data";
 import { siteConfig } from "@/lib/site";
+import { getPublicProductBySlug } from "@/server/admin/repository";
 
 type ProductOgRouteProps = {
   params: Promise<{
@@ -11,11 +11,11 @@ type ProductOgRouteProps = {
   }>;
 };
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 export async function GET(_request: Request, { params }: ProductOgRouteProps) {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await getPublicProductBySlug(slug);
 
   if (!product) {
     return NextResponse.json({ ok: false, message: "Product not found." }, { status: 404 });

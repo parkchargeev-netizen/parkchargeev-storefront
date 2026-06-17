@@ -14,9 +14,17 @@ type SiteShellProps = {
 export function SiteShell({ children, navigation }: SiteShellProps) {
   return (
     <div className="site-experience-shell">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-primary focus:px-5 focus:py-3 focus:text-sm focus:font-semibold focus:text-white focus:shadow-xl"
+      >
+        İçeriğe geç
+      </a>
       <SiteAmbientBackground />
       <SiteHeader navigation={navigation?.primary} />
-      <main className="site-page-transition relative z-10">{children}</main>
+      <main id="main-content" tabIndex={-1} className="site-page-transition relative z-10">
+        {children}
+      </main>
       <ScrollMotion />
       <SiteFooter
         navigation={

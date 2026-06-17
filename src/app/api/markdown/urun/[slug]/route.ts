@@ -1,5 +1,5 @@
-import { getProductBySlug } from "@/lib/mock-data";
 import { renderProductMarkdown } from "@/lib/markdown";
+import { getPublicProductBySlug } from "@/server/admin/repository";
 
 export const revalidate = 3600;
 
@@ -11,7 +11,7 @@ type ProductMarkdownRouteProps = {
 
 export async function GET(_request: Request, { params }: ProductMarkdownRouteProps) {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await getPublicProductBySlug(slug);
 
   if (!product) {
     return new Response("Product not found", { status: 404 });

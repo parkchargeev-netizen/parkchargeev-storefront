@@ -1,9 +1,15 @@
-import { eq } from "drizzle-orm";
+import { and, eq, gte, sql } from "drizzle-orm";
 
 import { type PaytrCallbackPayload, verifyPaytrCallbackHash } from "@/lib/paytr";
 import { durationSince, logError, logInfo, logWarn } from "@/lib/server-logger";
 import { getDb } from "@/server/db/client";
-import { orderStatusHistory, orders, paytrTransactions } from "@/server/db/schema";
+import {
+  orderItems,
+  orderStatusHistory,
+  orders,
+  paytrTransactions,
+  productVariants
+} from "@/server/db/schema";
 
 function parsePaytrKurus(value?: string) {
   if (!value) {
@@ -46,7 +52,7 @@ function isProcessedDuplicate({
     return true;
   }
 
-  return orderPaymentStatus === "paid" && payloadStatus === "failed";
+  return orderPaymentStatus === "paid";
 }
 
 export async function POST(request: Request) {
@@ -145,7 +151,7 @@ export async function POST(request: Request) {
     const totalAmountKurus = parsePaytrKurus(payload.total_amount);
 
     if (payload.status === "success") {
-      if (paymentAmountKurus === null || totalAmountKurus === null) {
+      if (totalAmountKurus === null) {
         logWarn("paytr.callback.invalid_amount", {
           merchantOid: payload.merchant_oid,
           paymentAmount: payload.payment_amount,
@@ -155,10 +161,11 @@ export async function POST(request: Request) {
         return new Response("PAYTR notification failed: invalid amount", { status: 400 });
       }
 
-      if (paymentAmountKurus !== order.totalKurus) {
+      if (totalAmountKurus !== order.totalKurus) {
         logWarn("paytr.callback.amount_mismatch", {
           merchantOid: payload.merchant_oid,
           callbackPaymentAmountKurus: paymentAmountKurus,
+          callbackTotalAmountKurus: totalAmountKurus,
           orderTotalKurus: order.totalKurus,
           durationMs: durationSince(startedAt)
         });
@@ -180,6 +187,42 @@ export async function POST(request: Request) {
     }
 
     await db.transaction(async (tx) => {
+      let stockWarningNote: string | null = null;
+
+      if (payload.status === "success") {
+        const purchasedItems = await tx
+          .select({
+            variantId: orderItems.variantId,
+            quantity: orderItems.quantity
+          })
+          .from(orderItems)
+          .where(eq(orderItems.orderId, order.id));
+
+        for (const item of purchasedItems) {
+          if (!item.variantId) {
+            continue;
+          }
+
+          const [updatedVariant] = await tx
+            .update(productVariants)
+            .set({
+              stockQuantity: sql`${productVariants.stockQuantity} - ${item.quantity}`
+            })
+            .where(
+              and(
+                eq(productVariants.id, item.variantId),
+                gte(productVariants.stockQuantity, item.quantity)
+              )
+            )
+            .returning({ id: productVariants.id });
+
+          if (!updatedVariant) {
+            stockWarningNote =
+              "Ödeme alındı; stok azaltımı yapılamadı. Manuel stok ve teslimat kontrolü gerekli.";
+          }
+        }
+      }
+
       const transactionValues = {
         totalAmountKurus: totalAmountKurus ?? paymentAmountKurus ?? 0,
         status: nextTransactionStatus,
@@ -196,7 +239,7 @@ export async function POST(request: Request) {
         await tx.insert(paytrTransactions).values({
           orderId: order.id,
           merchantOid: payload.merchant_oid,
-          paymentAmountKurus: order.totalKurus,
+          paymentAmountKurus: paymentAmountKurus ?? order.totalKurus,
           ...transactionValues
         });
       }
@@ -206,6 +249,7 @@ export async function POST(request: Request) {
         .set({
           status: nextOrderStatus,
           paymentStatus: nextPaymentStatus,
+          ...(stockWarningNote ? { statusNote: stockWarningNote } : {}),
           paytrLastSyncedAt: new Date(),
           updatedAt: new Date()
         })
@@ -218,7 +262,7 @@ export async function POST(request: Request) {
           toStatus: nextOrderStatus,
           note:
             payload.status === "success"
-              ? "PayTR callback ile ödeme onayı alındı."
+              ? stockWarningNote ?? "PayTR callback ile ödeme onayı alındı."
               : payload.failed_reason_msg || "PayTR callback ödeme hatasi bildirdi."
         });
       }
