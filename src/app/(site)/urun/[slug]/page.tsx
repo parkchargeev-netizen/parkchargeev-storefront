@@ -351,7 +351,7 @@ export default async function ProductDetailPage({
         </div>
       </section>
 
-      <section className="mt-12">
+      <section className="product-detail-related mt-12">
         <div className="surface-card p-8">
           <h2 className="text-3xl font-bold tracking-[-0.05em] text-on-surface">
             {detailContent.faqHeading}
@@ -381,7 +381,10 @@ export default async function ProductDetailPage({
           </div>
         </div>
 
-        <div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <div
+          className="product-detail-related-track mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3"
+          aria-label="İlgili ürünler kaydırmalı liste"
+        >
           {relatedProducts.map((relatedProduct) => (
             <ProductCard key={relatedProduct.id} product={relatedProduct} />
           ))}
