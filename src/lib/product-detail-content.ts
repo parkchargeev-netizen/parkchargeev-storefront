@@ -118,7 +118,7 @@ export function getDefaultProductDetailContent(product?: ProductModel): ProductD
     ],
     purchaseReadiness: getReadinessDefaults(product),
     decisionChecks: [
-      "Araç uyumu, güç ihtiyacı ve kurulum kapsamı satın alma öncesinde ayrı değerlendirilir.",
+      "Araç uyumu, güç ihtiyacı ve kurulum kapsamı ürün seçimi sırasında netleştirilir.",
       "Keşif talebiyle pano kapasitesi, faz yapısı ve kablo hattı netleştirilebilir.",
       "PayTR ödeme akışı kart verisini site sunucusuna taşımaz."
     ],

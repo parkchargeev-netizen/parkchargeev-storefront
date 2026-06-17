@@ -86,10 +86,6 @@ export default async function ProductDetailPage({
   const storeProfile = getProductStoreProfile(product);
   const mediaItems = detailContent.galleryItems;
   const productImageUrl = getDisplayProductImageUrl(product.imageUrl);
-  const isAccessoryProduct = storeProfile.powerTier === "Aksesuar";
-  const decisionNote = isAccessoryProduct
-    ? "Aksesuar ürünlerinde karar için soket tipi, kablo uzunluğu ve araç uyumu yeterlidir. Emin değilseniz ürün sayfasından keşif yerine hızlı destek alabilirsiniz."
-    : "Yanlış cihaz veya eksik kurulum kapsamı riskini azaltmak için pano kapasitesi, faz yapısı, kablo hattı ve koruma ekipmanı keşifte kontrol edilir.";
   const breadcrumbJsonLd = getBreadcrumbJsonLd([
     { name: "Ana Sayfa", path: "/" },
     { name: "Mağaza", path: "/magaza" },
@@ -176,31 +172,8 @@ export default async function ProductDetailPage({
             deviceCaption={detailContent.galleryDeviceCaption}
           />
           <div className="product-detail-desktop-under-gallery mt-5 hidden gap-4 lg:grid">
-            <div className="grid gap-4">
-              {renderSpecsCard()}
-              {renderIntentCard()}
-            </div>
-            <div className="surface-card p-8">
-              <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
-                <div className="max-w-xl">
-                  <p className="text-sm font-semibold uppercase tracking-[0.28em] text-primary">
-                    Satış öncesi netlik
-                  </p>
-                  <h2 className="mt-3 text-3xl font-bold tracking-[-0.05em] text-on-surface">
-                    Uygunluk, teslimat ve destek bilgileri aynı ekranda.
-                  </h2>
-                  <p className="mt-4 text-sm leading-7 text-on-surface-variant">
-                    {decisionNote}
-                  </p>
-                </div>
-                <Link
-                  href={detailContent.support.href}
-                  className="rounded-2xl bg-surface-container-high px-5 py-4 text-center text-sm font-semibold text-primary"
-                >
-                  {detailContent.support.ctaLabel}
-                </Link>
-              </div>
-            </div>
+            {renderSpecsCard()}
+            {renderIntentCard()}
           </div>
         </section>
 
@@ -270,21 +243,6 @@ export default async function ProductDetailPage({
             ))}
           </div>
 
-          <div className="mt-8 rounded-[24px] border border-outline-variant/40 bg-white p-6">
-            <h2 className="text-2xl font-bold tracking-[-0.05em] text-on-surface">
-              {detailContent.support.title}
-            </h2>
-            <p className="mt-4 text-sm leading-7 text-on-surface-variant">
-              {detailContent.support.body}
-            </p>
-            <Link
-              href={detailContent.support.href}
-              className="mt-6 inline-block rounded-2xl bg-surface-container-high px-5 py-4 text-sm font-semibold text-primary"
-            >
-              {detailContent.support.ctaLabel}
-            </Link>
-          </div>
-
           <div className="mt-6 overflow-hidden rounded-[24px] border border-outline-variant/40 bg-white">
             {detailContent.policyDetails.map((detail, index) => (
               <details
@@ -342,12 +300,6 @@ export default async function ProductDetailPage({
               </p>
             </div>
           ))}
-        </div>
-        <div className="mt-5 rounded-[22px] border border-primary/15 bg-primary/5 p-5">
-          <p className="text-sm font-semibold text-primary">Karar notu</p>
-          <p className="mt-2 text-sm leading-7 text-on-surface-variant">
-            {decisionNote}
-          </p>
         </div>
       </section>
 
