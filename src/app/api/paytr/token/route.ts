@@ -14,7 +14,7 @@ import { orders, paytrTransactions } from "@/server/db/schema";
 import { requestPaytrIframeToken } from "@/server/paytr/client";
 import {
   createPaytrCheckoutOrder,
-  isPaytrCheckoutPriçingError,
+  isPaytrCheckoutPricingError,
   paytrCheckoutRequestSchema
 } from "@/server/paytr/checkout-order";
 import {
@@ -101,7 +101,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           ok: false,
-          message: "PayTR token alınamadı.",
+          message: "PayTR ödeme oturumu başlatılamadı. Lütfen bilgilerinizi kontrol edip tekrar deneyin.",
           details: result
         },
         { status: 400 }
@@ -176,7 +176,7 @@ export async function POST(request: Request) {
       );
     }
 
-    if (isPaytrCheckoutPriçingError(error)) {
+    if (isPaytrCheckoutPricingError(error)) {
       return NextResponse.json(
         {
           ok: false,

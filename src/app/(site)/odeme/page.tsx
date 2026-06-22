@@ -4,7 +4,8 @@ import { CheckoutPageClient } from "@/components/shop/checkout-page-client";
 
 export const metadata: Metadata = {
   title: "Ödeme",
-  description: "PayTR ile güvenli ödeme adımı.",
+  description:
+    "Sepet, iletişim ve teslimat bilgilerinizi doğrulayın; kart bilgilerini yalnızca PayTR güvenli ödeme ekranında girin.",
   robots: {
     index: false,
     follow: false

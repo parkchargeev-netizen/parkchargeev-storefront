@@ -36,6 +36,7 @@ test("@e2e magaza -> urun -> sepet -> odeme akisi PayTR mock ile tamamlanir", as
   await page.locator('input[autocomplete="tel"]').fill("05555555555");
   await page.locator('input[autocomplete="address-level1"]').fill("Istanbul");
   await page.locator('textarea[autocomplete="street-address"]').fill("Test Mahallesi, Test Sokak No: 1");
+  await page.getByRole("checkbox").check();
   await page.getByRole("button", { name: "PayTR ile Güvenli Öde" }).click();
 
   await expect(page.locator("#paytriframe")).toBeVisible();
@@ -86,6 +87,7 @@ test("@e2e PayTR Direkt API kart formu devre disi ve odeme sayfasi kart istemez"
   await page.locator('input[autocomplete="tel"]').fill("05555555555");
   await page.locator('input[autocomplete="address-level1"]').fill("Istanbul");
   await page.locator('textarea[autocomplete="street-address"]').fill("Test Mahallesi, Test Sokak No: 1");
+  await page.getByRole("checkbox").check();
 
   await expect(page.getByRole("button", { name: "PayTR ile Güvenli Öde" })).toBeVisible();
   await expect(page.locator('input[autocomplete^="cc"]')).toHaveCount(0);
@@ -120,6 +122,7 @@ test("@e2e PayTR bos cevapta teknik JSON hatasi yerine Turkce mesaj gosterir", a
   await page.locator('input[autocomplete="tel"]').fill("05555555555");
   await page.locator('input[autocomplete="address-level1"]').fill("Istanbul");
   await page.locator('textarea[autocomplete="street-address"]').fill("Test Mahallesi, Test Sokak No: 1");
+  await page.getByRole("checkbox").check();
 
   await page.getByRole("button", { name: "PayTR ile Güvenli Öde" }).click();
 

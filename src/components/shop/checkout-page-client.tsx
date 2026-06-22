@@ -1,14 +1,23 @@
 "use client";
 
+import {
+  CheckCircle2,
+  CreditCard,
+  LockKeyhole,
+  MapPin,
+  RefreshCw,
+  ShieldCheck,
+  Truck
+} from "lucide-react";
 import Script from "next/script";
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 
+import { useCart } from "@/components/providers/cart-provider";
 import { CheckoutEmptyCartPanel, CheckoutLoadingPanel } from "@/components/shop/checkout-empty-cart-panel";
 import { CheckoutOrderSummary } from "@/components/shop/checkout-order-summary";
 import { CheckoutResultPanel } from "@/components/shop/checkout-result-panel";
 import { CheckoutStatusSummary } from "@/components/shop/checkout-status-summary";
 import { PaytrIframePanel } from "@/components/shop/paytr-iframe-panel";
-import { useCart } from "@/components/providers/cart-provider";
 import {
   enrichCartItems,
   getEnrichedCartSubtotalKurus,
@@ -34,7 +43,9 @@ type CheckoutDraft = {
   email: string;
   phone: string;
   city: string;
+  district: string;
   address: string;
+  deliveryNote: string;
 };
 
 type CheckoutApiResponse<T extends object> = T & {
@@ -42,9 +53,57 @@ type CheckoutApiResponse<T extends object> = T & {
   message?: string;
 };
 
-const CHECKOUT_STORAGE_KEY = "parkchargeev-checkout-draft-v1";
+const CHECKOUT_STORAGE_KEY = "parkchargeev-checkout-draft-v2";
+const LEGACY_CHECKOUT_STORAGE_KEY = "parkchargeev-checkout-draft-v1";
 const ACTIVE_ORDER_STORAGE_KEY = "parkchargeev-active-order-v1";
 const CART_INTENT_STORAGE_KEY = "parkchargeev-cart-intent-v1";
+
+const initialDraft: CheckoutDraft = {
+  fullName: "",
+  email: "",
+  phone: "",
+  city: "",
+  district: "",
+  address: "",
+  deliveryNote: ""
+};
+
+const checkoutSteps = [
+  {
+    title: "Sepet",
+    detail: "Ürün ve tutar doğrulandı"
+  },
+  {
+    title: "İletişim",
+    detail: "Fatura ve teslimat bilgisi"
+  },
+  {
+    title: "Adres",
+    detail: "Kargo ve kurulum notu"
+  },
+  {
+    title: "PayTR",
+    detail: "Kart bilgisi PayTR içinde"
+  }
+] as const;
+
+const trustItems = [
+  {
+    icon: ShieldCheck,
+    title: "PayTR güvencesi",
+    detail: "Kart bilgisi ParkChargeEV sunucularına gelmez."
+  },
+  {
+    icon: Truck,
+    title: "81 il kargo",
+    detail: serviceCoverageSummary.shipping
+  },
+  {
+    icon: LockKeyhole,
+    title: "Doğrulanmış tutar",
+    detail: "Tutar sunucuda yeniden hesaplanır."
+  }
+] as const;
 
 function isPaidOrderStatus(orderStatus: OrderStatusResponse | null) {
   return orderStatus?.paymentStatus === "paid";
@@ -60,13 +119,16 @@ function isTerminalOrderStatus(orderStatus: OrderStatusResponse | null) {
   );
 }
 
-const initialDraft: CheckoutDraft = {
-  fullName: "",
-  email: "",
-  phone: "",
-  city: "",
-  address: ""
-};
+function normalizeDraft(value: unknown): CheckoutDraft {
+  if (!value || typeof value !== "object") {
+    return initialDraft;
+  }
+
+  return {
+    ...initialDraft,
+    ...(value as Partial<CheckoutDraft>)
+  };
+}
 
 async function readCheckoutApiResponse<T extends object>(
   response: Response,
@@ -95,46 +157,46 @@ export function CheckoutPageClient({
   initialStatus,
   initialMerchantOid
 }: CheckoutPageClientProps) {
-  const {
-    items: cartItems,
-    isHydrated,
-    clearCart
-  } = useCart();
+  const { items: cartItems, isHydrated, clearCart } = useCart();
   const items = enrichCartItems(cartItems);
   const subtotalKurus = getEnrichedCartSubtotalKurus(items);
   const taxKurus = getEnrichedCartTaxKurus(items);
   const totalKurus = getEnrichedCartTotalKurus(items);
   const [draft, setDraft] = useState<CheckoutDraft>(initialDraft);
+  const [agreementAccepted, setAgreementAccepted] = useState(false);
   const [iframeToken, setIframeToken] = useState<string | null>(null);
-  const [merchantOid, setMerchantOid] = useState<string | null>(
-    initialMerchantOid ?? null
-  );
+  const [merchantOid, setMerchantOid] = useState<string | null>(initialMerchantOid ?? null);
   const [orderStatus, setOrderStatus] = useState<OrderStatusResponse | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCheckingStatus, setIsCheckingStatus] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const isPaymentSessionReady = Boolean(iframeToken);
   const cartIntentFingerprint = `${draft.email}|${totalKurus}|${items
     .map((item) => `${item.productId}:${item.quantity}:${item.cableOption}`)
     .join("|")}`;
   const isCheckoutInfoComplete = Boolean(
-    draft.fullName &&
-      draft.email &&
-      draft.phone &&
-      draft.city &&
-      draft.address
+    draft.fullName.trim() &&
+      draft.email.includes("@") &&
+      draft.phone.trim() &&
+      draft.city.trim() &&
+      draft.address.trim() &&
+      agreementAccepted
   );
   const hasPaidOrderStatus = isPaidOrderStatus(orderStatus);
   const hasTerminalOrderStatus = isTerminalOrderStatus(orderStatus);
 
   useEffect(() => {
     try {
-      const rawDraft = window.localStorage.getItem(CHECKOUT_STORAGE_KEY);
+      const rawDraft =
+        window.localStorage.getItem(CHECKOUT_STORAGE_KEY) ??
+        window.localStorage.getItem(LEGACY_CHECKOUT_STORAGE_KEY);
 
       if (rawDraft) {
-        setDraft(JSON.parse(rawDraft) as CheckoutDraft);
+        setDraft(normalizeDraft(JSON.parse(rawDraft)));
       }
     } catch {
       window.localStorage.removeItem(CHECKOUT_STORAGE_KEY);
+      window.localStorage.removeItem(LEGACY_CHECKOUT_STORAGE_KEY);
     }
   }, []);
 
@@ -181,11 +243,7 @@ export function CheckoutPageClient({
   }, [cartIntentFingerprint, draft.email, draft.fullName, draft.phone, isHydrated, items, totalKurus]);
 
   useEffect(() => {
-    if (!merchantOid) {
-      return;
-    }
-
-    if (hasTerminalOrderStatus) {
+    if (!merchantOid || hasTerminalOrderStatus) {
       return;
     }
 
@@ -269,12 +327,27 @@ export function CheckoutPageClient({
     }));
   }
 
+  function resetPaymentSession() {
+    setIframeToken(null);
+    setOrderStatus(null);
+    setMerchantOid(null);
+    setError("Bilgileri düzenledikten sonra PayTR ödeme oturumunu yeniden başlatın.");
+    window.sessionStorage.removeItem(ACTIVE_ORDER_STORAGE_KEY);
+  }
+
   function getPaytrCheckoutPayload() {
+    const addressParts = [
+      draft.address.trim(),
+      draft.district.trim(),
+      draft.city.trim(),
+      draft.deliveryNote.trim() ? `Not: ${draft.deliveryNote.trim()}` : ""
+    ].filter(Boolean);
+
     return {
-      email: draft.email,
-      userName: draft.fullName,
-      userAddress: `${draft.address}, ${draft.city}`,
-      userPhone: draft.phone,
+      email: draft.email.trim(),
+      userName: draft.fullName.trim(),
+      userAddress: addressParts.join(", "),
+      userPhone: draft.phone.trim(),
       items: items.map((item) => ({
         productId: item.productId,
         cableOption: item.cableOption,
@@ -303,10 +376,7 @@ export function CheckoutPageClient({
         iframeToken?: string;
         merchantOid?: string;
         message?: string;
-      }>(
-        response,
-        "PayTR ödeme oturumu başlatılamadı. Lütfen tekrar deneyin."
-      );
+      }>(response, "PayTR ödeme oturumu başlatılamadı. Lütfen tekrar deneyin.");
 
       if (!response.ok || !result.ok || !result.iframeToken || !result.merchantOid) {
         throw new Error(result.message || "Ödeme oturumu başlatılamadı.");
@@ -324,6 +394,16 @@ export function CheckoutPageClient({
     } finally {
       setIsSubmitting(false);
     }
+  }
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (!isCheckoutInfoComplete || isSubmitting || isPaymentSessionReady) {
+      return;
+    }
+
+    void handlePreparePayment();
   }
 
   if (!isHydrated) {
@@ -347,159 +427,277 @@ export function CheckoutPageClient({
   }
 
   return (
-    <div className="mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:px-6 sm:py-12 lg:grid-cols-[1fr_360px] lg:px-8">
+    <main className="checkout-page mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
       {iframeToken ? (
         <Script src="https://www.paytr.com/js/iframeResizer.min.js" strategy="afterInteractive" />
       ) : null}
 
-      <section className="space-y-6">
-        <header>
-          <p className="text-sm font-semibold uppercase tracking-[0.34em] text-secondary">
-            256-bit güvenli ödeme
-          </p>
-          <h1 className="mt-4 text-5xl font-black tracking-[-0.08em] text-on-surface">
-            Ödeme işlemi
-          </h1>
-          <p className="mt-4 text-lg text-on-surface-variant">
-            Sepetinizdeki tutar ve müşteri bilgileriyle PayTR güvenli ödeme akışını başlatın.
-          </p>
+      <div className="rounded-[32px] border border-white/80 bg-white/82 p-4 shadow-[0_24px_80px_rgba(6,51,38,0.10)] backdrop-blur-xl sm:p-6 lg:p-8">
+        <header className="grid gap-6 lg:grid-cols-[1fr_420px] lg:items-end">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.34em] text-primary">
+              PayTR uyumlu güvenli ödeme
+            </p>
+            <h1 className="mt-3 max-w-3xl text-3xl font-black tracking-[-0.06em] text-on-surface sm:text-5xl">
+              Siparişinizi doğrulayın, ödemeyi PayTR içinde tamamlayın.
+            </h1>
+            <p className="mt-4 max-w-2xl text-sm leading-7 text-on-surface-variant sm:text-base">
+              ParkChargeEV yalnızca sipariş, iletişim ve teslimat bilgilerini alır. Kart numarası,
+              son kullanma tarihi ve CVV alanları sadece PayTR güvenli ödeme ekranında görünür.
+            </p>
+          </div>
+
+          <div className="grid gap-2 rounded-[24px] border border-primary/12 bg-primary/6 p-3 sm:grid-cols-3">
+            {trustItems.map((item) => {
+              const Icon = item.icon;
+
+              return (
+                <div key={item.title} className="rounded-[18px] bg-white/78 p-3">
+                  <Icon className="h-5 w-5 text-primary" aria-hidden="true" />
+                  <p className="mt-2 text-sm font-black text-on-surface">{item.title}</p>
+                  <p className="mt-1 text-xs leading-5 text-on-surface-variant">{item.detail}</p>
+                </div>
+              );
+            })}
+          </div>
         </header>
 
-        {initialStatus ? (
-          <div className="surface-card p-6">
-            <p className="text-sm font-semibold uppercase tracking-[0.28em] text-primary">
-              Yönlendirme bilgisi
-            </p>
-            <p className="mt-3 text-base leading-7 text-on-surface-variant">
-              Tarayıcı sizi ödeme sağlayıcısından geri yönlendirdi. Kesin sipariş sonucu
-              callback ile doğrulandığı için aşağıdaki durum kartı esas alınmalıdır.
-            </p>
-          </div>
-        ) : null}
-
-        <div className="surface-card p-8">
-          <div className="grid gap-4 md:grid-cols-3">
-            {["Bilgiler", "Ödeme Yöntemi", "PayTR Onayı"].map((step, index) => (
-              <div
-                key={step}
-                className={`rounded-[24px] border px-5 py-5 ${
-                  (iframeToken && index < 3) || (!iframeToken && index < 2)
-                    ? "border-primary bg-surface-container-low"
-                    : "border-outline-variant/40 bg-white"
-                }`}
-              >
-                <p className="text-sm font-semibold uppercase tracking-[0.28em] text-primary">
-                  Adım {index + 1}
-                </p>
-                <p className="mt-2 text-2xl font-bold tracking-[-0.05em] text-on-surface">
-                  {step}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-8 grid gap-4 md:grid-cols-2">
-            <label className="grid gap-2">
-              <span className="text-sm text-on-surface-variant">Ad Soyad</span>
-              <input
-                required
-                autoComplete="name"
-                value={draft.fullName}
-                onChange={(event) => updateField("fullName", event.target.value)}
-                className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary"
-              />
-            </label>
-            <label className="grid gap-2">
-              <span className="text-sm text-on-surface-variant">E-posta</span>
-              <input
-                required
-                type="email"
-                autoComplete="email"
-                value={draft.email}
-                onChange={(event) => updateField("email", event.target.value)}
-                className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary"
-              />
-            </label>
-            <label className="grid gap-2">
-              <span className="text-sm text-on-surface-variant">Telefon</span>
-              <input
-                required
-                aria-describedby="checkout-phone-help"
-                autoComplete="tel"
-                inputMode="tel"
-                value={draft.phone}
-                onChange={(event) => updateField("phone", event.target.value)}
-                className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary"
-              />
-              <span id="checkout-phone-help" className="text-xs leading-5 text-on-surface-variant">
-                Kargo ve kurulum randevusu için kullanılır; pazarlama araması için kullanılmaz.
+        <ol className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4" aria-label="Ödeme adımları">
+          {checkoutSteps.map((step, index) => (
+            <li
+              key={step.title}
+              className={`rounded-[22px] border p-4 ${
+                (iframeToken && index <= 3) || (!iframeToken && index <= 2)
+                  ? "border-primary/25 bg-primary/7"
+                  : "border-outline-variant/35 bg-white/78"
+              }`}
+            >
+              <span className="text-xs font-black uppercase tracking-[0.24em] text-primary">
+                Adım {index + 1}
               </span>
-            </label>
-            <label className="grid gap-2">
-              <span className="text-sm text-on-surface-variant">Şehir</span>
-              <input
-                required
-                autoComplete="address-level1"
-                value={draft.city}
-                onChange={(event) => updateField("city", event.target.value)}
-                className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary"
-              />
-              <span className="text-xs leading-5 text-on-surface-variant">
-                {serviceCoverageSummary.shipping}; {serviceCoverageSummary.installation}.
-              </span>
-            </label>
-            <label className="grid gap-2 md:col-span-2">
-              <span className="text-sm text-on-surface-variant">Teslimat Adresi</span>
-              <textarea
-                required
-                autoComplete="street-address"
-                rows={4}
-                value={draft.address}
-                onChange={(event) => updateField("address", event.target.value)}
-                className="rounded-3xl border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary"
-              />
-            </label>
-          </div>
+              <strong className="mt-2 block text-base text-on-surface">{step.title}</strong>
+              <small className="mt-1 block text-xs leading-5 text-on-surface-variant">
+                {step.detail}
+              </small>
+            </li>
+          ))}
+        </ol>
+      </div>
 
-          <div className="mt-8 grid gap-4">
-            <div className="grid gap-4 rounded-[24px] bg-surface-container-low p-5 md:grid-cols-[1fr_auto] md:items-center">
+      {initialStatus ? (
+        <section className="mt-6 rounded-[28px] border border-primary/15 bg-white/86 p-5 shadow-[0_16px_50px_rgba(6,51,38,0.08)] backdrop-blur-xl">
+          <p className="text-sm font-black uppercase tracking-[0.24em] text-primary">
+            PayTR dönüş bilgisi
+          </p>
+          <p className="mt-2 text-sm leading-6 text-on-surface-variant">
+            Tarayıcı PayTR ekranından geri döndü. Kesin sonuç, PayTR callback doğrulaması ve
+            aşağıdaki sipariş durumu ile takip edilir.
+          </p>
+        </section>
+      ) : null}
+
+      <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start">
+        <section className="space-y-6">
+          <form
+            onSubmit={handleSubmit}
+            className="rounded-[30px] border border-white/80 bg-white/88 p-4 shadow-[0_24px_80px_rgba(6,51,38,0.10)] backdrop-blur-xl sm:p-6 lg:p-8"
+          >
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div>
-                <p className="text-lg font-bold text-on-surface">PayTR güvenli ödeme</p>
-                <p className="mt-2 text-sm leading-7 text-on-surface-variant">
-                  Kart bilgileri ParkChargeEV formunda istenmez ve sunucularımıza gönderilmez.
-                  Ödeme, PayTR tarafından oluşturulan güvenli ödeme alanında tamamlanır.
+                <p className="text-xs font-black uppercase tracking-[0.28em] text-primary">
+                  İletişim ve adres
+                </p>
+                <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-on-surface">
+                  Sipariş bilgileri
+                </h2>
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-on-surface-variant">
+                  Bu bilgiler kargo, fatura ve gerekirse kurulum planlaması için kullanılır.
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={() => void handlePreparePayment()}
-                disabled={isSubmitting || !isCheckoutInfoComplete}
-                className="rounded-2xl bg-primary px-6 py-4 text-base font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {isSubmitting ? "PayTR hazırlanıyor..." : "PayTR ile Güvenli Öde"}
-              </button>
-              {error ? (
-                <p className="text-sm font-medium text-red-600 md:col-span-2">{error}</p>
+
+              {isPaymentSessionReady ? (
+                <button
+                  type="button"
+                  onClick={resetPaymentSession}
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-outline-variant/50 bg-white px-4 py-3 text-sm font-bold text-on-surface transition hover:border-primary/40 hover:text-primary"
+                >
+                  <RefreshCw className="h-4 w-4" aria-hidden="true" />
+                  Bilgileri düzenle
+                </button>
               ) : null}
             </div>
+
+            <fieldset disabled={isPaymentSessionReady} className="mt-6 grid gap-4 md:grid-cols-2">
+              <label className="grid gap-2">
+                <span className="text-sm font-semibold text-on-surface">Ad Soyad</span>
+                <input
+                  required
+                  autoComplete="name"
+                  value={draft.fullName}
+                  onChange={(event) => updateField("fullName", event.target.value)}
+                  className="min-h-12 rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
+                />
+              </label>
+
+              <label className="grid gap-2">
+                <span className="text-sm font-semibold text-on-surface">E-posta</span>
+                <input
+                  required
+                  type="email"
+                  autoComplete="email"
+                  value={draft.email}
+                  onChange={(event) => updateField("email", event.target.value)}
+                  className="min-h-12 rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
+                />
+              </label>
+
+              <label className="grid gap-2">
+                <span className="text-sm font-semibold text-on-surface">Telefon</span>
+                <input
+                  required
+                  aria-describedby="checkout-phone-help"
+                  autoComplete="tel"
+                  inputMode="tel"
+                  value={draft.phone}
+                  onChange={(event) => updateField("phone", event.target.value)}
+                  className="min-h-12 rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
+                />
+                <span id="checkout-phone-help" className="text-xs leading-5 text-on-surface-variant">
+                  Kargo ve kurulum planı için kullanılır.
+                </span>
+              </label>
+
+              <label className="grid gap-2">
+                <span className="text-sm font-semibold text-on-surface">İl</span>
+                <input
+                  required
+                  autoComplete="address-level1"
+                  value={draft.city}
+                  onChange={(event) => updateField("city", event.target.value)}
+                  className="min-h-12 rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
+                />
+                <span className="text-xs leading-5 text-on-surface-variant">
+                  Ürün kargosu Türkiye geneline planlanır.
+                </span>
+              </label>
+
+              <label className="grid gap-2">
+                <span className="text-sm font-semibold text-on-surface">İlçe</span>
+                <input
+                  autoComplete="address-level2"
+                  value={draft.district}
+                  onChange={(event) => updateField("district", event.target.value)}
+                  className="min-h-12 rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
+                />
+              </label>
+
+              <label className="grid gap-2">
+                <span className="text-sm font-semibold text-on-surface">Teslimat notu</span>
+                <input
+                  autoComplete="off"
+                  value={draft.deliveryNote}
+                  onChange={(event) => updateField("deliveryNote", event.target.value)}
+                  placeholder="Site adı, daire, kurulum notu"
+                  className="min-h-12 rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
+                />
+              </label>
+
+              <label className="grid gap-2 md:col-span-2">
+                <span className="text-sm font-semibold text-on-surface">Açık adres</span>
+                <textarea
+                  required
+                  autoComplete="street-address"
+                  rows={4}
+                  value={draft.address}
+                  onChange={(event) => updateField("address", event.target.value)}
+                  className="rounded-3xl border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
+                />
+              </label>
+            </fieldset>
+
+            <section className="mt-6 rounded-[26px] border border-primary/12 bg-linear-to-br from-primary/7 via-white to-secondary/8 p-4 sm:p-5">
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                <div className="flex gap-3">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary text-white">
+                    <CreditCard className="h-5 w-5" aria-hidden="true" />
+                  </span>
+                  <div>
+                    <h3 className="text-lg font-black text-on-surface">PayTR ödeme adımı</h3>
+                    <p className="mt-1 text-sm leading-6 text-on-surface-variant">
+                      Sipariş tutarı sunucuda yeniden hesaplanır. Kart bilgisi bu sayfada
+                      istenmez; ödeme formu PayTR tarafından oluşturulur.
+                    </p>
+                  </div>
+                </div>
+
+                {isPaymentSessionReady ? (
+                  <span className="inline-flex items-center justify-center gap-2 rounded-2xl bg-secondary/12 px-4 py-3 text-sm font-black text-secondary">
+                    <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
+                    PayTR oturumu hazır
+                  </span>
+                ) : (
+                  <button
+                    type="submit"
+                    disabled={isSubmitting || !isCheckoutInfoComplete}
+                    className="min-h-12 rounded-2xl bg-primary px-6 py-3 text-base font-black text-white shadow-[0_16px_38px_rgba(6,51,38,0.22)] transition hover:-translate-y-0.5 hover:bg-primary/92 disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0"
+                  >
+                    {isSubmitting ? "PayTR hazırlanıyor..." : "PayTR ile Güvenli Öde"}
+                  </button>
+                )}
+              </div>
+
+              <label className="mt-5 flex gap-3 rounded-2xl bg-white/78 p-3 text-sm leading-6 text-on-surface-variant">
+                <input
+                  type="checkbox"
+                  checked={agreementAccepted}
+                  onChange={(event) => setAgreementAccepted(event.target.checked)}
+                  disabled={isPaymentSessionReady}
+                  className="mt-1 h-4 w-4 rounded border-outline-variant text-primary focus:ring-primary"
+                />
+                <span>
+                  Sipariş bilgilerimin doğru olduğunu ve ödemenin PayTR güvenli ödeme ekranında
+                  tamamlanacağını onaylıyorum.
+                </span>
+              </label>
+
+              {error ? (
+                <p className="mt-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+                  {error}
+                </p>
+              ) : null}
+            </section>
+          </form>
+
+          <CheckoutStatusSummary
+            merchantOid={merchantOid}
+            orderStatus={orderStatus}
+            isCheckingStatus={isCheckingStatus}
+          />
+
+          <PaytrIframePanel iframeToken={iframeToken} />
+        </section>
+
+        <aside className="space-y-4 lg:sticky lg:top-28">
+          <CheckoutOrderSummary
+            items={items}
+            subtotalKurus={subtotalKurus}
+            taxKurus={taxKurus}
+            totalKurus={totalKurus}
+          />
+
+          <div className="rounded-[26px] border border-white/80 bg-white/84 p-4 shadow-[0_16px_50px_rgba(6,51,38,0.08)] backdrop-blur-xl">
+            <div className="flex items-start gap-3">
+              <MapPin className="mt-1 h-5 w-5 text-primary" aria-hidden="true" />
+              <div>
+                <p className="text-sm font-black text-on-surface">Teslimat ve kurulum notu</p>
+                <p className="mt-1 text-xs leading-5 text-on-surface-variant">
+                  {serviceCoverageSummary.note}
+                </p>
+              </div>
+            </div>
           </div>
-        </div>
-
-        <CheckoutStatusSummary
-          merchantOid={merchantOid}
-          orderStatus={orderStatus}
-          isCheckingStatus={isCheckingStatus}
-        />
-
-        <PaytrIframePanel iframeToken={iframeToken} />
-      </section>
-
-      <CheckoutOrderSummary
-        items={items}
-        subtotalKurus={subtotalKurus}
-        taxKurus={taxKurus}
-        totalKurus={totalKurus}
-      />
-    </div>
+        </aside>
+      </div>
+    </main>
   );
 }

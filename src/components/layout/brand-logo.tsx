@@ -14,7 +14,11 @@ export function BrandLogo({
   const logoToneClass = tone === "light" ? "brand-logo--light" : "brand-logo--dark";
 
   return (
-    <span className={`brand-logo ${logoToneClass} ${className}`} aria-label={siteConfig.name}>
+    <span
+      className={`brand-logo ${logoToneClass} ${className}`}
+      role="img"
+      aria-label={siteConfig.name}
+    >
       <span className="brand-logo__mark">
         <span className="brand-logo__mark-glow" />
         <svg
