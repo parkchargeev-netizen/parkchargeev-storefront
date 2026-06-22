@@ -22,12 +22,54 @@ import {
   getPaytrTokenRateLimitKey
 } from "@/server/paytr/rate-limit";
 
+function getPaytrTokenFailureMessage(reason?: string) {
+  const normalizedReason = reason?.toLocaleLowerCase("tr-TR") ?? "";
+
+  if (
+    normalizedReason.includes("magaza aktif degil") ||
+    normalizedReason.includes("mağaza aktif değil")
+  ) {
+    return "PayTR mağazası aktif görünmüyor veya canlı/test mod ayarları uyuşmuyor. PayTR panelinde mağaza aktivasyonu, API bilgileri ve test modu ayarlarını kontrol edin.";
+  }
+
+  if (
+    normalizedReason.includes("merchant_id") ||
+    normalizedReason.includes("magaza no") ||
+    normalizedReason.includes("mağaza no")
+  ) {
+    return "PayTR mağaza numarası doğrulanamadı. PAYTR_MERCHANT_ID değerinin PayTR panelindeki sayısal mağaza numarası olduğundan emin olun.";
+  }
+
+  if (
+    normalizedReason.includes("gecersiz paytr_token") ||
+    normalizedReason.includes("geçersiz paytr_token")
+  ) {
+    return "PayTR güvenlik imzası doğrulanamadı. Merchant key/salt bilgileri ve müşteri IP değeri kontrol edilmelidir.";
+  }
+
+  return "PayTR ödeme oturumu başlatılamadı. Lütfen bilgilerinizi kontrol edip tekrar deneyin.";
+}
+
 export async function POST(request: Request) {
   const startedAt = Date.now();
   let createdMerchantOid: string | null = null;
 
   try {
-    const body = paytrCheckoutRequestSchema.parse(await request.json());
+    let requestBody: unknown;
+
+    try {
+      requestBody = await request.json();
+    } catch {
+      return NextResponse.json(
+        {
+          ok: false,
+          message: "Ödeme isteği okunamadı. Lütfen sayfayı yenileyip tekrar deneyin."
+        },
+        { status: 400 }
+      );
+    }
+
+    const body = paytrCheckoutRequestSchema.parse(requestBody);
     const rateLimit = consumePaytrTokenAttempt(
       getPaytrTokenRateLimitKey(request, body.email)
     );
@@ -101,10 +143,11 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           ok: false,
-          message: "PayTR ödeme oturumu başlatılamadı. Lütfen bilgilerinizi kontrol edip tekrar deneyin.",
+          code: "paytr_provider_rejected",
+          message: getPaytrTokenFailureMessage(result.reason),
           details: result
         },
-        { status: 400 }
+        { status: 200 }
       );
     }
 

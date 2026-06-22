@@ -1,6 +1,6 @@
 import { createHmac, randomUUID, timingSafeEqual } from "node:crypto";
 
-import { getPaytrConfig } from "@/lib/runtime-config";
+import { getPaytrConfig, RuntimeConfigError } from "@/lib/runtime-config";
 
 export type PaytrCheckoutItem = {
   title: string;
@@ -71,18 +71,51 @@ function getPaytrRuntimeOptions(input: {
   testMode?: 0 | 1;
   debugOn?: 0 | 1;
 }) {
+  const testMode = parsePaytrBooleanEnv(process.env.PAYTR_TEST_MODE, 0);
+  const debugOn = parsePaytrBooleanEnv(process.env.PAYTR_DEBUG_ON, 0);
+
   return {
     currency:
       input.currency ?? ((process.env.PAYTR_CURRENCY as PaytrCurrency | undefined) ?? "TL"),
-    testMode:
-      input.testMode ?? (process.env.PAYTR_TEST_MODE === "1" ? 1 : 0),
-    debugOn:
-      input.debugOn ?? (process.env.PAYTR_DEBUG_ON === "1" ? 1 : 0)
+    testMode: input.testMode ?? testMode,
+    debugOn: input.debugOn ?? debugOn
   };
+}
+
+function parsePaytrBooleanEnv(value: string | undefined, fallback: 0 | 1): 0 | 1 {
+  const normalized = value?.trim().toLowerCase();
+
+  if (!normalized) {
+    return fallback;
+  }
+
+  if (["1", "true", "yes", "on"].includes(normalized)) {
+    return 1;
+  }
+
+  if (["0", "false", "no", "off"].includes(normalized)) {
+    return 0;
+  }
+
+  return fallback;
+}
+
+function assertPaytrMerchantIdFormat(merchantId: string) {
+  if (/^\d+$/.test(merchantId.trim())) {
+    return;
+  }
+
+  throw new RuntimeConfigError({
+    area: "paytr",
+    missingKeys: ["PAYTR_MERCHANT_ID"],
+    message:
+      "PayTR mağaza numarası geçersiz görünüyor. PAYTR_MERCHANT_ID değeri PayTR panelindeki sayısal mağaza numarası olmalıdır."
+  });
 }
 
 export function buildPaytrIframePayload(input: PaytrIframeRequestInput) {
   const env = getPaytrConfig();
+  assertPaytrMerchantIdFormat(env.merchantId);
   const merchantOid = input.merchantOid ?? generateMerchantOid();
   const { currency, testMode, debugOn } = getPaytrRuntimeOptions(input);
   const noInstallment = input.noInstallment ?? 0;

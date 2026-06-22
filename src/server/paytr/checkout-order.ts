@@ -72,14 +72,22 @@ function createOrderNumber() {
 
 export function getPaytrUserIp(request: Request) {
   const forwardedFor = request.headers.get("x-forwarded-for");
-
-  return (
+  const candidateIp =
     forwardedFor?.split(",")[0]?.trim() ||
-    request.headers.get("x-real-ip") ||
-    request.headers.get("cf-connecting-ip") ||
-    process.env.PAYTR_TEST_USER_IP ||
-    "127.0.0.1"
-  );
+    request.headers.get("x-real-ip")?.trim() ||
+    request.headers.get("cf-connecting-ip")?.trim() ||
+    process.env.PAYTR_TEST_USER_IP?.trim() ||
+    "127.0.0.1";
+
+  if (candidateIp.startsWith("[") && candidateIp.includes("]")) {
+    return candidateIp.slice(1, candidateIp.indexOf("]"));
+  }
+
+  if (candidateIp.includes(":") && candidateIp.split(":").length === 2) {
+    return candidateIp.split(":")[0] ?? candidateIp;
+  }
+
+  return candidateIp.slice(0, 39);
 }
 
 function formatPaytrUnitPrice(unitPriceKurus: number) {
