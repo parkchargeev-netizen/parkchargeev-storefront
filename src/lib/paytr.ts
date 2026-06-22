@@ -31,6 +31,27 @@ export type PaytrIframeRequestInput = {
   merchantOid?: string;
 };
 
+export type PaytrDirectFormRequestInput = {
+  email: string;
+  paymentAmountKurus: number;
+  userIp: string;
+  userName: string;
+  userAddress: string;
+  userPhone: string;
+  okUrl: string;
+  failUrl: string;
+  items: PaytrCheckoutItem[];
+  currency?: PaytrCurrency;
+  testMode?: 0 | 1;
+  debugOn?: 0 | 1;
+  non3d?: 0 | 1;
+  non3dTestFailed?: 0 | 1;
+  installmentCount?: number;
+  cardType?: string;
+  clientLang?: "tr" | "en";
+  merchantOid?: string;
+};
+
 export type PaytrCallbackPayload = {
   merchant_oid: string;
   status: "success" | "failed";
@@ -161,6 +182,62 @@ export function buildPaytrIframePayload(input: PaytrIframeRequestInput) {
     test_mode: String(testMode),
     iframe_v2: String(input.iframeV2 ?? 1),
     lang: input.lang ?? "tr"
+  };
+}
+
+function formatDirectPaymentAmount(paymentAmountKurus: number) {
+  return (paymentAmountKurus / 100).toFixed(2);
+}
+
+export function buildPaytrDirectFormPayload(input: PaytrDirectFormRequestInput) {
+  const env = getPaytrConfig();
+  assertPaytrMerchantIdFormat(env.merchantId);
+  const merchantOid = input.merchantOid ?? generateMerchantOid();
+  const { currency, testMode, debugOn } = getPaytrRuntimeOptions(input);
+  const paymentType = "card";
+  const installmentCount = String(input.installmentCount ?? 0);
+  const non3d = String(input.non3d ?? 0);
+  const paymentAmount = formatDirectPaymentAmount(input.paymentAmountKurus);
+  const userBasket = JSON.stringify(
+    input.items.map((item) => [item.title, item.unitPrice, item.quantity])
+  );
+  const hashString =
+    env.merchantId +
+    input.userIp +
+    merchantOid +
+    input.email +
+    paymentAmount +
+    paymentType +
+    installmentCount +
+    currency +
+    String(testMode) +
+    non3d;
+  const paytrToken = createHmac("sha256", env.merchantKey)
+    .update(hashString + env.merchantSalt)
+    .digest("base64");
+
+  return {
+    merchant_id: env.merchantId,
+    user_ip: input.userIp,
+    merchant_oid: merchantOid,
+    email: input.email,
+    payment_type: paymentType,
+    payment_amount: paymentAmount,
+    currency,
+    test_mode: String(testMode),
+    non_3d: non3d,
+    merchant_ok_url: input.okUrl,
+    merchant_fail_url: input.failUrl,
+    user_name: input.userName,
+    user_address: input.userAddress,
+    user_phone: input.userPhone,
+    user_basket: userBasket,
+    debug_on: String(debugOn),
+    client_lang: input.clientLang ?? "tr",
+    paytr_token: paytrToken,
+    non3d_test_failed: String(input.non3dTestFailed ?? 0),
+    installment_count: installmentCount,
+    card_type: input.cardType ?? ""
   };
 }
 

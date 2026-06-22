@@ -210,7 +210,7 @@ test("@e2e mobil urun secici sade ve kompakt gorunur", async ({ page }) => {
   expect(hasPageOverflow).toBe(false);
 });
 
-test("@e2e odeme sayfasi kart bilgisini lokal formda istemez", async ({ page }) => {
+test("@e2e odeme sayfasi PayTR icin kart bilgisi toplar", async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.setItem(
       "parkchargeev-cart-v1",
@@ -226,10 +226,10 @@ test("@e2e odeme sayfasi kart bilgisini lokal formda istemez", async ({ page }) 
 
   await page.goto("/odeme", { waitUntil: "domcontentloaded" });
 
-  await expect(page.getByRole("main").getByText("PayTR güvenli ödeme", { exact: true })).toBeVisible();
-  await expect(page.getByRole("button", { name: "PayTR ile Güvenli Öde" })).toBeVisible();
-  await expect(page.locator('input[autocomplete^="cc"]')).toHaveCount(0);
-  await expect(page.getByText("Direkt API", { exact: false })).toHaveCount(0);
+  await expect(page.getByRole("main").getByText("PayTR uyumlu güvenli ödeme", { exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Kartı Doğrula ve Öde/i })).toBeVisible();
+  await expect(page.locator('input[autocomplete^="cc"]')).toHaveCount(5);
+  await expect(page.getByText("Kart bilgileri", { exact: true })).toBeVisible();
 });
 
 test("@e2e kurumsal sayfa kompakt teklif formu ve responsive akisi sunar", async ({ page }) => {

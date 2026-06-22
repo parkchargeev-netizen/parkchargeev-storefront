@@ -1,15 +1,12 @@
 "use client";
 
 import {
-  CheckCircle2,
   CreditCard,
   LockKeyhole,
   MapPin,
-  RefreshCw,
   ShieldCheck,
   Truck
 } from "lucide-react";
-import Script from "next/script";
 import { FormEvent, useEffect, useState } from "react";
 
 import { useCart } from "@/components/providers/cart-provider";
@@ -17,7 +14,6 @@ import { CheckoutEmptyCartPanel, CheckoutLoadingPanel } from "@/components/shop/
 import { CheckoutOrderSummary } from "@/components/shop/checkout-order-summary";
 import { CheckoutResultPanel } from "@/components/shop/checkout-result-panel";
 import { CheckoutStatusSummary } from "@/components/shop/checkout-status-summary";
-import { PaytrIframePanel } from "@/components/shop/paytr-iframe-panel";
 import {
   enrichCartItems,
   getEnrichedCartSubtotalKurus,
@@ -53,6 +49,14 @@ type CheckoutApiResponse<T extends object> = T & {
   message?: string;
 };
 
+type PaytrDirectFormResponse = {
+  ok: boolean;
+  action?: string;
+  merchantOid?: string;
+  fields?: Record<string, string>;
+  message?: string;
+};
+
 const CHECKOUT_STORAGE_KEY = "parkchargeev-checkout-draft-v2";
 const LEGACY_CHECKOUT_STORAGE_KEY = "parkchargeev-checkout-draft-v1";
 const ACTIVE_ORDER_STORAGE_KEY = "parkchargeev-active-order-v1";
@@ -83,7 +87,7 @@ const checkoutSteps = [
   },
   {
     title: "PayTR",
-    detail: "Kart bilgisi PayTR içinde"
+    detail: "Kart doğrulaması PayTR'ye gider"
   }
 ] as const;
 
@@ -91,7 +95,7 @@ const trustItems = [
   {
     icon: ShieldCheck,
     title: "PayTR güvencesi",
-    detail: "Kart bilgisi ParkChargeEV sunucularına gelmez."
+    detail: "Kart bilgisi doğrudan PayTR'ye gönderilir."
   },
   {
     icon: Truck,
@@ -164,13 +168,11 @@ export function CheckoutPageClient({
   const totalKurus = getEnrichedCartTotalKurus(items);
   const [draft, setDraft] = useState<CheckoutDraft>(initialDraft);
   const [agreementAccepted, setAgreementAccepted] = useState(false);
-  const [iframeToken, setIframeToken] = useState<string | null>(null);
   const [merchantOid, setMerchantOid] = useState<string | null>(initialMerchantOid ?? null);
   const [orderStatus, setOrderStatus] = useState<OrderStatusResponse | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCheckingStatus, setIsCheckingStatus] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const isPaymentSessionReady = Boolean(iframeToken);
   const cartIntentFingerprint = `${draft.email}|${totalKurus}|${items
     .map((item) => `${item.productId}:${item.quantity}:${item.cableOption}`)
     .join("|")}`;
@@ -306,33 +308,11 @@ export function CheckoutPageClient({
     }
   }, [clearCart, hasPaidOrderStatus, merchantOid]);
 
-  useEffect(() => {
-    if (!iframeToken || typeof window === "undefined") {
-      return;
-    }
-
-    const paytrWindow = window as Window & {
-      iFrameResize?: (options: Record<string, never>, target: string) => void;
-    };
-
-    if (paytrWindow.iFrameResize) {
-      paytrWindow.iFrameResize({}, "#paytriframe");
-    }
-  }, [iframeToken]);
-
   function updateField<Key extends keyof CheckoutDraft>(key: Key, value: CheckoutDraft[Key]) {
     setDraft((current) => ({
       ...current,
       [key]: value
     }));
-  }
-
-  function resetPaymentSession() {
-    setIframeToken(null);
-    setOrderStatus(null);
-    setMerchantOid(null);
-    setError("Bilgileri düzenledikten sonra PayTR ödeme oturumunu yeniden başlatın.");
-    window.sessionStorage.removeItem(ACTIVE_ORDER_STORAGE_KEY);
   }
 
   function getPaytrCheckoutPayload() {
@@ -356,14 +336,118 @@ export function CheckoutPageClient({
     };
   }
 
-  async function handlePreparePayment() {
+  function getNormalizedCardData(form: HTMLFormElement) {
+    const formData = new FormData(form);
+    const cardNumber = String(formData.get("card_number") ?? "").replace(/\D/g, "");
+    const expiryMonth = String(formData.get("expiry_month") ?? "").padStart(2, "0");
+    const expiryYear = String(formData.get("expiry_year") ?? "").replace(/\D/g, "").slice(-2);
+    const cvv = String(formData.get("cvv") ?? "").replace(/\D/g, "");
+
+    return {
+      cc_owner: String(formData.get("cc_owner") ?? "").trim(),
+      card_number: cardNumber,
+      expiry_month: expiryMonth,
+      expiry_year: expiryYear,
+      cvv
+    };
+  }
+
+  function isValidCardNumber(cardNumber: string) {
+    if (!/^\d{13,19}$/.test(cardNumber)) {
+      return false;
+    }
+
+    let sum = 0;
+    let shouldDouble = false;
+
+    for (let index = cardNumber.length - 1; index >= 0; index -= 1) {
+      let digit = Number(cardNumber[index]);
+
+      if (shouldDouble) {
+        digit *= 2;
+
+        if (digit > 9) {
+          digit -= 9;
+        }
+      }
+
+      sum += digit;
+      shouldDouble = !shouldDouble;
+    }
+
+    return sum % 10 === 0;
+  }
+
+  function validateCardData(cardData: ReturnType<typeof getNormalizedCardData>) {
+    if (cardData.cc_owner.length < 3) {
+      return "Kart sahibi adını girin.";
+    }
+
+    if (!isValidCardNumber(cardData.card_number)) {
+      return "Kart numarasını kontrol edin.";
+    }
+
+    if (!/^(0[1-9]|1[0-2])$/.test(cardData.expiry_month)) {
+      return "Son kullanma ayını kontrol edin.";
+    }
+
+    if (!/^\d{2}$/.test(cardData.expiry_year)) {
+      return "Son kullanma yılını iki haneli girin.";
+    }
+
+    if (!/^\d{3,4}$/.test(cardData.cvv)) {
+      return "CVV kodunu kontrol edin.";
+    }
+
+    return null;
+  }
+
+  function postCardDataToPaytr({
+    action,
+    cardData,
+    fields
+  }: {
+    action: string;
+    cardData: ReturnType<typeof getNormalizedCardData>;
+    fields: Record<string, string>;
+  }) {
+    const form = document.createElement("form");
+    form.action = action;
+    form.method = "post";
+    form.style.display = "none";
+
+    const values = {
+      ...fields,
+      ...cardData
+    };
+
+    Object.entries(values).forEach(([name, value]) => {
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = name;
+      input.value = value;
+      form.appendChild(input);
+    });
+
+    document.body.appendChild(form);
+    form.submit();
+  }
+
+  async function handlePrepareDirectPayment(form: HTMLFormElement) {
+    const cardData = getNormalizedCardData(form);
+    const cardError = validateCardData(cardData);
+
+    if (cardError) {
+      setError(cardError);
+      return;
+    }
+
     try {
       setIsSubmitting(true);
       setError(null);
-      setIframeToken(null);
       setOrderStatus(null);
 
-      const response = await fetch("/api/paytr/token", {
+      const response = await fetch("/api/paytr/direct-form", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -371,20 +455,22 @@ export function CheckoutPageClient({
         body: JSON.stringify(getPaytrCheckoutPayload())
       });
 
-      const result = await readCheckoutApiResponse<{
-        ok: boolean;
-        iframeToken?: string;
-        merchantOid?: string;
-        message?: string;
-      }>(response, "PayTR ödeme oturumu başlatılamadı. Lütfen tekrar deneyin.");
+      const result = await readCheckoutApiResponse<PaytrDirectFormResponse>(
+        response,
+        "PayTR ödeme formu hazırlanamadı. Lütfen tekrar deneyin."
+      );
 
-      if (!response.ok || !result.ok || !result.iframeToken || !result.merchantOid) {
-        throw new Error(result.message || "Ödeme oturumu başlatılamadı.");
+      if (!response.ok || !result.ok || !result.action || !result.fields || !result.merchantOid) {
+        throw new Error(result.message || "PayTR ödeme formu hazırlanamadı.");
       }
 
-      setIframeToken(result.iframeToken);
       setMerchantOid(result.merchantOid);
       window.sessionStorage.setItem(ACTIVE_ORDER_STORAGE_KEY, result.merchantOid);
+      postCardDataToPaytr({
+        action: result.action,
+        cardData,
+        fields: result.fields
+      });
     } catch (submissionError) {
       setError(
         submissionError instanceof Error
@@ -399,11 +485,11 @@ export function CheckoutPageClient({
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!isCheckoutInfoComplete || isSubmitting || isPaymentSessionReady) {
+    if (!isCheckoutInfoComplete || isSubmitting) {
       return;
     }
 
-    void handlePreparePayment();
+    void handlePrepareDirectPayment(event.currentTarget);
   }
 
   if (!isHydrated) {
@@ -428,10 +514,6 @@ export function CheckoutPageClient({
 
   return (
     <main className="checkout-page mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
-      {iframeToken ? (
-        <Script src="https://www.paytr.com/js/iframeResizer.min.js" strategy="afterInteractive" />
-      ) : null}
-
       <div className="rounded-[32px] border border-white/80 bg-white/82 p-4 shadow-[0_24px_80px_rgba(6,51,38,0.10)] backdrop-blur-xl sm:p-6 lg:p-8">
         <header className="grid gap-6 lg:grid-cols-[1fr_420px] lg:items-end">
           <div>
@@ -443,7 +525,7 @@ export function CheckoutPageClient({
             </h1>
             <p className="mt-4 max-w-2xl text-sm leading-7 text-on-surface-variant sm:text-base">
               ParkChargeEV yalnızca sipariş, iletişim ve teslimat bilgilerini alır. Kart numarası,
-              son kullanma tarihi ve CVV alanları sadece PayTR güvenli ödeme ekranında görünür.
+              son kullanma tarihi ve CVV bilgisi doğrudan PayTR güvenli ödeme servisine gönderilir.
             </p>
           </div>
 
@@ -467,7 +549,7 @@ export function CheckoutPageClient({
             <li
               key={step.title}
               className={`rounded-[22px] border p-4 ${
-                (iframeToken && index <= 3) || (!iframeToken && index <= 2)
+                index <= 3
                   ? "border-primary/25 bg-primary/7"
                   : "border-outline-variant/35 bg-white/78"
               }`}
@@ -515,19 +597,9 @@ export function CheckoutPageClient({
                 </p>
               </div>
 
-              {isPaymentSessionReady ? (
-                <button
-                  type="button"
-                  onClick={resetPaymentSession}
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-outline-variant/50 bg-white px-4 py-3 text-sm font-bold text-on-surface transition hover:border-primary/40 hover:text-primary"
-                >
-                  <RefreshCw className="h-4 w-4" aria-hidden="true" />
-                  Bilgileri düzenle
-                </button>
-              ) : null}
             </div>
 
-            <fieldset disabled={isPaymentSessionReady} className="mt-6 grid gap-4 md:grid-cols-2">
+            <fieldset disabled={isSubmitting} className="mt-6 grid gap-4 md:grid-cols-2">
               <label className="grid gap-2">
                 <span className="text-sm font-semibold text-on-surface">Ad Soyad</span>
                 <input
@@ -622,41 +694,101 @@ export function CheckoutPageClient({
                     <CreditCard className="h-5 w-5" aria-hidden="true" />
                   </span>
                   <div>
-                    <h3 className="text-lg font-black text-on-surface">PayTR ödeme adımı</h3>
+                    <h3 className="text-lg font-black text-on-surface">Kart bilgileri</h3>
                     <p className="mt-1 text-sm leading-6 text-on-surface-variant">
-                      Sipariş tutarı sunucuda yeniden hesaplanır. Kart bilgisi bu sayfada
-                      istenmez; ödeme formu PayTR tarafından oluşturulur.
+                      Sipariş tutarı sunucuda yeniden hesaplanır. Kart bilgileri ParkChargeEV
+                      API&apos;sine gönderilmez; doğrulama formu doğrudan PayTR&apos;ye POST edilir.
                     </p>
                   </div>
                 </div>
 
-                {isPaymentSessionReady ? (
-                  <span className="inline-flex items-center justify-center gap-2 rounded-2xl bg-secondary/12 px-4 py-3 text-sm font-black text-secondary">
-                    <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
-                    PayTR oturumu hazır
-                  </span>
-                ) : (
-                  <button
-                    type="submit"
-                    disabled={isSubmitting || !isCheckoutInfoComplete}
-                    className="min-h-12 rounded-2xl bg-primary px-6 py-3 text-base font-black text-white shadow-[0_16px_38px_rgba(6,51,38,0.22)] transition hover:-translate-y-0.5 hover:bg-primary/92 disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0"
-                  >
-                    {isSubmitting ? "PayTR hazırlanıyor..." : "PayTR ile Güvenli Öde"}
-                  </button>
-                )}
+                <button
+                  type="submit"
+                  disabled={isSubmitting || !isCheckoutInfoComplete}
+                  className="min-h-12 rounded-2xl bg-primary px-6 py-3 text-base font-black text-white shadow-[0_16px_38px_rgba(6,51,38,0.22)] transition hover:-translate-y-0.5 hover:bg-primary/92 disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0"
+                >
+                  {isSubmitting ? "PayTR doğruluyor..." : "Kartı Doğrula ve Öde"}
+                </button>
               </div>
+
+              <fieldset disabled={isSubmitting} className="mt-5 grid gap-4 md:grid-cols-2">
+                <label className="grid gap-2 md:col-span-2">
+                  <span className="text-sm font-semibold text-on-surface">Kart üzerindeki ad</span>
+                  <input
+                    required
+                    name="cc_owner"
+                    autoComplete="cc-name"
+                    placeholder="Ad Soyad"
+                    className="min-h-12 rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
+                  />
+                </label>
+
+                <label className="grid gap-2 md:col-span-2">
+                  <span className="text-sm font-semibold text-on-surface">Kart numarası</span>
+                  <input
+                    required
+                    name="card_number"
+                    autoComplete="cc-number"
+                    inputMode="numeric"
+                    pattern="[0-9 ]{13,23}"
+                    placeholder="0000 0000 0000 0000"
+                    className="min-h-12 rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
+                  />
+                </label>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <label className="grid gap-2">
+                    <span className="text-sm font-semibold text-on-surface">Ay</span>
+                    <input
+                      required
+                      name="expiry_month"
+                      autoComplete="cc-exp-month"
+                      inputMode="numeric"
+                      pattern="0?[1-9]|1[0-2]"
+                      placeholder="AA"
+                      className="min-h-12 rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
+                    />
+                  </label>
+
+                  <label className="grid gap-2">
+                    <span className="text-sm font-semibold text-on-surface">Yıl</span>
+                    <input
+                      required
+                      name="expiry_year"
+                      autoComplete="cc-exp-year"
+                      inputMode="numeric"
+                      pattern="[0-9]{2,4}"
+                      placeholder="YY"
+                      className="min-h-12 rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
+                    />
+                  </label>
+                </div>
+
+                <label className="grid gap-2">
+                  <span className="text-sm font-semibold text-on-surface">CVV</span>
+                  <input
+                    required
+                    name="cvv"
+                    autoComplete="cc-csc"
+                    inputMode="numeric"
+                    pattern="[0-9]{3,4}"
+                    placeholder="000"
+                    className="min-h-12 rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
+                  />
+                </label>
+              </fieldset>
 
               <label className="mt-5 flex gap-3 rounded-2xl bg-white/78 p-3 text-sm leading-6 text-on-surface-variant">
                 <input
                   type="checkbox"
                   checked={agreementAccepted}
                   onChange={(event) => setAgreementAccepted(event.target.checked)}
-                  disabled={isPaymentSessionReady}
+                  disabled={isSubmitting}
                   className="mt-1 h-4 w-4 rounded border-outline-variant text-primary focus:ring-primary"
                 />
                 <span>
-                  Sipariş bilgilerimin doğru olduğunu ve ödemenin PayTR güvenli ödeme ekranında
-                  tamamlanacağını onaylıyorum.
+                  Sipariş bilgilerimin doğru olduğunu ve kart doğrulamasının PayTR güvenli ödeme
+                  altyapısına gönderileceğini onaylıyorum.
                 </span>
               </label>
 
@@ -674,7 +806,6 @@ export function CheckoutPageClient({
             isCheckingStatus={isCheckingStatus}
           />
 
-          <PaytrIframePanel iframeToken={iframeToken} />
         </section>
 
         <aside className="space-y-4 lg:sticky lg:top-28">
