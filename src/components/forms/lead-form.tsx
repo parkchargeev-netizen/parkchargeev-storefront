@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { contactReasons } from "@/lib/contact-reasons";
+import { trackConversionEvent } from "@/lib/conversion-events";
 import {
   getLeadCoverageHelp,
   leadCityOptions,
@@ -96,6 +97,11 @@ export function LeadForm({
         throw new Error(getLeadRequestError(response.status, result?.message));
       }
 
+      trackConversionEvent("contact_submit", {
+        reason: typeof payload.reason === "string" ? payload.reason : "",
+        city: typeof payload.city === "string" ? payload.city : "",
+        hasCompany: Boolean(payload.company)
+      });
       setMessage(result.message || "Talebiniz alındı. Ekibimiz en kısa sürede dönüş yapacak.");
       form.reset();
       setSelectedCity("");

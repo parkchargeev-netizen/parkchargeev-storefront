@@ -20,6 +20,7 @@ import {
   getEnrichedCartTaxKurus,
   getEnrichedCartTotalKurus
 } from "@/lib/cart";
+import { trackConversionEvent } from "@/lib/conversion-events";
 import { serviceCoverageSummary } from "@/lib/service-coverage";
 
 type CheckoutPageClientProps = {
@@ -446,6 +447,12 @@ export function CheckoutPageClient({
       setIsSubmitting(true);
       setError(null);
       setOrderStatus(null);
+      trackConversionEvent("checkout_start", {
+        itemCount: items.length,
+        totalKurus,
+        city: draft.city,
+        hasDeliveryNote: Boolean(draft.deliveryNote.trim())
+      });
 
       const response = await fetch("/api/paytr/direct-form", {
         method: "POST",

@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import { Manrope, Space_Grotesk } from "next/font/google";
 
+import { ConversionEventListener } from "@/components/analytics/conversion-event-listener";
 import { absoluteUrl, siteConfig } from "@/lib/site";
 
 import "@/app/globals.css";
@@ -85,6 +86,7 @@ export default function RootLayout({
   return (
     <html lang="tr">
       <body className={`${manrope.variable} ${spaceGrotesk.variable} font-sans`}>
+        <ConversionEventListener />
         {children}
       </body>
     </html>

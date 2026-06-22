@@ -21,7 +21,7 @@ const publicOrRemoteUrlSchema = z
   .max(500)
   .refine(
     (value) => value.startsWith("/") || value.startsWith("http://") || value.startsWith("https://"),
-    "URL /, http:// veya https:// ile baÅŸlamalÄ±dÄ±r."
+    "URL /, http:// veya https:// ile başlamalıdır."
   );
 
 export const adminLoginSchema = z.object({

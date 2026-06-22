@@ -5,6 +5,8 @@ import { useEffect } from "react";
 const motionSelectors = [
   ".premium-section > .mx-auto",
   ".premium-route-card",
+  ".premium-route-mini",
+  ".premium-funnel-lane",
   ".premium-power-card",
   ".premium-metric-card",
   ".premium-install-card",
@@ -18,6 +20,8 @@ const motionSelectors = [
   ".store-hero",
   ".store-results__header",
   ".store-segment-card",
+  ".store-commerce-strip",
+  ".store-category-chip",
   ".premium-product-card",
   ".product-gallery-premium",
   ".contact-info-card",

@@ -193,7 +193,7 @@ export default async function ProductDetailPage({
             {product.name}
           </h1>
           <p className="mt-4 text-lg leading-8 text-on-surface-variant">
-            {product.description}
+            {product.summary}
           </p>
 
           <div className="product-detail-feature-strip mt-6 grid gap-3 sm:grid-cols-3">

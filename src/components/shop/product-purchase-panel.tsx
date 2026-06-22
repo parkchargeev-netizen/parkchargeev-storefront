@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 
 import { useCart } from "@/components/providers/cart-provider";
+import { trackConversionEvent } from "@/lib/conversion-events";
 import { formatPriceTRY } from "@/lib/format";
 import type { ProductModel } from "@/lib/mock-data";
 import {
@@ -64,12 +65,30 @@ export function ProductPurchasePanel({
       quantity,
       productSnapshot: product
     });
+    trackConversionEvent("add_to_cart", {
+      productId: product.id,
+      productName: product.name,
+      category: product.category,
+      priceKurus: selectedOption.priceKurus,
+      quantity,
+      purchaseMode,
+      cableOption: cableOptionRef.current
+    });
     setFeedback(`${quantity} adet ürün sepete eklendi.`);
   }
 
   function selectCableOption(nextCableOption: string) {
     cableOptionRef.current = nextCableOption;
     setCableOption(nextCableOption);
+  }
+
+  function selectPurchaseMode(nextPurchaseMode: "product" | "survey") {
+    setPurchaseMode(nextPurchaseMode);
+    trackConversionEvent("purchase_mode_select", {
+      productId: product.id,
+      productName: product.name,
+      mode: nextPurchaseMode
+    });
   }
 
   return (
@@ -145,7 +164,7 @@ export function ProductPurchasePanel({
                 key={option.value}
                 type="button"
                 aria-pressed={purchaseMode === option.value}
-                onClick={() => setPurchaseMode(option.value as "product" | "survey")}
+                onClick={() => selectPurchaseMode(option.value as "product" | "survey")}
                 className={`rounded-2xl border px-4 py-3 text-left text-sm font-medium transition ${
                   purchaseMode === option.value
                     ? "border-primary bg-white text-primary"

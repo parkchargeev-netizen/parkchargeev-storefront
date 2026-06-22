@@ -3,6 +3,7 @@ import { Headphones, Search, ShieldCheck, SlidersHorizontal, Truck, X } from "lu
 import Link from "next/link";
 
 import { ProductCard } from "@/components/shop/product-card";
+import { conversionDataAttributes } from "@/lib/conversion-events";
 import { absoluteUrl } from "@/lib/site";
 import { getProductStoreProfile, getStoreFilterOptions } from "@/lib/shop-merchandising";
 import {
@@ -35,9 +36,9 @@ const sortOptions = [
 ] as const;
 
 const quickSegments = [
+  { label: "Ev tipi", href: "/magaza?power=7.4%20kW", detail: "7.4 / 11 kW wallbox" },
   { label: "Site yönetimi", href: "/magaza?power=22%20kW", detail: "RFID + ortak kullanım" },
   { label: "Ofis otoparkı", href: "/magaza?installation=Sabit%20kurulum", detail: "22 kW AC + servis" },
-  { label: "Ticari saha", href: "/magaza?category=DC%20Hızlı%20Şarj", detail: "DC yatırım planı" },
   { label: "Type 2 aksesuar", href: "/magaza?category=Aksesuar", detail: "Kablo ve uyum" }
 ] as const;
 
@@ -241,7 +242,16 @@ export default async function StorePage({ searchParams }: StorePageProps) {
           ))}
         </select>
       </label>
-      <button type="submit" className="store-filter-submit">
+      <button
+        type="submit"
+        className="store-filter-submit"
+        {...conversionDataAttributes("product_filter_apply", {
+          source: compact ? "mobile" : "desktop",
+          selectedCategory: selectedCategory || "all",
+          selectedPower: selectedPower || "all",
+          selectedInstallation: selectedInstallation || "all"
+        })}
+      >
         {compact ? "Sonuçları Göster" : "Filtreleri Uygula"}
       </button>
     </>
@@ -263,6 +273,10 @@ export default async function StorePage({ searchParams }: StorePageProps) {
           <div>
             <p className="premium-eyebrow">ParkChargeEV mağaza</p>
             <h1>Şarj ürünlerini bulun ve karşılaştırın.</h1>
+            <p className="store-commerce-header__lead">
+              Ürünü, uyumu ve kurulum ihtiyacını e-ticaret hızında görün; emin değilseniz keşif
+              akışına geçin.
+            </p>
           </div>
 
           <form action="/magaza" className="store-hero-search">
@@ -298,6 +312,46 @@ export default async function StorePage({ searchParams }: StorePageProps) {
                 </span>
               );
             })}
+          </div>
+        </div>
+
+        <div className="store-commerce-strip mt-4" aria-label="Mağaza kategori hızlı filtreleri">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="premium-eyebrow">Kategoriler</p>
+              <h2>İhtiyaca göre hızlı filtrele.</h2>
+            </div>
+            {activeFilterCount > 0 ? (
+              <Link href="/magaza" className="btn-secondary shrink-0">
+                Filtreleri temizle
+              </Link>
+            ) : null}
+          </div>
+
+          <div className="mt-4 flex gap-2 overflow-x-auto pb-1" aria-label="Kategoriler">
+            {categoryFilters.map((filter) => (
+              <Link
+                key={`desktop-category-${filter.label}`}
+                href={buildStoreHref({
+                  category: filter.value || undefined,
+                  q: query || undefined,
+                  sort: selectedSort,
+                  power: selectedPower || undefined,
+                  installation: selectedInstallation || undefined,
+                  view: selectedView
+                })}
+                className={`store-category-chip ${filter.active ? "store-category-chip--active" : ""}`}
+              >
+                {filter.label}
+                <span>{filter.count}</span>
+              </Link>
+            ))}
+          </div>
+
+          <div className="store-commerce-strip__badges">
+            <span>Stok, fiyat ve kargo ilk ekranda</span>
+            <span>Ev, site, işletme ve aksesuar ayrımı</span>
+            <span>PayTR ve 81 il kargo güvencesi</span>
           </div>
         </div>
       </section>

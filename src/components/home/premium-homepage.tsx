@@ -3,6 +3,7 @@ import {
   BatteryCharging,
   Building2,
   Cable,
+  CheckCircle2,
   ClipboardCheck,
   Gauge,
   Home,
@@ -22,6 +23,7 @@ import Link from "next/link";
 
 import { ChargingVisual } from "@/components/home/charging-visual";
 import { ProductCard } from "@/components/shop/product-card";
+import { conversionDataAttributes } from "@/lib/conversion-events";
 import {
   conversionRoutes,
   heroTrustSignals,
@@ -127,18 +129,38 @@ function PremiumHero({ whatsappHref }: { whatsappHref: string }) {
           </p>
 
           <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-            <Link href="/magaza?segment=Ev" className="premium-btn premium-btn--primary">
+            <Link
+              href="/magaza?segment=Ev"
+              className="premium-btn premium-btn--primary"
+              {...conversionDataAttributes("hero_cta_click", {
+                cta: "Ürünleri İncele",
+                href: "/magaza?segment=Ev"
+              })}
+            >
               <ShoppingBag className="h-5 w-5" aria-hidden />
               Ürünleri İncele
             </Link>
             <Link
               href={`/iletisim?reason=${encodeURIComponent("Ücretsiz keşif talebi")}`}
               className="premium-btn premium-btn--glass"
+              {...conversionDataAttributes("hero_cta_click", {
+                cta: "Ücretsiz Keşif İste",
+                href: "/iletisim?reason=Ücretsiz keşif talebi"
+              })}
             >
               <ClipboardCheck className="h-5 w-5" aria-hidden />
               Ücretsiz Keşif İste
             </Link>
-            <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className="premium-btn premium-btn--ghost">
+            <a
+              href={whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="premium-btn premium-btn--ghost"
+              {...conversionDataAttributes("hero_cta_click", {
+                cta: "WhatsApp",
+                href: whatsappHref
+              })}
+            >
               <MessageCircle className="h-5 w-5" aria-hidden />
               WhatsApp
             </a>
@@ -181,6 +203,154 @@ function ProductSpotlight({ products }: { products: ProductModel[] }) {
           {products.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function PersonaRouteSection() {
+  const primaryRoutes = conversionRoutes.slice(0, 3);
+  const secondaryRoutes = conversionRoutes.slice(3);
+
+  return (
+    <section className="premium-section premium-home-routes">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+          <SectionHeading
+            eyebrow="Doğru yol"
+            title="İhtiyacınızı seçin, doğru satış akışına geçin."
+            body="Ev kullanıcısı hızlı ürün seçimine, site ve işletme karar vericisi keşif veya teklif akışına yönlenir."
+          />
+          <Link href="/urun-secici" className="btn-secondary shrink-0">
+            Ürün Seçici
+            <ArrowRight className="h-4 w-4" aria-hidden />
+          </Link>
+        </div>
+
+        <div className="premium-route-grid mt-8 grid gap-4 lg:grid-cols-3">
+          {primaryRoutes.map((route) => (
+            <Link
+              key={route.label}
+              href={route.href}
+              className="premium-route-card surface-card group"
+              {...conversionDataAttributes("persona_route_click", {
+                route: route.label,
+                href: route.href
+              })}
+            >
+              <div className="flex items-center justify-between gap-3">
+                <IconBadge icon={route.icon} className="h-11 w-11 bg-primary/10 text-primary" />
+                <span className="rounded-full bg-surface-container-low px-3 py-1 text-xs font-black text-primary">
+                  {route.accent}
+                </span>
+              </div>
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.16em] text-secondary">
+                  {route.label}
+                </p>
+                <h3 className="mt-2 text-xl font-black leading-tight text-on-surface">
+                  {route.title}
+                </h3>
+                <p className="mt-3 line-clamp-3 text-sm leading-6 text-on-surface-variant">
+                  {route.body}
+                </p>
+              </div>
+              <span className="mt-auto inline-flex items-center gap-2 text-sm font-black text-primary">
+                {route.cta}
+                <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" aria-hidden />
+              </span>
+            </Link>
+          ))}
+        </div>
+
+        <div className="premium-route-secondary mt-4 grid gap-3 md:grid-cols-2">
+          {secondaryRoutes.map((route) => (
+            <Link
+              key={route.label}
+              href={route.href}
+              className="premium-route-mini group"
+              {...conversionDataAttributes("persona_route_click", {
+                route: route.label,
+                href: route.href
+              })}
+            >
+              <IconBadge icon={route.icon} className="premium-route-mini__icon" />
+              <span>
+                <small>{route.label}</small>
+                <strong>{route.title}</strong>
+              </span>
+              <b>{route.accent}</b>
+              <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" aria-hidden />
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ConversionFunnelSection() {
+  const lanes = [
+    {
+      icon: "shopping",
+      title: "Hızlı alışveriş",
+      body: "Aksesuar, kablo ve hazır ürünlerde fiyat, stok ve 81 il kargo net görünür.",
+      cta: "Mağazayı aç",
+      href: "/magaza"
+    },
+    {
+      icon: "clipboard",
+      title: "Uygunluk kontrolü",
+      body: "Güç, faz, soket ve kurulum ihtiyacı ürün seçiciyle sade şekilde netleşir.",
+      cta: "Ürün seçici",
+      href: "/urun-secici"
+    },
+    {
+      icon: "building",
+      title: "Kurumsal teklif",
+      body: "Site, ofis, filo ve ticari lokasyonlar için keşif ve teklif akışı ayrılır.",
+      cta: "Teklif al",
+      href: "/iletisim?reason=Kurumsal%20teklif"
+    }
+  ] as const;
+
+  return (
+    <section className="premium-section premium-funnel-section">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="premium-funnel-shell">
+          <div className="premium-funnel-shell__copy">
+            <p className="premium-eyebrow">Satış yolu</p>
+            <h2>Her ziyaretçi aynı kararı vermiyor. Akış ona göre kısalıyor.</h2>
+            <p>
+              Yeni EV sahibi hızlı ürüne, site yöneticisi keşfe, işletme karar vericisi teklife
+              yönlenir. Böylece sayfa kalabalığı azalır, karar sürtünmesi düşer.
+            </p>
+          </div>
+
+          <div className="premium-funnel-lanes">
+            {lanes.map((lane, index) => (
+              <Link key={lane.title} href={lane.href} className="premium-funnel-lane group">
+                <span className="premium-funnel-lane__step">0{index + 1}</span>
+                <IconBadge icon={lane.icon} className="premium-funnel-lane__icon" />
+                <strong>{lane.title}</strong>
+                <small>{lane.body}</small>
+                <span className="premium-funnel-lane__cta">
+                  {lane.cta}
+                  <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" aria-hidden />
+                </span>
+              </Link>
+            ))}
+          </div>
+
+          <div className="premium-funnel-proof">
+            {["PayTR güvenli ödeme", "81 il ürün kargosu", "Keşif ve kurulum desteği"].map((item) => (
+              <span key={item}>
+                <CheckCircle2 className="h-4 w-4" aria-hidden />
+                {item}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -321,6 +491,8 @@ export function PremiumHomepage({
   return (
     <main className="premium-home-page">
       <PremiumHero whatsappHref={whatsappHref} />
+      <PersonaRouteSection />
+      <ConversionFunnelSection />
       <ProductSpotlight products={featuredProducts} />
       <InstallationFlow />
       <ProofAndResources articles={featuredArticles} testimonials={testimonials} />
