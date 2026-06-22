@@ -17,6 +17,7 @@ import {
   listFallbackAdminOrders,
   updateFallbackAdminOrder
 } from "@/server/admin/fallback-store";
+import { requestPaytrTransactionStatus } from "@/server/paytr/client";
 import type {
   adminListQuerySchema,
   adminOrderUpdateSchema,
@@ -35,6 +36,13 @@ import type { AdminSessionPayload } from "@/server/auth/session";
 type ListQueryInput = z.infer<typeof adminListQuerySchema>;
 type OrderUpdateInput = z.infer<typeof adminOrderUpdateSchema>;
 type PaytrOperationInput = z.infer<typeof adminPaytrOperationSchema>;
+
+export class PaytrReconciliationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "PaytrReconciliationError";
+  }
+}
 
 type CursorPayload = {
   updatedAt: string;
@@ -338,6 +346,16 @@ export async function listAdminPaytrTransactions(input: ListQueryInput) {
   };
 }
 
+function normalizePaytrCurrency(value?: string | null) {
+  const currency = value?.trim().toUpperCase();
+
+  if (!currency) {
+    return null;
+  }
+
+  return currency === "TL" ? "TRY" : currency;
+}
+
 export async function runAdminPaytrOperation(
   transactionId: string,
   input: PaytrOperationInput,
@@ -359,30 +377,109 @@ export async function runAdminPaytrOperation(
     return null;
   }
 
+  const [orderBefore] = await db
+    .select({
+      id: orders.id,
+      status: orders.status,
+      currency: orders.currency,
+      totalKurus: orders.totalKurus
+    })
+    .from(orders)
+    .where(eq(orders.id, transaction.orderId))
+    .limit(1);
+
+  if (!orderBefore) {
+    return null;
+  }
+
+  const now = new Date();
+  const statusQuery =
+    input.action === "reconcile"
+      ? await requestPaytrTransactionStatus(transaction.merchantOid)
+      : null;
+  const nextTransactionValues =
+    input.action === "reconcile" && statusQuery
+      ? {
+          status:
+            statusQuery.status === "success"
+              ? ("callback_success" as const)
+              : ("callback_failed" as const),
+          totalAmountKurus:
+            statusQuery.status === "success"
+              ? statusQuery.paymentTotalKurus ??
+                statusQuery.paymentAmountKurus ??
+                transaction.totalAmountKurus
+              : transaction.totalAmountKurus,
+          rawCallback: {
+            paytrStatusQuery: statusQuery.raw
+          },
+          updatedAt: now
+        }
+      : null;
   const nextOrderValues =
     input.action === "mark_refunded"
       ? {
           status: "refunded" as const,
           paymentStatus: "refunded",
           statusNote: input.note || "Admin tarafından iade olarak işaretlendi.",
-          updatedAt: new Date()
+          updatedAt: now
         }
-      : {
-          status:
-            transaction.status === "callback_success" ? ("pending_confirmation" as const) : ("failed" as const),
-          paymentStatus: transaction.status === "callback_success" ? "paid" : "failed",
-          statusNote: input.note || "PayTR işlem durumuna göre manuel mutabakat yapıldı.",
-          updatedAt: new Date()
-        };
+      : statusQuery?.status === "success"
+        ? {
+            status: "pending_confirmation" as const,
+            paymentStatus: "paid",
+            statusNote: input.note || "PayTR durum sorgusu ile ödeme doğrulandı.",
+            paytrLastSyncedAt: now,
+            updatedAt: now
+          }
+        : {
+            status: "failed" as const,
+            paymentStatus: "failed",
+            statusNote:
+              input.note ||
+              statusQuery?.errMsg ||
+              "PayTR durum sorgusunda başarılı ödeme bulunamadı.",
+            paytrLastSyncedAt: now,
+            updatedAt: now
+          };
 
-  await db.update(orders).set(nextOrderValues).where(eq(orders.id, transaction.orderId));
+  if (input.action === "reconcile" && statusQuery?.status === "success") {
+    const paytrTotalKurus =
+      statusQuery.paymentTotalKurus ?? statusQuery.paymentAmountKurus;
 
-  await db.insert(orderStatusHistory).values({
-    orderId: transaction.orderId,
-    adminUserId: actor?.sub ?? null,
-    fromStatus: null,
-    toStatus: nextOrderValues.status,
-    note: nextOrderValues.statusNote
+    if (paytrTotalKurus !== null && paytrTotalKurus !== orderBefore.totalKurus) {
+      throw new PaytrReconciliationError(
+        "PayTR durum sorgusunda dönen tutar sipariş toplamıyla eşleşmiyor."
+      );
+    }
+
+    const paytrCurrency = normalizePaytrCurrency(statusQuery.currency);
+    const orderCurrency = normalizePaytrCurrency(orderBefore.currency);
+
+    if (paytrCurrency && paytrCurrency !== orderCurrency) {
+      throw new PaytrReconciliationError(
+        "PayTR durum sorgusunda dönen para birimi sipariş para birimiyle eşleşmiyor."
+      );
+    }
+  }
+
+  await db.transaction(async (tx) => {
+    if (nextTransactionValues) {
+      await tx
+        .update(paytrTransactions)
+        .set(nextTransactionValues)
+        .where(eq(paytrTransactions.id, transaction.id));
+    }
+
+    await tx.update(orders).set(nextOrderValues).where(eq(orders.id, transaction.orderId));
+
+    await tx.insert(orderStatusHistory).values({
+      orderId: transaction.orderId,
+      adminUserId: actor?.sub ?? null,
+      fromStatus: orderBefore.status,
+      toStatus: nextOrderValues.status,
+      note: nextOrderValues.statusNote
+    });
   });
 
   await recordAuditLog({
@@ -391,9 +488,17 @@ export async function runAdminPaytrOperation(
     entityType: "paytr_transaction",
     entityId: transaction.id,
     action: input.action,
-    summary: input.note || "PayTR operasyonu uygulandi.",
+    summary:
+      input.note ||
+      (input.action === "reconcile"
+        ? "PayTR durum sorgusu ile mutabakat yapıldı."
+        : "PayTR operasyonu uygulandı."),
     beforePayload: transaction,
-    afterPayload: nextOrderValues,
+    afterPayload: {
+      order: nextOrderValues,
+      transaction: nextTransactionValues,
+      statusQuery
+    },
     ipAddress: requestMeta?.ipAddress,
     userAgent: requestMeta?.userAgent
   });

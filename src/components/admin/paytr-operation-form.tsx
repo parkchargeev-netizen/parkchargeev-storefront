@@ -55,7 +55,7 @@ export function PaytrOperationForm({ transactionId }: PaytrOperationFormProps) {
         value={action}
         onChange={(event) => setAction(event.target.value)}
       >
-        <option value="reconcile">Manuel mutabakat</option>
+        <option value="reconcile">PayTR durum sorgusu ile mutabakat</option>
         <option value="mark_refunded">İade olarak işaretle</option>
       </select>
       <input
