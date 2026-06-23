@@ -97,108 +97,6 @@ function SectionHeading({
   );
 }
 
-const marketSignalCards = [
-  {
-    label: "Pazar",
-    value: "440K+ EV",
-    detail: "Ev ve işyeri şarj talebi büyüyor."
-  },
-  {
-    label: "Altyapı",
-    value: "44K+ soket",
-    detail: "Özel otopark kurulumları ayrışıyor."
-  },
-  {
-    label: "AC fırsatı",
-    value: "25K+ AC",
-    detail: "Ürün + keşif birlikte daha hızlı karar aldırır."
-  }
-] as const;
-
-const strategyUniverses = [
-  {
-    tag: "Evren A",
-    title: "Hemen al",
-    persona: "Ev",
-    body: "Fiyat, stok ve uyumu görüp sepete geçer.",
-    proof: "Kazanım: mağaza, ürün detay ve mobil sticky satın alma.",
-    href: "/magaza?q=ev",
-    cta: "Ev ürünleri"
-  },
-  {
-    tag: "Evren B",
-    title: "Doğru ürünü seç",
-    persona: "Emin değilim",
-    body: "Araç ve otoparka göre öneri alır.",
-    proof: "Kazanım: ürün seçici ve uyumluluk güveni.",
-    href: "/urun-secici",
-    cta: "Seçiciye git"
-  },
-  {
-    tag: "Evren C",
-    title: "Teklif al",
-    persona: "Site",
-    body: "RFID, paylaşım ve keşfi tek akışta netleştirir.",
-    proof: "Kazanım: keşif formu ve kurumsal teklif rotası.",
-    href: "/kurumsal-cozumler/site-ve-apartman",
-    cta: "Site çözümü"
-  },
-  {
-    tag: "Evren D",
-    title: "Gelir modeli kur",
-    persona: "İşletme",
-    body: "Çoklu cihaz, raporlama ve servis için teklif alır.",
-    proof: "Kazanım: ROI ön fizibilite ve kurumsal lead.",
-    href: "/iletisim?reason=ROI%20%C3%B6n%20fizibilite",
-    cta: "ROI teklifi"
-  },
-  {
-    tag: "Evren E",
-    title: "Kurulumu netleştir",
-    persona: "Kurulum",
-    body: "Pano, faz ve hat riskini keşifle azaltır.",
-    proof: "Kazanım: keşif, servis kapsamı ve güven mesajı.",
-    href: "/hizmetler",
-    cta: "Kurulum"
-  },
-  {
-    tag: "Evren F",
-    title: "Aksesuar dönüşümü",
-    persona: "Kablo ve ekipman arayan sürücü",
-    body: "Type 2 kablo, uzunluk ve stok kararını hızlı ürün listeleme ile tamamlar.",
-    proof: "Kazanım: düşük sürtünmeli ürün listeleme.",
-    href: "/magaza?category=Aksesuar",
-    cta: "Aksesuarları gör"
-  }
-] as const;
-
-const experiencePillars = [
-  {
-    label: "Heuristik",
-    title: "5 sn karar",
-    body: "Kullanıcı önce kendi senaryosunu seçer; ürün, keşif veya teklif yoluna dağılır.",
-    metric: "Net ilk ekran"
-  },
-  {
-    label: "UI",
-    title: "Sabit CTA",
-    body: "Mobil ürün detay ve sepet ekranlarında satın alma aksiyonu görünür kalır.",
-    metric: "Az sürtünme"
-  },
-  {
-    label: "UX",
-    title: "Güven sinyali",
-    body: "PayTR, 81 il kargo, keşif ve kurulum mesajları her kritik kararda tekrar eder.",
-    metric: "Daha net karar"
-  },
-  {
-    label: "DX",
-    title: "Event bazlı optimizasyon",
-    body: "Tıklama, validasyon ve PayTR dönüşleri ölçülür; kazanan varyantlar birleşir.",
-    metric: "Canlı öğrenme"
-  }
-] as const;
-
 const personaCtas = [
   {
     label: "Ev",
@@ -223,34 +121,6 @@ const personaCtas = [
     title: "Ürün seçiciyle başla",
     body: "Araç, otopark ve kullanım tipine göre öneri.",
     href: "/urun-secici"
-  }
-] as const;
-
-const intentChips = [
-  {
-    title: "Ev fiyat",
-    detail: "Fiyat hassasiyeti yüksek kullanıcıyı ürün listeye taşır.",
-    href: "/magaza?q=ev"
-  },
-  {
-    title: "Site şarjı",
-    detail: "Yönetim, RFID ve keşif itirazlarını teklif akışına bağlar.",
-    href: "/kurumsal-cozumler/site-ve-apartman"
-  },
-  {
-    title: "22 kW AC",
-    detail: "Güç ve altyapı araştıran kullanıcıyı doğru filtreye indirir.",
-    href: "/magaza?power=22%20kW"
-  },
-  {
-    title: "Type 2 kablo",
-    detail: "Aksesuar niyetini hızlı satın alma rotasına dönüştürür.",
-    href: "/magaza?category=Aksesuar"
-  },
-  {
-    title: "Kurulum ve keşif",
-    detail: "Risk azaltma arayan kullanıcıyı hizmet sayfasına yönlendirir.",
-    href: "/hizmetler"
   }
 ] as const;
 
@@ -336,108 +206,6 @@ function PremiumHero({ whatsappHref }: { whatsappHref: string }) {
               <ArrowRight className="ml-auto h-4 w-4 shrink-0 transition group-hover:translate-x-1" aria-hidden />
             </Link>
           ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function MarketStrategySection() {
-  const routeIconKeys: HomeIconKey[] = ["home", "clipboard", "building", "users", "cable"];
-  const decisionUniverses = strategyUniverses.slice(0, 5);
-  const compactPillars = experiencePillars.slice(0, 3);
-  const compactIntents = intentChips.slice(0, 4);
-
-  return (
-    <section className="premium-section premium-strategy-section">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="premium-strategy-shell premium-strategy-shell--compact">
-          <div className="premium-strategy-shell__head">
-            <SectionHeading
-              eyebrow="Satış akışı"
-              title="Senaryonu seç, doğru adıma geç."
-              body="Ürün, keşif veya teklif rotası tek ekranda netleşir."
-            />
-
-            <div className="premium-strategy-messages premium-strategy-messages--compact">
-              {marketSignalCards.map((signal) => (
-                <article key={signal.label}>
-                  <span>{signal.label}</span>
-                  <strong>{signal.value}</strong>
-                  <small>{signal.detail}</small>
-                </article>
-              ))}
-            </div>
-          </div>
-
-          <div className="premium-decision-route-grid" aria-label="Satış karar rotaları">
-            {decisionUniverses.map((universe, index) => (
-              <article key={universe.tag} className="premium-decision-route-card">
-                <div className="premium-decision-route-card__head">
-                  <IconBadge
-                    icon={routeIconKeys[index] ?? "plug"}
-                    className="h-11 w-11 bg-primary/10 text-primary"
-                  />
-                  <span>{universe.persona}</span>
-                </div>
-                <strong>{universe.title}</strong>
-                <p>{universe.body}</p>
-                <Link
-                  href={universe.href}
-                  {...conversionDataAttributes("persona_route_click", {
-                    route: universe.tag,
-                    persona: universe.persona,
-                    href: universe.href
-                  })}
-                >
-                  {universe.cta}
-                  <ArrowRight className="h-4 w-4" aria-hidden />
-                </Link>
-              </article>
-            ))}
-          </div>
-
-          <div className="premium-system-strip">
-            <div>
-              <span>UI / UX / DX</span>
-              <strong>Tek ekran. Tek karar.</strong>
-            </div>
-            <div className="premium-system-strip__grid">
-              {compactPillars.map((pillar) => (
-                <article key={pillar.title} className="premium-system-pill">
-                  <span>{pillar.label}</span>
-                  <strong>{pillar.title}</strong>
-                  <small>{pillar.metric}</small>
-                </article>
-              ))}
-            </div>
-          </div>
-
-          <div className="premium-intent-quick-row" aria-label="Popüler satın alma niyetleri">
-            {compactIntents.map((intent) => (
-              <Link
-                key={intent.title}
-                href={intent.href}
-                className="premium-intent-quick-chip"
-                {...conversionDataAttributes("seo_intent_click", {
-                  intent: intent.title,
-                  href: intent.href
-                })}
-              >
-                <strong>{intent.title}</strong>
-                <ArrowRight className="h-3.5 w-3.5" aria-hidden />
-              </Link>
-            ))}
-          </div>
-
-          <div className="premium-trust-message-row">
-            {["PayTR", "81 il kargo", "Keşif desteği", "Uyum kontrolü"].map((message) => (
-              <span key={message}>
-                <CheckCircle2 className="h-4 w-4" aria-hidden />
-                {message}
-              </span>
-            ))}
-          </div>
         </div>
       </div>
     </section>
@@ -786,23 +554,6 @@ function FinalCta({ whatsappHref }: { whatsappHref: string }) {
   );
 }
 
-function HomepageCredit() {
-  return (
-    <section className="border-t border-outline-variant/35 bg-surface/80 px-4 py-5 text-center text-xs font-bold text-on-surface-variant sm:px-6">
-      Bu site{" "}
-      <a
-        href="https://digicoreyazilim.com"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="font-black text-primary underline-offset-4 transition hover:text-secondary hover:underline"
-      >
-        Digicore Yazılım
-      </a>{" "}
-      tarafından yapılmıştır.
-    </section>
-  );
-}
-
 export function PremiumHomepage({
   featuredProducts,
   featuredArticles,
@@ -812,14 +563,12 @@ export function PremiumHomepage({
   return (
     <main className="premium-home-page">
       <PremiumHero whatsappHref={whatsappHref} />
-      <MarketStrategySection />
       <PersonaRouteSection />
       <ConversionFunnelSection />
       <ProductSpotlight products={featuredProducts} />
       <InstallationFlow />
       <ProofAndResources articles={featuredArticles} testimonials={testimonials} />
       <FinalCta whatsappHref={whatsappHref} />
-      <HomepageCredit />
     </main>
   );
 }

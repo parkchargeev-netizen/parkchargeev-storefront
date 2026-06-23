@@ -95,8 +95,22 @@ export function SiteFooter({
           </div>
         </div>
 
-        <div className="mt-10 border-t border-outline-variant/35 pt-6 text-sm text-on-surface-variant">
-          © 2026 {siteConfig.name}. Güvenli şarj ürünleri, keşif ve kurulum çözümleri.
+        <div className="mt-10 flex flex-col gap-3 border-t border-outline-variant/35 pt-6 text-sm text-on-surface-variant sm:flex-row sm:items-center sm:justify-between">
+          <span>
+            © 2026 {siteConfig.name}. Güvenli şarj ürünleri, keşif ve kurulum çözümleri.
+          </span>
+          <span>
+            Bu site{" "}
+            <a
+              href="https://digicoreyazilim.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-bold text-primary underline-offset-4 transition hover:text-secondary hover:underline"
+            >
+              Digicore Yazılım
+            </a>{" "}
+            tarafından yapılmıştır.
+          </span>
         </div>
       </div>
     </footer>

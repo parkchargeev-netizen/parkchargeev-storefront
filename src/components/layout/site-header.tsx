@@ -14,7 +14,7 @@ type SiteHeaderProps = {
 };
 
 const navLabelMap: Record<string, string> = {
-  "/": "Ana",
+  "/": "Anasayfa",
   "/magaza": "Mağaza",
   "/urun-secici": "Seçici",
   "/kurumsal-cozumler": "Site & İşletme",
