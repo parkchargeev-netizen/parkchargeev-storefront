@@ -99,6 +99,11 @@ function SectionHeading({
 
 function PremiumHero({ whatsappHref }: { whatsappHref: string }) {
   const primaryRoutes = conversionRoutes.slice(0, 3);
+  const heroHighlights = [
+    { label: "Ürün kargosu", value: "81 il" },
+    { label: "Satış yolu", value: "Ürün + keşif" },
+    { label: "Ödeme", value: "PayTR" }
+  ] as const;
 
   return (
     <section className="premium-hero relative isolate overflow-hidden">
@@ -107,7 +112,7 @@ function PremiumHero({ whatsappHref }: { whatsappHref: string }) {
 
       <div className="premium-hero__inner relative z-10 mx-auto flex max-w-7xl flex-col justify-center px-4 py-12 sm:px-6 lg:px-8">
         <div className="premium-hero__copy max-w-[42rem]">
-          <p className="premium-hero__eyebrow">ParkChargeEV şarj çözümleri</p>
+          <p className="premium-hero__eyebrow">ParkChargeEV premium şarj platformu</p>
           <div className="premium-hero__mobile-trust">
             {heroTrustSignals.slice(0, 3).map((item) => {
               const Icon = iconMap[item.icon];
@@ -122,10 +127,10 @@ function PremiumHero({ whatsappHref }: { whatsappHref: string }) {
           </div>
 
           <h1 className="mt-5 max-w-[42rem] text-[2.45rem] font-black leading-[1.02] tracking-normal text-white sm:text-5xl lg:text-[3.55rem]">
-            Şarj cihazını değil, doğru çözümü seçin.
+            Aracınız, otoparkınız ve altyapınız için doğru şarj çözümünü seçin.
           </h1>
           <p className="mt-5 max-w-xl text-base leading-7 text-white/82 sm:text-lg">
-            Aracınıza uygun cihazı güvenli kurulum ve uzman desteğiyle birlikte planlayın.
+            Ev, site ve işletmeler için ürün, uyumluluk, kargo ve kurulum kararını tek akışta netleştirin.
           </p>
 
           <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
@@ -133,23 +138,23 @@ function PremiumHero({ whatsappHref }: { whatsappHref: string }) {
               href="/magaza?segment=Ev"
               className="premium-btn premium-btn--primary"
               {...conversionDataAttributes("hero_cta_click", {
-                cta: "Ürünleri İncele",
+                cta: "Mağazayı İncele",
                 href: "/magaza?segment=Ev"
               })}
             >
               <ShoppingBag className="h-5 w-5" aria-hidden />
-              Ürünleri İncele
+              Mağazayı İncele
             </Link>
             <Link
-              href={`/iletisim?reason=${encodeURIComponent("Ücretsiz keşif talebi")}`}
+              href="/urun-secici"
               className="premium-btn premium-btn--glass"
               {...conversionDataAttributes("hero_cta_click", {
-                cta: "Ücretsiz Keşif İste",
-                href: "/iletisim?reason=Ücretsiz keşif talebi"
+                cta: "Uygunluğu Kontrol Et",
+                href: "/urun-secici"
               })}
             >
               <ClipboardCheck className="h-5 w-5" aria-hidden />
-              Ücretsiz Keşif İste
+              Uygunluğu Kontrol Et
             </Link>
             <a
               href={whatsappHref}
@@ -164,6 +169,15 @@ function PremiumHero({ whatsappHref }: { whatsappHref: string }) {
               <MessageCircle className="h-5 w-5" aria-hidden />
               WhatsApp
             </a>
+          </div>
+
+          <div className="premium-hero__highlights" aria-label="ParkChargeEV karar güveni">
+            {heroHighlights.map((item) => (
+              <span key={item.label}>
+                <small>{item.label}</small>
+                <strong>{item.value}</strong>
+              </span>
+            ))}
           </div>
         </div>
 
@@ -218,9 +232,9 @@ function PersonaRouteSection() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <SectionHeading
-            eyebrow="Doğru yol"
-            title="İhtiyacınızı seçin, doğru satış akışına geçin."
-            body="Ev kullanıcısı hızlı ürün seçimine, site ve işletme karar vericisi keşif veya teklif akışına yönlenir."
+            eyebrow="Karar rotaları"
+            title="Her persona için kısa, net ve satışa yakın yol."
+            body="Ev kullanıcısı ürüne, site yöneticisi keşfe, işletme karar vericisi teklife daha az adımla ulaşır."
           />
           <Link href="/urun-secici" className="btn-secondary shrink-0">
             Ürün Seçici
@@ -294,23 +308,23 @@ function ConversionFunnelSection() {
   const lanes = [
     {
       icon: "shopping",
-      title: "Hızlı alışveriş",
-      body: "Aksesuar, kablo ve hazır ürünlerde fiyat, stok ve 81 il kargo net görünür.",
-      cta: "Mağazayı aç",
+      title: "Ürünü gör",
+      body: "Fiyat, stok, güç ve soket bilgisi ilk bakışta görünür.",
+      cta: "Mağaza",
       href: "/magaza"
     },
     {
       icon: "clipboard",
-      title: "Uygunluk kontrolü",
-      body: "Güç, faz, soket ve kurulum ihtiyacı ürün seçiciyle sade şekilde netleşir.",
-      cta: "Ürün seçici",
+      title: "Uygunluğu netleştir",
+      body: "Araç, otopark ve altyapı kararı kısa seçiciyle sadeleşir.",
+      cta: "Seçici",
       href: "/urun-secici"
     },
     {
       icon: "building",
-      title: "Kurumsal teklif",
-      body: "Site, ofis, filo ve ticari lokasyonlar için keşif ve teklif akışı ayrılır.",
-      cta: "Teklif al",
+      title: "Teklife geç",
+      body: "Site, ofis ve filo için keşif ve teklif yolu ayrılır.",
+      cta: "Teklif",
       href: "/iletisim?reason=Kurumsal%20teklif"
     }
   ] as const;
@@ -321,10 +335,10 @@ function ConversionFunnelSection() {
         <div className="premium-funnel-shell">
           <div className="premium-funnel-shell__copy">
             <p className="premium-eyebrow">Satış yolu</p>
-            <h2>Her ziyaretçi aynı kararı vermiyor. Akış ona göre kısalıyor.</h2>
+            <h2>Satın alma hızı, güven ve kurulum uzmanlığı aynı akışta.</h2>
             <p>
-              Yeni EV sahibi hızlı ürüne, site yöneticisi keşfe, işletme karar vericisi teklife
-              yönlenir. Böylece sayfa kalabalığı azalır, karar sürtünmesi düşer.
+              Ürün almak isteyen hızlıca sepete gider; emin olmayan kullanıcı uygunluk kontrolüne,
+              kurumsal karar verici teklif akışına geçer.
             </p>
           </div>
 

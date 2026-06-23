@@ -526,18 +526,18 @@ export function CheckoutPageClient({
 
   return (
     <main className="checkout-page mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
-      <div className="rounded-[32px] border border-white/80 bg-white/82 p-4 shadow-[0_24px_80px_rgba(6,51,38,0.10)] backdrop-blur-xl sm:p-6 lg:p-8">
+      <div className="checkout-command-center rounded-[32px] border border-white/80 bg-white/82 p-4 shadow-[0_24px_80px_rgba(6,51,38,0.10)] backdrop-blur-xl sm:p-6 lg:p-8">
         <header className="grid gap-6 lg:grid-cols-[1fr_420px] lg:items-end">
           <div>
             <p className="text-xs font-black uppercase tracking-[0.34em] text-primary">
               PayTR uyumlu güvenli ödeme
             </p>
             <h1 className="mt-3 max-w-3xl text-3xl font-black tracking-[-0.06em] text-on-surface sm:text-5xl">
-              Siparişinizi doğrulayın, ödemeyi PayTR içinde tamamlayın.
+              Siparişi doğrulayın, kartı PayTR ile güvenli onaylayın.
             </h1>
             <p className="mt-4 max-w-2xl text-sm leading-7 text-on-surface-variant sm:text-base">
-              ParkChargeEV yalnızca sipariş, iletişim ve teslimat bilgilerini alır. Kart numarası,
-              son kullanma tarihi ve CVV bilgisi doğrudan PayTR güvenli ödeme servisine gönderilir.
+              İletişim, adres ve sepet tutarı kontrol edilir; kart doğrulaması doğrudan PayTR
+              güvenli ödeme akışına gönderilir.
             </p>
           </div>
 
@@ -556,7 +556,7 @@ export function CheckoutPageClient({
           </div>
         </header>
 
-        <ol className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4" aria-label="Ödeme adımları">
+        <ol className="checkout-step-grid mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4" aria-label="Ödeme adımları">
           {checkoutSteps.map((step, index) => (
             <li
               key={step.title}
@@ -699,8 +699,8 @@ export function CheckoutPageClient({
               </label>
             </fieldset>
 
-            <section className="mt-6 rounded-[26px] border border-primary/12 bg-linear-to-br from-primary/7 via-white to-secondary/8 p-4 sm:p-5">
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <section className="checkout-payment-card mt-6 rounded-[26px] border border-primary/12 bg-linear-to-br from-primary/7 via-white to-secondary/8 p-4 sm:p-5">
+              <div className="checkout-payment-card__head">
                 <div className="flex gap-3">
                   <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary text-white">
                     <CreditCard className="h-5 w-5" aria-hidden="true" />
@@ -708,22 +708,20 @@ export function CheckoutPageClient({
                   <div>
                     <h3 className="text-lg font-black text-on-surface">Kart bilgileri</h3>
                     <p className="mt-1 text-sm leading-6 text-on-surface-variant">
-                      Sipariş tutarı sunucuda yeniden hesaplanır. Kart bilgileri ParkChargeEV
-                      API&apos;sine gönderilmez; doğrulama formu doğrudan PayTR&apos;ye POST edilir.
+                      Kart bilgileri ParkChargeEV tarafında saklanmaz. Doğrulama formu PayTR
+                      güvenli ödeme sistemine iletilir.
                     </p>
                   </div>
                 </div>
 
-                <button
-                  type="submit"
-                  disabled={isSubmitting || !isCheckoutInfoComplete}
-                  className="min-h-12 rounded-2xl bg-primary px-6 py-3 text-base font-black text-white shadow-[0_16px_38px_rgba(6,51,38,0.22)] transition hover:-translate-y-0.5 hover:bg-primary/92 disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0"
-                >
-                  {isSubmitting ? "PayTR doğruluyor..." : "Kartı Doğrula ve Öde"}
-                </button>
+                <div className="checkout-card-preview" aria-hidden="true">
+                  <span>ParkChargeEV</span>
+                  <strong>PayTR Secure</strong>
+                  <small>**** **** **** 2026</small>
+                </div>
               </div>
 
-              <fieldset disabled={isSubmitting} className="mt-5 grid gap-4 md:grid-cols-2">
+              <fieldset disabled={isSubmitting} className="checkout-card-fields mt-5 grid gap-4 md:grid-cols-2">
                 <label className="grid gap-2 md:col-span-2">
                   <span className="text-sm font-semibold text-on-surface">Kart üzerindeki ad</span>
                   <input
@@ -809,6 +807,14 @@ export function CheckoutPageClient({
                   {error}
                 </p>
               ) : null}
+
+              <button
+                type="submit"
+                disabled={isSubmitting || !isCheckoutInfoComplete}
+                className="checkout-pay-button mt-5 min-h-12 rounded-2xl bg-primary px-6 py-3 text-base font-black text-white shadow-[0_16px_38px_rgba(6,51,38,0.22)] transition hover:-translate-y-0.5 hover:bg-primary/92 disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0"
+              >
+                {isSubmitting ? "PayTR doğruluyor..." : "Kartı Doğrula ve Öde"}
+              </button>
             </section>
           </form>
 

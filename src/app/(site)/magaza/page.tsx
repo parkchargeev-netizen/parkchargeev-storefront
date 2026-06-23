@@ -1,5 +1,17 @@
 import type { Metadata } from "next";
-import { Headphones, Search, ShieldCheck, SlidersHorizontal, Truck, X } from "lucide-react";
+import {
+  Building2,
+  Cable,
+  Headphones,
+  Home,
+  Search,
+  ShieldCheck,
+  SlidersHorizontal,
+  Store,
+  Truck,
+  X,
+  type LucideIcon
+} from "lucide-react";
 import Link from "next/link";
 
 import { ProductCard } from "@/components/shop/product-card";
@@ -37,11 +49,16 @@ const sortOptions = [
 ] as const;
 
 const quickSegments = [
-  { label: "Ev tipi", href: "/magaza?power=7.4%20kW", detail: "7.4 / 11 kW wallbox" },
-  { label: "Site yönetimi", href: "/magaza?power=22%20kW", detail: "RFID + ortak kullanım" },
-  { label: "Ofis otoparkı", href: "/magaza?installation=Sabit%20kurulum", detail: "22 kW AC + servis" },
-  { label: "Type 2 aksesuar", href: "/magaza?category=Aksesuar", detail: "Kablo ve uyum" }
-] as const;
+  { icon: Home, label: "Ev tipi", href: "/magaza?power=7.4%20kW", detail: "7.4 / 11 kW wallbox" },
+  { icon: Building2, label: "Site yönetimi", href: "/magaza?power=22%20kW", detail: "RFID + ortak kullanım" },
+  { icon: Store, label: "Ofis otoparkı", href: "/magaza?installation=Sabit%20kurulum", detail: "22 kW AC + servis" },
+  { icon: Cable, label: "Type 2 aksesuar", href: "/magaza?category=Aksesuar", detail: "Kablo ve uyum" }
+] as const satisfies ReadonlyArray<{
+  icon: LucideIcon;
+  label: string;
+  href: string;
+  detail: string;
+}>;
 
 const storeAssuranceItems = [
   { icon: ShieldCheck, title: "Güvenli ödeme", detail: "PayTR altyapısı" },
@@ -262,8 +279,13 @@ export default async function StorePage({ searchParams }: StorePageProps) {
 
       <section className="store-commerce-header">
         <div className="store-commerce-header__top">
-          <div>
+          <div className="store-commerce-header__lead">
             <p className="premium-eyebrow">ParkChargeEV mağaza</p>
+            <h1>Ürün, uyum ve teslimat kararını hızlıca verin.</h1>
+            <p>
+              Ev tipi wallbox, site/ofis istasyonu ve Type 2 aksesuarları fiyat, stok ve kullanım
+              alanına göre sade kartlarla karşılaştırın.
+            </p>
           </div>
 
           <form action="/magaza" className="store-hero-search">
@@ -281,18 +303,27 @@ export default async function StorePage({ searchParams }: StorePageProps) {
         <div className="store-commerce-header__nav">
           <div className="store-segment-grid">
           {quickSegments.map((segment) => (
-            <Link
-              key={segment.label}
-              href={segment.href}
-              className="store-segment-card"
-              {...conversionDataAttributes("store_quick_segment_click", {
-                segment: segment.label,
-                href: segment.href
-              })}
-            >
-              <span className="text-base font-black">{segment.label}</span>
-              <span className="text-xs font-bold text-on-surface-variant">{segment.detail}</span>
-            </Link>
+            (() => {
+              const Icon = segment.icon;
+
+              return (
+                <Link
+                  key={segment.label}
+                  href={segment.href}
+                  className="store-segment-card"
+                  {...conversionDataAttributes("store_quick_segment_click", {
+                    segment: segment.label,
+                    href: segment.href
+                  })}
+                >
+                  <Icon className="h-4 w-4" aria-hidden />
+                  <span>
+                    <strong>{segment.label}</strong>
+                    <small>{segment.detail}</small>
+                  </span>
+                </Link>
+              );
+            })()
           ))}
           </div>
 

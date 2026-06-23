@@ -121,7 +121,7 @@ export function CartPageClient() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="cart-page mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <section className="cart-hero">
         <div className="relative z-10 grid gap-7 lg:grid-cols-[1fr_360px] lg:items-end">
           <div>
@@ -133,10 +133,10 @@ export function CartPageClient() {
               Alışverişe devam et
             </Link>
             <h1 className="mt-5 text-4xl font-black leading-tight text-white md:text-6xl">
-              Sepetin hazır. Kurulum adımını netleştirelim.
+              Sepetin hazır. Ödeme ve teslimat net.
             </h1>
             <p className="mt-4 max-w-2xl text-base leading-7 text-white/80">
-              Ürün, 81 il kargo, KDV ve keşif kararını tek ekranda görüp güvenli ödeme akışına geçin.
+              Ürünleri, KDV dahil toplamı, 81 il kargoyu ve varsa keşif ihtiyacını tek ekranda kontrol edin.
             </p>
           </div>
 
@@ -407,6 +407,14 @@ export function CartPageClient() {
           </div>
         </section>
       ) : null}
+
+      <div className="cart-mobile-checkout-bar">
+        <div>
+          <span>Genel toplam</span>
+          <strong>{formatPriceTRY(totalKurus)}</strong>
+        </div>
+        <Link href="/odeme">Ödemeye Geç</Link>
+      </div>
     </div>
   );
 }
