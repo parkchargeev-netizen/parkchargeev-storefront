@@ -482,6 +482,23 @@ function FinalCta({ whatsappHref }: { whatsappHref: string }) {
   );
 }
 
+function HomepageCredit() {
+  return (
+    <section className="border-t border-outline-variant/35 bg-surface/80 px-4 py-5 text-center text-xs font-bold text-on-surface-variant sm:px-6">
+      Bu site{" "}
+      <a
+        href="https://digicoreyazilim.com"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="font-black text-primary underline-offset-4 transition hover:text-secondary hover:underline"
+      >
+        Digicore Yazılım
+      </a>{" "}
+      tarafından yapılmıştır.
+    </section>
+  );
+}
+
 export function PremiumHomepage({
   featuredProducts,
   featuredArticles,
@@ -497,6 +514,7 @@ export function PremiumHomepage({
       <InstallationFlow />
       <ProofAndResources articles={featuredArticles} testimonials={testimonials} />
       <FinalCta whatsappHref={whatsappHref} />
+      <HomepageCredit />
     </main>
   );
 }
