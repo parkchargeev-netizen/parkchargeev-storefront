@@ -453,6 +453,11 @@ export function CheckoutPageClient({
         city: draft.city,
         hasDeliveryNote: Boolean(draft.deliveryNote.trim())
       });
+      trackConversionEvent("checkout_paytr_submit", {
+        itemCount: items.length,
+        totalKurus,
+        city: draft.city
+      });
 
       const response = await fetch("/api/paytr/direct-form", {
         method: "POST",

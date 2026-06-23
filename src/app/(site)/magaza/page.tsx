@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ProductCard } from "@/components/shop/product-card";
 import { conversionDataAttributes } from "@/lib/conversion-events";
 import { absoluteUrl } from "@/lib/site";
+import { seoIntentClusters } from "@/lib/site-strategy";
 import { getProductStoreProfile, getStoreFilterOptions } from "@/lib/shop-merchandising";
 import {
   getBreadcrumbJsonLd,
@@ -294,7 +295,15 @@ export default async function StorePage({ searchParams }: StorePageProps) {
         <div className="store-commerce-header__nav">
           <div className="store-segment-grid">
           {quickSegments.map((segment) => (
-            <Link key={segment.label} href={segment.href} className="store-segment-card">
+            <Link
+              key={segment.label}
+              href={segment.href}
+              className="store-segment-card"
+              {...conversionDataAttributes("store_quick_segment_click", {
+                segment: segment.label,
+                href: segment.href
+              })}
+            >
               <span className="text-base font-black">{segment.label}</span>
               <span className="text-xs font-bold text-on-surface-variant">{segment.detail}</span>
             </Link>
@@ -352,6 +361,24 @@ export default async function StorePage({ searchParams }: StorePageProps) {
             <span>Stok, fiyat ve kargo ilk ekranda</span>
             <span>Ev, site, işletme ve aksesuar ayrımı</span>
             <span>PayTR ve 81 il kargo güvencesi</span>
+          </div>
+
+          <div className="store-intent-clusters" aria-label="Arama niyetine göre hızlı mağaza girişleri">
+            {seoIntentClusters.map((cluster) => (
+              <Link
+                key={cluster.cluster}
+                href={cluster.href}
+                className="store-intent-chip"
+                {...conversionDataAttributes("seo_intent_click", {
+                  source: "store",
+                  cluster: cluster.cluster,
+                  href: cluster.href
+                })}
+              >
+                <strong>{cluster.cluster}</strong>
+                <span>{cluster.query}</span>
+              </Link>
+            ))}
           </div>
         </div>
       </section>

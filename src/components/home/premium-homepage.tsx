@@ -31,6 +31,12 @@ import {
   proofSignals,
   type HomeIconKey
 } from "@/lib/homepage-content";
+import {
+  personaCtaMatrix,
+  primarySiteMessages,
+  seoIntentClusters,
+  trustMessages
+} from "@/lib/site-strategy";
 import type {
   ArticleModel,
   ProductModel,
@@ -357,6 +363,84 @@ function ConversionFunnelSection() {
   );
 }
 
+function StrategyIntentSection() {
+  return (
+    <section className="premium-section premium-strategy-section">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="premium-strategy-shell">
+          <div className="premium-strategy-shell__head">
+            <SectionHeading
+              eyebrow="Karar evrenleri"
+              title="Aradığınız niyet neyse, satış yolu oradan başlar."
+              body="Ev kullanıcısı, aksesuar alıcısı, site yöneticisi ve işletme karar vericisi aynı sayfada kaybolmaz; her rota kendi karar bilgisi ve CTA'sı ile ilerler."
+            />
+            <div className="premium-strategy-messages" aria-label="ParkChargeEV ana mesajları">
+              {primarySiteMessages.map((item) => (
+                <article key={item.label}>
+                  <span>{item.label}</span>
+                  <strong>{item.message}</strong>
+                  <small>{item.detail}</small>
+                </article>
+              ))}
+            </div>
+          </div>
+
+          <div className="premium-persona-cta-grid" aria-label="Persona bazlı hızlı satış yolları">
+            {personaCtaMatrix.map((item) => (
+              <Link
+                key={item.persona}
+                href={item.href}
+                className="premium-persona-cta-card group"
+                {...conversionDataAttributes("persona_route_click", {
+                  route: item.persona,
+                  href: item.href
+                })}
+              >
+                <span>{item.persona}</span>
+                <strong>{item.cta}</strong>
+                <small>{item.intent}</small>
+                <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" aria-hidden />
+              </Link>
+            ))}
+          </div>
+
+          <div className="premium-intent-clusters" aria-label="SEO ve AIEO arama niyeti kümeleri">
+            <div>
+              <p className="premium-eyebrow">Arama niyetleri</p>
+              <h3>Google ve yapay zekâ keşfi için net konu kümeleri.</h3>
+            </div>
+            <div className="premium-intent-cluster-list">
+              {seoIntentClusters.map((cluster) => (
+                <Link
+                  key={cluster.cluster}
+                  href={cluster.href}
+                  className="premium-intent-chip"
+                  {...conversionDataAttributes("seo_intent_click", {
+                    cluster: cluster.cluster,
+                    href: cluster.href
+                  })}
+                >
+                  <strong>{cluster.cluster}</strong>
+                  <span>{cluster.query}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <div className="premium-trust-message-row" aria-label="Güven mesajları">
+            {trustMessages.map((message) => (
+              <span key={message}>
+                <CheckCircle2 className="h-4 w-4" aria-hidden />
+                {message}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function InstallationFlow() {
   return (
     <section className="premium-section premium-install-section">
@@ -493,6 +577,7 @@ export function PremiumHomepage({
       <PremiumHero whatsappHref={whatsappHref} />
       <PersonaRouteSection />
       <ConversionFunnelSection />
+      <StrategyIntentSection />
       <ProductSpotlight products={featuredProducts} />
       <InstallationFlow />
       <ProofAndResources articles={featuredArticles} testimonials={testimonials} />

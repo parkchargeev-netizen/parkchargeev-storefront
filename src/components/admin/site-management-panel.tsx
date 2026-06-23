@@ -5,6 +5,11 @@ import { AdminFilterBar } from "@/components/admin/table/admin-filter-bar";
 import { AdminPageHeader } from "@/components/admin/table/admin-page-header";
 import { AdminStatusBadge } from "@/components/admin/table/admin-status-badge";
 import {
+  funnelAuditPhases,
+  primarySiteMessages,
+  seoIntentClusters
+} from "@/lib/site-strategy";
+import {
   getAdminNavigationItemById,
   getAdminSitePageById,
   listAdminNavigationItems,
@@ -200,6 +205,60 @@ export async function SiteManagementPanel({
           </ul>
         </aside>
       </div>
+
+      <section className="surface-card border border-emerald-100 bg-white/95 p-5 lg:p-6">
+        <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-emerald-700">
+              Site strateji notları
+            </p>
+            <h2 className="mt-2 text-2xl font-semibold text-slate-950">
+              Yayına çıkmadan önce aynı satış dilini koruyun.
+            </h2>
+            <div className="mt-4 grid gap-3">
+              {primarySiteMessages.map((item) => (
+                <article key={item.label} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                  <span className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">
+                    {item.label}
+                  </span>
+                  <strong className="mt-2 block text-sm text-slate-950">{item.message}</strong>
+                  <p className="mt-1 text-xs leading-5 text-slate-600">{item.detail}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid gap-4 lg:grid-cols-2">
+            <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-4">
+              <p className="text-sm font-semibold text-slate-950">SEO / AIEO kümeleri</p>
+              <div className="mt-3 grid gap-2">
+                {seoIntentClusters.map((cluster) => (
+                  <AdminPrefetchLink
+                    key={cluster.cluster}
+                    href={cluster.href}
+                    className="rounded-2xl bg-white px-3 py-2 text-xs leading-5 text-slate-600 transition hover:bg-emerald-50 hover:text-[#063326]"
+                  >
+                    <b className="block text-slate-950">{cluster.cluster}</b>
+                    {cluster.query}
+                  </AdminPrefetchLink>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-[24px] border border-slate-200 bg-slate-950 p-4 text-white">
+              <p className="text-sm font-semibold text-emerald-200">Faz kontrol listesi</p>
+              <ol className="mt-3 space-y-2 text-xs leading-5 text-white/74">
+                {funnelAuditPhases.map((phase, index) => (
+                  <li key={phase} className="flex gap-2">
+                    <span className="font-semibold text-emerald-200">F{index}</span>
+                    <span>{phase}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {[

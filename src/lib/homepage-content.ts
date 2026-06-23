@@ -36,7 +36,7 @@ export const conversionRoutes = [
     title: "Her sabah hazır araç.",
     body: "Pano uygunluğu, araç uyumu ve 7.4/11 kW wallbox seçeneklerini hızlıca netleştirin.",
     href: "/magaza?segment=Ev",
-    cta: "Ev için seç",
+    cta: "Evime Uygun Cihazı Bul",
     accent: "7.4/11 kW"
   },
   {
@@ -45,7 +45,7 @@ export const conversionRoutes = [
     title: "Yönetime hazır çözüm.",
     body: "RFID, adil kullanım ve maliyet paylaşımı için yönetime sunulabilir teknik teklif alın.",
     href: "/kurumsal-cozumler/site-ve-apartman",
-    cta: "Site çözümünü planla",
+    cta: "Site İçin Keşif Planla",
     accent: "RFID + yönetim"
   },
   {
@@ -54,7 +54,7 @@ export const conversionRoutes = [
     title: "Otoparkı marka değerine çevirin.",
     body: "Çalışan, misafir ve filo kullanımı için 22 kW AC, raporlama ve servis destekli kurulum.",
     href: "/iletisim?reason=Kurumsal%20teklif",
-    cta: "İşletme teklifi al",
+    cta: "Kurumsal Teklif Al",
     accent: "OCPP"
   },
   {
@@ -63,7 +63,7 @@ export const conversionRoutes = [
     title: "Şarjı gelir modeline bağlayın.",
     body: "DC hızlı şarj veya çoklu AC yatırımında saha, trafo ve geri dönüş riskini azaltın.",
     href: "/iletisim?reason=Ticari%20lokasyon%20teklifi",
-    cta: "Fizibilite iste",
+    cta: "ROI Ön Fizibilite Al",
     accent: "Gelir modeli"
   },
   {
@@ -72,7 +72,7 @@ export const conversionRoutes = [
     title: "Araca uygun kabloyu seçin.",
     body: "Type 2 kablo, soket uyumu ve kablo uzunluğunu stok ve fiyatla birlikte görün.",
     href: "/magaza?category=Aksesuar",
-    cta: "Aksesuar seç",
+    cta: "Hemen Satın Al",
     accent: "Type 2"
   }
 ] as const;

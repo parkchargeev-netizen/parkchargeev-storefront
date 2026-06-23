@@ -2,10 +2,14 @@ export type ConversionEventName =
   | "add_to_cart"
   | "checkout_start"
   | "contact_submit"
+  | "checkout_paytr_submit"
   | "hero_cta_click"
   | "persona_route_click"
   | "product_filter_apply"
-  | "purchase_mode_select";
+  | "purchase_mode_select"
+  | "selector_result_click"
+  | "seo_intent_click"
+  | "store_quick_segment_click";
 
 type ConversionEventParams = Record<string, string | number | boolean | null | undefined>;
 

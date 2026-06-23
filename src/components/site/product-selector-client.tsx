@@ -4,8 +4,11 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { ArrowRight, CheckCircle2, Gauge, Home, MapPin, Zap } from "lucide-react";
 
+import { conversionDataAttributes } from "@/lib/conversion-events";
 import { formatPriceTRY } from "@/lib/format";
 import type { ProductModel } from "@/lib/mock-data";
+import { getProductStoreProfile } from "@/lib/shop-merchandising";
+import { trustMessages } from "@/lib/site-strategy";
 
 type SelectorValues = {
   parking: "home" | "apartment" | "business" | "fleet";
@@ -44,6 +47,13 @@ const vehicleCountOptions = [
   { value: "one", label: "1 araç" },
   { value: "few", label: "2-8 araç" },
   { value: "many", label: "8+ araç" }
+] as const;
+
+const selectorSteps = [
+  "Kurulum yeri",
+  "Elektrik altyapısı",
+  "Kullanım önceliği",
+  "Araç sayısı"
 ] as const;
 
 function scoreProduct(product: ProductModel, values: SelectorValues): ScoredProduct {
@@ -139,6 +149,18 @@ export function ProductSelectorClient({ products }: { products: ProductModel[] }
       .slice(0, 3);
   }, [products, values]);
   const topRecommendation = recommendations[0];
+  const topProfile = topRecommendation
+    ? getProductStoreProfile(topRecommendation.product)
+    : null;
+  const resultSummary =
+    topRecommendation && topProfile
+      ? [
+          ["Önerilen ürün", topRecommendation.product.name],
+          ["Önerilen güç", topRecommendation.product.powerLabel],
+          ["Kurulum ihtiyacı", topProfile.installationMode],
+          ["Sonraki adım", values.phase === "unknown" ? "Keşifle netleştir" : "Ürünü incele"]
+        ]
+      : [];
 
   function updateValue<Key extends keyof SelectorValues>(key: Key, value: SelectorValues[Key]) {
     setValues((current) => ({ ...current, [key]: value }));
@@ -153,6 +175,14 @@ export function ProductSelectorClient({ products }: { products: ProductModel[] }
         <h1 className="mt-4 text-4xl font-black tracking-[-0.06em] text-on-surface md:text-5xl">
           Aracınıza ve otoparkınıza göre doğru ürünü bulun
         </h1>
+        <ol className="selector-progress mt-6" aria-label="Ürün seçici akışı">
+          {selectorSteps.map((step, index) => (
+            <li key={step}>
+              <span>{index + 1}</span>
+              {step}
+            </li>
+          ))}
+        </ol>
 
         <div className="mt-8 space-y-8">
           <div>
@@ -287,6 +317,14 @@ export function ProductSelectorClient({ products }: { products: ProductModel[] }
                 Uygunluk {topRecommendation.score}
               </span>
             </div>
+            <div className="selector-result-summary mt-6">
+              {resultSummary.map(([label, value]) => (
+                <div key={label}>
+                  <span>{label}</span>
+                  <strong>{value}</strong>
+                </div>
+              ))}
+            </div>
             <div className="mt-6 grid gap-2">
               {topRecommendation.reasons.map((reason) => (
                 <div key={reason} className="flex items-center gap-2 text-sm text-white/80">
@@ -299,16 +337,32 @@ export function ProductSelectorClient({ products }: { products: ProductModel[] }
               <Link
                 href={`/urun/${topRecommendation.product.slug}`}
                 className="inline-flex items-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950"
+                {...conversionDataAttributes("selector_result_click", {
+                  productId: topRecommendation.product.id,
+                  cta: "Ürünü İncele ve Sepete Ekle"
+                })}
               >
-                Ürünü İncele
+                Ürünü İncele ve Sepete Ekle
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
-                href="/iletisim"
+                href={`/iletisim?reason=${encodeURIComponent(`${topRecommendation.product.name} keşif talebi`)}`}
                 className="rounded-2xl border border-white/20 px-5 py-3 text-sm font-semibold text-white"
+                {...conversionDataAttributes("selector_result_click", {
+                  productId: topRecommendation.product.id,
+                  cta: "Keşif Planla"
+                })}
               >
                 Keşif Planla
               </Link>
+            </div>
+            <div className="selector-trust-strip mt-6" aria-label="Seçici güven mesajları">
+              {trustMessages.slice(0, 3).map((message) => (
+                <span key={message}>
+                  <CheckCircle2 className="h-4 w-4" aria-hidden />
+                  {message}
+                </span>
+              ))}
             </div>
           </article>
         ) : null}
