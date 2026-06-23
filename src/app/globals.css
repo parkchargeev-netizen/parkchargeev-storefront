@@ -9499,6 +9499,10 @@ body {
 }
 
 .store-selector-launch b {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
   border-radius: 999px;
   background: var(--color-primary);
   padding: 0.72rem 1rem;
@@ -9560,6 +9564,15 @@ body {
   font-size: clamp(1.25rem, 2vw, 2rem);
   font-weight: 950;
   line-height: 1.08;
+}
+
+.store-selector-modal__intro {
+  margin-top: 0.5rem;
+  max-width: 48rem;
+  color: var(--color-on-surface-variant);
+  font-size: 0.9rem;
+  font-weight: 750;
+  line-height: 1.6;
 }
 
 .store-selector-modal__close {
@@ -9868,6 +9881,113 @@ body {
   padding: 0.52rem 0.68rem;
   color: white;
   font-size: 0.72rem;
+  font-weight: 950;
+}
+
+.store-selector-product-list {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 0.75rem;
+}
+
+.store-selector-product-card {
+  display: grid;
+  grid-template-columns: 7rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.8rem;
+  border: 1px solid rgba(6, 51, 38, 0.09);
+  border-radius: 1.05rem;
+  background: rgba(255, 255, 255, 0.82);
+  padding: 0.72rem;
+  box-shadow: 0 14px 34px rgba(6, 51, 38, 0.06);
+}
+
+.store-selector-product-card__media {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  min-height: 5.6rem;
+  border-radius: 0.85rem;
+  background: #063326;
+}
+
+.store-selector-product-card__media img,
+.store-selector-product-card__media .product-device-preview {
+  width: 100%;
+  height: 100%;
+  min-height: 5.6rem;
+  object-fit: cover;
+}
+
+.store-selector-product-card__media .product-device-preview {
+  aspect-ratio: auto;
+}
+
+.store-selector-product-card__media > span {
+  position: absolute;
+  left: 0.45rem;
+  bottom: 0.45rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.88);
+  padding: 0.22rem 0.42rem;
+  color: #063326;
+  font-size: 0.62rem;
+  font-weight: 950;
+}
+
+.store-selector-product-card__body {
+  min-width: 0;
+}
+
+.store-selector-product-card__body h3 {
+  margin-top: 0.38rem;
+  color: var(--color-on-surface);
+  font-size: 1rem;
+  font-weight: 950;
+  line-height: 1.14;
+}
+
+.store-selector-product-card__body p {
+  margin-top: 0.25rem;
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--color-on-surface-variant);
+  font-size: 0.76rem;
+  font-weight: 800;
+  line-height: 1.45;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.store-selector-product-card__action {
+  display: grid;
+  gap: 0.42rem;
+  justify-items: end;
+  min-width: 8.6rem;
+}
+
+.store-selector-product-card__action strong {
+  color: var(--color-primary);
+  font-size: 1.05rem;
+  font-weight: 950;
+}
+
+.store-selector-product-card__action small {
+  color: var(--color-on-surface-variant);
+  font-size: 0.68rem;
+  font-weight: 850;
+}
+
+.store-selector-product-card__action a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.32rem;
+  border-radius: 0.78rem;
+  background: var(--color-primary);
+  padding: 0.55rem 0.78rem;
+  color: white;
+  font-size: 0.76rem;
   font-weight: 950;
 }
 
@@ -10229,6 +10349,50 @@ body {
 
   .store-selector-result-card__action a {
     justify-content: center;
+  }
+
+  .store-selector-product-card {
+    grid-template-columns: 5.8rem minmax(0, 1fr);
+    align-items: start;
+    gap: 0.62rem;
+    padding: 0.58rem;
+  }
+
+  .store-selector-product-card__media {
+    min-height: 5rem;
+    border-radius: 0.72rem;
+  }
+
+  .store-selector-product-card__media img,
+  .store-selector-product-card__media .product-device-preview {
+    min-height: 5rem;
+  }
+
+  .store-selector-product-card__body h3 {
+    font-size: 0.88rem;
+  }
+
+  .store-selector-product-card__body p {
+    font-size: 0.68rem;
+    -webkit-line-clamp: 2;
+  }
+
+  .store-selector-product-card__action {
+    grid-column: 1 / -1;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    justify-items: stretch;
+    min-width: 0;
+    border-top: 1px solid rgba(6, 51, 38, 0.08);
+    padding-top: 0.55rem;
+  }
+
+  .store-selector-product-card__action small {
+    display: none;
+  }
+
+  .store-selector-product-card__action a {
+    min-height: 2.45rem;
   }
 
   .premium-universe-grid {

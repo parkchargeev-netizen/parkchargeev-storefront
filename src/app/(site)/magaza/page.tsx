@@ -282,7 +282,7 @@ export default async function StorePage({ searchParams }: StorePageProps) {
           </div>
         </div>
 
-        <StoreProductSelectorAccordion />
+        <StoreProductSelectorAccordion products={products} />
       </section>
 
       {activeFilterCount === 0 && featuredProducts.length > 0 ? (
