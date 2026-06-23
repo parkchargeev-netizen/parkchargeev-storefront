@@ -1,6 +1,12 @@
 import { solutionPages } from "@/lib/mock-data";
 import { serviceCoverageSummary } from "@/lib/service-coverage";
 import { absoluteUrl, siteConfig } from "@/lib/site";
+import {
+  personaCtaMatrix,
+  primarySiteMessages,
+  seoIntentClusters,
+  trustMessages
+} from "@/lib/site-strategy";
 import { listPublicProducts } from "@/server/admin/repository";
 import { listPublicBlogArticles } from "@/server/blog/repository";
 
@@ -46,6 +52,15 @@ export async function generateLlmsText() {
     (solution) =>
       `${absoluteUrl(`/kurumsal-cozumler/${solution.slug}`)} - ${solution.title}`
   );
+  const primaryMessages = primarySiteMessages.map(
+    (item) => `${item.message} ${item.detail}`
+  );
+  const personaRoutes = personaCtaMatrix.map(
+    (item) => `${item.persona}: ${item.cta} - ${absoluteUrl(item.href)} - ${item.intent}`
+  );
+  const seoClusters = seoIntentClusters.map(
+    (cluster) => `${cluster.cluster}: ${cluster.query} - ${absoluteUrl(cluster.href)}`
+  );
 
   return [
     `# ${siteConfig.name}`,
@@ -60,6 +75,18 @@ export async function generateLlmsText() {
     `- E-posta: ${siteConfig.email}`,
     `- Hizmet bölgeleri: ${siteConfig.serviceAreas.join(", ")}`,
     `- ${serviceCoverageSummary.shipping}; ${serviceCoverageSummary.freeSurvey}; ${serviceCoverageSummary.installation}`,
+    "",
+    "## Ana Mesajlar",
+    "",
+    lineList(primaryMessages),
+    "",
+    "## Persona Satış Rotaları",
+    "",
+    lineList(personaRoutes),
+    "",
+    "## SEO, GEO ve AIEO Kümeleri",
+    "",
+    lineList(seoClusters),
     "",
     "## Kanonik Sayfalar",
     "",
@@ -90,6 +117,16 @@ export async function generateLlmsText() {
     "- Organization, ProfessionalService, WebSite/SearchAction, Product, Offer, BreadcrumbList, FAQPage ve Article JSON-LD kullanılır.",
     "- Ürün sayfalarında fiyat, stok, teslimat, iade ve garanti bilgileri makine tarafından okunabilir biçimde sunulur.",
     "- İletişim sayfasında ofis adresi ve Google Maps konumu yer alır.",
+    "",
+    "## Güven ve Ödeme",
+    "",
+    lineList([
+      ...trustMessages,
+      "PayTR güvenli ödeme altyapısı kullanılır.",
+      "Kart bilgileri ParkChargeEV tarafında saklanmaz.",
+      "Sipariş tutarı sunucu tarafında yeniden hesaplanır.",
+      "Ödeme, sipariş ve kargo durumu panelden takip edilir."
+    ]),
     "",
     "## Kullanım Notu",
     "",
