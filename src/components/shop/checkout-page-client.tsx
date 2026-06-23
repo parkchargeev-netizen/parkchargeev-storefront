@@ -135,6 +135,59 @@ function normalizeDraft(value: unknown): CheckoutDraft {
   };
 }
 
+function normalizePhoneForPayment(value: string) {
+  const compact = value.trim().replace(/[^\d+]/g, "");
+  const plusSafe = compact.startsWith("+")
+    ? `+${compact.slice(1).replace(/\D/g, "")}`
+    : compact.replace(/\D/g, "");
+
+  return plusSafe.slice(0, 20);
+}
+
+function isValidCheckoutEmail(value: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+}
+
+function getCheckoutValidationError({
+  draft,
+  agreementAccepted,
+  itemCount
+}: {
+  draft: CheckoutDraft;
+  agreementAccepted: boolean;
+  itemCount: number;
+}) {
+  if (itemCount < 1) {
+    return "Sepetinizde ödeme yapılacak ürün bulunamadı.";
+  }
+
+  if (draft.fullName.trim().length < 2) {
+    return "Ad soyad bilgisini en az 2 karakter olacak şekilde girin.";
+  }
+
+  if (!isValidCheckoutEmail(draft.email)) {
+    return "Geçerli bir e-posta adresi girin.";
+  }
+
+  if (normalizePhoneForPayment(draft.phone).replace(/\D/g, "").length < 10) {
+    return "Telefon numarası en az 10 rakam içermelidir.";
+  }
+
+  if (!draft.city.trim()) {
+    return "Teslimat ili bilgisini girin.";
+  }
+
+  if (draft.address.trim().length < 5) {
+    return "Açık adresi en az 5 karakter olacak şekilde girin.";
+  }
+
+  if (!agreementAccepted) {
+    return "Ödeme ve sipariş bilgileri onay kutusunu işaretleyin.";
+  }
+
+  return null;
+}
+
 async function readCheckoutApiResponse<T extends object>(
   response: Response,
   fallbackMessage: string
@@ -177,14 +230,12 @@ export function CheckoutPageClient({
   const cartIntentFingerprint = `${draft.email}|${totalKurus}|${items
     .map((item) => `${item.productId}:${item.quantity}:${item.cableOption}`)
     .join("|")}`;
-  const isCheckoutInfoComplete = Boolean(
-    draft.fullName.trim() &&
-      draft.email.includes("@") &&
-      draft.phone.trim() &&
-      draft.city.trim() &&
-      draft.address.trim() &&
-      agreementAccepted
-  );
+  const checkoutValidationError = getCheckoutValidationError({
+    draft,
+    agreementAccepted,
+    itemCount: items.length
+  });
+  const isCheckoutInfoComplete = !checkoutValidationError;
   const hasPaidOrderStatus = isPaidOrderStatus(orderStatus);
   const hasTerminalOrderStatus = isTerminalOrderStatus(orderStatus);
 
@@ -328,10 +379,10 @@ export function CheckoutPageClient({
       email: draft.email.trim(),
       userName: draft.fullName.trim(),
       userAddress: addressParts.join(", "),
-      userPhone: draft.phone.trim(),
+      userPhone: normalizePhoneForPayment(draft.phone),
       items: items.map((item) => ({
         productId: item.productId,
-        cableOption: item.cableOption,
+        cableOption: item.cableOption.trim() || "Standart",
         quantity: item.quantity
       }))
     };
@@ -435,6 +486,17 @@ export function CheckoutPageClient({
   }
 
   async function handlePrepareDirectPayment(form: HTMLFormElement) {
+    const infoError = getCheckoutValidationError({
+      draft,
+      agreementAccepted,
+      itemCount: items.length
+    });
+
+    if (infoError) {
+      setError(infoError);
+      return;
+    }
+
     const cardData = getNormalizedCardData(form);
     const cardError = validateCardData(cardData);
 
@@ -498,6 +560,9 @@ export function CheckoutPageClient({
     event.preventDefault();
 
     if (!isCheckoutInfoComplete || isSubmitting) {
+      if (checkoutValidationError) {
+        setError(checkoutValidationError);
+      }
       return;
     }
 

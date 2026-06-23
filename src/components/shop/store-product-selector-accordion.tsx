@@ -4,7 +4,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { ArrowRight, CheckCircle2, SlidersHorizontal, Sparkles, X } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  CheckCircle2,
+  SlidersHorizontal,
+  Sparkles,
+  X
+} from "lucide-react";
 
 import { ProductDevicePreview } from "@/components/shop/product-device-preview";
 import { conversionDataAttributes } from "@/lib/conversion-events";
@@ -22,6 +29,7 @@ type SelectorState = {
 type SelectorField = {
   key: keyof SelectorState;
   label: string;
+  title: string;
   helper: string;
   options: Array<{
     value: SelectorState[keyof SelectorState];
@@ -39,40 +47,43 @@ const initialSelectorState: SelectorState = {
 const selectorFields: SelectorField[] = [
   {
     key: "useCase",
-    label: "Kullanım alanı",
-    helper: "Ürünü hangi senaryo için arıyorsunuz?",
+    label: "Kullanım",
+    title: "Şarj çözümünü nerede kullanacaksınız?",
+    helper: "Önce kullanım senaryosunu seçin; ürün listesi buna göre daralır.",
     options: [
-      { value: "all", label: "Tüm ürünler", detail: "Tüm ürünleri karşılaştır" },
+      { value: "all", label: "Emin değilim", detail: "Tüm ürünleri karşılaştır" },
       { value: "home", label: "Ev / villa", detail: "7.4 / 11 kW wallbox" },
-      { value: "site", label: "Site / apartman", detail: "Ortak otopark ve RFID" },
-      { value: "business", label: "İşletme / ofis", detail: "22 kW AC ve servis" },
-      { value: "dc", label: "DC hızlı şarj", detail: "Ticari lokasyon" },
-      { value: "accessory", label: "Aksesuar", detail: "Type 2 kablo / adaptör" }
+      { value: "site", label: "Site / apartman", detail: "Ortak otopark, RFID ve yük yönetimi" },
+      { value: "business", label: "İşletme / ofis", detail: "22 kW AC, servis ve raporlama" },
+      { value: "dc", label: "DC hızlı şarj", detail: "Ticari lokasyon ve yatırım" },
+      { value: "accessory", label: "Aksesuar", detail: "Type 2 kablo ve tamamlayıcı ürünler" }
     ]
   },
   {
     key: "power",
-    label: "Güç seviyesi",
-    helper: "İhtiyacınıza en yakın güç aralığını seçin.",
+    label: "Güç",
+    title: "Hangi güç seviyesi size daha yakın?",
+    helper: "Aracınız ve altyapınız net değilse “Emin değilim” seçeneğiyle devam edin.",
     options: [
-      { value: "all", label: "Tüm güç seviyeleri", detail: "Emin değilim" },
-      { value: "7.4 kW", label: "7.4 kW", detail: "Monofaze ev" },
-      { value: "11 kW", label: "11 kW", detail: "Dengeli ev/villa" },
-      { value: "22 kW", label: "22 kW", detail: "Site / ofis" },
-      { value: "DC", label: "DC", detail: "Hızlı şarj" },
-      { value: "Aksesuar", label: "Aksesuar", detail: "Kablo ve tamamlayıcı" }
+      { value: "all", label: "Emin değilim", detail: "Uygun ürünleri birlikte görelim" },
+      { value: "7.4 kW", label: "7.4 kW", detail: "Monofaze ev kullanımı" },
+      { value: "11 kW", label: "11 kW", detail: "Dengeli ev/villa tercihi" },
+      { value: "22 kW", label: "22 kW", detail: "Site, ofis ve ortak kullanım" },
+      { value: "DC", label: "DC", detail: "Hızlı şarj yatırımı" },
+      { value: "Aksesuar", label: "Aksesuar", detail: "Kablo, adaptör ve ekipman" }
     ]
   },
   {
     key: "installation",
-    label: "Kurulum yolu",
-    helper: "Satın alma veya keşif yolunu netleştirin.",
+    label: "Kurulum",
+    title: "Satın alma ve kurulum nasıl ilerlesin?",
+    helper: "Ürün kargosu 81 ile gider; keşif ve kurulum ihtiyacını burada netleştirin.",
     options: [
-      { value: "all", label: "Tüm kurulum yolları", detail: "Tüm yollar" },
-      { value: "quick", label: "Tak-çalıştır", detail: "Hızlı kullanım" },
-      { value: "fixed", label: "Sabit kurulum", detail: "Pano ve hat kontrolü" },
-      { value: "survey", label: "Keşif gerekli", detail: "Saha fizibilitesi" },
-      { value: "none", label: "Kurulumsuz", detail: "Aksesuar / kablo" }
+      { value: "all", label: "Emin değilim", detail: "Satın alma veya keşif seçeneklerini göster" },
+      { value: "quick", label: "Tak-çalıştır", detail: "Hızlı kullanım senaryosu" },
+      { value: "fixed", label: "Sabit kurulum", detail: "Pano ve hat kontrolü gerekir" },
+      { value: "survey", label: "Keşif gerekli", detail: "Saha uygunluğu netleşmeli" },
+      { value: "none", label: "Kurulumsuz", detail: "Aksesuar / kablo alımı" }
     ]
   }
 ];
@@ -179,10 +190,19 @@ function buildStoreFilterHref(state: SelectorState) {
   return query ? `/magaza?${query}` : "/magaza";
 }
 
+function getSelectedOptionLabel(field: SelectorField, state: SelectorState) {
+  const value = state[field.key];
+  return field.options.find((option) => option.value === value)?.label ?? "Emin değilim";
+}
+
 export function StoreProductSelectorAccordion({ products }: { products: ProductModel[] }) {
   const [mounted, setMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [activeStep, setActiveStep] = useState(0);
   const [state, setState] = useState<SelectorState>(initialSelectorState);
+  const resultStepIndex = selectorFields.length;
+  const isResultStep = activeStep === resultStepIndex;
+  const currentField = selectorFields[Math.min(activeStep, selectorFields.length - 1)];
 
   const filteredProducts = useMemo(() => {
     const scoredProducts = products
@@ -242,17 +262,31 @@ export function StoreProductSelectorAccordion({ products }: { products: ProductM
     }) as SelectorState);
   }
 
+  function openSelector() {
+    setActiveStep(0);
+    setIsOpen(true);
+  }
+
+  function closeSelector() {
+    setIsOpen(false);
+  }
+
+  function resetSelector() {
+    setState(initialSelectorState);
+    setActiveStep(0);
+  }
+
   const selectorWindow = isOpen ? (
     <div className="store-selector-modal store-selector-modal--window" role="presentation">
       <button
         type="button"
         className="store-selector-modal__backdrop"
         aria-label="Seçiciyi kapat"
-        onClick={() => setIsOpen(false)}
+        onClick={closeSelector}
       />
 
       <section
-        className="store-selector-modal__dialog store-selector-window-dialog"
+        className="store-selector-modal__dialog store-selector-window-dialog store-selector-step-dialog"
         role="dialog"
         aria-modal="true"
         aria-labelledby="store-selector-modal-title"
@@ -260,69 +294,132 @@ export function StoreProductSelectorAccordion({ products }: { products: ProductM
         <div className="store-selector-window-head">
           <div>
             <p className="premium-eyebrow">Elektrikli araç şarj seçicisi</p>
-            <h2 id="store-selector-modal-title">İhtiyacınızı seçin, uygun ürünleri görün.</h2>
-            <span>Bu pencere mağaza sayfasının üzerinde açılır; sayfa uzamaz.</span>
+            <h2 id="store-selector-modal-title">Doğru ürünü adım adım bulun.</h2>
+            <span>Kullanım alanı, güç ve kurulum ihtiyacını seçin; uygun ürünleri tek pencerede görün.</span>
           </div>
           <button
             type="button"
             className="store-selector-modal__close"
             aria-label="Seçiciyi kapat"
-            onClick={() => setIsOpen(false)}
+            onClick={closeSelector}
           >
             <X className="h-5 w-5" aria-hidden />
           </button>
         </div>
 
-        <div className="store-selector-window-layout">
-          <form className="store-selector-window-form" onSubmit={(event) => event.preventDefault()}>
-            <div className="store-selector-window-form__intro">
-              <strong>3 adımda daraltın</strong>
-              <span>Kullanım alanı, güç ve kurulum yolunu seçin; sonuçlar anında güncellensin.</span>
-            </div>
+        <div className="store-selector-stepper" aria-label="Seçici adımları">
+          {[...selectorFields, { label: "Sonuç", key: "result" }].map((step, index) => (
+            <button
+              key={step.key}
+              type="button"
+              className={`store-selector-stepper__item ${
+                index === activeStep ? "is-active" : ""
+              } ${index < activeStep ? "is-complete" : ""}`}
+              onClick={() => setActiveStep(index)}
+            >
+              <span>{index + 1}</span>
+              <strong>{step.label}</strong>
+            </button>
+          ))}
+        </div>
 
-            <div className="store-selector-window-fields">
-              {selectorFields.map((field) => (
-                <label key={field.key} className="store-selector-window-field">
-                  <span>{field.label}</span>
-                  <select
-                    value={state[field.key]}
-                    onChange={(event) => updateSelection(field.key, event.target.value)}
-                  >
-                    {field.options.map((option) => (
-                      <option key={`${field.key}-${option.value}`} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                  <small>
-                    {field.options.find((option) => option.value === state[field.key])?.detail ??
-                      field.helper}
-                  </small>
-                </label>
-              ))}
-            </div>
+        <div className="store-selector-step-layout">
+          <section className="store-selector-step-panel">
+            {isResultStep ? (
+              <>
+                <p className="premium-eyebrow">Seçim özeti</p>
+                <h3>Uygun ürünler hazır.</h3>
+                <p>
+                  {filteredProducts.length} ürün eşleşti. Mağazada filtreyi uygulayabilir veya
+                  önerilen ürünlerden birini inceleyebilirsiniz.
+                </p>
+                <div className="store-selector-summary-chips">
+                  {selectorFields.map((field) => (
+                    <span key={field.key}>
+                      <small>{field.label}</small>
+                      {getSelectedOptionLabel(field, state)}
+                    </span>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <>
+                <p className="premium-eyebrow">
+                  Adım {activeStep + 1} / {selectorFields.length}
+                </p>
+                <h3>{currentField.title}</h3>
+                <p>{currentField.helper}</p>
+                <div className="store-selector-choice-grid">
+                  {currentField.options.map((option) => {
+                    const isSelected = state[currentField.key] === option.value;
 
-            <div className="store-selector-window-status">
-              <span>{filteredProducts.length} ürün eşleşti</span>
-              <button type="button" onClick={() => setState(initialSelectorState)}>
+                    return (
+                      <button
+                        key={`${currentField.key}-${option.value}`}
+                        type="button"
+                        className={`store-selector-choice-card ${isSelected ? "is-selected" : ""}`}
+                        onClick={() => updateSelection(currentField.key, option.value)}
+                      >
+                        <span>{option.label}</span>
+                        <small>{option.detail}</small>
+                        {isSelected ? <CheckCircle2 className="h-4 w-4" aria-hidden /> : null}
+                      </button>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+
+            <div className="store-selector-step-actions">
+              <button
+                type="button"
+                className="store-selector-step-actions__ghost"
+                onClick={resetSelector}
+              >
                 Temizle
               </button>
-            </div>
-          </form>
+              <div>
+                <button
+                  type="button"
+                  className="store-selector-step-actions__secondary"
+                  disabled={activeStep === 0}
+                  onClick={() => setActiveStep((step) => Math.max(0, step - 1))}
+                >
+                  <ArrowLeft className="h-4 w-4" aria-hidden />
+                  Geri
+                </button>
+                <button
+                  type="button"
+                  className="store-selector-step-actions__primary"
+                  onClick={() => {
+                    if (isResultStep) {
+                      closeSelector();
+                      return;
+                    }
 
-          <section className="store-selector-window-results" aria-label="Filtrelenen ürünler">
+                    setActiveStep((step) => Math.min(resultStepIndex, step + 1));
+                  }}
+                >
+                  {isResultStep ? "Pencereyi Kapat" : "Devam Et"}
+                  {!isResultStep ? <ArrowRight className="h-4 w-4" aria-hidden /> : null}
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <section className="store-selector-step-results" aria-label="Filtrelenen ürünler">
             <div className="store-selector-window-results__head">
               <div>
-                <p className="premium-eyebrow">Önerilen ürünler</p>
-                <h3>Seçiminize göre en uygunlar</h3>
+                <p className="premium-eyebrow">Canlı sonuç</p>
+                <h3>{filteredProducts.length} ürün eşleşti</h3>
               </div>
-              <Link href={filterHref} onClick={() => setIsOpen(false)}>
+              <Link href={filterHref} onClick={closeSelector}>
                 Mağazada uygula
                 <ArrowRight className="h-4 w-4" aria-hidden />
               </Link>
             </div>
 
-            <div className="store-selector-window-list">
+            <div className="store-selector-window-list" aria-live="polite">
               {visibleProducts.map(({ product, profile, score, reasons }, index) => {
                 const imageUrl = getDisplayProductImageUrl(product.imageUrl);
                 const confidenceScore = Math.min(98, Math.max(54, score));
@@ -332,7 +429,7 @@ export function StoreProductSelectorAccordion({ products }: { products: ProductM
                     <Link
                       href={`/urun/${product.slug}`}
                       className="store-selector-window-card__media"
-                      onClick={() => setIsOpen(false)}
+                      onClick={closeSelector}
                     >
                       {imageUrl ? (
                         <Image
@@ -372,9 +469,9 @@ export function StoreProductSelectorAccordion({ products }: { products: ProductM
                       <strong>{formatPriceTRY(product.priceKurus)}</strong>
                       <Link
                         href={`/urun/${product.slug}`}
-                        onClick={() => setIsOpen(false)}
+                        onClick={closeSelector}
                         {...conversionDataAttributes("selector_result_click", {
-                          source: "store_modal_window",
+                          source: "store_step_modal",
                           productId: product.id,
                           score
                         })}
@@ -398,9 +495,9 @@ export function StoreProductSelectorAccordion({ products }: { products: ProductM
       <button
         type="button"
         className="store-selector-launch"
-        onClick={() => setIsOpen(true)}
+        onClick={openSelector}
         {...conversionDataAttributes("selector_open", {
-          source: "store_modal_window"
+          source: "store_step_modal"
         })}
       >
         <span className="store-selector-launch__icon">
@@ -408,7 +505,7 @@ export function StoreProductSelectorAccordion({ products }: { products: ProductM
         </span>
         <span className="store-selector-launch__copy">
           <strong>Elektrikli araç şarj seçicisi</strong>
-          <small>Butona basınca mağaza üstünde ayrı pencere açılır.</small>
+          <small>Adım adım ilerleyin; uygun ürünleri aynı pencerede görün.</small>
         </span>
         <b>
           Seçiciyi Aç

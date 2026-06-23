@@ -15,12 +15,23 @@ export const paytrCheckoutRequestSchema = z.object({
   email: z.string().trim().email().max(100),
   userName: z.string().trim().min(2).max(60),
   userAddress: z.string().trim().min(5).max(400),
-  userPhone: z.string().trim().min(10).max(20),
+  userPhone: z
+    .string()
+    .trim()
+    .min(10)
+    .max(20)
+    .refine((value) => value.replace(/\D/g, "").length >= 10),
   items: z
     .array(
       z.object({
         productId: z.string().trim().min(1).max(160),
-        cableOption: z.string().trim().min(1).max(180),
+        cableOption: z.preprocess(
+          (value) => {
+            const normalized = typeof value === "string" ? value.trim() : "";
+            return normalized || "Standart";
+          },
+          z.string().trim().min(1).max(180)
+        ),
         quantity: z.number().int().positive().max(99)
       })
     )
@@ -123,9 +134,10 @@ async function priceCheckoutItems(items: PaytrCheckoutRequest["items"]) {
       );
     }
 
-    const selectedOption = getProductCableOptions(product).find(
-      (option) => option.label === item.cableOption
-    );
+    const cableOptions = getProductCableOptions(product);
+    const selectedOption =
+      cableOptions.find((option) => option.label === item.cableOption) ??
+      (item.cableOption === "Standart" ? cableOptions[0] : undefined);
 
     if (!selectedOption) {
       throw new PaytrCheckoutPricingError(

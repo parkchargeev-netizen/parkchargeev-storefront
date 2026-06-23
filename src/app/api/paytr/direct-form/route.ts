@@ -21,6 +21,35 @@ import {
   getPaytrTokenRateLimitKey
 } from "@/server/paytr/rate-limit";
 
+function formatPaytrCheckoutIssues(error: ZodError) {
+  const fieldErrors = error.flatten().fieldErrors;
+  const messages: string[] = [];
+
+  if (fieldErrors.email?.length) {
+    messages.push("e-posta adresini kontrol edin");
+  }
+
+  if (fieldErrors.userName?.length) {
+    messages.push("ad soyad en az 2 karakter olmalıdır");
+  }
+
+  if (fieldErrors.userPhone?.length) {
+    messages.push("telefon numarası en az 10 rakam içermelidir");
+  }
+
+  if (fieldErrors.userAddress?.length) {
+    messages.push("açık adres en az 5 karakter olmalıdır");
+  }
+
+  if (fieldErrors.items?.length) {
+    messages.push("sepetinizde geçerli ürün bulunmalıdır");
+  }
+
+  return messages.length > 0
+    ? `Ödeme bilgileri eksik veya geçersiz: ${messages.join(", ")}.`
+    : "Ödeme bilgileri eksik veya geçersiz. Lütfen bilgilerinizi kontrol edin.";
+}
+
 export async function POST(request: Request) {
   const startedAt = Date.now();
   let createdMerchantOid: string | null = null;
@@ -148,7 +177,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           ok: false,
-          message: "Ödeme bilgileri eksik veya geçersiz.",
+          message: formatPaytrCheckoutIssues(error),
           issues: error.flatten()
         },
         { status: 400 }
