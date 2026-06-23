@@ -13,6 +13,8 @@ Bu klasör, `Technical-Architecture-Test-Pack` içeriğinin ParkChargeEV Next.js
 - Performans, ölçeklenebilirlik ve gözlemlenebilirlik
 - Test kalitesi ve release readiness
 
+Canlıya alma operasyon runbook'u için: `../canliya-alma-entegrasyonu.md`
+
 ## Kullanım Sırası
 
 1. `01-Master-Technical-Audit-Prompt.md`

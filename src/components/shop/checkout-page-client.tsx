@@ -7,7 +7,7 @@ import {
   ShieldCheck,
   Truck
 } from "lucide-react";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 
 import { useCart } from "@/components/providers/cart-provider";
 import { CheckoutEmptyCartPanel, CheckoutLoadingPanel } from "@/components/shop/checkout-empty-cart-panel";
@@ -227,6 +227,9 @@ export function CheckoutPageClient({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCheckingStatus, setIsCheckingStatus] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const returnEventTrackedRef = useRef(false);
+  const abandonIntentTrackedRef = useRef(false);
+  const trackedOrderStatusRef = useRef<string | null>(null);
   const cartIntentFingerprint = `${draft.email}|${totalKurus}|${items
     .map((item) => `${item.productId}:${item.quantity}:${item.cableOption}`)
     .join("|")}`;
@@ -257,6 +260,77 @@ export function CheckoutPageClient({
   useEffect(() => {
     window.localStorage.setItem(CHECKOUT_STORAGE_KEY, JSON.stringify(draft));
   }, [draft]);
+
+  useEffect(() => {
+    if (returnEventTrackedRef.current || !initialStatus) {
+      return;
+    }
+
+    const normalizedStatus = initialStatus.toLowerCase();
+
+    if (normalizedStatus !== "success" && normalizedStatus !== "failed") {
+      return;
+    }
+
+    returnEventTrackedRef.current = true;
+    trackConversionEvent(
+      normalizedStatus === "success" ? "paytr_return_success" : "paytr_return_failed",
+      {
+        merchantOid: initialMerchantOid ?? merchantOid ?? null,
+        source: "return_url"
+      }
+    );
+  }, [initialMerchantOid, initialStatus, merchantOid]);
+
+  useEffect(() => {
+    if (
+      !isHydrated ||
+      items.length === 0 ||
+      merchantOid ||
+      hasPaidOrderStatus ||
+      hasTerminalOrderStatus
+    ) {
+      return;
+    }
+
+    function handleVisibilityChange() {
+      if (document.visibilityState !== "hidden" || abandonIntentTrackedRef.current) {
+        return;
+      }
+
+      const hasEmail = isValidCheckoutEmail(draft.email);
+      const hasPhone = normalizePhoneForPayment(draft.phone).replace(/\D/g, "").length >= 10;
+
+      if (!hasEmail && !hasPhone) {
+        return;
+      }
+
+      abandonIntentTrackedRef.current = true;
+      trackConversionEvent("checkout_abandon_intent", {
+        itemCount: items.length,
+        totalKurus,
+        city: draft.city || null,
+        hasEmail,
+        hasPhone
+      });
+    }
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [
+    draft.city,
+    draft.email,
+    draft.phone,
+    hasPaidOrderStatus,
+    hasTerminalOrderStatus,
+    isHydrated,
+    items.length,
+    merchantOid,
+    totalKurus
+  ]);
 
   useEffect(() => {
     if (!isHydrated || items.length === 0 || !draft.email.includes("@")) {
@@ -321,6 +395,23 @@ export function CheckoutPageClient({
         if (!isCancelled) {
           setError(null);
           setOrderStatus(result);
+
+          const statusFingerprint = [
+            targetMerchantOid,
+            result.orderStatus,
+            result.paymentStatus,
+            result.transactionStatus ?? ""
+          ].join(":");
+
+          if (trackedOrderStatusRef.current !== statusFingerprint) {
+            trackedOrderStatusRef.current = statusFingerprint;
+            trackConversionEvent("order_status_poll", {
+              merchantOid: targetMerchantOid,
+              orderStatus: result.orderStatus,
+              paymentStatus: result.paymentStatus,
+              transactionStatus: result.transactionStatus
+            });
+          }
         }
       } catch (statusError) {
         if (!isCancelled) {
@@ -494,6 +585,13 @@ export function CheckoutPageClient({
 
     if (infoError) {
       setError(infoError);
+      trackConversionEvent("checkout_validation_error", {
+        area: "checkout_info",
+        message: infoError,
+        itemCount: items.length,
+        totalKurus,
+        city: draft.city || null
+      });
       return;
     }
 
@@ -502,6 +600,13 @@ export function CheckoutPageClient({
 
     if (cardError) {
       setError(cardError);
+      trackConversionEvent("checkout_validation_error", {
+        area: "card",
+        message: cardError,
+        itemCount: items.length,
+        totalKurus,
+        city: draft.city || null
+      });
       return;
     }
 
@@ -562,6 +667,13 @@ export function CheckoutPageClient({
     if (!isCheckoutInfoComplete || isSubmitting) {
       if (checkoutValidationError) {
         setError(checkoutValidationError);
+        trackConversionEvent("checkout_validation_error", {
+          area: "checkout_info",
+          message: checkoutValidationError,
+          itemCount: items.length,
+          totalKurus,
+          city: draft.city || null
+        });
       }
       return;
     }

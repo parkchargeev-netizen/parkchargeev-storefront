@@ -4,6 +4,7 @@ Bu klasör, `UI-UX-Test-Pack` içeriğinin ParkChargeEV e-ticaret sitesi ve admi
 
 ## Kullanım Sırası
 
+0. `parkchargeev-2026-canli-pazar-persona-ux-satis-raporu.md`
 1. `01-Master-UI-UX-QA-Checklist.md`
 2. `02-Heuristic-UX-Audit-Prompt.md`
 3. `03-Full-UI-Consistency-Audit-Prompt.md`

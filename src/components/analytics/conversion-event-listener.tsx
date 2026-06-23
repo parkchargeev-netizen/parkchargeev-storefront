@@ -3,20 +3,13 @@
 import { useEffect } from "react";
 
 import {
+  conversionEventNames,
   trackConversionEvent,
   type ConversionEventName
 } from "@/lib/conversion-events";
 
 function isConversionEventName(value: string): value is ConversionEventName {
-  return [
-    "add_to_cart",
-    "checkout_start",
-    "contact_submit",
-    "hero_cta_click",
-    "persona_route_click",
-    "product_filter_apply",
-    "purchase_mode_select"
-  ].includes(value);
+  return (conversionEventNames as readonly string[]).includes(value);
 }
 
 function parsePayload(value: string | null | undefined) {
