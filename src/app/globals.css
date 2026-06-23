@@ -9991,6 +9991,186 @@ body {
   font-weight: 950;
 }
 
+.store-selector-form-dialog {
+  overflow: hidden;
+}
+
+.store-selector-form-tab {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid rgba(6, 51, 38, 0.1);
+  background:
+    radial-gradient(circle at 12% 18%, rgba(126, 236, 201, 0.28), transparent 18rem),
+    rgba(255, 255, 255, 0.92);
+  padding: 1rem;
+}
+
+.store-selector-form-tab h2 {
+  margin-top: 0.18rem;
+  color: var(--color-on-surface);
+  font-size: clamp(1.25rem, 2.2vw, 2rem);
+  font-weight: 950;
+  line-height: 1.08;
+}
+
+.store-selector-form-body {
+  display: grid;
+  gap: 1rem;
+  max-height: calc(100dvh - 9rem);
+  overflow: auto;
+  padding: 1rem;
+}
+
+.store-selector-form {
+  border: 1px solid rgba(6, 51, 38, 0.1);
+  border-radius: 1.25rem;
+  background: rgba(255, 255, 255, 0.82);
+  padding: 1rem;
+}
+
+.store-selector-form__copy {
+  display: grid;
+  gap: 0.24rem;
+}
+
+.store-selector-form__copy strong {
+  color: var(--color-on-surface);
+  font-size: 1.05rem;
+  font-weight: 950;
+}
+
+.store-selector-form__copy span {
+  color: var(--color-on-surface-variant);
+  font-size: 0.82rem;
+  font-weight: 780;
+  line-height: 1.5;
+}
+
+.store-selector-form-fields {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 1rem;
+}
+
+.store-selector-form-field {
+  display: grid;
+  min-width: 0;
+  gap: 0.42rem;
+}
+
+.store-selector-form-field span {
+  color: var(--color-on-surface);
+  font-size: 0.78rem;
+  font-weight: 950;
+}
+
+.store-selector-form-field select {
+  width: 100%;
+  min-height: 3rem;
+  border: 1px solid rgba(6, 51, 38, 0.14);
+  border-radius: 0.95rem;
+  background: white;
+  padding: 0 0.85rem;
+  color: var(--color-on-surface);
+  font-size: 0.92rem;
+  font-weight: 850;
+  outline: none;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.store-selector-form-field select:focus {
+  border-color: rgba(15, 143, 111, 0.52);
+  box-shadow: 0 0 0 4px rgba(126, 236, 201, 0.16);
+}
+
+.store-selector-form-field small {
+  color: var(--color-on-surface-variant);
+  font-size: 0.68rem;
+  font-weight: 780;
+  line-height: 1.35;
+}
+
+.store-selector-form-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+  margin-top: 1rem;
+  border-radius: 1rem;
+  background: rgba(229, 255, 245, 0.76);
+  padding: 0.7rem;
+}
+
+.store-selector-form-status span {
+  color: var(--color-primary);
+  font-size: 0.8rem;
+  font-weight: 950;
+}
+
+.store-selector-form-status button {
+  border: 1px solid rgba(6, 51, 38, 0.14);
+  border-radius: 999px;
+  background: white;
+  padding: 0.45rem 0.72rem;
+  color: var(--color-primary);
+  font-size: 0.72rem;
+  font-weight: 950;
+}
+
+.store-selector-form-results {
+  border: 1px solid rgba(6, 51, 38, 0.1);
+  border-radius: 1.25rem;
+  background: rgba(255, 255, 255, 0.76);
+  padding: 1rem;
+}
+
+.store-selector-form-results__head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.store-selector-form-results__head h3 {
+  margin-top: 0.2rem;
+  color: var(--color-on-surface);
+  font-size: 1.15rem;
+  font-weight: 950;
+}
+
+.store-selector-form-results__head a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 0.9rem;
+  background: var(--color-primary);
+  padding: 0.72rem 0.9rem;
+  color: white;
+  font-size: 0.78rem;
+  font-weight: 950;
+  white-space: nowrap;
+}
+
+.store-selector-product-list--form {
+  max-height: 22rem;
+  overflow: auto;
+  padding-right: 0.2rem;
+}
+
+.store-selector-product-card--form {
+  grid-template-columns: 6.5rem minmax(0, 1fr) auto;
+}
+
+.store-selector-product-card--form .store-selector-product-card__media,
+.store-selector-product-card--form .store-selector-product-card__media img,
+.store-selector-product-card--form .store-selector-product-card__media .product-device-preview {
+  min-height: 5.2rem;
+}
+
 .store-selector-panel__footer {
   display: flex;
   flex-wrap: wrap;
@@ -11048,7 +11228,7 @@ body {
   }
 }
 
-/* Final requested cleanup: contrast, simplified store header, true fullscreen selector */
+/* Final requested cleanup: contrast, simplified store header, form-tab selector */
 .premium-funnel-shell .premium-eyebrow,
 .premium-install-section .premium-eyebrow,
 .premium-final-cta .premium-eyebrow {
@@ -11087,21 +11267,28 @@ body {
   justify-content: flex-start !important;
 }
 
-.store-selector-modal {
-  width: 100vw !important;
-  height: 100dvh !important;
-  padding: 0 !important;
-  place-items: stretch !important;
+.store-selector-modal--form {
+  width: auto !important;
+  height: auto !important;
+  overflow-y: auto !important;
+  padding: clamp(0.75rem, 2vw, 1.4rem) !important;
+  place-items: start center !important;
 }
 
-.store-selector-modal__dialog {
-  width: 100vw !important;
-  max-width: none !important;
-  height: 100dvh !important;
-  max-height: none !important;
-  min-height: 100dvh !important;
-  border-radius: 0 !important;
-  overflow: auto !important;
+.store-selector-modal--form .store-selector-modal__dialog {
+  width: min(980px, calc(100vw - 1.5rem)) !important;
+  max-width: 980px !important;
+  height: auto !important;
+  max-height: calc(100dvh - 1.5rem) !important;
+  min-height: 0 !important;
+  border: 1px solid rgba(255, 255, 255, 0.24) !important;
+  border-radius: 1.45rem !important;
+  background:
+    radial-gradient(circle at 8% 4%, rgba(126, 236, 201, 0.22), transparent 22rem),
+    linear-gradient(180deg, rgba(247, 255, 251, 0.98), rgba(237, 248, 243, 0.96)) !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  box-shadow: 0 34px 100px rgba(2, 14, 12, 0.32) !important;
 }
 
 @media (max-width: 767px) {
@@ -11116,7 +11303,66 @@ body {
     display: none;
   }
 
-  .store-selector-modal__dialog {
-    padding: 0.55rem !important;
+  .store-selector-modal--form {
+    padding: 0.5rem !important;
+    align-items: start !important;
+  }
+
+  .store-selector-modal--form .store-selector-modal__dialog {
+    width: calc(100vw - 1rem) !important;
+    max-height: calc(100dvh - 1rem) !important;
+    border-radius: 1rem !important;
+  }
+
+  .store-selector-form-tab {
+    padding: 0.82rem;
+  }
+
+  .store-selector-form-tab h2 {
+    font-size: 1.08rem;
+  }
+
+  .store-selector-form-body {
+    max-height: calc(100dvh - 6.5rem);
+    padding: 0.72rem;
+  }
+
+  .store-selector-form {
+    border-radius: 0.95rem;
+    padding: 0.75rem;
+  }
+
+  .store-selector-form-fields {
+    grid-template-columns: 1fr;
+    gap: 0.62rem;
+  }
+
+  .store-selector-form-field select {
+    min-height: 2.75rem;
+    border-radius: 0.82rem;
+    font-size: 0.86rem;
+  }
+
+  .store-selector-form-results {
+    border-radius: 0.95rem;
+    padding: 0.75rem;
+  }
+
+  .store-selector-form-results__head {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .store-selector-form-results__head a {
+    justify-content: center;
+  }
+
+  .store-selector-product-list--form {
+    max-height: 18rem;
+  }
+
+  .store-selector-product-card--form {
+    grid-template-columns: 5.4rem minmax(0, 1fr);
   }
 }
