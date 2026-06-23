@@ -16,6 +16,66 @@ export const primarySiteMessages = [
   }
 ] as const;
 
+export const decisionUniverses = [
+  {
+    label: "Evren A",
+    title: "Hızlı satın alma",
+    audience: "Aksesuar ve hazır ürün alıcısı",
+    trigger: "Fiyat, stok, 81 il kargo ve hızlı sepet görünürse satın alma hızlanır.",
+    design: "Kompakt ürün kartı, yatay ürün rayı, mobil sticky sepet ve kısa güven çipleri.",
+    metric: "PDP tıklama + sepete ekleme",
+    href: "/magaza",
+    cta: "Mağazayı Aç"
+  },
+  {
+    label: "Evren B",
+    title: "Uygunluk rehberi",
+    audience: "Yeni EV sahibi ve ev tipi wallbox alıcısı",
+    trigger: "Pano, faz, soket ve güç belirsizliği azaltılırsa keşif veya sepete ekleme artar.",
+    design: "4 soruluk seçici, önerilen güç, önerilen ürün ve keşif CTA'sı.",
+    metric: "Seçici tamamlama + keşif talebi",
+    href: "/urun-secici",
+    cta: "Ürün Seçici"
+  },
+  {
+    label: "Evren C",
+    title: "Kurumsal karar",
+    audience: "Site yöneticisi, işletme, filo ve yatırımcı",
+    trigger: "Teklif, saha keşfi, RFID/OCPP ve ROI dili netleşirse lead kalitesi yükselir.",
+    design: "Segment kartları, teklif formu, teknik gereksinim özeti ve yönetim dili.",
+    metric: "Teklif formu + saha görüşmesi",
+    href: "/iletisim?reason=Kurumsal%20teklif",
+    cta: "Teklif Al"
+  }
+] as const;
+
+export const premiumExperiencePillars = [
+  {
+    label: "Güven konsolu",
+    title: "Ödeme, kargo ve kurulum sinyali aynı ekranda.",
+    body: "PayTR, 81 il kargo, uzman destek ve sipariş takibi görünür kalarak satın alma kaygısını azaltır.",
+    proof: "Risk azaltma"
+  },
+  {
+    label: "Karar motoru",
+    title: "Kullanıcı ürün aramaz; uygun çözüm yolunu seçer.",
+    body: "Ev, site, işletme ve aksesuar alıcısı farklı karar evrenlerine ayrılır; mağaza seçici ilgili ürünleri öne çıkarır.",
+    proof: "Daha hızlı yön bulma"
+  },
+  {
+    label: "E-ticaret hızı",
+    title: "Fiyat, stok, CTA ve ürün kanıtı gereksiz metinden önce gelir.",
+    body: "Kompakt kartlar, hızlı filtreler, mobil satın alma bari ve kısa ürün özeti satış sürtünmesini düşürür.",
+    proof: "Sepete ekleme odağı"
+  },
+  {
+    label: "Operasyon takibi",
+    title: "Sipariş, keşif, kurulum ve destek tek yolculukta izlenir.",
+    body: "Müşteri paneli ve admin akışı satış sonrası güveni tamamlayan servis işletim sistemi gibi çalışır.",
+    proof: "Satış sonrası güven"
+  }
+] as const;
+
 export const personaCtaMatrix = [
   {
     persona: "Ev kullanıcısı",

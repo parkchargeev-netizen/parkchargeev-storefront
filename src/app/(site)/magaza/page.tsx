@@ -3,6 +3,7 @@ import { Headphones, Search, ShieldCheck, SlidersHorizontal, Truck, X } from "lu
 import Link from "next/link";
 
 import { ProductCard } from "@/components/shop/product-card";
+import { StoreProductSelectorAccordion } from "@/components/shop/store-product-selector-accordion";
 import { conversionDataAttributes } from "@/lib/conversion-events";
 import { absoluteUrl } from "@/lib/site";
 import { seoIntentClusters } from "@/lib/site-strategy";
@@ -323,6 +324,8 @@ export default async function StorePage({ searchParams }: StorePageProps) {
             })}
           </div>
         </div>
+
+        <StoreProductSelectorAccordion products={products} />
 
         <div className="store-commerce-strip mt-4" aria-label="Mağaza kategori hızlı filtreleri">
           <div className="flex items-center justify-between gap-4">

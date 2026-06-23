@@ -32,7 +32,9 @@ import {
   type HomeIconKey
 } from "@/lib/homepage-content";
 import {
+  decisionUniverses,
   personaCtaMatrix,
+  premiumExperiencePillars,
   primarySiteMessages,
   seoIntentClusters,
   trustMessages
@@ -371,18 +373,57 @@ function StrategyIntentSection() {
           <div className="premium-strategy-shell__head">
             <SectionHeading
               eyebrow="Karar evrenleri"
-              title="Aradığınız niyet neyse, satış yolu oradan başlar."
-              body="Ev kullanıcısı, aksesuar alıcısı, site yöneticisi ve işletme karar vericisi aynı sayfada kaybolmaz; her rota kendi karar bilgisi ve CTA'sı ile ilerler."
+              title="Her kullanıcıyı aynı sayfada yormadan doğru satış yoluna alın."
+              body="Araştırma çıktısını üç ana evrene indiriyoruz: hızlı satın alma, uygunluk rehberi ve kurumsal karar. Kazanan ortak tasarım bu üç evrenin en hızlı parçalarını birleştirir."
             />
-            <div className="premium-strategy-messages" aria-label="ParkChargeEV ana mesajları">
-              {primarySiteMessages.map((item) => (
-                <article key={item.label}>
-                  <span>{item.label}</span>
-                  <strong>{item.message}</strong>
-                  <small>{item.detail}</small>
+            <div className="premium-universe-grid" aria-label="Test edilen karar evrenleri">
+              {decisionUniverses.map((universe) => (
+                <article key={universe.title} className="premium-universe-card">
+                  <span>{universe.label}</span>
+                  <strong>{universe.title}</strong>
+                  <small>{universe.audience}</small>
+                  <p>{universe.trigger}</p>
+                  <b>{universe.design}</b>
+                  <em>{universe.metric}</em>
+                  <Link href={universe.href}>
+                    {universe.cta}
+                    <ArrowRight className="h-4 w-4" aria-hidden />
+                  </Link>
                 </article>
               ))}
             </div>
+          </div>
+
+          <div className="premium-experience-console" aria-label="Premium deneyim protokolü">
+            <div className="premium-experience-console__head">
+              <span>Premium protokol</span>
+              <strong>Güven, karar ve satın alma hızı aynı sistemde birleşir.</strong>
+              <small>
+                Tesla/Apple sadeliğini, e-ticaret hızını ve EV kurulum uzmanlığını tek ParkChargeEV
+                yolculuğunda topluyoruz.
+              </small>
+            </div>
+
+            <div className="premium-experience-pillar-grid">
+              {premiumExperiencePillars.map((pillar) => (
+                <article key={pillar.label} className="premium-experience-pillar">
+                  <span>{pillar.label}</span>
+                  <strong>{pillar.title}</strong>
+                  <p>{pillar.body}</p>
+                  <small>{pillar.proof}</small>
+                </article>
+              ))}
+            </div>
+          </div>
+
+          <div className="premium-strategy-messages premium-strategy-messages--inline" aria-label="ParkChargeEV ana mesajları">
+            {primarySiteMessages.map((item) => (
+              <article key={item.label}>
+                <span>{item.label}</span>
+                <strong>{item.message}</strong>
+                <small>{item.detail}</small>
+              </article>
+            ))}
           </div>
 
           <div className="premium-persona-cta-grid" aria-label="Persona bazlı hızlı satış yolları">

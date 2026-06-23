@@ -1048,3 +1048,133 @@ Güven
 ```
 
 Bu yapı bütün personaları tek sayfada aynı mesaja zorlamaz. Her kullanıcı kendi karar evrenine girer; kazanan parçalar ortak bir ParkChargeEV deneyiminde birleşir.
+
+## 25. 23 Haziran 2026 Uygulama Notu
+
+Bu turda rapordaki strateji kod tarafında iki kritik satış yüzeyine taşındı: ana sayfa karar evrenleri ve mağaza girişindeki açılır ürün seçici. Amaç, kullanıcıyı uzun metinlerle yormadan kendi satın alma evrenine alıp ilgili ürünleri hızlıca göstermektir.
+
+### 25.1 Ana Sayfa Karar Evrenleri
+
+Ana sayfadaki karar evrenleri üç net satış rotasına indirildi:
+
+| Evren | Hedef kullanıcı | Satış davranışı | Arayüz kararı |
+|---|---|---|---|
+| Hızlı satın alma | Aksesuar, kablo ve stoktan ürün arayan kullanıcı | Fiyat, stok, kargo ve hızlı inceleme görürse ilerler | Kompakt kart, kısa güven mesajı ve doğrudan mağaza CTA'sı |
+| Uygunluk rehberi | Ev tipi wallbox alıcısı ve yeni EV sahibi | Pano, faz, soket ve güç belirsizliği azalırsa dönüşür | Ürün seçici ve uygunluk kontrolü CTA'sı |
+| Kurumsal karar | Site yönetimi, işletme, filo ve yatırımcı | Teknik güven, teklif ve saha keşfi netleşirse lead bırakır | Kurumsal teklif, RFID/OCPP ve saha dili |
+
+Bu yapı ana sayfada aynı anda hem e-ticaret hızını hem de uzman danışmanlık hissini verir. “Herkese aynı mesaj” yerine kullanıcının karar yükünü azaltan üç kapı oluşturur.
+
+### 25.2 Mağaza Girişinde Açılır Şarj Aleti Seçici
+
+Mağaza girişine açılır sekme olarak “Elektrikli şarj aleti seçici” eklendi. Kullanıcı dört kısa soruyla ilgili ürün listesine ulaşır:
+
+1. Kullanım alanı: ev/villa, site, işletme, aksesuar.
+2. Altyapı bilgisi: monofaze, trifaze, yüksek güç veya emin değilim.
+3. Satın alma niyeti: satın al, keşif, ortak kullanım veya yatırım.
+4. Öncelik: denge, hız veya kolaylık.
+
+Seçici, ürünleri şu sinyallere göre puanlar:
+
+- kategori,
+- güç seviyesi,
+- stok durumu,
+- kurulum ihtiyacı,
+- kullanım alanı,
+- ortak kullanım / RFID / OCPP gibi kurumsal sinyaller,
+- aksesuar veya DC yatırım niyeti.
+
+Sonuç ekranında en alakalı dört ürün kısa nedenlerle gösterilir. Bu yapı Trendyol/Hepsiburada tarzı hızlı listeleme refleksini, EV şarj sektöründeki teknik uygunluk ihtiyacıyla birleştirir.
+
+### 25.3 Ölçüm ve CRO Mantığı
+
+Yeni alanlarda conversion event altyapısı kullanıldı:
+
+- `persona_route_click`: persona/evren rotalarındaki tıklamaları ölçer.
+- `seo_intent_click`: arama niyeti çipleriyle ürün/çözüm girişlerini ölçer.
+- `selector_result_click`: mağaza seçici sonucundan ürün detayına geçişi ölçer.
+
+Bu eventler A/B test aşamasında hangi evrenin daha yüksek ürün detay ziyareti, sepete ekleme ve keşif formu dönüşümü sağladığını göstermek için kullanılmalıdır.
+
+### 25.4 Güncel Sayfa Kurgusu
+
+| Sayfa | Güncel tasarım kararı | Dönüşüm etkisi |
+|---|---|---|
+| Ana sayfa | Üç karar evreni, persona CTA'ları, arama niyeti kümeleri ve güven mesajları birlikte çalışır | Kullanıcı kendi rotasını daha hızlı seçer |
+| Mağaza | Arama, segment kartları, güven çipleri ve açılır ürün seçici üstte konumlanır | İlk ekranda ürün keşfi ve uygunluk kararı hızlanır |
+| Ürün listeleme | Mevcut kompakt ürün kartları korunur; seçici ilgili ürünlere yönlendirir | Kart karmaşası artmadan yeni karar katmanı eklenir |
+| Ürün detay | Mevcut sticky satın alma ve teknik bilgi düzeni, seçiciden gelen daha nitelikli trafikle desteklenir | Kullanıcı ürüne daha hazırlıklı gelir |
+| Sepet / ödeme | PayTR uyumlu güvenli akış korunur | Teknik ödeme güveni zedelenmeden satış tamamlanır |
+
+### 25.5 Kabul Kontrolü
+
+- Mağaza girişinde açılır ürün seçici görünür.
+- Seçici dört karar alanıyla ilgili ürünleri listeler.
+- Sonuç kartları fiyat, stok, güç/ürün profili ve inceleme CTA'sı içerir.
+- Ana sayfada karar evrenleri sade ve üçlü yapıya iner.
+- Türkçe karakterler dosya içeriğinde UTF-8 olarak korunur.
+- TypeScript tip kontrolü temiz geçer.
+
+### 25.6 Sonraki Tasarım Kapıları
+
+Bir sonraki iterasyonda en yüksek etki sağlayacak alanlar:
+
+1. Ürün seçici bağımsız sayfasını mağaza açılır seçiciyle aynı skor mantığına bağlamak.
+2. Ürün detay sayfasında “bu ürün kimler için?” alanını seçici sonucuna göre daha görünür yapmak.
+3. Mağaza mobil filtre drawer davranışını event bazlı ölçmek.
+4. Sepet ve PayTR dönüşüm hunisine kullanıcı terk eventleri eklemek.
+5. Admin panelde ana sayfa mesajları, evren kartları ve seçici metinlerini CMS alanlarıyla yönetilebilir yapmak.
+
+## 26. Premium Revizyon Katmanı
+
+Bu aşamada plan “sayfa tasarımı” seviyesinden çıkarılıp ParkChargeEV için premium bir karar işletim sistemi modeline genişletildi.
+
+### 26.1 Premium Deneyim Protokolü
+
+| Katman | Ne yapar? | Kullanıcı etkisi |
+|---|---|---|
+| Güven konsolu | PayTR, 81 il kargo, uzman destek, kurulum ve sipariş takibi mesajlarını aynı deneyimde toplar | Kullanıcının ödeme ve teslimat kaygısını azaltır |
+| Karar motoru | Ev, site, işletme, aksesuar ve yatırım niyetlerini ayrıştırıp ilgili ürünleri öne çıkarır | Kullanıcı yanlış ürüne gitmeden doğru ürün kümesine ulaşır |
+| E-ticaret hızı | Fiyat, stok, kısa ürün özeti, hızlı CTA ve mobil satın alma davranışını önce gösterir | Ürün detay ve sepete ekleme oranı güçlenir |
+| Operasyon takibi | Sipariş, keşif, kurulum ve destek süreçlerini müşteri/admin panellerine bağlar | Satış sonrası güven ve tekrar satın alma ihtimali artar |
+
+### 26.2 Mağaza Seçici Geliştirmesi
+
+Mağaza girişindeki açılır seçici artık yalnızca “ilgili ürünler” listesi değildir. Her öneri bir uyum skoru, kısa gerekçe ve karar CTA'sı ile sunulur.
+
+Yeni gösterim mantığı:
+
+```text
+Kullanıcı cevabı
+  -> ürün profili
+  -> güç / kategori / kurulum / stok sinyali
+  -> uyum skoru
+  -> ürün detaya geçiş
+```
+
+Bu yapı özellikle şu üç sürtünmeyi azaltır:
+
+1. “Bu ürün bana uygun mu?” belirsizliği.
+2. “Kurulum gerekir mi?” kaygısı.
+3. “Hangi ürünü önce incelemeliyim?” karar yorgunluğu.
+
+### 26.3 Ana Sayfa Premium Karar Alanı
+
+Ana sayfadaki karar evrenleri artık yalnızca segment kartı değil, ölçülebilir satış deneyimi bloklarıdır. Her evren şu bilgileri taşır:
+
+- hedef persona,
+- satın alma tetikleyicisi,
+- uygulanacak UI deseni,
+- ölçülecek başarı metriği,
+- yönlendirme CTA'sı.
+
+Bu sayede ana sayfa, tasarım olarak daha premium görünürken aynı zamanda CRO ve A/B test mantığına hazır hale gelir.
+
+### 26.4 Geliştirilmiş Kabul Kriterleri
+
+- Ana sayfa karar evrenleri üç rota ve ölçüm metriğiyle görünür olmalı.
+- Premium deneyim protokolü güven, karar, hız ve operasyon katmanlarını açıklamalı.
+- Mağaza seçici açılır sekme olarak çalışmalı ve önerilerde uyum skoru göstermeli.
+- Ürün önerileri kullanıcıyı ürün detayına izlenebilir conversion event ile taşımalı.
+- Mobilde bu alanlar yatay kaydırmalı, kompakt ve okunabilir kalmalı.
+- TypeScript, lint ve production build hatasız geçmeli.
