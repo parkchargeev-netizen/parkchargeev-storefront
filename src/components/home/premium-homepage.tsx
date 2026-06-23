@@ -99,11 +99,6 @@ function SectionHeading({
 
 function PremiumHero({ whatsappHref }: { whatsappHref: string }) {
   const primaryRoutes = conversionRoutes.slice(0, 3);
-  const heroHighlights = [
-    { label: "Ürün kargosu", value: "81 il" },
-    { label: "Satış yolu", value: "Ürün + keşif" },
-    { label: "Ödeme", value: "PayTR" }
-  ] as const;
 
   return (
     <section className="premium-hero relative isolate overflow-hidden">
@@ -171,14 +166,6 @@ function PremiumHero({ whatsappHref }: { whatsappHref: string }) {
             </a>
           </div>
 
-          <div className="premium-hero__highlights" aria-label="ParkChargeEV karar güveni">
-            {heroHighlights.map((item) => (
-              <span key={item.label}>
-                <small>{item.label}</small>
-                <strong>{item.value}</strong>
-              </span>
-            ))}
-          </div>
         </div>
 
         <div className="premium-hero__routes" aria-label="Kullanım alanına göre çözüm seçimi">
@@ -334,7 +321,7 @@ function ConversionFunnelSection() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="premium-funnel-shell">
           <div className="premium-funnel-shell__copy">
-            <p className="premium-eyebrow">Satış yolu</p>
+            <p className="premium-eyebrow">Akıllı akış</p>
             <h2>Satın alma hızı, güven ve kurulum uzmanlığı aynı akışta.</h2>
             <p>
               Ürün almak isteyen hızlıca sepete gider; emin olmayan kullanıcı uygunluk kontrolüne,
