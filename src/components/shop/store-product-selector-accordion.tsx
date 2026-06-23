@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { ArrowRight, CheckCircle2, SlidersHorizontal, Sparkles, X } from "lucide-react";
 
 import { ProductDevicePreview } from "@/components/shop/product-device-preview";
@@ -179,6 +180,7 @@ function buildStoreFilterHref(state: SelectorState) {
 }
 
 export function StoreProductSelectorAccordion({ products }: { products: ProductModel[] }) {
+  const [mounted, setMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [state, setState] = useState<SelectorState>(initialSelectorState);
 
@@ -210,6 +212,10 @@ export function StoreProductSelectorAccordion({ products }: { products: ProductM
   const filterHref = buildStoreFilterHref(state);
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
     if (!isOpen) return;
 
     const previousOverflow = document.body.style.overflow;
@@ -236,6 +242,157 @@ export function StoreProductSelectorAccordion({ products }: { products: ProductM
     }) as SelectorState);
   }
 
+  const selectorWindow = isOpen ? (
+    <div className="store-selector-modal store-selector-modal--window" role="presentation">
+      <button
+        type="button"
+        className="store-selector-modal__backdrop"
+        aria-label="Seçiciyi kapat"
+        onClick={() => setIsOpen(false)}
+      />
+
+      <section
+        className="store-selector-modal__dialog store-selector-window-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="store-selector-modal-title"
+      >
+        <div className="store-selector-window-head">
+          <div>
+            <p className="premium-eyebrow">Elektrikli araç şarj seçicisi</p>
+            <h2 id="store-selector-modal-title">İhtiyacınızı seçin, uygun ürünleri görün.</h2>
+            <span>Bu pencere mağaza sayfasının üzerinde açılır; sayfa uzamaz.</span>
+          </div>
+          <button
+            type="button"
+            className="store-selector-modal__close"
+            aria-label="Seçiciyi kapat"
+            onClick={() => setIsOpen(false)}
+          >
+            <X className="h-5 w-5" aria-hidden />
+          </button>
+        </div>
+
+        <div className="store-selector-window-layout">
+          <form className="store-selector-window-form" onSubmit={(event) => event.preventDefault()}>
+            <div className="store-selector-window-form__intro">
+              <strong>3 adımda daraltın</strong>
+              <span>Kullanım alanı, güç ve kurulum yolunu seçin; sonuçlar anında güncellensin.</span>
+            </div>
+
+            <div className="store-selector-window-fields">
+              {selectorFields.map((field) => (
+                <label key={field.key} className="store-selector-window-field">
+                  <span>{field.label}</span>
+                  <select
+                    value={state[field.key]}
+                    onChange={(event) => updateSelection(field.key, event.target.value)}
+                  >
+                    {field.options.map((option) => (
+                      <option key={`${field.key}-${option.value}`} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                  <small>
+                    {field.options.find((option) => option.value === state[field.key])?.detail ??
+                      field.helper}
+                  </small>
+                </label>
+              ))}
+            </div>
+
+            <div className="store-selector-window-status">
+              <span>{filteredProducts.length} ürün eşleşti</span>
+              <button type="button" onClick={() => setState(initialSelectorState)}>
+                Temizle
+              </button>
+            </div>
+          </form>
+
+          <section className="store-selector-window-results" aria-label="Filtrelenen ürünler">
+            <div className="store-selector-window-results__head">
+              <div>
+                <p className="premium-eyebrow">Önerilen ürünler</p>
+                <h3>Seçiminize göre en uygunlar</h3>
+              </div>
+              <Link href={filterHref} onClick={() => setIsOpen(false)}>
+                Mağazada uygula
+                <ArrowRight className="h-4 w-4" aria-hidden />
+              </Link>
+            </div>
+
+            <div className="store-selector-window-list">
+              {visibleProducts.map(({ product, profile, score, reasons }, index) => {
+                const imageUrl = getDisplayProductImageUrl(product.imageUrl);
+                const confidenceScore = Math.min(98, Math.max(54, score));
+
+                return (
+                  <article key={product.id} className="store-selector-window-card">
+                    <Link
+                      href={`/urun/${product.slug}`}
+                      className="store-selector-window-card__media"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      {imageUrl ? (
+                        <Image
+                          src={imageUrl}
+                          alt={product.name}
+                          width={220}
+                          height={170}
+                          loading="lazy"
+                          unoptimized
+                          sizes="120px"
+                        />
+                      ) : (
+                        <ProductDevicePreview productName={product.name} powerLabel={product.powerLabel} />
+                      )}
+                      <span>0{index + 1}</span>
+                    </Link>
+
+                    <div className="store-selector-window-card__body">
+                      <div className="store-selector-window-card__meta">
+                        <span>{profile.powerTier}</span>
+                        <span>{product.stockLabel}</span>
+                        <span>%{confidenceScore} uyum</span>
+                      </div>
+                      <h3>{product.name}</h3>
+                      <p>{profile.primaryFit}</p>
+                      <div className="store-selector-window-card__reasons">
+                        {reasons.slice(0, 2).map((reason) => (
+                          <span key={reason}>
+                            <CheckCircle2 className="h-3.5 w-3.5" aria-hidden />
+                            {reason}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="store-selector-window-card__action">
+                      <strong>{formatPriceTRY(product.priceKurus)}</strong>
+                      <Link
+                        href={`/urun/${product.slug}`}
+                        onClick={() => setIsOpen(false)}
+                        {...conversionDataAttributes("selector_result_click", {
+                          source: "store_modal_window",
+                          productId: product.id,
+                          score
+                        })}
+                      >
+                        İncele
+                        <ArrowRight className="h-4 w-4" aria-hidden />
+                      </Link>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+        </div>
+      </section>
+    </div>
+  ) : null;
+
   return (
     <>
       <button
@@ -243,7 +400,7 @@ export function StoreProductSelectorAccordion({ products }: { products: ProductM
         className="store-selector-launch"
         onClick={() => setIsOpen(true)}
         {...conversionDataAttributes("selector_open", {
-          source: "store_form_tab"
+          source: "store_modal_window"
         })}
       >
         <span className="store-selector-launch__icon">
@@ -251,7 +408,7 @@ export function StoreProductSelectorAccordion({ products }: { products: ProductM
         </span>
         <span className="store-selector-launch__copy">
           <strong>Elektrikli araç şarj seçicisi</strong>
-          <small>Mağaza sayfasının üzerinde form sekmesi olarak açılır.</small>
+          <small>Butona basınca mağaza üstünde ayrı pencere açılır.</small>
         </span>
         <b>
           Seçiciyi Aç
@@ -259,162 +416,7 @@ export function StoreProductSelectorAccordion({ products }: { products: ProductM
         </b>
       </button>
 
-      {isOpen ? (
-        <div className="store-selector-modal store-selector-modal--form" role="presentation">
-          <button
-            type="button"
-            className="store-selector-modal__backdrop"
-            aria-label="Seçiciyi kapat"
-            onClick={() => setIsOpen(false)}
-          />
-
-          <section
-            className="store-selector-modal__dialog store-selector-form-dialog"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="store-selector-modal-title"
-          >
-            <div className="store-selector-form-tab">
-              <div>
-                <p className="premium-eyebrow">Mağaza seçici sekmesi</p>
-                <h2 id="store-selector-modal-title">
-                  Ürün ihtiyacınızı form gibi seçin.
-                </h2>
-              </div>
-              <button
-                type="button"
-                className="store-selector-modal__close"
-                aria-label="Seçiciyi kapat"
-                onClick={() => setIsOpen(false)}
-              >
-                <X className="h-5 w-5" aria-hidden />
-              </button>
-            </div>
-
-            <div className="store-selector-form-body">
-              <form className="store-selector-form" onSubmit={(event) => event.preventDefault()}>
-                <div className="store-selector-form__copy">
-                  <strong>Doğru ürünü daraltın</strong>
-                  <span>
-                    Üç alanı seçin; altta mağaza ürünleri otomatik olarak filtrelenir.
-                  </span>
-                </div>
-
-                <div className="store-selector-form-fields">
-                  {selectorFields.map((field) => (
-                    <label key={field.key} className="store-selector-form-field">
-                      <span>{field.label}</span>
-                      <select
-                        value={state[field.key]}
-                        onChange={(event) => updateSelection(field.key, event.target.value)}
-                      >
-                        {field.options.map((option) => (
-                          <option key={`${field.key}-${option.value}`} value={option.value}>
-                            {option.label}
-                          </option>
-                        ))}
-                      </select>
-                      <small>
-                        {field.options.find((option) => option.value === state[field.key])?.detail ??
-                          field.helper}
-                      </small>
-                    </label>
-                  ))}
-                </div>
-
-                <div className="store-selector-form-status">
-                  <span>{filteredProducts.length} ürün eşleşti</span>
-                  <button type="button" onClick={() => setState(initialSelectorState)}>
-                    Temizle
-                  </button>
-                </div>
-              </form>
-
-              <section className="store-selector-form-results" aria-label="Filtrelenen ürünler">
-                <div className="store-selector-form-results__head">
-                  <div>
-                    <p className="premium-eyebrow">İlgili ürünler</p>
-                    <h3>Seçiminize göre önerilenler</h3>
-                  </div>
-                  <Link href={filterHref} onClick={() => setIsOpen(false)}>
-                    Mağazada uygula
-                    <ArrowRight className="h-4 w-4" aria-hidden />
-                  </Link>
-                </div>
-
-                <div className="store-selector-product-list store-selector-product-list--form">
-                  {visibleProducts.map(({ product, profile, score, reasons }, index) => {
-                    const imageUrl = getDisplayProductImageUrl(product.imageUrl);
-                    const confidenceScore = Math.min(98, Math.max(54, score));
-
-                    return (
-                      <article key={product.id} className="store-selector-product-card store-selector-product-card--form">
-                        <Link
-                          href={`/urun/${product.slug}`}
-                          className="store-selector-product-card__media"
-                          onClick={() => setIsOpen(false)}
-                        >
-                          {imageUrl ? (
-                            <Image
-                              src={imageUrl}
-                              alt={product.name}
-                              width={260}
-                              height={200}
-                              loading="lazy"
-                              unoptimized
-                              sizes="120px"
-                            />
-                          ) : (
-                            <ProductDevicePreview
-                              productName={product.name}
-                              powerLabel={product.powerLabel}
-                            />
-                          )}
-                          <span>0{index + 1}</span>
-                        </Link>
-
-                        <div className="store-selector-product-card__body">
-                          <div className="store-selector-result-card__meta">
-                            <span>{profile.powerTier}</span>
-                            <span>{product.stockLabel}</span>
-                            <span>%{confidenceScore} uyum</span>
-                          </div>
-                          <h3>{product.name}</h3>
-                          <p>{profile.primaryFit}</p>
-                          <div className="store-selector-result-card__reasons">
-                            {reasons.slice(0, 2).map((reason) => (
-                              <span key={reason}>
-                                <CheckCircle2 className="h-3.5 w-3.5" aria-hidden />
-                                {reason}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-
-                        <div className="store-selector-product-card__action">
-                          <strong>{formatPriceTRY(product.priceKurus)}</strong>
-                          <Link
-                            href={`/urun/${product.slug}`}
-                            onClick={() => setIsOpen(false)}
-                            {...conversionDataAttributes("selector_result_click", {
-                              source: "store_form_tab",
-                              productId: product.id,
-                              score
-                            })}
-                          >
-                            İncele
-                            <ArrowRight className="h-4 w-4" aria-hidden />
-                          </Link>
-                        </div>
-                      </article>
-                    );
-                  })}
-                </div>
-              </section>
-            </div>
-          </section>
-        </div>
-      ) : null}
+      {mounted && selectorWindow ? createPortal(selectorWindow, document.body) : null}
     </>
   );
 }
