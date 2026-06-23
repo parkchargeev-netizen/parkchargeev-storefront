@@ -10738,7 +10738,28 @@ body {
 }
 
 .checkout-card-fields input {
+  width: 100%;
+  min-width: 0;
   font-weight: 750;
+}
+
+.checkout-card-expiry-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.checkout-card-expiry-grid label {
+  min-width: 0;
+}
+
+.checkout-card-expiry-grid label > span {
+  white-space: nowrap;
+}
+
+.checkout-card-expiry-grid input {
+  padding-inline: 0.75rem;
+  text-align: center;
 }
 
 .checkout-pay-button {
@@ -10842,6 +10863,20 @@ body {
 
   .checkout-card-preview {
     min-height: 7.6rem;
+  }
+
+  .checkout-card-expiry-grid {
+    gap: 0.55rem;
+  }
+
+  .checkout-card-expiry-grid label > span {
+    font-size: 0.78rem;
+  }
+
+  .checkout-card-expiry-grid input {
+    min-height: 2.85rem;
+    padding-inline: 0.45rem;
+    font-size: 0.92rem;
   }
 
   .checkout-page {

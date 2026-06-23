@@ -746,7 +746,7 @@ export function CheckoutPageClient({
                   />
                 </label>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="checkout-card-expiry-grid md:col-span-2">
                   <label className="grid gap-2">
                     <span className="text-sm font-semibold text-on-surface">Ay</span>
                     <input
@@ -772,20 +772,20 @@ export function CheckoutPageClient({
                       className="min-h-12 rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
                     />
                   </label>
-                </div>
 
-                <label className="grid gap-2">
-                  <span className="text-sm font-semibold text-on-surface">CVV</span>
-                  <input
-                    required
-                    name="cvv"
-                    autoComplete="cc-csc"
-                    inputMode="numeric"
-                    pattern="[0-9]{3,4}"
-                    placeholder="000"
-                    className="min-h-12 rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
-                  />
-                </label>
+                  <label className="grid gap-2">
+                    <span className="text-sm font-semibold text-on-surface">CVV</span>
+                    <input
+                      required
+                      name="cvv"
+                      autoComplete="cc-csc"
+                      inputMode="numeric"
+                      pattern="[0-9]{3,4}"
+                      placeholder="000"
+                      className="min-h-12 rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
+                    />
+                  </label>
+                </div>
               </fieldset>
 
               <label className="mt-5 flex gap-3 rounded-2xl bg-white/78 p-3 text-sm leading-6 text-on-surface-variant">

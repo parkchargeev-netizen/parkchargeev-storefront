@@ -220,8 +220,7 @@ function PersonaRouteSection() {
         <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <SectionHeading
             eyebrow="Karar rotaları"
-            title="Her persona için kısa, net ve satışa yakın yol."
-            body="Ev kullanıcısı ürüne, site yöneticisi keşfe, işletme karar vericisi teklife daha az adımla ulaşır."
+            title="Ev kullanıcısı ürüne, site yöneticisi keşfe, işletme karar vericisi teklife daha az adımla ulaşır."
           />
           <Link href="/urun-secici" className="btn-secondary shrink-0">
             Ürün Seçici
