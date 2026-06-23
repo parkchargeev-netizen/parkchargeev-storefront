@@ -6,7 +6,6 @@ import { ProductDevicePreview } from "@/components/shop/product-device-preview";
 import { formatPriceTRY } from "@/lib/format";
 import type { ProductModel } from "@/lib/mock-data";
 import { getDisplayProductImageUrl } from "@/lib/product-media";
-import { serviceCoverageSummary } from "@/lib/service-coverage";
 import { getProductStoreProfile } from "@/lib/shop-merchandising";
 
 type ProductCardProps = {
@@ -91,7 +90,7 @@ export function ProductCard({ product, layout = "standard" }: ProductCardProps) 
               </h3>
             </Link>
             <p className="mt-2 line-clamp-2 text-sm leading-6 text-on-surface-variant">
-              {product.summary}
+              {profile.primaryFit}
             </p>
 
             <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
@@ -107,9 +106,11 @@ export function ProductCard({ product, layout = "standard" }: ProductCardProps) 
               ))}
             </div>
 
-            <p className="mt-4 text-xs font-bold leading-5 text-on-surface-variant">
-              {serviceCoverageSummary.shipping}; kurulum ihtiyacı ürün tipine göre keşifle netleşir.
-            </p>
+            <div className="mt-4 flex flex-wrap gap-2 text-xs font-black text-primary">
+              <span className="rounded-full bg-[#e5fff5] px-3 py-1">PayTR</span>
+              <span className="rounded-full bg-[#e5fff5] px-3 py-1">81 il kargo</span>
+              <span className="rounded-full bg-[#e5fff5] px-3 py-1">Keşif desteği</span>
+            </div>
           </div>
 
           <div className="flex flex-col justify-between gap-4 rounded-[22px] border border-outline-variant/35 bg-white/76 p-4">

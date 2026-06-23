@@ -17,9 +17,9 @@ const navLabelMap: Record<string, string> = {
   "/": "Ana",
   "/magaza": "Mağaza",
   "/urun-secici": "Seçici",
-  "/kurumsal-cozumler": "Kurumsal",
+  "/kurumsal-cozumler": "Site & İşletme",
   "/hizmetler": "Kurulum",
-  "/blog": "Blog",
+  "/blog": "Rehber",
   "/iletisim": "İletişim"
 };
 
@@ -45,7 +45,7 @@ export function SiteHeader({ navigation = siteConfig.primaryNavigation }: SiteHe
             href={`/iletisim?reason=${encodeURIComponent("Ücretsiz keşif talebi")}`}
             className="inline-flex items-center gap-1 text-[#7eecc9]"
           >
-            Türkiye geneli keşif talebi
+            Keşif / teklif al
             <ChevronRight className="h-3.5 w-3.5" aria-hidden />
           </Link>
         </div>

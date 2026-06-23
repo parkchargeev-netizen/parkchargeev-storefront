@@ -19,9 +19,9 @@ type ProductPurchasePanelProps = {
 };
 
 const defaultBenefits = [
-  "PayTR güvenli ödeme ve net sipariş takibi",
-  "Garanti, servis ve kurulum desteği",
-  "Keşif talebiyle yanlış ürün riskini azaltma"
+  "PayTR güvenli ödeme",
+  "Garanti ve teknik destek",
+  "Keşifle doğru kurulum"
 ];
 
 export function ProductPurchasePanel({
@@ -137,12 +137,12 @@ export function ProductPurchasePanel({
         ))}
       </div>
       <p className="product-purchase-panel__fit-note mt-3 rounded-2xl bg-surface-container-low px-4 py-3 text-xs leading-5 text-on-surface-variant">
-        Emin değilseniz ürünle birlikte keşif akışını seçin; pano, faz, kablo hattı ve koruma ekipmanı netleştirilir.
+        Emin değilseniz keşifle ilerleyin; pano, faz ve kablo hattı netleşsin.
       </p>
 
       <div className="product-purchase-panel__route mt-8 rounded-[24px] bg-surface-container-low p-6">
         <p className="text-sm font-semibold uppercase text-on-surface-variant">
-          Satın alma yolu
+          1 karar yeterli
         </p>
 
         <div className="mt-5">
@@ -151,12 +151,12 @@ export function ProductPurchasePanel({
             {[
               {
                 value: "product",
-                label: "Ürünü satın al",
-                detail: "Stoktan sevkiyat"
+                label: "Hemen al",
+                detail: "Stoktan sevk"
               },
               {
                 value: "survey",
-                label: "Keşifle ilerle",
+                label: "Keşifle al",
                 detail: storeProfile.installationMode
               }
             ].map((option) => (
@@ -180,8 +180,7 @@ export function ProductPurchasePanel({
           </div>
           {purchaseMode === "survey" ? (
             <p className="mt-3 rounded-2xl border border-primary/15 bg-white px-4 py-3 text-xs leading-5 text-on-surface-variant">
-              Ürünü sepete ekleyip kurulum kapsamı için keşif talebi bırakabilirsiniz.
-              Keşif sonrası kablo hattı, pano ve randevu bilgisi netleşir.
+              Sepete ekleyin, keşifte hat, pano ve randevu bilgisi netleşsin.
             </p>
           ) : null}
         </div>
@@ -275,8 +274,7 @@ export function ProductPurchasePanel({
             </span>
           </div>
           <p className="mt-3 text-xs leading-5 text-on-surface-variant">
-            Ürün kargosu Türkiye&apos;nin 81 iline yapılır. KDV ve varsa kurulum kalemi
-            sepet/teklif akışında ayrı gösterilir.
+            KDV ve varsa kurulum kalemi sepet/teklif akışında ayrı gösterilir.
           </p>
         </div>
 
@@ -289,9 +287,9 @@ export function ProductPurchasePanel({
           </Link>
         ) : null}
 
-        <div className="product-purchase-panel__benefits mt-6 space-y-3 text-sm text-on-surface-variant">
+        <div className="product-purchase-panel__benefits mt-6 flex flex-wrap gap-2 text-sm text-on-surface-variant">
           {benefits.map((benefit) => (
-            <p key={benefit}>{benefit}</p>
+            <span key={benefit}>{benefit}</span>
           ))}
         </div>
       </div>

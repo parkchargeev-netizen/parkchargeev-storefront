@@ -5,13 +5,14 @@ Bu klasör, `UI-UX-Test-Pack` içeriğinin ParkChargeEV e-ticaret sitesi ve admi
 ## Kullanım Sırası
 
 0. `parkchargeev-2026-canli-pazar-persona-ux-satis-raporu.md`
-1. `01-Master-UI-UX-QA-Checklist.md`
-2. `02-Heuristic-UX-Audit-Prompt.md`
-3. `03-Full-UI-Consistency-Audit-Prompt.md`
-4. `04-Broken-State-And-Dead-Control-Prompt.md`
-5. `05-Task-Based-Manual-QA-Runbook.md`
-6. `06-Design-System-Consistency-Prompt.md`
-7. `07-Regression-And-Release-Gate.md`
+1. `parkchargeev-2026-site-geneli-yeni-tasarim-blueprint.md`
+2. `01-Master-UI-UX-QA-Checklist.md`
+3. `02-Heuristic-UX-Audit-Prompt.md`
+4. `03-Full-UI-Consistency-Audit-Prompt.md`
+5. `04-Broken-State-And-Dead-Control-Prompt.md`
+6. `05-Task-Based-Manual-QA-Runbook.md`
+7. `06-Design-System-Consistency-Prompt.md`
+8. `07-Regression-And-Release-Gate.md`
 
 ## Otomatik Kapı
 

@@ -343,18 +343,23 @@ function PremiumHero({ whatsappHref }: { whatsappHref: string }) {
 }
 
 function MarketStrategySection() {
+  const routeIconKeys: HomeIconKey[] = ["home", "clipboard", "building", "users", "cable"];
+  const decisionUniverses = strategyUniverses.slice(0, 5);
+  const compactPillars = experiencePillars.slice(0, 3);
+  const compactIntents = intentChips.slice(0, 4);
+
   return (
     <section className="premium-section premium-strategy-section">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="premium-strategy-shell">
+        <div className="premium-strategy-shell premium-strategy-shell--compact">
           <div className="premium-strategy-shell__head">
             <SectionHeading
-              eyebrow="Canlı satış stratejisi"
-              title="Tek site, farklı satın alma davranışlarına göre çalışan çoklu akış."
-              body="ParkChargeEV ana akışı hızlı satın alma, rehberli seçim, kurumsal teklif ve kurulum güveni senaryolarını aynı deneyimde birleştirir."
+              eyebrow="Yeni satış akışı"
+              title="Önce senaryoyu seçtir, sonra karar yolunu kısalt."
+              body="Ev, site, işletme ve aksesuar niyeti aynı vitrinde ayrışır; kullanıcı en uygun ürün, keşif veya teklif rotasına tek adımda iner."
             />
 
-            <div className="premium-strategy-messages">
+            <div className="premium-strategy-messages premium-strategy-messages--compact">
               {marketSignalCards.map((signal) => (
                 <article key={signal.label}>
                   <span>{signal.label}</span>
@@ -365,14 +370,18 @@ function MarketStrategySection() {
             </div>
           </div>
 
-          <div className="premium-universe-grid mt-5">
-            {strategyUniverses.map((universe) => (
-              <article key={universe.tag} className="premium-universe-card">
-                <span>{universe.tag}</span>
+          <div className="premium-decision-route-grid" aria-label="Satış karar rotaları">
+            {decisionUniverses.map((universe, index) => (
+              <article key={universe.tag} className="premium-decision-route-card">
+                <div className="premium-decision-route-card__head">
+                  <IconBadge
+                    icon={routeIconKeys[index] ?? "plug"}
+                    className="h-11 w-11 bg-primary/10 text-primary"
+                  />
+                  <span>{universe.persona}</span>
+                </div>
                 <strong>{universe.title}</strong>
-                <small>{universe.persona}</small>
                 <p>{universe.body}</p>
-                <b>{universe.proof}</b>
                 <Link
                   href={universe.href}
                   {...conversionDataAttributes("persona_route_click", {
@@ -388,67 +397,37 @@ function MarketStrategySection() {
             ))}
           </div>
 
-          <div className="premium-experience-console">
-            <div className="premium-experience-console__head">
+          <div className="premium-system-strip">
+            <div>
               <span>UI / UX / DX</span>
-              <strong>Karar anlarını ölç, sürtünmeyi azalt, kazanan rotaları birleştir.</strong>
-              <small>
-                Her persona ayrı bir satın alma evreni gibi davranır; canlı veride en iyi çalışan
-                rotalar ortak deneyime geri beslenir.
-              </small>
+              <strong>Tek ekran, tek karar, ölçülebilir rota.</strong>
             </div>
-            <div className="premium-experience-pillar-grid">
-              {experiencePillars.map((pillar) => (
-                <article key={pillar.title} className="premium-experience-pillar">
+            <div className="premium-system-strip__grid">
+              {compactPillars.map((pillar) => (
+                <article key={pillar.title} className="premium-system-pill">
                   <span>{pillar.label}</span>
                   <strong>{pillar.title}</strong>
-                  <p>{pillar.body}</p>
                   <small>{pillar.metric}</small>
                 </article>
               ))}
             </div>
           </div>
 
-          <div className="premium-persona-cta-grid">
-            {personaCtas.map((persona) => (
+          <div className="premium-intent-quick-row" aria-label="Popüler satın alma niyetleri">
+            {compactIntents.map((intent) => (
               <Link
-                key={persona.label}
-                href={persona.href}
-                className="premium-persona-cta-card"
-                {...conversionDataAttributes("persona_route_click", {
-                  route: persona.label,
-                  href: persona.href
+                key={intent.title}
+                href={intent.href}
+                className="premium-intent-quick-chip"
+                {...conversionDataAttributes("seo_intent_click", {
+                  intent: intent.title,
+                  href: intent.href
                 })}
               >
-                <span>{persona.label}</span>
-                <strong>{persona.title}</strong>
-                <small>{persona.body}</small>
-                <ArrowRight className="h-5 w-5" aria-hidden />
+                <strong>{intent.title}</strong>
+                <ArrowRight className="h-3.5 w-3.5" aria-hidden />
               </Link>
             ))}
-          </div>
-
-          <div className="premium-intent-clusters">
-            <div>
-              <p className="premium-eyebrow">SEO niyeti</p>
-              <h3>Aramadan gelen kullanıcıyı en kısa satış rotasına indir.</h3>
-            </div>
-            <div className="premium-intent-cluster-list" aria-label="Satın alma niyeti kümeleri">
-              {intentChips.map((intent) => (
-                <Link
-                  key={intent.title}
-                  href={intent.href}
-                  className="premium-intent-chip"
-                  {...conversionDataAttributes("seo_intent_click", {
-                    intent: intent.title,
-                    href: intent.href
-                  })}
-                >
-                  <strong>{intent.title}</strong>
-                  <span>{intent.detail}</span>
-                </Link>
-              ))}
-            </div>
           </div>
 
           <div className="premium-trust-message-row">

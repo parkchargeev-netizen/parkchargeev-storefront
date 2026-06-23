@@ -1,5 +1,18 @@
 import type { Metadata } from "next";
-import { Headphones, Search, ShieldCheck, SlidersHorizontal, Truck, X } from "lucide-react";
+import {
+  Building2,
+  Cable,
+  ClipboardCheck,
+  Headphones,
+  Home,
+  Search,
+  ShieldCheck,
+  SlidersHorizontal,
+  Truck,
+  Users,
+  X,
+  type LucideIcon
+} from "lucide-react";
 import Link from "next/link";
 
 import { ProductCard } from "@/components/shop/product-card";
@@ -41,6 +54,34 @@ const storeAssuranceItems = [
   { icon: Truck, title: "81 ile gönderim", detail: "Takipli ürün kargosu" },
   { icon: Headphones, title: "Uzman desteği", detail: "Ürün ve kurulum danışmanlığı" }
 ] as const;
+
+const storeQuickSegments: Array<{
+  icon: LucideIcon;
+  label: string;
+  detail: string;
+  href: string;
+}> = [
+  { icon: Home, label: "Ev", detail: "7.4 / 11 kW", href: "/magaza?q=ev" },
+  {
+    icon: ClipboardCheck,
+    label: "Emin değilim",
+    detail: "4 soruda öneri",
+    href: "/urun-secici"
+  },
+  {
+    icon: Building2,
+    label: "Site",
+    detail: "RFID + keşif",
+    href: "/kurumsal-cozumler/site-ve-apartman"
+  },
+  {
+    icon: Users,
+    label: "İşletme",
+    detail: "Teklif akışı",
+    href: "/iletisim?reason=Kurumsal%20teklif"
+  },
+  { icon: Cable, label: "Aksesuar", detail: "Type 2 kablo", href: "/magaza?category=Aksesuar" }
+];
 
 type StorePageProps = {
   searchParams: Promise<{
@@ -255,19 +296,50 @@ export default async function StorePage({ searchParams }: StorePageProps) {
 
       <section className="store-commerce-header">
         <div className="store-commerce-header__top">
+          <div className="store-commerce-header__lead">
+            <p className="premium-eyebrow">Mağaza</p>
+            <h1>Doğru şarj ürününü hızlı seçin.</h1>
+            <p>
+              Güç, araç uyumu, stok ve kurulum kararını tek ekranda sadeleştirin.
+            </p>
+          </div>
           <form action="/magaza" className="store-hero-search">
-              <Search className="h-5 w-5 shrink-0 text-primary" aria-hidden />
-              <input
-                name="q"
-                defaultValue={query}
-                aria-label="Mağazada ürün ara"
-                placeholder="Ürün, güç, Type 2 veya RFID ara"
-              />
-              <button type="submit">Ara</button>
+            <Search className="h-5 w-5 shrink-0 text-primary" aria-hidden />
+            <input
+              name="q"
+              defaultValue={query}
+              aria-label="Mağazada ürün ara"
+              placeholder="Ürün, güç, Type 2 veya RFID ara"
+            />
+            <button type="submit">Ara</button>
           </form>
         </div>
 
         <div className="store-commerce-header__nav">
+          <div className="store-segment-grid" aria-label="Hızlı ürün rotaları">
+            {storeQuickSegments.map((segment) => {
+              const Icon = segment.icon;
+
+              return (
+                <Link
+                  key={segment.label}
+                  href={segment.href}
+                  className="store-segment-card"
+                  {...conversionDataAttributes("store_quick_segment_click", {
+                    segment: segment.label,
+                    href: segment.href
+                  })}
+                >
+                  <span>
+                    <Icon className="h-4 w-4" aria-hidden />
+                    {segment.label}
+                  </span>
+                  <span>{segment.detail}</span>
+                </Link>
+              );
+            })}
+          </div>
+
           <div className="store-inline-assurance" aria-label="Mağaza güvenceleri">
             {storeAssuranceItems.map((item) => {
               const Icon = item.icon;
