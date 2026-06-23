@@ -19,7 +19,7 @@ const navLabelMap: Record<string, string> = {
   "/urun-secici": "Seçici",
   "/kurumsal-cozumler": "Site & İşletme",
   "/hizmetler": "Kurulum",
-  "/blog": "Rehber",
+  "/blog": "Blog",
   "/iletisim": "İletişim"
 };
 

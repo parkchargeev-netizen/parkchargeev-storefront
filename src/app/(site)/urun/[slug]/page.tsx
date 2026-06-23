@@ -189,11 +189,11 @@ export default async function ProductDetailPage({
             </span>
           </div>
 
-          <h1 className="mt-6 text-4xl font-black tracking-[-0.07em] text-on-surface">
+          <h1 className="mt-6 text-3xl font-black tracking-normal text-on-surface md:text-4xl">
             {product.name}
           </h1>
-          <p className="mt-4 text-lg leading-8 text-on-surface-variant">
-            {product.summary}
+          <p className="mt-4 line-clamp-2 text-base leading-7 text-on-surface-variant">
+            {storeProfile.primaryFit}
           </p>
 
           <div className="product-detail-feature-strip mt-6 grid gap-3 sm:grid-cols-3">
@@ -216,32 +216,26 @@ export default async function ProductDetailPage({
             benefits={detailContent.purchaseBenefits}
           />
 
-          <div className="mt-6 grid gap-3">
-            {detailContent.purchaseReadiness.map((item) => (
+          <div className="product-detail-readiness-strip mt-5">
+            {detailContent.purchaseReadiness.slice(0, 3).map((item) => (
               <div
                 key={item.label}
-                className="rounded-2xl border border-primary/15 bg-primary/5 px-4 py-3"
+                className="product-detail-readiness-chip"
               >
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-                  {item.label}
-                </p>
-                <p className="mt-2 text-sm font-semibold leading-6 text-on-surface">
-                  {item.value}
-                </p>
+                <span>{item.label}</span>
+                <strong>{item.value}</strong>
               </div>
             ))}
           </div>
 
-          <div className="mt-6 grid gap-3">
-            {detailContent.decisionChecks.map((item) => (
-              <div
-                key={item}
-                className="rounded-2xl border border-outline-variant/35 bg-white px-4 py-3 text-sm leading-6 text-on-surface-variant"
-              >
-                {item}
-              </div>
-            ))}
-          </div>
+          <details className="product-detail-checklist mt-4">
+            <summary>Uygunluk notları</summary>
+            <div>
+              {detailContent.decisionChecks.slice(0, 3).map((item) => (
+                <p key={item}>{item}</p>
+              ))}
+            </div>
+          </details>
 
           <div className="mt-6 overflow-hidden rounded-[24px] border border-outline-variant/40 bg-white">
             {detailContent.policyDetails.map((detail, index) => (

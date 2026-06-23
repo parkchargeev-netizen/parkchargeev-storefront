@@ -100,66 +100,66 @@ function SectionHeading({
 const marketSignalCards = [
   {
     label: "Pazar",
-    value: "440.327 EV",
-    detail: "Mayıs 2026 elektrikli araç parkı; ev, site ve işyeri AC şarj ihtiyacı hızlanıyor."
+    value: "440K+ EV",
+    detail: "Ev ve işyeri şarj talebi büyüyor."
   },
   {
     label: "Altyapı",
-    value: "44.175 soket",
-    detail: "Kamusal şarj ağı büyürken özel otoparklarda güvenli kurulum talebi ayrışıyor."
+    value: "44K+ soket",
+    detail: "Özel otopark kurulumları ayrışıyor."
   },
   {
-    label: "Satış fırsatı",
-    value: "25.125 AC",
-    detail: "Wallbox, kablo, keşif ve kurulum aynı akışta sunulduğunda karar süresi kısalıyor."
+    label: "AC fırsatı",
+    value: "25K+ AC",
+    detail: "Ürün + keşif birlikte daha hızlı karar aldırır."
   }
 ] as const;
 
 const strategyUniverses = [
   {
     tag: "Evren A",
-    title: "Hızlı satın alma",
-    persona: "Ev kullanıcısı",
-    body: "Fiyat, stok, güç ve kablo uyumunu görüp PayTR ile doğrudan sepete gider.",
+    title: "Hemen al",
+    persona: "Ev",
+    body: "Fiyat, stok ve uyumu görüp sepete geçer.",
     proof: "Kazanım: mağaza, ürün detay ve mobil sticky satın alma.",
-    href: "/magaza?segment=Ev",
-    cta: "Ev ürünlerini gör"
+    href: "/magaza?q=ev",
+    cta: "Ev ürünleri"
   },
   {
     tag: "Evren B",
-    title: "Uzman rehberli seçim",
-    persona: "İlk kez şarj cihazı alan kullanıcı",
-    body: "Araç, faz, otopark ve kullanım senaryosunu cevaplayıp doğru ürüne yönlenir.",
+    title: "Doğru ürünü seç",
+    persona: "Emin değilim",
+    body: "Araç ve otoparka göre öneri alır.",
     proof: "Kazanım: ürün seçici ve uyumluluk güveni.",
     href: "/urun-secici",
-    cta: "Ürün seçiciye git"
+    cta: "Seçiciye git"
   },
   {
     tag: "Evren C",
-    title: "Yönetime hazır teklif",
-    persona: "Site ve apartman yöneticisi",
-    body: "RFID, maliyet paylaşımı ve keşif ihtiyacını tek teklif talebinde netleştirir.",
+    title: "Teklif al",
+    persona: "Site",
+    body: "RFID, paylaşım ve keşfi tek akışta netleştirir.",
     proof: "Kazanım: keşif formu ve kurumsal teklif rotası.",
     href: "/kurumsal-cozumler/site-ve-apartman",
-    cta: "Site çözümünü incele"
+    cta: "Site çözümü"
   },
   {
     tag: "Evren D",
-    title: "Gelir modeli",
-    persona: "Otel, AVM, filo ve işletme",
-    body: "OCPP, raporlama, çoklu cihaz ve servis beklentisiyle danışmanlı teklife geçer.",
+    title: "Gelir modeli kur",
+    persona: "İşletme",
+    body: "Çoklu cihaz, raporlama ve servis için teklif alır.",
     proof: "Kazanım: ROI ön fizibilite ve kurumsal lead.",
     href: "/iletisim?reason=ROI%20%C3%B6n%20fizibilite",
-    cta: "ROI teklifi al"
+    cta: "ROI teklifi"
   },
   {
     tag: "Evren E",
-    title: "Kurulum güveni",
-    persona: "Yerel servis arayan müşteri",
-    body: "Pano, faz ve hat riskini satın alma öncesinde keşif desteğiyle azaltır.",
+    title: "Kurulumu netleştir",
+    persona: "Kurulum",
+    body: "Pano, faz ve hat riskini keşifle azaltır.",
     proof: "Kazanım: keşif, servis kapsamı ve güven mesajı.",
     href: "/hizmetler",
-    cta: "Kurulumu incele"
+    cta: "Kurulum"
   },
   {
     tag: "Evren F",
@@ -175,21 +175,21 @@ const strategyUniverses = [
 const experiencePillars = [
   {
     label: "Heuristik",
-    title: "İlk ekranda karar netliği",
+    title: "5 sn karar",
     body: "Kullanıcı önce kendi senaryosunu seçer; ürün, keşif veya teklif yoluna dağılır.",
-    metric: "5 saniye sinyali"
+    metric: "Net ilk ekran"
   },
   {
     label: "UI",
-    title: "Sabit ve hızlı CTA",
+    title: "Sabit CTA",
     body: "Mobil ürün detay ve sepet ekranlarında satın alma aksiyonu görünür kalır.",
-    metric: "Daha az kayıp"
+    metric: "Az sürtünme"
   },
   {
     label: "UX",
-    title: "Güven önce gelir",
+    title: "Güven sinyali",
     body: "PayTR, 81 il kargo, keşif ve kurulum mesajları her kritik kararda tekrar eder.",
-    metric: "İtiraz azaltma"
+    metric: "Daha net karar"
   },
   {
     label: "DX",
@@ -228,22 +228,22 @@ const personaCtas = [
 
 const intentChips = [
   {
-    title: "Ev şarj istasyonu fiyatları",
+    title: "Ev fiyat",
     detail: "Fiyat hassasiyeti yüksek kullanıcıyı ürün listeye taşır.",
-    href: "/magaza?segment=Ev"
+    href: "/magaza?q=ev"
   },
   {
-    title: "Site için elektrikli araç şarj",
+    title: "Site şarjı",
     detail: "Yönetim, RFID ve keşif itirazlarını teklif akışına bağlar.",
     href: "/kurumsal-cozumler/site-ve-apartman"
   },
   {
-    title: "22 kW AC şarj cihazı",
+    title: "22 kW AC",
     detail: "Güç ve altyapı araştıran kullanıcıyı doğru filtreye indirir.",
     href: "/magaza?power=22%20kW"
   },
   {
-    title: "Type 2 şarj kablosu",
+    title: "Type 2 kablo",
     detail: "Aksesuar niyetini hızlı satın alma rotasına dönüştürür.",
     href: "/magaza?category=Aksesuar"
   },
@@ -354,9 +354,9 @@ function MarketStrategySection() {
         <div className="premium-strategy-shell premium-strategy-shell--compact">
           <div className="premium-strategy-shell__head">
             <SectionHeading
-              eyebrow="Yeni satış akışı"
-              title="Önce senaryoyu seçtir, sonra karar yolunu kısalt."
-              body="Ev, site, işletme ve aksesuar niyeti aynı vitrinde ayrışır; kullanıcı en uygun ürün, keşif veya teklif rotasına tek adımda iner."
+              eyebrow="Satış akışı"
+              title="Senaryonu seç, doğru adıma geç."
+              body="Ürün, keşif veya teklif rotası tek ekranda netleşir."
             />
 
             <div className="premium-strategy-messages premium-strategy-messages--compact">
@@ -400,7 +400,7 @@ function MarketStrategySection() {
           <div className="premium-system-strip">
             <div>
               <span>UI / UX / DX</span>
-              <strong>Tek ekran, tek karar, ölçülebilir rota.</strong>
+              <strong>Tek ekran. Tek karar.</strong>
             </div>
             <div className="premium-system-strip__grid">
               {compactPillars.map((pillar) => (
@@ -431,7 +431,7 @@ function MarketStrategySection() {
           </div>
 
           <div className="premium-trust-message-row">
-            {["PayTR güvenli ödeme", "81 il ürün kargosu", "Keşif ve kurulum desteği", "Araç ve altyapı uyumu"].map((message) => (
+            {["PayTR", "81 il kargo", "Keşif desteği", "Uyum kontrolü"].map((message) => (
               <span key={message}>
                 <CheckCircle2 className="h-4 w-4" aria-hidden />
                 {message}

@@ -107,9 +107,8 @@ export function ProductCard({ product, layout = "standard" }: ProductCardProps) 
             </div>
 
             <div className="mt-4 flex flex-wrap gap-2 text-xs font-black text-primary">
-              <span className="rounded-full bg-[#e5fff5] px-3 py-1">PayTR</span>
-              <span className="rounded-full bg-[#e5fff5] px-3 py-1">81 il kargo</span>
-              <span className="rounded-full bg-[#e5fff5] px-3 py-1">Keşif desteği</span>
+              <span className="rounded-full bg-[#e5fff5] px-3 py-1">Uyum net</span>
+              <span className="rounded-full bg-[#e5fff5] px-3 py-1">Keşif opsiyonel</span>
             </div>
           </div>
 
@@ -128,7 +127,7 @@ export function ProductCard({ product, layout = "standard" }: ProductCardProps) 
                 href={`/urun/${product.slug}`}
                 className="inline-flex min-h-11 items-center justify-center rounded-2xl bg-primary px-4 py-3 text-sm font-black text-white transition hover:bg-primary-container"
               >
-                Ürünü İncele
+                İncele
               </Link>
               <Link
                 href={`/iletisim?reason=${encodeURIComponent(`${product.name} kurulum keşfi`)}`}
@@ -221,7 +220,7 @@ export function ProductCard({ product, layout = "standard" }: ProductCardProps) 
           href={`/urun/${product.slug}`}
           className="inline-flex min-h-11 items-center justify-center rounded-2xl bg-primary px-4 py-3 text-sm font-black text-white transition hover:bg-primary-container"
         >
-          Ürünü İncele
+          İncele
         </Link>
         <Link
           href={`/iletisim?reason=${encodeURIComponent(`${product.name} kurulum keşfi`)}`}

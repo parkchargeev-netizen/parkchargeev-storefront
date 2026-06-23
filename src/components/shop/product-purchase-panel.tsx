@@ -49,9 +49,9 @@ export function ProductPurchasePanel({
       )
     : null;
   const purchaseTrustSignals = [
-    { label: "Araç", detail: storeProfile.connectorHint },
-    { label: "Saha", detail: storeProfile.installationMode },
-    { label: "Ödeme", detail: "PayTR + garanti" }
+    { label: "Uyum", detail: storeProfile.connectorHint },
+    { label: "Kurulum", detail: storeProfile.installationMode },
+    { label: "Ödeme", detail: "PayTR" }
   ];
 
   function handleAddToCart() {
@@ -137,7 +137,7 @@ export function ProductPurchasePanel({
         ))}
       </div>
       <p className="product-purchase-panel__fit-note mt-3 rounded-2xl bg-surface-container-low px-4 py-3 text-xs leading-5 text-on-surface-variant">
-        Emin değilseniz keşifle ilerleyin; pano, faz ve kablo hattı netleşsin.
+        Emin değilseniz keşifle ilerleyin.
       </p>
 
       <div className="product-purchase-panel__route mt-8 rounded-[24px] bg-surface-container-low p-6">
@@ -274,7 +274,7 @@ export function ProductPurchasePanel({
             </span>
           </div>
           <p className="mt-3 text-xs leading-5 text-on-surface-variant">
-            KDV ve varsa kurulum kalemi sepet/teklif akışında ayrı gösterilir.
+            KDV ve kurulum kalemi sepette ayrılır.
           </p>
         </div>
 
