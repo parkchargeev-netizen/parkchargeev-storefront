@@ -7,6 +7,7 @@ export type ConversionEventName =
   | "persona_route_click"
   | "product_filter_apply"
   | "purchase_mode_select"
+  | "selector_open"
   | "selector_result_click"
   | "seo_intent_click"
   | "store_quick_segment_click";

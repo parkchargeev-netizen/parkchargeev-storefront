@@ -6,7 +6,6 @@ import { ProductCard } from "@/components/shop/product-card";
 import { StoreProductSelectorAccordion } from "@/components/shop/store-product-selector-accordion";
 import { conversionDataAttributes } from "@/lib/conversion-events";
 import { absoluteUrl } from "@/lib/site";
-import { seoIntentClusters } from "@/lib/site-strategy";
 import { getProductStoreProfile, getStoreFilterOptions } from "@/lib/shop-merchandising";
 import {
   getBreadcrumbJsonLd,
@@ -164,15 +163,6 @@ export default async function StorePage({ searchParams }: StorePageProps) {
     selectedSort !== "recommended" ? selectedSort : ""
   ].filter(Boolean).length;
   const featuredProducts = products.slice(0, 6);
-  const categoryFilters = [
-    { label: "Tümü", value: "", count: optionScopedProducts.length, active: !selectedCategory },
-    ...categoryLabels.map((label) => ({
-      label,
-      value: label,
-      count: optionScopedProducts.filter((product) => product.category === label).length,
-      active: selectedCategory === label
-    }))
-  ];
   const itemListJsonLd = {
     "@context": "https://schema.org",
     "@type": "ItemList",
@@ -274,11 +264,6 @@ export default async function StorePage({ searchParams }: StorePageProps) {
         <div className="store-commerce-header__top">
           <div>
             <p className="premium-eyebrow">ParkChargeEV mağaza</p>
-            <h1>Şarj ürünlerini bulun ve karşılaştırın.</h1>
-            <p className="store-commerce-header__lead">
-              Ürünü, uyumu ve kurulum ihtiyacını e-ticaret hızında görün; emin değilseniz keşif
-              akışına geçin.
-            </p>
           </div>
 
           <form action="/magaza" className="store-hero-search">
@@ -326,64 +311,6 @@ export default async function StorePage({ searchParams }: StorePageProps) {
         </div>
 
         <StoreProductSelectorAccordion products={products} />
-
-        <div className="store-commerce-strip mt-4" aria-label="Mağaza kategori hızlı filtreleri">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="premium-eyebrow">Kategoriler</p>
-              <h2>İhtiyaca göre hızlı filtrele.</h2>
-            </div>
-            {activeFilterCount > 0 ? (
-              <Link href="/magaza" className="btn-secondary shrink-0">
-                Filtreleri temizle
-              </Link>
-            ) : null}
-          </div>
-
-          <div className="mt-4 flex gap-2 overflow-x-auto pb-1" aria-label="Kategoriler">
-            {categoryFilters.map((filter) => (
-              <Link
-                key={`desktop-category-${filter.label}`}
-                href={buildStoreHref({
-                  category: filter.value || undefined,
-                  q: query || undefined,
-                  sort: selectedSort,
-                  power: selectedPower || undefined,
-                  installation: selectedInstallation || undefined,
-                  view: selectedView
-                })}
-                className={`store-category-chip ${filter.active ? "store-category-chip--active" : ""}`}
-              >
-                {filter.label}
-                <span>{filter.count}</span>
-              </Link>
-            ))}
-          </div>
-
-          <div className="store-commerce-strip__badges">
-            <span>Stok, fiyat ve kargo ilk ekranda</span>
-            <span>Ev, site, işletme ve aksesuar ayrımı</span>
-            <span>PayTR ve 81 il kargo güvencesi</span>
-          </div>
-
-          <div className="store-intent-clusters" aria-label="Arama niyetine göre hızlı mağaza girişleri">
-            {seoIntentClusters.map((cluster) => (
-              <Link
-                key={cluster.cluster}
-                href={cluster.href}
-                className="store-intent-chip"
-                {...conversionDataAttributes("seo_intent_click", {
-                  source: "store",
-                  cluster: cluster.cluster,
-                  href: cluster.href
-                })}
-              >
-                <strong>{cluster.cluster}</strong>
-                <span>{cluster.query}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
       </section>
 
       {activeFilterCount === 0 && featuredProducts.length > 0 ? (
@@ -428,51 +355,8 @@ export default async function StorePage({ searchParams }: StorePageProps) {
             <form action="/magaza" className="store-filter-form store-filter-form--mobile">
               {renderFilterFields(true)}
             </form>
-
-            <div className="store-mobile-filter__categories">
-              <p>Kullanım alanı</p>
-              <div>
-                {categoryFilters.map((filter) => (
-                  <Link
-                    key={`mobile-filter-${filter.label}`}
-                    href={buildStoreHref({
-                      category: filter.value || undefined,
-                      q: query || undefined,
-                      sort: selectedSort,
-                      power: selectedPower || undefined,
-                      installation: selectedInstallation || undefined,
-                      view: selectedView
-                    })}
-                    className={filter.active ? "is-active" : ""}
-                  >
-                    <span>{filter.label}</span>
-                    <b>{filter.count}</b>
-                  </Link>
-                ))}
-              </div>
-            </div>
           </div>
         </details>
-
-        <div className="store-mobile-category-strip" aria-label="Kullanım alanına göre filtrele">
-          {categoryFilters.map((filter) => (
-            <Link
-              key={`mobile-category-${filter.label}`}
-              href={buildStoreHref({
-                category: filter.value || undefined,
-                q: query || undefined,
-                sort: selectedSort,
-                power: selectedPower || undefined,
-                installation: selectedInstallation || undefined,
-                view: selectedView
-              })}
-              className={filter.active ? "is-active" : ""}
-            >
-              {filter.label}
-              <span>{filter.count}</span>
-            </Link>
-          ))}
-        </div>
       </div>
 
       <div className="store-catalog-layout">
@@ -482,28 +366,6 @@ export default async function StorePage({ searchParams }: StorePageProps) {
             {renderFilterFields()}
           </form>
 
-          <div className="store-usage-filter surface-card">
-            <p className="store-filter-title">Kullanım alanı</p>
-            <div>
-              {categoryFilters.map((filter) => (
-                <Link
-                  key={filter.label}
-                  href={buildStoreHref({
-                    category: filter.value || undefined,
-                    q: query || undefined,
-                    sort: selectedSort,
-                    power: selectedPower || undefined,
-                    installation: selectedInstallation || undefined,
-                    view: selectedView
-                  })}
-                  className={filter.active ? "is-active" : ""}
-                >
-                  <span>{filter.label}</span>
-                  <b>{filter.count}</b>
-                </Link>
-              ))}
-            </div>
-          </div>
         </aside>
 
         <section id="urun-listesi" className="store-results min-w-0 scroll-mt-28">

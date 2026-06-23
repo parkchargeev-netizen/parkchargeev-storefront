@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { type CSSProperties, useMemo, useState } from "react";
-import { ArrowRight, CheckCircle2, ChevronDown, SlidersHorizontal, Sparkles } from "lucide-react";
+import { type CSSProperties, useEffect, useMemo, useState } from "react";
+import { ArrowRight, CheckCircle2, SlidersHorizontal, Sparkles, X } from "lucide-react";
 
 import { conversionDataAttributes } from "@/lib/conversion-events";
 import { formatPriceTRY } from "@/lib/format";
@@ -168,6 +168,7 @@ function getConfidenceScore(score: number) {
 
 export function StoreProductSelectorAccordion({ products }: { products: ProductModel[] }) {
   const [state, setState] = useState<SelectorState>(initialSelectorState);
+  const [isOpen, setIsOpen] = useState(false);
 
   const recommendations = useMemo(() => {
     return products
@@ -186,125 +187,186 @@ export function StoreProductSelectorAccordion({ products }: { products: ProductM
     }));
   }
 
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen]);
+
   return (
-    <details className="store-selector-accordion" open>
-      <summary>
-        <span className="store-selector-accordion__summary-icon">
+    <>
+      <button
+        type="button"
+        className="store-selector-launch"
+        onClick={() => setIsOpen(true)}
+        {...conversionDataAttributes("selector_open", {
+          source: "store_modal"
+        })}
+      >
+        <span className="store-selector-launch__icon">
           <Sparkles className="h-5 w-5" aria-hidden />
         </span>
-        <span>
-          <strong>Elektrikli şarj aleti seçici</strong>
+        <span className="store-selector-launch__copy">
+          <strong>Elektrikli araç şarj seçicisi</strong>
           <small>4 kısa kararla ürün, güç ve kurulum yolunu netleştirin.</small>
         </span>
-        <ChevronDown className="store-selector-accordion__chevron h-5 w-5" aria-hidden />
-      </summary>
+        <b>Seçiciyi Aç</b>
+      </button>
 
-      <div className="store-selector-panel">
-        <div className="store-selector-panel__questions">
-          <div className="store-selector-panel__heading">
-            <p className="premium-eyebrow">Hızlı uygunluk</p>
-            <h2>Yanlış ürün riskini azaltın, doğru listeye geçin.</h2>
-          </div>
-
-          {selectorGroups.map((group, groupIndex) => (
-            <fieldset key={group.title} className="store-selector-group">
-              <legend>
-                <span>0{groupIndex + 1}</span>
-                {group.title}
-              </legend>
-              <p>{group.helper}</p>
+      {isOpen ? (
+        <div className="store-selector-modal" role="presentation">
+          <button
+            type="button"
+            className="store-selector-modal__backdrop"
+            aria-label="Seçiciyi kapat"
+            onClick={() => setIsOpen(false)}
+          />
+          <section
+            className="store-selector-modal__dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="store-selector-modal-title"
+          >
+            <div className="store-selector-modal__head">
               <div>
-                {group.options.map((option) => {
-                  const isSelected = state[option.key] === option.value;
-
-                  return (
-                    <button
-                      key={`${option.key}-${option.value}`}
-                      type="button"
-                      aria-pressed={isSelected}
-                      onClick={() => updateSelection(option.key, option.value)}
-                      className={isSelected ? "is-selected" : undefined}
-                    >
-                      <strong>{option.label}</strong>
-                      <small>{option.detail}</small>
-                    </button>
-                  );
-                })}
+                <p className="premium-eyebrow">Hızlı uygunluk</p>
+                <h2 id="store-selector-modal-title">
+                  Yanlış ürün riskini azaltın, doğru listeye geçin.
+                </h2>
               </div>
-            </fieldset>
-          ))}
-        </div>
+              <button
+                type="button"
+                className="store-selector-modal__close"
+                aria-label="Seçiciyi kapat"
+                onClick={() => setIsOpen(false)}
+              >
+                <X className="h-5 w-5" aria-hidden />
+              </button>
+            </div>
 
-        <div className="store-selector-panel__results" aria-label="Seçiciye göre ilgili ürünler">
-          <div className="store-selector-results-head">
-            <span>
-              <SlidersHorizontal className="h-4 w-4" aria-hidden />
-              Canlı karar motoru
-            </span>
-            <b>{recommendations.length} öneri</b>
-          </div>
+            <div className="store-selector-panel">
+              <div className="store-selector-panel__questions">
+                {selectorGroups.map((group, groupIndex) => (
+                  <fieldset key={group.title} className="store-selector-group">
+                    <legend>
+                      <span>0{groupIndex + 1}</span>
+                      {group.title}
+                    </legend>
+                    <p>{group.helper}</p>
+                    <div>
+                      {group.options.map((option) => {
+                        const isSelected = state[option.key] === option.value;
 
-          <div className="store-selector-result-list">
-            {recommendations.map((recommendation, index) => {
-              const confidenceScore = getConfidenceScore(recommendation.score);
-
-              return (
-                <article key={recommendation.product.id} className="store-selector-result-card">
-                  <div className="store-selector-result-card__rank">0{index + 1}</div>
-                  <div className="min-w-0">
-                    <div className="store-selector-result-card__meta">
-                      <span>{recommendation.profile.powerTier}</span>
-                      <span>{recommendation.product.stockLabel}</span>
-                      <span>%{confidenceScore} uyum</span>
-                    </div>
-                    <h3>{recommendation.product.name}</h3>
-                    <p>{recommendation.profile.primaryFit}</p>
-                    <div
-                      className="store-selector-result-card__score"
-                      style={{ "--match-score": `${confidenceScore}%` } as CSSProperties}
-                      aria-label={`Uyum skoru yüzde ${confidenceScore}`}
-                    >
-                      <span />
-                    </div>
-                    <div className="store-selector-result-card__reasons">
-                      {recommendation.reasons.map((reason) => (
-                        <span key={reason}>
-                          <CheckCircle2 className="h-3.5 w-3.5" aria-hidden />
-                          {reason}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="store-selector-result-card__action">
-                    <strong>{formatPriceTRY(recommendation.product.priceKurus)}</strong>
-                    <small>Karar skoru %{confidenceScore}</small>
-                    <Link
-                      href={`/urun/${recommendation.product.slug}`}
-                      {...conversionDataAttributes("selector_result_click", {
-                        source: "store_accordion",
-                        productId: recommendation.product.id,
-                        score: recommendation.score
+                        return (
+                          <button
+                            key={`${option.key}-${option.value}`}
+                            type="button"
+                            aria-pressed={isSelected}
+                            onClick={() => updateSelection(option.key, option.value)}
+                            className={isSelected ? "is-selected" : undefined}
+                          >
+                            <strong>{option.label}</strong>
+                            <small>{option.detail}</small>
+                          </button>
+                        );
                       })}
-                    >
-                      İncele
-                      <ArrowRight className="h-4 w-4" aria-hidden />
-                    </Link>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
+                    </div>
+                  </fieldset>
+                ))}
+              </div>
 
-          <div className="store-selector-panel__footer">
-            <Link href="/urun-secici" className="btn-secondary">
-              Detaylı seçiciye git
-            </Link>
-            <Link href="/iletisim?reason=Uygunluk%20kontrol%C3%BC" className="premium-btn premium-btn--primary">
-              Uygunluğu Kontrol Et
-            </Link>
-          </div>
+              <div className="store-selector-panel__results" aria-label="Seçiciye göre ilgili ürünler">
+                <div className="store-selector-results-head">
+                  <span>
+                    <SlidersHorizontal className="h-4 w-4" aria-hidden />
+                    Canlı karar motoru
+                  </span>
+                  <b>{recommendations.length} öneri</b>
+                </div>
+
+                <div className="store-selector-result-list">
+                  {recommendations.map((recommendation, index) => {
+                    const confidenceScore = getConfidenceScore(recommendation.score);
+
+                    return (
+                      <article key={recommendation.product.id} className="store-selector-result-card">
+                        <div className="store-selector-result-card__rank">0{index + 1}</div>
+                        <div className="min-w-0">
+                          <div className="store-selector-result-card__meta">
+                            <span>{recommendation.profile.powerTier}</span>
+                            <span>{recommendation.product.stockLabel}</span>
+                            <span>%{confidenceScore} uyum</span>
+                          </div>
+                          <h3>{recommendation.product.name}</h3>
+                          <p>{recommendation.profile.primaryFit}</p>
+                          <div
+                            className="store-selector-result-card__score"
+                            style={{ "--match-score": `${confidenceScore}%` } as CSSProperties}
+                            aria-label={`Uyum skoru yüzde ${confidenceScore}`}
+                          >
+                            <span />
+                          </div>
+                          <div className="store-selector-result-card__reasons">
+                            {recommendation.reasons.map((reason) => (
+                              <span key={reason}>
+                                <CheckCircle2 className="h-3.5 w-3.5" aria-hidden />
+                                {reason}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="store-selector-result-card__action">
+                          <strong>{formatPriceTRY(recommendation.product.priceKurus)}</strong>
+                          <small>Karar skoru %{confidenceScore}</small>
+                          <Link
+                            href={`/urun/${recommendation.product.slug}`}
+                            onClick={() => setIsOpen(false)}
+                            {...conversionDataAttributes("selector_result_click", {
+                              source: "store_modal",
+                              productId: recommendation.product.id,
+                              score: recommendation.score
+                            })}
+                          >
+                            İncele
+                            <ArrowRight className="h-4 w-4" aria-hidden />
+                          </Link>
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+
+                <div className="store-selector-panel__footer">
+                  <Link href="/urun-secici" className="btn-secondary" onClick={() => setIsOpen(false)}>
+                    Detaylı seçiciye git
+                  </Link>
+                  <Link
+                    href="/iletisim?reason=Uygunluk%20kontrol%C3%BC"
+                    className="premium-btn premium-btn--primary"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Uygunluğu Kontrol Et
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
-      </div>
-    </details>
+      ) : null}
+    </>
   );
 }
