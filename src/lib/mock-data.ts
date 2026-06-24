@@ -34,6 +34,7 @@ export type FaqItem = {
 export type ProductModel = {
   id: string;
   slug: string;
+  updatedAt?: string;
   name: string;
   category: string;
   badge?: string;
@@ -88,6 +89,7 @@ export type ArticleSection = {
 export type ArticleModel = {
   id: string;
   slug: string;
+  updatedAt?: string;
   title: string;
   category: string;
   excerpt: string;

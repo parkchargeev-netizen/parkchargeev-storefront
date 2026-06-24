@@ -2,16 +2,24 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { ManagedPageRenderer } from "@/components/site/managed-page-renderer";
+import { JsonLd } from "@/components/seo/json-ld";
 import { PageHeader } from "@/components/ui/page-header";
 import { services } from "@/lib/mock-data";
 import { serviceCoverageSummary } from "@/lib/service-coverage";
 import { absoluteUrl } from "@/lib/site";
+import {
+  getBreadcrumbJsonLd,
+  getServiceCatalogJsonLd
+} from "@/lib/structured-data";
 import { getPublishedSitePageBySlug } from "@/server/site/repository";
 
 const fallbackMetadata: Metadata = {
   title: "Hizmetler",
   description:
-    "Şarj ünitesi kurulumu, teknik servis, kurumsal çözümler ve enerji danışmanlığı hizmetleri."
+    "Şarj ünitesi kurulumu, teknik servis, kurumsal çözümler ve enerji danışmanlığı hizmetleri.",
+  alternates: {
+    canonical: "/hizmetler"
+  }
 };
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -42,13 +50,26 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function ServicesPage() {
   const page = await getPublishedSitePageBySlug("hizmetler");
+  const structuredData = [
+    getServiceCatalogJsonLd(services),
+    getBreadcrumbJsonLd([
+      { name: "Ana Sayfa", path: "/" },
+      { name: "Hizmetler", path: "/hizmetler" }
+    ])
+  ];
 
   if (page) {
-    return <ManagedPageRenderer page={page} />;
+    return (
+      <>
+        <JsonLd data={structuredData} />
+        <ManagedPageRenderer page={page} />
+      </>
+    );
   }
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8" data-motion-scope>
+      <JsonLd data={structuredData} />
       <PageHeader
         align="center"
         eyebrow="Kurulum ve teknik destek"

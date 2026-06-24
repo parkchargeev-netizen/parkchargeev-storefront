@@ -20,6 +20,7 @@ export type PublicBlogArticle = ArticleModel & {
 function getFallbackPublicArticles(): PublicBlogArticle[] {
   return articles.map((article) => ({
     ...article,
+    updatedAt: article.updatedAt ?? article.publishedAt,
     bodyHtml: renderArticleBodyHtml(article),
     source: "fallback"
   }));
@@ -40,6 +41,7 @@ function mapBlogPostToPublicArticle(
     excerpt: post.excerpt,
     coverKicker: "ParkChargeEV Rehber",
     publishedAt: publishedAt.toISOString().slice(0, 10),
+    updatedAt: post.updatedAt.toISOString(),
     readingMinutes: estimateReadingMinutes(bodyText),
     seoDescription: post.seoDescription || post.excerpt,
     sections: [],

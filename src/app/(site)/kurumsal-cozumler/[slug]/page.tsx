@@ -10,7 +10,11 @@ import {
   getSolutionBySlug,
   solutionPages
 } from "@/lib/mock-data";
-import { getBreadcrumbJsonLd, getFaqJsonLd } from "@/lib/structured-data";
+import {
+  getBreadcrumbJsonLd,
+  getFaqJsonLd,
+  getSolutionServiceJsonLd
+} from "@/lib/structured-data";
 
 type SolutionPageProps = {
   params: Promise<{ slug: string }>;
@@ -32,7 +36,10 @@ export async function generateMetadata({
 
   return {
     title: solution.title,
-    description: solution.summary
+    description: solution.summary,
+    alternates: {
+      canonical: `/kurumsal-cozumler/${solution.slug}`
+    }
   };
 }
 
@@ -53,6 +60,7 @@ export default async function SolutionDetailPage({
     { name: solution.title, path: `/kurumsal-cozumler/${solution.slug}` }
   ]);
   const faqJsonLd = getFaqJsonLd(solution.faq);
+  const serviceJsonLd = getSolutionServiceJsonLd(solution);
   const defaultReasonBySlug: Record<string, string> = {
     "site-ve-apartman": "Site / apartman çözümü",
     "is-yeri-ve-ofis": "İş yeri / ofis projesi",
@@ -61,7 +69,7 @@ export default async function SolutionDetailPage({
 
   return (
     <main className="corporate-detail-page mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <JsonLd data={[breadcrumbJsonLd, faqJsonLd]} />
+      <JsonLd data={[serviceJsonLd, breadcrumbJsonLd, faqJsonLd]} />
 
       <div className="mb-6 flex flex-wrap items-center gap-2 text-xs text-on-surface-variant sm:text-sm">
         <Link href="/" className="transition hover:text-primary">

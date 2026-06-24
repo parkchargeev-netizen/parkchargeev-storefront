@@ -15,7 +15,10 @@ import { getPublishedSitePageBySlug } from "@/server/site/repository";
 const fallbackMetadata: Metadata = {
   title: "İletişim",
   description:
-    "Keşif, teklif, kurulum, servis ve iş ortaklığı talepleri için ParkChargeEV ile iletişime geçin."
+    "Keşif, teklif, kurulum, servis ve iş ortaklığı talepleri için ParkChargeEV ile iletişime geçin.",
+  alternates: {
+    canonical: "/iletisim"
+  }
 };
 
 const parkChargeEvMapEmbedSrc =

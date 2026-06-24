@@ -8,7 +8,10 @@ import { getPublishedSitePageBySlug } from "@/server/site/repository";
 const fallbackMetadata: Metadata = {
   title: "Hakkımızda",
   description:
-    "ParkChargeEV'in elektrikli araç şarj cihazı, keşif, kurulum ve teknik destek yaklaşımı."
+    "ParkChargeEV'in elektrikli araç şarj cihazı, keşif, kurulum ve teknik destek yaklaşımı.",
+  alternates: {
+    canonical: "/hakkimizda"
+  }
 };
 
 export async function generateMetadata(): Promise<Metadata> {

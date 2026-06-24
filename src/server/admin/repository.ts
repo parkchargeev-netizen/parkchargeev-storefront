@@ -617,6 +617,7 @@ function mapAdminProductToPublicProduct(
   const publicBase: ProductModel = {
     id: base?.id ?? row.id,
     slug: row.slug,
+    updatedAt: row.updatedAt.toISOString(),
     name: row.name,
     category: getPublicCategoryLabel(categorySlugs, base),
     badge: getPublicProductBadge(tags, base),

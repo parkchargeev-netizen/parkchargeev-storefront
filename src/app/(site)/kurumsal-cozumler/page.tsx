@@ -6,7 +6,10 @@ import { CorporateSolutionsView } from "@/features/corporate/ui/corporate-soluti
 export const metadata: Metadata = {
   title: "Kurumsal Çözümler",
   description:
-    "Site, apartman, iş yeri, ofis, filo ve otopark projeleri için kurumsal EV şarj altyapısı çözümleri."
+    "Site, apartman, iş yeri, ofis, filo ve otopark projeleri için kurumsal EV şarj altyapısı çözümleri.",
+  alternates: {
+    canonical: "/kurumsal-cozumler"
+  }
 };
 
 export default function CorporateSolutionsPage() {

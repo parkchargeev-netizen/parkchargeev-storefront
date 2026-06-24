@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">ParkChargeEV</title>
+  <rect width="512" height="512" rx="96" fill="#063326"/>
+  <circle cx="256" cy="256" r="184" fill="none" stroke="#7eecc9" stroke-width="34"/>
+  <circle cx="256" cy="256" r="118" fill="#7eecc9" fill-opacity="0.12" stroke="#7eecc9" stroke-opacity="0.36" stroke-width="12"/>
+  <path d="M150 296c12-58 58-88 112-88h58c48 0 77 28 92 67 10 25-8 55-36 55h-22c-18 0-34-10-42-26H222c-9 16-25 26-44 26h-16c-19 0-30-13-12-34Z" fill="none" stroke="#7eecc9" stroke-linecap="round" stroke-linejoin="round" stroke-width="30"/>
+  <path d="M284 112 204 270h59l-37 130 98-171h-57l17-117Z" fill="#7eecc9"/>
+</svg>

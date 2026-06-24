@@ -2,13 +2,16 @@ import { absoluteUrl, siteConfig } from "@/lib/site";
 import type {
   ArticleModel,
   FaqItem,
-  ProductModel
+  ProductModel,
+  ServiceModel,
+  SolutionModel
 } from "@/lib/mock-data";
 
 const organizationId = absoluteUrl("/#organization");
 const localBusinessId = absoluteUrl("/#localbusiness");
 const websiteId = absoluteUrl("/#website");
 const defaultImageUrl = absoluteUrl("/api/og/product/homecharge-pro-11kw");
+const logoUrl = absoluteUrl("/images/parkchargeev-logo.svg");
 const officeLatitude = 40.74146948542449;
 const officeLongitude = 30.300722122192383;
 const officeMapUrl =
@@ -40,11 +43,13 @@ export function getOrganizationJsonLd() {
     "@type": "Organization",
     "@id": organizationId,
     name: siteConfig.name,
+    alternateName: "Park Charge EV",
     url: siteConfig.url,
     description: siteConfig.description,
     email: siteConfig.email,
     telephone: siteConfig.phone,
     image: defaultImageUrl,
+    logo: logoUrl,
     address: {
       "@type": "PostalAddress",
       streetAddress: siteConfig.address.streetAddress,
@@ -76,6 +81,14 @@ export function getOrganizationJsonLd() {
       }
     },
     areaServed: siteConfig.serviceAreas,
+    knowsAbout: [
+      "Elektrikli araç şarj cihazları",
+      "EV şarj istasyonu kurulumu",
+      "AC wallbox",
+      "DC hızlı şarj",
+      "Site ve apartman şarj altyapısı",
+      "Filo ve iş yeri şarj çözümleri"
+    ],
     sameAs: getSameAsLinks()
   };
 }
@@ -83,16 +96,20 @@ export function getOrganizationJsonLd() {
 export function getLocalBusinessJsonLd() {
   return {
     "@context": "https://schema.org",
-    "@type": "ProfessionalService",
+    "@type": ["ProfessionalService", "Electrician"],
     "@id": localBusinessId,
     name: siteConfig.name,
+    alternateName: "Park Charge EV",
     url: siteConfig.url,
     description:
       "Elektrikli araç şarj cihazı satışı, keşif, kurulum ve teknik destek hizmeti.",
     image: defaultImageUrl,
+    logo: logoUrl,
     email: siteConfig.email,
     telephone: siteConfig.phone,
     priceRange: "$$",
+    currenciesAccepted: "TRY",
+    paymentAccepted: "Credit Card",
     parentOrganization: {
       "@id": organizationId
     },
@@ -167,6 +184,78 @@ export function getFaqJsonLd(faqs: FaqItem[]) {
   };
 }
 
+function getServiceEntity(service: ServiceModel) {
+  return {
+    "@type": "Service",
+    "@id": absoluteUrl(`/hizmetler#${service.id}`),
+    name: service.title,
+    serviceType: service.title,
+    description: service.summary,
+    url: absoluteUrl(service.href),
+    provider: {
+      "@id": localBusinessId
+    },
+    areaServed: {
+      "@type": "Country",
+      name: "Türkiye"
+    },
+    availableLanguage: ["tr-TR"]
+  };
+}
+
+export function getServiceCatalogJsonLd(services: ServiceModel[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "OfferCatalog",
+    "@id": absoluteUrl("/hizmetler#service-catalog"),
+    name: "ParkChargeEV elektrikli araç şarj hizmetleri",
+    itemListElement: services.map((service) => ({
+      "@type": "Offer",
+      itemOffered: getServiceEntity(service)
+    }))
+  };
+}
+
+export function getSolutionServiceJsonLd(solution: SolutionModel) {
+  const solutionUrl = absoluteUrl(`/kurumsal-cozumler/${solution.slug}`);
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "@id": `${solutionUrl}#service`,
+    name: solution.title,
+    serviceType: solution.title,
+    description: solution.summary,
+    url: solutionUrl,
+    provider: {
+      "@id": localBusinessId
+    },
+    areaServed: {
+      "@type": "Country",
+      name: "Türkiye"
+    },
+    audience: {
+      "@type": "Audience",
+      audienceType: solution.segment
+    },
+    category: "Elektrikli araç şarj altyapısı",
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: `${solution.title} kapsamı`,
+      itemListElement: solution.features.map((feature) => ({
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: feature,
+          provider: {
+            "@id": localBusinessId
+          }
+        }
+      }))
+    }
+  };
+}
+
 export function getProductJsonLd(product: ProductModel) {
   const productUrl = absoluteUrl(`/urun/${product.slug}`);
 
@@ -203,7 +292,6 @@ export function getProductJsonLd(product: ProductModel) {
       priceCurrency: "TRY",
       price: (product.priceKurus / 100).toFixed(2),
       itemCondition: "https://schema.org/NewCondition",
-      priceValidUntil: "2026-12-31",
       availability:
         product.stockLabel === "Stokta Yok"
           ? "https://schema.org/OutOfStock"
@@ -272,7 +360,7 @@ export function getArticleJsonLd(article: ArticleModel) {
     url: articleUrl,
     inLanguage: "tr-TR",
     datePublished: article.publishedAt,
-    dateModified: article.publishedAt,
+    dateModified: article.updatedAt ?? article.publishedAt,
     author: {
       "@id": organizationId
     },

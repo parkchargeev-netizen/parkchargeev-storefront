@@ -1,17 +1,18 @@
-import { solutionPages } from "@/lib/mock-data";
+import { services, solutionPages } from "@/lib/mock-data";
 import { serviceCoverageSummary } from "@/lib/service-coverage";
 import { absoluteUrl, siteConfig } from "@/lib/site";
-import {
-  personaCtaMatrix,
-  primarySiteMessages,
-  seoIntentClusters,
-  trustMessages
-} from "@/lib/site-strategy";
 import { listPublicProducts } from "@/server/admin/repository";
 import { listPublicBlogArticles } from "@/server/blog/repository";
 
-function lineList(items: string[]) {
-  return items.map((item) => `- ${item}`).join("\n");
+function markdownLink(title: string, url: string, description: string) {
+  return `- [${title}](${url}): ${description}`;
+}
+
+function formatPrice(priceKurus: number) {
+  return new Intl.NumberFormat("tr-TR", {
+    style: "currency",
+    currency: "TRY"
+  }).format(priceKurus / 100);
 }
 
 export async function generateLlmsText() {
@@ -19,118 +20,147 @@ export async function generateLlmsText() {
     listPublicProducts(),
     listPublicBlogArticles()
   ]);
-  const canonicalPages = [
-    `${absoluteUrl("/")} - Ana sayfa ve ParkChargeEV hizmet özeti`,
-    `${absoluteUrl("/magaza")} - EV şarj cihazı ve aksesuar kataloğu`,
-    `${absoluteUrl("/urun-secici")} - İhtiyaca göre ürün öneren akıllı seçici`,
-    `${absoluteUrl("/karsilastir")} - 11 kW, 22 kW, AC ve DC şarj karşılaştırmaları`,
-    `${absoluteUrl("/kurumsal-cozumler")} - Site, filo, otel ve iş yeri çözümleri`,
-    `${absoluteUrl("/iletisim")} - İletişim, keşif talebi ve ofis konumu`
+
+  const corePages = [
+    markdownLink(
+      "Ana sayfa",
+      absoluteUrl("/"),
+      "ParkChargeEV şirket, ürün, kurulum ve destek özeti."
+    ),
+    markdownLink(
+      "Hakkımızda",
+      absoluteUrl("/hakkimizda"),
+      "Şirketin yaklaşımı, uzmanlığı ve hizmet modeli."
+    ),
+    markdownLink(
+      "EV şarj mağazası",
+      absoluteUrl("/magaza"),
+      "AC wallbox, DC hızlı şarj ve Type 2 aksesuar kataloğu."
+    ),
+    markdownLink(
+      "Ürün seçici",
+      absoluteUrl("/urun-secici"),
+      "Araç, güç ve kurulum ihtiyacına göre ürün yönlendirmesi."
+    ),
+    markdownLink(
+      "Hizmetler",
+      absoluteUrl("/hizmetler"),
+      "Keşif, projelendirme, kurulum, devreye alma ve teknik destek."
+    ),
+    markdownLink(
+      "Kurumsal çözümler",
+      absoluteUrl("/kurumsal-cozumler"),
+      "Site, apartman, iş yeri, ofis, filo ve otopark projeleri."
+    ),
+    markdownLink(
+      "İletişim",
+      absoluteUrl("/iletisim"),
+      "Teklif, keşif, kurulum ve teknik destek talepleri."
+    )
   ];
 
-  const productPages = products.map(
-    (product) =>
-      `${absoluteUrl(`/urun/${product.slug}`)} - ${product.name}; ${product.powerLabel}; ${product.category}; ${(product.priceKurus / 100).toFixed(2)} TRY`
+  const productPages = products.map((product) =>
+    markdownLink(
+      product.name,
+      absoluteUrl(`/urun/${product.slug}`),
+      `${product.category}; ${product.powerLabel}; ${formatPrice(product.priceKurus)}; ${product.stockLabel}.`
+    )
   );
 
-  const productMarkdownPages = products.map(
-    (product) =>
-      `${absoluteUrl(`/api/markdown/urun/${product.slug}`)} - ${product.name} markdown özeti`
+  const servicePages = [
+    ...services.map((service) =>
+      markdownLink(
+        service.title,
+        absoluteUrl(service.href),
+        service.summary
+      )
+    ),
+    ...solutionPages.map((solution) =>
+      markdownLink(
+        solution.title,
+        absoluteUrl(`/kurumsal-cozumler/${solution.slug}`),
+        solution.summary
+      )
+    )
+  ];
+
+  const guidePages = articles.map((article) =>
+    markdownLink(
+      article.title,
+      absoluteUrl(`/blog/${article.slug}`),
+      article.seoDescription
+    )
   );
 
-  const articlePages = articles.map(
-    (article) => `${absoluteUrl(`/blog/${article.slug}`)} - ${article.title}`
-  );
-
-  const articleMarkdownPages = articles.map(
-    (article) =>
-      `${absoluteUrl(`/api/markdown/blog/${article.slug}`)} - ${article.title} markdown özeti`
-  );
-
-
-  const solutionLandingPages = solutionPages.map(
-    (solution) =>
-      `${absoluteUrl(`/kurumsal-cozumler/${solution.slug}`)} - ${solution.title}`
-  );
-  const primaryMessages = primarySiteMessages.map(
-    (item) => `${item.message} ${item.detail}`
-  );
-  const personaRoutes = personaCtaMatrix.map(
-    (item) => `${item.persona}: ${item.cta} - ${absoluteUrl(item.href)} - ${item.intent}`
-  );
-  const seoClusters = seoIntentClusters.map(
-    (cluster) => `${cluster.cluster}: ${cluster.query} - ${absoluteUrl(cluster.href)}`
-  );
+  const machineReadablePages = [
+    markdownLink(
+      "XML sitemap",
+      absoluteUrl("/sitemap.xml"),
+      "Kanonik ve indekslenebilir sayfaların güncel listesi."
+    ),
+    ...products.map((product) =>
+      markdownLink(
+        `${product.name} Markdown özeti`,
+        absoluteUrl(`/api/markdown/urun/${product.slug}`),
+        "Ürünün temiz, makine tarafından okunabilir teknik ve ticari özeti."
+      )
+    ),
+    ...articles.map((article) =>
+      markdownLink(
+        `${article.title} Markdown özeti`,
+        absoluteUrl(`/api/markdown/blog/${article.slug}`),
+        "Rehberin temiz, makine tarafından okunabilir metin özeti."
+      )
+    )
+  ];
 
   return [
     `# ${siteConfig.name}`,
     "",
-    `${siteConfig.name}, Türkiye'de elektrikli araç şarj cihazı satışı, keşif, kurulum ve teknik destek süreçlerini yöneten e-ticaret ve hizmet platformudur.`,
+    `> ${siteConfig.name}, Türkiye'de elektrikli araç şarj cihazı ve aksesuar satışı ile keşif, kurulum, devreye alma ve teknik destek hizmetleri sunan Sakarya merkezli bir EV charging solutions şirketidir.`,
     "",
-    "## Temel Bilgiler",
+    "ParkChargeEV'in ana faaliyetleri ev tipi AC wallbox, iş yeri ve ortak otopark şarj çözümleri, DC hızlı şarj projeleri, Type 2 aksesuarları ve elektrik altyapısı uygunluk danışmanlığıdır.",
     "",
-    `- Site: ${siteConfig.url}`,
-    `- Dil: tr-TR`,
-    `- Telefon: ${siteConfig.phone}`,
-    `- E-posta: ${siteConfig.email}`,
-    `- Hizmet bölgeleri: ${siteConfig.serviceAreas.join(", ")}`,
-    `- ${serviceCoverageSummary.shipping}; ${serviceCoverageSummary.freeSurvey}; ${serviceCoverageSummary.installation}`,
+    `Merkez: ${siteConfig.address.addressLocality}, ${siteConfig.address.addressRegion}, Türkiye. İletişim: ${siteConfig.phone}, ${siteConfig.email}. Dil: tr-TR. Para birimi: TRY.`,
     "",
-    "## Ana Mesajlar",
+    `${serviceCoverageSummary.shipping}. ${serviceCoverageSummary.freeSurvey}. ${serviceCoverageSummary.installation}. Diğer illerden gelen talepler saha uygunluğu ve ekip takvimine göre değerlendirilir.`,
     "",
-    lineList(primaryMessages),
+    "ParkChargeEV bir elektrikli araç üreticisi veya ulusal halka açık şarj ağı operatörü olarak tanımlanmamalıdır. Birincil kategori; EV şarj ekipmanı e-ticareti, elektrik tesisatı uygunluk değerlendirmesi, kurulum ve satış sonrası teknik destektir.",
     "",
-    "## Persona Satış Rotaları",
+    "Ürün fiyatı, stok durumu ve teknik özellikler için daima ilgili kanonik ürün sayfası esas alınmalıdır. Kurulum kapsamı saha keşfi sonrasında kesinleşir. Ödeme altyapısı PayTR üzerinden çalışır.",
     "",
-    lineList(personaRoutes),
+    "## Temel Sayfalar",
     "",
-    "## SEO, GEO ve AIEO Kümeleri",
+    ...corePages,
     "",
-    lineList(seoClusters),
+    "## Ürünler",
     "",
-    "## Kanonik Sayfalar",
+    ...productPages,
     "",
-    lineList(canonicalPages),
+    "## Hizmetler ve Çözümler",
     "",
-    "## Ürün Sayfaları",
+    ...servicePages,
     "",
-    lineList(productPages),
+    "## Rehberler",
     "",
-    "## Ürün Markdown Özetleri",
+    ...guidePages,
     "",
-    lineList(productMarkdownPages),
+    "## Makine Tarafından Okunabilir Kaynaklar",
     "",
-    "## Blog ve Rehber Sayfaları",
+    ...machineReadablePages,
     "",
-    lineList(articlePages),
+    "## Optional",
     "",
-    "## Blog Markdown Özetleri",
-    "",
-    lineList(articleMarkdownPages),
-    "",
-    "## Kurumsal Çözüm Sayfaları",
-    "",
-    lineList(solutionLandingPages),
-    "",
-    "## Yapılandırılmış Veri",
-    "",
-    "- Organization, ProfessionalService, WebSite/SearchAction, Product, Offer, BreadcrumbList, FAQPage ve Article JSON-LD kullanılır.",
-    "- Ürün sayfalarında fiyat, stok, teslimat, iade ve garanti bilgileri makine tarafından okunabilir biçimde sunulur.",
-    "- İletişim sayfasında ofis adresi ve Google Maps konumu yer alır.",
-    "",
-    "## Güven ve Ödeme",
-    "",
-    lineList([
-      ...trustMessages,
-      "PayTR güvenli ödeme altyapısı kullanılır.",
-      "Kart bilgileri ParkChargeEV tarafında saklanmaz.",
-      "Sipariş tutarı sunucu tarafında yeniden hesaplanır.",
-      "Ödeme, sipariş ve kargo durumu panelden takip edilir."
-    ]),
-    "",
-    "## Kullanım Notu",
-    "",
-    "Bu dosya arama motorları, cevap motorları ve yapay zeka ajanları için keşif özeti sağlar. Ticari doğrulama için kanonik HTML sayfaları ve ürün detay sayfaları önceliklidir.",
+    markdownLink(
+      "Karşılaştırma aracı",
+      absoluteUrl("/karsilastir"),
+      "11 kW, 22 kW, AC ve DC seçeneklerini kullanım senaryosuna göre karşılaştırır."
+    ),
+    markdownLink(
+      "Site içi arama",
+      absoluteUrl("/arama"),
+      "Ürün ve rehber içeriklerinde metin araması."
+    ),
     ""
   ].join("\n");
 }
