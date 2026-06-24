@@ -14,7 +14,19 @@ test.describe("@e2e contact and mobile navigation", () => {
 
     await expect(mapFrame).toBeVisible();
     await expect(mapFrame).toHaveAttribute("loading", "lazy");
-    expect(response?.headers()["content-security-policy"]).toContain("https://www.google.com");
+
+    const contentSecurityPolicy =
+      response?.headers()["content-security-policy"] ?? "";
+
+    expect(contentSecurityPolicy).toContain("https://www.google.com");
+    expect(contentSecurityPolicy).toContain("script-src-elem");
+    expect(contentSecurityPolicy).toContain("https://*.googletagmanager.com");
+    expect(contentSecurityPolicy).toContain("https://*.google-analytics.com");
+    expect(contentSecurityPolicy).toContain("https://www.googleadservices.com");
+    expect(contentSecurityPolicy).toContain("https://googleads.g.doubleclick.net");
+    expect(contentSecurityPolicy).toContain("https://www.clarity.ms");
+    expect(contentSecurityPolicy).toContain("https://scripts.clarity.ms");
+    expect(contentSecurityPolicy).toContain("https://*.clarity.ms");
   });
 
   test("Open site sections from the mobile menu", async ({ page }) => {

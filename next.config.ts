@@ -4,17 +4,71 @@ import type { NextConfig } from "next";
 const isProduction = process.env.NODE_ENV === "production";
 const sentryIngestOrigin = "https://o4511393003077632.ingest.de.sentry.io";
 
+const googleMeasurementScriptSources = [
+  "https://*.googletagmanager.com",
+  "https://www.googleadservices.com",
+  "https://www.google.com",
+  "https://pagead2.googlesyndication.com",
+  "https://googleads.g.doubleclick.net"
+];
+
+const googleMeasurementConnectSources = [
+  "https://*.google-analytics.com",
+  "https://*.analytics.google.com",
+  "https://*.googletagmanager.com",
+  "https://*.g.doubleclick.net",
+  "https://*.google.com",
+  "https://google.com",
+  "https://*.google.com.tr",
+  "https://google.com.tr",
+  "https://pagead2.googlesyndication.com",
+  "https://www.googleadservices.com",
+  "https://ad.doubleclick.net"
+];
+
+const googleMeasurementImageSources = [
+  "https://*.google-analytics.com",
+  "https://*.googletagmanager.com",
+  "https://*.g.doubleclick.net",
+  "https://*.google.com",
+  "https://google.com",
+  "https://*.google.com.tr",
+  "https://google.com.tr",
+  "https://pagead2.googlesyndication.com",
+  "https://www.googleadservices.com"
+];
+
+const googleMeasurementFrameSources = ["https://www.googletagmanager.com"];
+
+const microsoftClarityScriptSources = [
+  "https://www.clarity.ms",
+  "https://scripts.clarity.ms",
+  "https://*.clarity.ms"
+];
+
+const microsoftClarityConnectSources = ["https://*.clarity.ms"];
+const microsoftClarityImageSources = ["https://*.clarity.ms"];
+
+const scriptSources = [
+  "'self'",
+  "'unsafe-inline'",
+  ...googleMeasurementScriptSources,
+  ...microsoftClarityScriptSources,
+  ...(isProduction ? [] : ["'unsafe-eval'"])
+].join(" ");
+
 const contentSecurityPolicy = [
   "default-src 'self'",
   "base-uri 'self'",
   "form-action 'self' https://www.paytr.com",
   "frame-ancestors 'self'",
-  "frame-src 'self' https://www.paytr.com https://www.google.com https://maps.google.com https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com",
-  `connect-src 'self' https://www.paytr.com ${sentryIngestOrigin}${isProduction ? "" : " ws: http: https:"}`,
-  "img-src 'self' data: blob: https:",
+  `frame-src 'self' https://www.paytr.com https://www.google.com https://maps.google.com https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com ${googleMeasurementFrameSources.join(" ")}`,
+  `connect-src 'self' https://www.paytr.com ${sentryIngestOrigin} ${googleMeasurementConnectSources.join(" ")} ${microsoftClarityConnectSources.join(" ")}${isProduction ? "" : " ws: http: https:"}`,
+  `img-src 'self' data: blob: https: ${googleMeasurementImageSources.join(" ")} ${microsoftClarityImageSources.join(" ")}`,
   "font-src 'self' data: https://fonts.gstatic.com",
   "style-src 'self' 'unsafe-inline'",
-  `script-src 'self' 'unsafe-inline'${isProduction ? "" : " 'unsafe-eval'"}`,
+  `script-src ${scriptSources}`,
+  `script-src-elem ${scriptSources}`,
   "worker-src 'self' blob:",
   "manifest-src 'self'",
   "media-src 'self' data: blob: https:",
