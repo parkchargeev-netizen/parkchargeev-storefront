@@ -1,10 +1,9 @@
 import type { ReactNode } from "react";
 
-import { SiteAmbientBackground } from "@/components/layout/site-ambient-background";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { ScrollMotion } from "@/components/layout/scroll-motion";
-import type { PublicSiteNavigation } from "@/server/site/repository";
+import type { PublicSiteNavigation } from "@/features/navigation/domain/public-navigation";
 
 type SiteShellProps = {
   children: ReactNode;
@@ -20,11 +19,14 @@ export function SiteShell({ children, navigation }: SiteShellProps) {
       >
         İçeriğe geç
       </a>
-      <SiteAmbientBackground />
       <SiteHeader navigation={navigation?.primary} />
-      <main id="main-content" tabIndex={-1} className="site-page-transition relative z-10">
+      <div
+        id="main-content"
+        tabIndex={-1}
+        className="site-page-transition relative z-10"
+      >
         {children}
-      </main>
+      </div>
       <ScrollMotion />
       <SiteFooter
         navigation={

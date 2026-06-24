@@ -23,7 +23,7 @@ export const siteConfig = {
   supportHours: "Mo-Sa 09:00-18:00",
   serviceAreas: ["Türkiye geneli"],
   primaryNavigation: [
-    { href: "/", label: "Ana Sayfa" },
+    { href: "/", label: "Anasayfa" },
     { href: "/magaza", label: "Mağaza" },
     { href: "/urun-secici", label: "Ürün Seçici" },
     { href: "/karsilastir", label: "Karşılaştır" },

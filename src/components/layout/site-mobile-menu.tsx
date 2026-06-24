@@ -2,19 +2,17 @@
 
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { SiteHeaderActions } from "@/components/layout/site-header-actions";
+import type { PublicNavigationItem } from "@/features/navigation/domain/public-navigation";
 import { formatPublicNavigationLabel } from "@/lib/public-navigation-labels";
-import type { PublicNavigationItem } from "@/server/site/repository";
 
 type SiteMobileMenuProps = {
   navigation: ReadonlyArray<PublicNavigationItem>;
 };
 
 export function SiteMobileMenu({ navigation }: SiteMobileMenuProps) {
-  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const Icon = isOpen ? X : Menu;
   const buttonLabel = isOpen ? "Menüyü kapat" : "Menüyü aç";
@@ -33,7 +31,7 @@ export function SiteMobileMenu({ navigation }: SiteMobileMenuProps) {
         data-testid="mobile-menu-toggle"
         title={buttonLabel}
         onClick={() => setIsOpen((current) => !current)}
-        className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-outline-variant/45 bg-white text-on-surface transition hover:border-primary/35 hover:text-primary"
+        className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-outline-variant/45 bg-white text-on-surface transition hover:border-primary/35 hover:text-primary"
       >
         <Icon className="h-5 w-5" aria-hidden="true" />
       </button>
@@ -52,16 +50,8 @@ export function SiteMobileMenu({ navigation }: SiteMobileMenuProps) {
                   href={item.href}
                   target={item.opensInNewTab ? "_blank" : undefined}
                   rel={item.rel ?? (item.opensInNewTab ? "noopener noreferrer" : undefined)}
-                  onClick={(event) => {
-                    if (item.opensInNewTab) {
-                      return;
-                    }
-
-                    event.preventDefault();
-                    setIsOpen(false);
-                    router.push(item.href);
-                  }}
-                  className="rounded-2xl border border-white/10 bg-white/[0.14] px-4 py-3 text-sm font-black text-white/80 transition hover:border-primary/35 hover:text-white"
+                  onClick={() => setIsOpen(false)}
+                  className="rounded-lg border border-white/10 bg-white/[0.14] px-4 py-3 text-sm font-black text-white/80 transition hover:border-primary/35 hover:text-white"
                 >
                   {formatPublicNavigationLabel(item)}
                 </Link>

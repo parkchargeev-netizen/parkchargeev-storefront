@@ -3,11 +3,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ArticleCard } from "@/components/content/article-card";
+import { JsonLd } from "@/components/seo/json-ld";
 import {
   getArticleJsonLd,
   getBreadcrumbJsonLd,
-  getFaqJsonLd,
-  stringifyJsonLd
+  getFaqJsonLd
 } from "@/lib/structured-data";
 import {
   getPublicBlogArticleBySlug,
@@ -85,20 +85,13 @@ export default async function ArticleDetailPage({
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-12 lg:px-8">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(articleJsonLd) }}
+      <JsonLd
+        data={[
+          articleJsonLd,
+          breadcrumbJsonLd,
+          ...(article.faq?.length ? [getFaqJsonLd(article.faq)] : [])
+        ]}
       />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(breadcrumbJsonLd) }}
-      />
-      {article.faq?.length ? (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: stringifyJsonLd(getFaqJsonLd(article.faq)) }}
-        />
-      ) : null}
 
       <div className="mb-8 flex flex-wrap items-center gap-2 text-sm text-on-surface-variant">
         <Link href="/" className="transition hover:text-primary">

@@ -4,13 +4,10 @@ import { ArrowRight, CheckCircle2 } from "lucide-react";
 
 import { ProductCard } from "@/components/shop/product-card";
 import { ProductComparisonClient } from "@/components/site/product-comparison-client";
+import { JsonLd } from "@/components/seo/json-ld";
 import { formatPriceTRY } from "@/lib/format";
 import { products } from "@/lib/mock-data";
-import {
-  getBreadcrumbJsonLd,
-  getFaqJsonLd,
-  stringifyJsonLd
-} from "@/lib/structured-data";
+import { getBreadcrumbJsonLd, getFaqJsonLd } from "@/lib/structured-data";
 
 export const metadata: Metadata = {
   title: "Şarj Cihazı Karşılaştırma",
@@ -78,14 +75,7 @@ export default function ComparePage() {
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(breadcrumbJsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(faqJsonLd) }}
-      />
+      <JsonLd data={[breadcrumbJsonLd, faqJsonLd]} />
 
       <section className="grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)] lg:items-end">
         <div>

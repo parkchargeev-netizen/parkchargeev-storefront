@@ -12,7 +12,7 @@ export function SiteCartLink() {
     <Link
       href="/sepet"
       aria-label={`Sepetim${totalQuantity > 0 ? `, ${totalQuantity} ürün` : ""}`}
-      className="relative inline-flex h-11 min-w-11 items-center justify-center gap-2 rounded-2xl border border-outline-variant/40 bg-surface-container-low px-3 text-sm font-black text-on-surface transition hover:border-primary/30 hover:text-primary"
+      className="relative inline-flex h-11 min-w-11 items-center justify-center gap-2 rounded-lg border border-outline-variant/40 bg-surface-container-low px-3 text-sm font-black text-on-surface transition hover:border-primary/30 hover:text-primary"
     >
       <ShoppingCart className="h-5 w-5" aria-hidden />
       <span className="hidden xl:inline">Sepet</span>

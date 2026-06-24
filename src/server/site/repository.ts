@@ -1,6 +1,10 @@
 import { unstable_cache } from "next/cache";
 import { desc, eq, and } from "drizzle-orm";
 
+import type {
+  PublicNavigationItem,
+  PublicSiteNavigation
+} from "@/features/navigation/domain/public-navigation";
 import { hasDatabaseConfig } from "@/lib/runtime-config";
 import { formatPublicNavigationLabel } from "@/lib/public-navigation-labels";
 import { siteConfig } from "@/lib/site";
@@ -9,20 +13,6 @@ import { navigationItems, sitePages } from "@/server/db/schema";
 
 const retiredPublicHrefs = new Set(["/harita"]);
 const retiredPublicSlugs = new Set(["harita"]);
-
-export type PublicNavigationItem = {
-  id?: string;
-  label: string;
-  href: string;
-  opensInNewTab?: boolean;
-  rel?: string | null;
-};
-
-export type PublicSiteNavigation = {
-  primary: ReadonlyArray<PublicNavigationItem>;
-  footer: ReadonlyArray<PublicNavigationItem>;
-  legal: ReadonlyArray<PublicNavigationItem>;
-};
 
 function fallbackNavigation(): PublicSiteNavigation {
   return {

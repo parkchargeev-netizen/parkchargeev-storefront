@@ -28,3 +28,6 @@ npm run verify:architecture
 ```
 
 Bu komut proje özel teknik denetim dokümanlarının varlığını, kritik katman dosyalarını, API route handler yüzeyini, release scriptlerini ve bariz secret sızıntısı kalıplarını kontrol eder.
+
+Feature katmanları ve bağımlılık yönü için:
+`11-Feature-Layering-And-Dependency-Rules.md`

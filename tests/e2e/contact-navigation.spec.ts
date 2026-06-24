@@ -60,8 +60,8 @@ test.describe("@e2e contact and mobile navigation", () => {
     }
 
     await page.goto("/", { waitUntil: "domcontentloaded" });
-    await expect(page.locator(".premium-hero__visual")).toBeHidden();
-    await expect(page.locator(".coverage-route-card")).toHaveCount(3);
+    await expect(page.locator(".premium-hero > .real-charger-media")).toBeHidden();
+    await expect(page.locator(".premium-hero-route")).toHaveCount(3);
   });
 
   test("Contact form accepts requests from every province", async ({ page }) => {

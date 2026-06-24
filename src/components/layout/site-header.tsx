@@ -4,10 +4,10 @@ import { BadgeCheck, ChevronRight } from "lucide-react";
 import { BrandLogo } from "@/components/layout/brand-logo";
 import { SiteHeaderActions } from "@/components/layout/site-header-actions";
 import { SiteMobileMenu } from "@/components/layout/site-mobile-menu";
+import type { PublicNavigationItem } from "@/features/navigation/domain/public-navigation";
 import { formatPublicNavigationLabel } from "@/lib/public-navigation-labels";
 import { serviceCoverageSummary } from "@/lib/service-coverage";
 import { siteConfig } from "@/lib/site";
-import type { PublicNavigationItem } from "@/server/site/repository";
 
 type SiteHeaderProps = {
   navigation?: ReadonlyArray<PublicNavigationItem>;

@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
+import { JsonLd } from "@/components/seo/json-ld";
 import { ProductCard } from "@/components/shop/product-card";
 import { StoreProductSelectorAccordion } from "@/components/shop/store-product-selector-accordion";
 import { conversionDataAttributes } from "@/lib/conversion-events";
@@ -13,8 +14,7 @@ import { absoluteUrl } from "@/lib/site";
 import { getProductStoreProfile, getStoreFilterOptions } from "@/lib/shop-merchandising";
 import {
   getBreadcrumbJsonLd,
-  getProductImageUrl,
-  stringifyJsonLd
+  getProductImageUrl
 } from "@/lib/structured-data";
 import { listPublicProducts } from "@/server/admin/repository";
 
@@ -242,14 +242,7 @@ export default async function StorePage({ searchParams }: StorePageProps) {
 
   return (
     <div className="store-page mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(itemListJsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(breadcrumbJsonLd) }}
-      />
+      <JsonLd data={[itemListJsonLd, breadcrumbJsonLd]} />
 
       <section className="store-commerce-header">
         <div className="store-commerce-header__top">

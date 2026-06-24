@@ -20,7 +20,7 @@ export function SiteHeaderActions({ className = "" }: SiteHeaderActionsProps) {
       <Link
         href="/arama"
         aria-label="Arama"
-        className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-outline-variant/40 bg-white/86 text-on-surface transition hover:border-primary/30 hover:text-primary"
+        className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-outline-variant/40 bg-white/86 text-on-surface transition hover:border-primary/30 hover:text-primary"
       >
         <Search className="h-5 w-5" aria-hidden />
       </Link>
@@ -29,7 +29,7 @@ export function SiteHeaderActions({ className = "" }: SiteHeaderActionsProps) {
         target="_blank"
         rel="noopener noreferrer"
         aria-label="WhatsApp destek"
-        className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-secondary/25 bg-secondary/10 text-secondary transition hover:border-secondary/45 hover:bg-secondary/15"
+        className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-secondary/25 bg-secondary/10 text-secondary transition hover:border-secondary/45 hover:bg-secondary/15"
         {...conversionDataAttributes("whatsapp_click", {
           placement: "header",
           href: whatsappHref
@@ -40,7 +40,7 @@ export function SiteHeaderActions({ className = "" }: SiteHeaderActionsProps) {
       <SiteCartLink />
       <Link
         href={surveyHref}
-        className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-primary to-secondary px-4 py-2 text-sm font-black text-white shadow-[0_14px_34px_rgba(6,51,38,0.2)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(6,51,38,0.25)]"
+        className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-black text-white shadow-[0_14px_34px_rgba(6,51,38,0.2)] transition hover:-translate-y-0.5 hover:bg-secondary hover:shadow-[0_18px_44px_rgba(6,51,38,0.25)]"
         {...conversionDataAttributes("installation_quote_click", {
           placement: "header",
           href: surveyHref
@@ -52,7 +52,7 @@ export function SiteHeaderActions({ className = "" }: SiteHeaderActionsProps) {
       <Link
         href="/giris"
         aria-label="Giriş Yap"
-        className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-950 text-white shadow-[0_12px_32px_rgba(15,23,42,0.2)] transition hover:-translate-y-0.5 hover:bg-primary"
+        className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-slate-950 text-white shadow-[0_12px_32px_rgba(15,23,42,0.2)] transition hover:-translate-y-0.5 hover:bg-primary"
       >
         <UserRound className="h-5 w-5" aria-hidden />
       </Link>

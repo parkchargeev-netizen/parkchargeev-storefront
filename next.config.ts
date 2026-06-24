@@ -58,8 +58,20 @@ const nextConfig: NextConfig = {
             value: "nosniff"
           },
           {
+            key: "Strict-Transport-Security",
+            value: "max-age=63072000; includeSubDomains; preload"
+          },
+          {
             key: "X-Frame-Options",
             value: "SAMEORIGIN"
+          },
+          {
+            key: "Cross-Origin-Opener-Policy",
+            value: "same-origin"
+          },
+          {
+            key: "X-DNS-Prefetch-Control",
+            value: "off"
           },
           {
             key: "Permissions-Policy",

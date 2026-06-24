@@ -4,16 +4,13 @@ import { notFound } from "next/navigation";
 
 import { ArticleCard } from "@/components/content/article-card";
 import { LeadForm } from "@/components/forms/lead-form";
+import { JsonLd } from "@/components/seo/json-ld";
 import {
   getArticlesForSolution,
   getSolutionBySlug,
   solutionPages
 } from "@/lib/mock-data";
-import {
-  getBreadcrumbJsonLd,
-  getFaqJsonLd,
-  stringifyJsonLd
-} from "@/lib/structured-data";
+import { getBreadcrumbJsonLd, getFaqJsonLd } from "@/lib/structured-data";
 
 type SolutionPageProps = {
   params: Promise<{ slug: string }>;
@@ -64,14 +61,7 @@ export default async function SolutionDetailPage({
 
   return (
     <main className="corporate-detail-page mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(breadcrumbJsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(faqJsonLd) }}
-      />
+      <JsonLd data={[breadcrumbJsonLd, faqJsonLd]} />
 
       <div className="mb-6 flex flex-wrap items-center gap-2 text-xs text-on-surface-variant sm:text-sm">
         <Link href="/" className="transition hover:text-primary">

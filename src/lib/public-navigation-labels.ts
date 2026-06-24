@@ -4,7 +4,7 @@ type NavigationLabelInput = {
 };
 
 const labelsByHref: Record<string, string> = {
-  "/": "Ana Sayfa",
+  "/": "Anasayfa",
   "/hakkimizda": "Hakkımızda",
   "/kurumsal-cozumler": "Kurumsal Çözümler",
   "/urun-secici": "Ürün Seçici",
@@ -19,7 +19,7 @@ const labelsByHref: Record<string, string> = {
 };
 
 const labelsByPlainText: Record<string, string> = {
-  "ana sayfa": "Ana Sayfa",
+  "ana sayfa": "Anasayfa",
   hakkimizda: "Hakkımızda",
   "kurumsal cozumler": "Kurumsal Çözümler",
   "urun secici": "Ürün Seçici",

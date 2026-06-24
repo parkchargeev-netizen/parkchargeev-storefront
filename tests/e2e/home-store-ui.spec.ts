@@ -4,7 +4,9 @@ test("@e2e ana sayfa sade karar akisini gosterir", async ({ page }) => {
   await page.goto("/", { waitUntil: "domcontentloaded" });
 
   await expect(
-    page.getByRole("heading", { name: "Şarj cihazını değil, doğru çözümü seçin." })
+    page.getByRole("heading", {
+      name: "Aracınız ve otoparkınız için doğru şarj çözümünü seçin."
+    })
   ).toBeVisible();
   await expect(page.locator(".premium-hero-route")).toHaveCount(3);
 
@@ -41,7 +43,9 @@ test("@e2e ana sayfa sade karar akisini gosterir", async ({ page }) => {
     await expect(page.locator("header").getByText("Ürün kargosu: 81 il")).toBeVisible();
     await expect(page.locator("header").getByText("Ücretsiz keşif: Sakarya")).toBeVisible();
     await expect(page.locator("header").getByText("Kurulum: Sakarya ve Kocaeli")).toBeVisible();
-    await expect(page.locator("header").getByRole("link", { name: /Türkiye geneli keşif talebi/i })).toBeVisible();
+    await expect(
+      page.locator("header").getByRole("link", { name: /Keşif \/ teklif al/i })
+    ).toBeVisible();
     await expect(page.locator(".premium-hero__mobile-trust")).toBeHidden();
   }
 
@@ -56,7 +60,7 @@ test("@e2e magaza acik renkli e-ticaret girisi ve kayan urun vitrini sunar", asy
 
   await expect(
     page.getByRole("heading", {
-      name: "Şarj ürünlerini bulun ve karşılaştırın."
+      name: "Doğru şarj ürününü hızlı seçin."
     })
   ).toBeVisible();
   await expect(page.getByRole("textbox", { name: "Mağazada ürün ara" })).toBeVisible();
@@ -237,7 +241,7 @@ test("@e2e kurumsal sayfa kompakt teklif formu ve responsive akisi sunar", async
 
   await expect(
     page.getByRole("heading", {
-      name: "Site, ofis ve otoparklar için ölçeklenebilir şarj altyapısı."
+      name: "Lokasyonunuzu ölçeklenebilir bir şarj operasyonuna dönüştürün."
     })
   ).toBeVisible();
   await expect(page.locator(".corporate-solution-grid .solution-card")).toHaveCount(3);

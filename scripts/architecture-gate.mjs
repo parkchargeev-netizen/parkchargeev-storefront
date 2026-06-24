@@ -77,6 +77,7 @@ checkDocs();
 checkCoreFiles();
 checkPackageScripts();
 checkApiRoutes();
+checkFeatureBoundaries();
 scanForSecrets();
 scanLargeFiles();
 printSummary();
@@ -166,6 +167,53 @@ function checkApiRoutes() {
     } else {
       fail("api", `${relativePath} HTTP method export etmiyor.`);
     }
+  }
+}
+
+function checkFeatureBoundaries() {
+  const sourceFiles = walk(path.join(root, "src")).filter((file) =>
+    /\.(ts|tsx)$/.test(file)
+  );
+  const boundaryRules = [
+    {
+      name: "presentation-server",
+      applies: (file) =>
+        /src\/components\/(?:layout|seo|solutions)\//.test(relative(file)) ||
+        /src\/features\/[^/]+\/ui\//.test(relative(file)),
+      forbidden: /from\s+["']@\/server\//,
+      detail: "Sunum katmani dogrudan server katmanina baglanamaz."
+    },
+    {
+      name: "domain-outward",
+      applies: (file) => /src\/features\/[^/]+\/domain\//.test(relative(file)),
+      forbidden:
+        /from\s+["']@\/(?:server|components|features\/[^/]+\/(?:application|infrastructure|ui))\//,
+      detail: "Domain katmani dis katmanlara baglanamaz."
+    },
+    {
+      name: "application-infrastructure",
+      applies: (file) => /src\/features\/[^/]+\/application\//.test(relative(file)),
+      forbidden: /from\s+["']@\/(?:server|components|features\/[^/]+\/(?:infrastructure|ui))\//,
+      detail: "Application katmani altyapi veya UI uygulamasina baglanamaz."
+    }
+  ];
+  let violationCount = 0;
+
+  for (const file of sourceFiles) {
+    const content = fs.readFileSync(file, "utf8");
+
+    for (const rule of boundaryRules) {
+      if (!rule.applies(file) || !rule.forbidden.test(content)) {
+        continue;
+      }
+
+      violationCount += 1;
+      fail("boundaries", `${relative(file)} ${rule.detail} (${rule.name})`);
+    }
+  }
+
+  if (violationCount === 0) {
+    pass("boundaries", "Feature, application, domain ve sunum bagimlilik yonleri temiz.");
   }
 }
 

@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { ProductGallery } from "@/components/shop/product-gallery";
 import { ProductCard } from "@/components/shop/product-card";
 import { ProductPurchasePanel } from "@/components/shop/product-purchase-panel";
+import { JsonLd } from "@/components/seo/json-ld";
 import { getDisplayProductImageUrl } from "@/lib/product-media";
 import { getProductDetailContent } from "@/lib/product-detail-content";
 import { getProductStoreProfile } from "@/lib/shop-merchandising";
@@ -12,8 +13,7 @@ import {
   getBreadcrumbJsonLd,
   getFaqJsonLd,
   getProductImageUrl,
-  getProductJsonLd,
-  stringifyJsonLd
+  getProductJsonLd
 } from "@/lib/structured-data";
 import {
   getPublicProductBySlug,
@@ -134,18 +134,7 @@ export default async function ProductDetailPage({
   );
   return (
     <div className="product-detail-page mx-auto max-w-7xl px-6 py-10 lg:px-8">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(productJsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(breadcrumbJsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(faqJsonLd) }}
-      />
+      <JsonLd data={[productJsonLd, breadcrumbJsonLd, faqJsonLd]} />
 
       <div className="mb-8 flex flex-wrap items-center gap-2 text-sm text-on-surface-variant">
         <Link href="/" className="transition hover:text-primary">

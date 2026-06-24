@@ -1,10 +1,11 @@
 import Link from "next/link";
+import { ArrowRight, Headphones, MapPin, Phone } from "lucide-react";
 
 import { BrandLogo } from "@/components/layout/brand-logo";
+import type { PublicSiteNavigation } from "@/features/navigation/domain/public-navigation";
 import { formatPublicNavigationLabel } from "@/lib/public-navigation-labels";
 import { serviceCoverageSummary } from "@/lib/service-coverage";
 import { siteConfig } from "@/lib/site";
-import type { PublicSiteNavigation } from "@/server/site/repository";
 
 type SiteFooterProps = {
   navigation?: Pick<PublicSiteNavigation, "footer" | "legal">;
@@ -18,6 +19,28 @@ export function SiteFooter({
 }: SiteFooterProps) {
   return (
     <footer className="border-t border-outline-variant/40 bg-white">
+      <div className="bg-[#063326] text-white">
+        <div className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-8 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+          <div className="max-w-2xl">
+            <p className="text-xs font-bold uppercase text-emerald-300">Proje masası</p>
+            <h2 className="mt-2 text-2xl font-black leading-tight md:text-3xl">
+              Şarj altyapınızı ürün, kurulum ve servis planıyla birlikte kuralım.
+            </h2>
+          </div>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <Link
+              href="/iletisim?reason=Kurumsal%20teklif"
+              className="premium-btn premium-btn--primary"
+            >
+              Proje teklifi al
+              <ArrowRight className="h-4 w-4" aria-hidden />
+            </Link>
+            <Link href="/urun-secici" className="premium-btn premium-btn--glass">
+              Ürün seçici
+            </Link>
+          </div>
+        </div>
+      </div>
       <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
         <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr]">
           <div>
@@ -26,24 +49,37 @@ export function SiteFooter({
               Ev, site, işletme ve ticari lokasyonlar için elektrikli araç şarj
               cihazı, keşif, kurulum ve teknik destek çözümleri.
             </p>
-            <div className="mt-6 space-y-2 text-sm text-on-surface-variant">
-              <p>{siteConfig.phone}</p>
-              <p>{siteConfig.email}</p>
+            <div className="mt-6 space-y-3 text-sm text-on-surface-variant">
+              <a
+                href={`tel:${siteConfig.phone}`}
+                className="flex items-center gap-2 transition hover:text-primary"
+              >
+                <Phone className="h-4 w-4" aria-hidden />
+                {siteConfig.phone}
+              </a>
+              <a
+                href={`mailto:${siteConfig.email}`}
+                className="flex items-center gap-2 transition hover:text-primary"
+              >
+                <Headphones className="h-4 w-4" aria-hidden />
+                {siteConfig.email}
+              </a>
               <p>
                 {serviceCoverageSummary.shipping} · {serviceCoverageSummary.freeSurvey} ·{" "}
                 {serviceCoverageSummary.installation}
               </p>
-              <p>
-                {siteConfig.address.streetAddress}, {siteConfig.address.addressLocality} /{" "}
-                {siteConfig.address.addressRegion}
+              <p className="flex items-start gap-2">
+                <MapPin className="mt-1 h-4 w-4 shrink-0" aria-hidden />
+                <span>
+                  {siteConfig.address.streetAddress}, {siteConfig.address.addressLocality} /{" "}
+                  {siteConfig.address.addressRegion}
+                </span>
               </p>
             </div>
           </div>
 
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.28em] text-primary">
-              Navigasyon
-            </p>
+            <p className="text-sm font-semibold uppercase text-primary">Navigasyon</p>
             <div className="mt-5 grid gap-3 text-sm text-on-surface-variant">
               {navigation.footer.map((item) => (
                 <Link
@@ -60,9 +96,7 @@ export function SiteFooter({
           </div>
 
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.28em] text-primary">
-              Destek
-            </p>
+            <p className="text-sm font-semibold uppercase text-primary">Destek</p>
             <div className="mt-5 grid gap-3 text-sm text-on-surface-variant">
               {navigation.legal.map((item) => (
                 <Link
@@ -79,9 +113,7 @@ export function SiteFooter({
           </div>
 
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.28em] text-primary">
-              Hizmet kapsamı
-            </p>
+            <p className="text-sm font-semibold uppercase text-primary">Hizmet kapsamı</p>
             <div className="mt-5 flex flex-wrap gap-2">
               {siteConfig.serviceAreas.map((area) => (
                 <span

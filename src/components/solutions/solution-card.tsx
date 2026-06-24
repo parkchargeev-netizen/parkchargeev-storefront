@@ -9,7 +9,7 @@ type SolutionCardProps = {
 
 export function SolutionCard({ solution }: SolutionCardProps) {
   return (
-    <article className="solution-card group relative flex h-full flex-col overflow-hidden rounded-[22px] border border-white/70 bg-white/88 p-5 shadow-[0_14px_38px_rgba(15,23,42,0.07)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_55px_rgba(15,23,42,0.12)]">
+    <article className="solution-card group relative flex h-full flex-col overflow-hidden rounded-[8px] border border-white/70 bg-white/88 p-5 shadow-[0_14px_38px_rgba(15,23,42,0.07)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_55px_rgba(15,23,42,0.12)]">
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/10 opacity-70" />
 
       <div className="relative z-10">
@@ -23,7 +23,7 @@ export function SolutionCard({ solution }: SolutionCardProps) {
           </h3>
         </div>
 
-        <div className="mt-4 rounded-2xl bg-[#EEF5F1] px-4 py-3">
+        <div className="mt-4 rounded-[6px] bg-[#EEF5F1] px-4 py-3">
           <p className="text-xs leading-5 text-on-surface-variant">
             {solution.heroLabel}
           </p>

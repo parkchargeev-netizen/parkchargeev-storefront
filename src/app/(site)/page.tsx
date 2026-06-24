@@ -1,26 +1,9 @@
-import { PremiumHomepage } from "@/components/home/premium-homepage";
-import { testimonials } from "@/lib/mock-data";
-import { siteConfig } from "@/lib/site";
-import { listPublicProducts } from "@/server/admin/repository";
-import { listPublicBlogArticles } from "@/server/blog/repository";
+import { getHomePageData } from "@/features/home/application/get-home-page-data";
+import { parkChargeHomeDataSource } from "@/features/home/infrastructure/parkcharge-home-data-source";
+import { HomePageView } from "@/features/home/ui/home-page-view";
 
 export default async function HomePage() {
-  const [publicProducts, publicArticles] = await Promise.all([
-    listPublicProducts(),
-    listPublicBlogArticles()
-  ]);
-  const featuredProducts = publicProducts.slice(0, 4);
-  const featuredArticles = publicArticles.slice(0, 3);
-  const whatsappHref = `https://wa.me/${siteConfig.whatsappPhone}?text=${encodeURIComponent(
-    "Merhaba, ParkChargeEV şarj çözümü için bilgi almak istiyorum."
-  )}`;
+  const viewModel = await getHomePageData(parkChargeHomeDataSource);
 
-  return (
-    <PremiumHomepage
-      featuredProducts={featuredProducts}
-      featuredArticles={featuredArticles}
-      testimonials={testimonials}
-      whatsappHref={whatsappHref}
-    />
-  );
+  return <HomePageView {...viewModel} />;
 }

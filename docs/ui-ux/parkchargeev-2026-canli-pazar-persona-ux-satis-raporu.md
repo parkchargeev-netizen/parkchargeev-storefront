@@ -294,7 +294,7 @@ Ana sayfa sirasi:
 6. Guven ve rehberler.
 7. Final CTA.
 
-Mevcut kod durumu: `src/components/home/premium-homepage.tsx` bu stratejinin ana iskeletini tasiyor.
+Mevcut kod durumu: `src/features/home` altındaki domain, application, infrastructure ve UI katmanları bu stratejinin ana iskeletini taşır.
 
 ### 8.2 Magaza / PLP
 

@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 
 import { LeadForm } from "@/components/forms/lead-form";
+import { JsonLd } from "@/components/seo/json-ld";
 import { resolveContactReason } from "@/lib/contact-reasons";
 import { globalFaqs } from "@/lib/mock-data";
 import { serviceCoverageSummary } from "@/lib/service-coverage";
 import { absoluteUrl, siteConfig } from "@/lib/site";
 import {
   getFaqJsonLd,
-  getLocalBusinessJsonLd,
-  stringifyJsonLd
+  getLocalBusinessJsonLd
 } from "@/lib/structured-data";
 import { getPublishedSitePageBySlug } from "@/server/site/repository";
 
@@ -40,18 +40,7 @@ function ContactJsonLd() {
   const localBusinessJsonLd = getLocalBusinessJsonLd();
   const faqJsonLd = getFaqJsonLd(globalFaqs);
 
-  return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(localBusinessJsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(faqJsonLd) }}
-      />
-    </>
-  );
+  return <JsonLd data={[localBusinessJsonLd, faqJsonLd]} />;
 }
 
 function OfficeMapCard() {

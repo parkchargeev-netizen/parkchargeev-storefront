@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
 
+import { JsonLd } from "@/components/seo/json-ld";
 import { ProductSelectorClient } from "@/components/site/product-selector-client";
 import { products } from "@/lib/mock-data";
-import {
-  getBreadcrumbJsonLd,
-  stringifyJsonLd
-} from "@/lib/structured-data";
+import { getBreadcrumbJsonLd } from "@/lib/structured-data";
 
 export const metadata: Metadata = {
   title: "Akıllı EV Şarj Ürün Seçici",
@@ -24,10 +22,7 @@ export default function ProductSelectorPage() {
 
   return (
     <div className="selector-page mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(breadcrumbJsonLd) }}
-      />
+      <JsonLd data={breadcrumbJsonLd} />
       <ProductSelectorClient products={products} />
     </div>
   );

@@ -1,25 +1,10 @@
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
-import { Manrope, Space_Grotesk } from "next/font/google";
 
 import { ConversionEventListener } from "@/components/analytics/conversion-event-listener";
 import { absoluteUrl, siteConfig } from "@/lib/site";
 
 import "@/app/globals.css";
-
-const manrope = Manrope({
-  subsets: ["latin", "latin-ext"],
-  variable: "--font-manrope",
-  display: "swap",
-  weight: ["400", "500", "600", "700", "800"]
-});
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin", "latin-ext"],
-  variable: "--font-space-grotesk",
-  display: "swap",
-  weight: ["500", "600", "700"]
-});
 
 const defaultTitle = `${siteConfig.name} | EV Şarj Cihazı ve Kurulum Çözümleri`;
 const defaultOgImage = absoluteUrl("/api/og/product/homecharge-pro-11kw");
@@ -85,7 +70,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="tr">
-      <body className={`${manrope.variable} ${spaceGrotesk.variable} font-sans`}>
+      <body className="font-sans">
         <ConversionEventListener />
         {children}
       </body>
