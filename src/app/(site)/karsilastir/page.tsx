@@ -79,10 +79,10 @@ export default function ComparePage() {
 
       <section className="grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)] lg:items-end">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-primary">
+          <p className="text-sm font-semibold uppercase tracking-normal text-primary">
             Ürün karşılaştırma
           </p>
-          <h1 className="mt-4 max-w-4xl text-4xl font-black tracking-[-0.06em] text-on-surface md:text-6xl">
+          <h1 className="mt-4 max-w-4xl text-4xl font-bold tracking-normal text-on-surface md:text-6xl">
             11 kW, 22 kW, AC ve DC şarj cihazlarını karşılaştır
           </h1>
           <p className="mt-6 max-w-3xl text-lg leading-8 text-on-surface-variant">
@@ -91,7 +91,7 @@ export default function ComparePage() {
           </p>
         </div>
         <aside className="surface-card p-6">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">
+          <p className="text-sm font-semibold uppercase tracking-normal text-primary">
             Hızlı karar
           </p>
           <div className="mt-5 space-y-3 text-sm leading-6 text-on-surface-variant">
@@ -108,7 +108,7 @@ export default function ComparePage() {
           </div>
           <Link
             href="/urun-secici"
-            className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-white"
+            className="mt-6 inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-white"
           >
             Akıllı seçiciye git
             <ArrowRight className="h-4 w-4" />
@@ -121,17 +121,17 @@ export default function ComparePage() {
       <section className="mt-12 grid gap-5">
         {comparisonRows.map((row) => (
           <article key={row.title} className="surface-card p-6">
-            <h2 className="text-2xl font-black tracking-[-0.04em] text-on-surface">
+            <h2 className="text-2xl font-bold tracking-normal text-on-surface">
               {row.title}
             </h2>
             <div className="mt-5 grid gap-4 md:grid-cols-3">
-              <div className="rounded-2xl bg-surface-container-low p-4 text-sm leading-7 text-on-surface-variant">
+              <div className="rounded-lg bg-surface-container-low p-4 text-sm leading-7 text-on-surface-variant">
                 {row.left}
               </div>
-              <div className="rounded-2xl bg-surface-container-low p-4 text-sm leading-7 text-on-surface-variant">
+              <div className="rounded-lg bg-surface-container-low p-4 text-sm leading-7 text-on-surface-variant">
                 {row.right}
               </div>
-              <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4 text-sm font-semibold leading-7 text-on-surface">
+              <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 text-sm font-semibold leading-7 text-on-surface">
                 {row.bestFor}
               </div>
             </div>
@@ -142,10 +142,10 @@ export default function ComparePage() {
       <section className="mt-12">
         <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-primary">
+            <p className="text-sm font-semibold uppercase tracking-normal text-primary">
               AC ürünler
             </p>
-            <h2 className="mt-3 text-3xl font-black tracking-[-0.05em] text-on-surface">
+            <h2 className="mt-3 text-3xl font-bold tracking-normal text-on-surface">
               Ev, site ve iş yeri için öneriler
             </h2>
           </div>
@@ -163,10 +163,10 @@ export default function ComparePage() {
       {dcProducts.length ? (
         <section className="mt-12">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-primary">
+            <p className="text-sm font-semibold uppercase tracking-normal text-primary">
               DC hızlı şarj
             </p>
-            <h2 className="mt-3 text-3xl font-black tracking-[-0.05em] text-on-surface">
+            <h2 className="mt-3 text-3xl font-bold tracking-normal text-on-surface">
               Ticari ve yüksek devirli lokasyonlar
             </h2>
           </div>
@@ -179,12 +179,12 @@ export default function ComparePage() {
       ) : null}
 
       <section className="mt-12 surface-card p-8">
-        <h2 className="text-3xl font-black tracking-[-0.05em] text-on-surface">
+        <h2 className="text-3xl font-bold tracking-normal text-on-surface">
           Sık sorulan sorular
         </h2>
         <div className="mt-6 grid gap-4 lg:grid-cols-3">
           {faqs.map((faq) => (
-            <article key={faq.question} className="rounded-2xl bg-surface-container-low p-5">
+            <article key={faq.question} className="rounded-lg bg-surface-container-low p-5">
               <h3 className="text-base font-semibold text-on-surface">{faq.question}</h3>
               <p className="mt-3 text-sm leading-7 text-on-surface-variant">{faq.answer}</p>
             </article>

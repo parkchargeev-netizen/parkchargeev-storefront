@@ -67,7 +67,7 @@ export function CorporateSolutionsView({
       </section>
 
       <section
-        className="mt-6 grid overflow-hidden rounded-[8px] border border-outline-variant/35 bg-white shadow-[0_18px_55px_rgba(6,51,38,0.08)] sm:grid-cols-2 lg:grid-cols-4"
+        className="mt-6 grid overflow-hidden rounded-lg border border-outline-variant/35 bg-white shadow-[0_18px_55px_rgba(6,51,38,0.08)] sm:grid-cols-2 lg:grid-cols-4"
         aria-label="Kurumsal çözüm standartları"
       >
         {metrics.map((metric) => (
@@ -75,7 +75,7 @@ export function CorporateSolutionsView({
             key={metric.label}
             className="border-b border-outline-variant/30 p-5 last:border-b-0 sm:border-r sm:odd:border-r sm:[&:nth-child(n+3)]:border-b-0 lg:border-b-0"
           >
-            <strong className="block text-2xl font-black text-primary">{metric.value}</strong>
+            <strong className="block text-2xl font-bold text-primary">{metric.value}</strong>
             <span className="mt-1 block text-sm text-on-surface-variant">{metric.label}</span>
           </div>
         ))}
@@ -123,7 +123,7 @@ export function CorporateSolutionsView({
             <li key={item.title}>
               <span>{index + 1}</span>
               <div>
-                <strong className="text-sm font-black text-white">{item.title}</strong>
+                <strong className="text-sm font-bold text-white">{item.title}</strong>
                 <p>{item.body}</p>
               </div>
               <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-300" aria-hidden />

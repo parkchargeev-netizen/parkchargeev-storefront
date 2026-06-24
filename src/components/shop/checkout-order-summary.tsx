@@ -27,17 +27,17 @@ export function CheckoutOrderSummary({
   totalKurus
 }: CheckoutOrderSummaryProps) {
   return (
-    <section className="rounded-[30px] border border-white/80 bg-white/88 p-4 shadow-[0_24px_80px_rgba(6,51,38,0.10)] backdrop-blur-xl sm:p-5">
+    <section className="rounded-lg border border-white/80 bg-white/88 p-4 shadow-[0_24px_80px_rgba(6,51,38,0.10)] backdrop-blur-xl sm:p-5">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <p className="text-xs font-black uppercase tracking-[0.24em] text-primary">
+          <p className="text-xs font-bold uppercase tracking-normal text-primary">
             Güvenli sepet
           </p>
-          <h2 className="mt-2 text-2xl font-black tracking-[-0.05em] text-on-surface">
+          <h2 className="mt-2 text-2xl font-bold tracking-normal text-on-surface">
             Sipariş özeti
           </h2>
         </div>
-        <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-white">
+        <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-primary text-white">
           <PackageCheck className="h-5 w-5" aria-hidden="true" />
         </span>
       </div>
@@ -46,19 +46,19 @@ export function CheckoutOrderSummary({
         {items.map((item) => (
           <article
             key={`${item.product.id}-${item.cableOption}`}
-            className="grid grid-cols-[44px_1fr] gap-3 rounded-[22px] border border-outline-variant/28 bg-white p-3"
+            className="grid grid-cols-[44px_1fr] gap-3 rounded-lg border border-outline-variant/28 bg-white p-3"
           >
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-sm font-black text-primary">
+            <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-sm font-bold text-primary">
               {item.quantity}x
             </div>
             <div>
-              <p className="line-clamp-2 text-sm font-black leading-5 text-on-surface">
+              <p className="line-clamp-2 text-sm font-bold leading-5 text-on-surface">
                 {item.product.name}
               </p>
               <p className="mt-1 text-xs leading-5 text-on-surface-variant">
                 {item.cableOption}
               </p>
-              <p className="mt-2 text-sm font-black text-primary">
+              <p className="mt-2 text-sm font-bold text-primary">
                 {formatPriceTRY(item.lineTotalKurus)}
               </p>
             </div>
@@ -66,14 +66,14 @@ export function CheckoutOrderSummary({
         ))}
       </div>
 
-      <dl className="mt-5 space-y-3 rounded-[22px] bg-surface-container-low p-4 text-sm">
+      <dl className="mt-5 space-y-3 rounded-lg bg-surface-container-low p-4 text-sm">
         <div className="flex items-center justify-between gap-4 text-on-surface-variant">
           <dt>Ara toplam</dt>
           <dd className="font-semibold text-on-surface">{formatPriceTRY(subtotalKurus)}</dd>
         </div>
         <div className="flex items-center justify-between gap-4 text-on-surface-variant">
           <dt>Kargo</dt>
-          <dd className="text-right font-black text-secondary">81 il · Ücretsiz</dd>
+          <dd className="text-right font-bold text-secondary">81 il · Ücretsiz</dd>
         </div>
         <div className="flex items-center justify-between gap-4 text-on-surface-variant">
           <dt>KDV (%20)</dt>
@@ -81,8 +81,8 @@ export function CheckoutOrderSummary({
         </div>
         <div className="border-t border-outline-variant/35 pt-3">
           <div className="flex items-end justify-between gap-4">
-            <dt className="text-base font-black text-on-surface">Ödenecek tutar</dt>
-            <dd className="text-3xl font-black tracking-[-0.05em] text-primary">
+            <dt className="text-base font-bold text-on-surface">Ödenecek tutar</dt>
+            <dd className="text-3xl font-bold tracking-normal text-primary">
               {formatPriceTRY(totalKurus)}
             </dd>
           </div>

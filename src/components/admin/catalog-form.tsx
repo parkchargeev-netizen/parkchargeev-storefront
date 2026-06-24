@@ -71,13 +71,13 @@ export function CatalogForm({ type, item, categories = [] }: CatalogFormProps) {
     <form className="grid gap-3" onSubmit={onSubmit}>
       <div className="grid gap-3 md:grid-cols-2">
         <input
-          className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+          className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
           placeholder="Ad"
           value={name}
           onChange={(event) => setName(event.target.value)}
         />
         <input
-          className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+          className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
           placeholder="Slug"
           value={slug}
           onChange={(event) => setSlug(event.target.value)}
@@ -85,14 +85,14 @@ export function CatalogForm({ type, item, categories = [] }: CatalogFormProps) {
       </div>
       {type === "brand" ? (
         <input
-          className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+          className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
           placeholder="Web sitesi"
           value={websiteUrl}
           onChange={(event) => setWebsiteUrl(event.target.value)}
         />
       ) : (
         <select
-          className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+          className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
           value={parentId}
           onChange={(event) => setParentId(event.target.value)}
         >
@@ -108,7 +108,7 @@ export function CatalogForm({ type, item, categories = [] }: CatalogFormProps) {
       )}
       <textarea
         rows={3}
-        className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+        className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
         placeholder="Açıklama"
         value={description}
         onChange={(event) => setDescription(event.target.value)}
@@ -117,7 +117,7 @@ export function CatalogForm({ type, item, categories = [] }: CatalogFormProps) {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white disabled:opacity-70"
+        className="rounded-lg bg-slate-950 px-4 py-3 text-sm font-semibold text-white disabled:opacity-70"
       >
         {isSubmitting ? "Kaydediliyor..." : item?.id ? "Güncelle" : "Ekle"}
       </button>

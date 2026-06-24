@@ -71,26 +71,26 @@ export function AdminUserForm({ mode, user }: AdminUserFormProps) {
     <form className="grid gap-3" onSubmit={onSubmit}>
       <div className="grid gap-3 md:grid-cols-2">
         <input
-          className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+          className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
           placeholder="Ad soyad"
           {...register("fullName")}
         />
         <input
-          className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+          className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
           placeholder="E-posta"
           type="email"
           {...register("email")}
         />
       </div>
       <div className="grid gap-3 md:grid-cols-3">
-        <select className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" {...register("role")}>
+        <select className="rounded-lg border border-slate-300 px-4 py-3 text-sm" {...register("role")}>
           {roleOptions.map(([value, label]) => (
             <option key={value} value={value}>
               {label}
             </option>
           ))}
         </select>
-        <select className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" {...register("status")}>
+        <select className="rounded-lg border border-slate-300 px-4 py-3 text-sm" {...register("status")}>
           {statusOptions.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
@@ -98,13 +98,13 @@ export function AdminUserForm({ mode, user }: AdminUserFormProps) {
           ))}
         </select>
         <input
-          className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+          className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
           placeholder="Telefon"
           {...register("phone")}
         />
       </div>
       <input
-        className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+        className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
         placeholder={mode === "create" ? "Geçici şifre" : "Yeni şifre (boş bırakılırsa değişmez)"}
         type="password"
         {...register("password")}
@@ -115,14 +115,14 @@ export function AdminUserForm({ mode, user }: AdminUserFormProps) {
         </p>
       ) : null}
       {feedback ? (
-        <p className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+        <p className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
           {feedback}
         </p>
       ) : null}
       <button
         type="submit"
         disabled={isSubmitting}
-        className="rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white disabled:opacity-70"
+        className="rounded-lg bg-slate-950 px-4 py-3 text-sm font-semibold text-white disabled:opacity-70"
       >
         {isSubmitting ? "Kaydediliyor..." : mode === "create" ? "Admin ekle" : "Kaydet / şifre sıfırla"}
       </button>

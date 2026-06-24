@@ -18,7 +18,7 @@ export function CustomerLogoutButton() {
     <button
       type="button"
       onClick={() => void handleLogout()}
-      className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-outline-variant/45 bg-white px-5 py-4 text-sm font-semibold text-on-surface transition hover:border-primary/30 hover:text-primary"
+      className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-outline-variant/45 bg-white px-5 py-4 text-sm font-semibold text-on-surface transition hover:border-primary/30 hover:text-primary"
     >
       <LogOut className="h-4 w-4" />
       Çıkış Yap

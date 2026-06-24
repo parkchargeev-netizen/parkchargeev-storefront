@@ -35,7 +35,7 @@ function StatusStepper({ order }: { order: AccountOrder }) {
               }`}
             />
             <span
-              className={`text-[11px] font-black ${
+              className={`text-xs font-bold ${
                 isActive ? "text-primary" : "text-on-surface-variant"
               }`}
             >
@@ -60,7 +60,7 @@ function OrderActionLink({
   return (
     <Link
       href={href}
-      className="inline-flex items-center gap-2 rounded-2xl border border-outline-variant/60 bg-white px-4 py-3 text-sm font-black text-on-surface transition hover:border-primary/30 hover:text-primary"
+      className="inline-flex items-center gap-2 rounded-lg border border-outline-variant/60 bg-white px-4 py-3 text-sm font-bold text-on-surface transition hover:border-primary/30 hover:text-primary"
     >
       {icon}
       {label}
@@ -73,10 +73,10 @@ export function OrdersSection({ orders }: { orders: AccountSnapshot["recentOrder
     <section id="siparisler" className="surface-card scroll-mt-28 p-6 lg:p-8">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
-          <p className="text-sm font-black uppercase tracking-[0.28em] text-primary">
+          <p className="text-sm font-bold uppercase tracking-normal text-primary">
             Siparişler
           </p>
-          <h2 className="mt-3 text-3xl font-black tracking-[-0.05em] text-on-surface">
+          <h2 className="mt-3 text-3xl font-bold tracking-normal text-on-surface">
             Sipariş, kargo ve belgeler
           </h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-on-surface-variant">
@@ -85,7 +85,7 @@ export function OrdersSection({ orders }: { orders: AccountSnapshot["recentOrder
         </div>
         <Link
           href="/magaza"
-          className="inline-flex items-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-black text-white"
+          className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-3 text-sm font-bold text-white"
         >
           Tekrar alışveriş yap
           <ArrowRight className="h-4 w-4" />
@@ -95,17 +95,17 @@ export function OrdersSection({ orders }: { orders: AccountSnapshot["recentOrder
       <div className="mt-6 grid gap-4">
         {orders.length > 0 ? (
           orders.map((order) => (
-            <article key={order.id} className="rounded-[26px] bg-surface-container-low p-5">
+            <article key={order.id} className="rounded-lg bg-surface-container-low p-5">
               <div className="grid gap-4 lg:grid-cols-[1fr_auto]">
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="text-lg font-black tracking-[-0.03em] text-on-surface">
+                    <h3 className="text-lg font-bold tracking-normal text-on-surface">
                       {order.orderNumber}
                     </h3>
-                    <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-black text-primary">
+                    <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
                       {orderStatusLabel[order.status] ?? order.status}
                     </span>
-                    <span className="rounded-full bg-white px-3 py-1 text-xs font-black text-on-surface-variant">
+                    <span className="rounded-full bg-white px-3 py-1 text-xs font-bold text-on-surface-variant">
                       {paymentStatusLabel[order.paymentStatus] ?? order.paymentStatus}
                     </span>
                   </div>
@@ -115,12 +115,12 @@ export function OrdersSection({ orders }: { orders: AccountSnapshot["recentOrder
                     {order.trackingNumber ? ` - Takip no: ${order.trackingNumber}` : ""}
                   </p>
                   {order.statusNote ? (
-                    <p className="mt-3 rounded-2xl bg-white px-4 py-3 text-sm leading-6 text-on-surface-variant">
+                    <p className="mt-3 rounded-lg bg-white px-4 py-3 text-sm leading-6 text-on-surface-variant">
                       {order.statusNote}
                     </p>
                   ) : null}
                 </div>
-                <p className="text-2xl font-black tracking-[-0.04em] text-primary">
+                <p className="text-2xl font-bold tracking-normal text-primary">
                   {formatPriceTRY(order.totalKurus)}
                 </p>
               </div>
@@ -132,13 +132,13 @@ export function OrdersSection({ orders }: { orders: AccountSnapshot["recentOrder
                   {order.items.slice(0, 3).map((item) => (
                     <div
                       key={`${order.id}-${item.productName}-${item.quantity}`}
-                      className="flex items-center justify-between gap-4 rounded-2xl bg-white/70 px-4 py-3 text-sm text-on-surface-variant"
+                      className="flex items-center justify-between gap-4 rounded-lg bg-white/70 px-4 py-3 text-sm text-on-surface-variant"
                     >
                       <span>
                         {item.productName}
                         {item.variantName ? ` - ${item.variantName}` : ""}
                       </span>
-                      <span className="font-black">x{item.quantity}</span>
+                      <span className="font-bold">x{item.quantity}</span>
                     </div>
                   ))}
                 </div>
@@ -173,15 +173,15 @@ export function OrdersSection({ orders }: { orders: AccountSnapshot["recentOrder
             </article>
           ))
         ) : (
-          <div className="rounded-[26px] bg-surface-container-low p-6">
-            <p className="font-black text-on-surface">Henüz sipariş görünmüyor.</p>
+          <div className="rounded-lg bg-surface-container-low p-6">
+            <p className="font-bold text-on-surface">Henüz sipariş görünmüyor.</p>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-on-surface-variant">
               Aynı e-posta adresiyle ödeme yaptığınızda siparişler, ödeme ve kargo durumuyla
               birlikte burada listelenir.
             </p>
             <Link
               href="/magaza"
-              className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-black text-white"
+              className="mt-5 inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-3 text-sm font-bold text-white"
             >
               Mağazaya git
               <ArrowRight className="h-4 w-4" />

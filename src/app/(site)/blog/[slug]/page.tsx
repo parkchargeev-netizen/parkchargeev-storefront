@@ -106,10 +106,10 @@ export default async function ArticleDetailPage({
       </div>
 
       <article className="surface-card p-8 lg:p-12">
-        <p className="text-sm font-semibold uppercase tracking-[0.34em] text-primary">
+        <p className="text-sm font-semibold uppercase tracking-normal text-primary">
           {article.coverKicker}
         </p>
-        <h1 className="mt-5 text-5xl font-black tracking-[-0.08em] text-on-surface">
+        <h1 className="mt-5 text-5xl font-bold tracking-normal text-on-surface">
           {article.title}
         </h1>
         <div className="mt-5 flex flex-wrap gap-4 text-sm text-on-surface-variant">
@@ -123,7 +123,7 @@ export default async function ArticleDetailPage({
 
         <div className="mt-10 space-y-10">
           <div
-            className="space-y-10 text-base leading-8 text-on-surface-variant [&_h2]:text-3xl [&_h2]:font-bold [&_h2]:tracking-[-0.05em] [&_h2]:text-on-surface [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:text-on-surface [&_li]:ml-5 [&_li]:list-disc [&_p+ul]:mt-4 [&_section]:space-y-5"
+            className="space-y-10 text-base leading-8 text-on-surface-variant [&_h2]:text-3xl [&_h2]:font-bold [&_h2]:tracking-normal [&_h2]:text-on-surface [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:text-on-surface [&_li]:ml-5 [&_li]:list-disc [&_p+ul]:mt-4 [&_section]:space-y-5"
             dangerouslySetInnerHTML={{ __html: article.bodyHtml }}
           />
         </div>
@@ -131,12 +131,12 @@ export default async function ArticleDetailPage({
 
       {article.faq?.length ? (
         <section className="mt-10 surface-card p-8">
-          <h2 className="text-3xl font-bold tracking-[-0.05em] text-on-surface">
+          <h2 className="text-3xl font-bold tracking-normal text-on-surface">
             Sık sorulan sorular
           </h2>
           <div className="mt-6 space-y-4">
             {article.faq.map((item) => (
-              <article key={item.question} className="rounded-[24px] bg-surface-container-low p-5">
+              <article key={item.question} className="rounded-lg bg-surface-container-low p-5">
                 <h3 className="text-lg font-semibold text-on-surface">{item.question}</h3>
                 <p className="mt-3 text-sm leading-7 text-on-surface-variant">
                   {item.answer}
@@ -150,10 +150,10 @@ export default async function ArticleDetailPage({
       <section className="mt-10">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.34em] text-secondary">
+            <p className="text-sm font-semibold uppercase tracking-normal text-secondary">
               Sonraki içerikler
             </p>
-            <h2 className="mt-4 text-4xl font-black tracking-[-0.07em] text-on-surface">
+            <h2 className="mt-4 text-4xl font-bold tracking-normal text-on-surface">
               İlgili rehberler
             </h2>
           </div>

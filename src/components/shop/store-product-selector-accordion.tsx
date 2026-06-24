@@ -328,12 +328,19 @@ export function StoreProductSelectorAccordion({ products }: { products: ProductM
                 const confidenceScore = Math.min(98, Math.max(54, score));
 
                 return (
-                  <article key={product.id} className="store-selector-window-card">
-                    <Link
-                      href={`/urun/${product.slug}`}
-                      className="store-selector-window-card__media"
-                      onClick={() => setIsOpen(false)}
-                    >
+                  <Link
+                    key={product.id}
+                    href={`/urun/${product.slug}`}
+                    className="store-selector-window-card store-selector-window-card--link"
+                    aria-label={`${product.name} urun detayini ac`}
+                    onClick={() => setIsOpen(false)}
+                    {...conversionDataAttributes("selector_result_click", {
+                      source: "store_modal_window_card",
+                      productId: product.id,
+                      score
+                    })}
+                  >
+                    <div className="store-selector-window-card__media">
                       {imageUrl ? (
                         <Image
                           src={imageUrl}
@@ -348,7 +355,7 @@ export function StoreProductSelectorAccordion({ products }: { products: ProductM
                         <ProductDevicePreview productName={product.name} powerLabel={product.powerLabel} />
                       )}
                       <span>0{index + 1}</span>
-                    </Link>
+                    </div>
 
                     <div className="store-selector-window-card__body">
                       <div className="store-selector-window-card__meta">
@@ -370,20 +377,12 @@ export function StoreProductSelectorAccordion({ products }: { products: ProductM
 
                     <div className="store-selector-window-card__action">
                       <strong>{formatPriceTRY(product.priceKurus)}</strong>
-                      <Link
-                        href={`/urun/${product.slug}`}
-                        onClick={() => setIsOpen(false)}
-                        {...conversionDataAttributes("selector_result_click", {
-                          source: "store_modal_window",
-                          productId: product.id,
-                          score
-                        })}
-                      >
+                      <span>
                         İncele
                         <ArrowRight className="h-4 w-4" aria-hidden />
-                      </Link>
+                      </span>
                     </div>
-                  </article>
+                  </Link>
                 );
               })}
             </div>

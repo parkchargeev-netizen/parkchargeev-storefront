@@ -30,6 +30,15 @@ const requiredRoutes = [
   "tests/e2e/admin.spec.ts"
 ];
 
+const requiredDesignSystemFiles = [
+  "src/components/ui/action.tsx",
+  "src/components/ui/page-header.tsx",
+  "src/components/ui/status-badge.tsx",
+  "src/components/ui/surface.tsx",
+  "src/components/ui/typography.tsx",
+  "src/components/layout/scroll-motion.tsx"
+];
+
 const sourceRoots = ["src/app", "src/components"];
 const failPatterns = [
   {
@@ -49,11 +58,38 @@ const failPatterns = [
   }
 ];
 
+const designSystemFailPatterns = [
+  {
+    id: "negative-tracking",
+    regex: /tracking-\[-[^\]]+\]/g,
+    message: "Negatif harf araligi yeni tipografi sisteminde yasak."
+  },
+  {
+    id: "font-black",
+    regex: /font-black/g,
+    message: "Asiri kalin agirlik yerine font-bold veya tasarim tokeni kullan."
+  },
+  {
+    id: "large-rounded",
+    regex: /rounded-(?:xl|2xl|3xl)|rounded-\[(?:1[0-9]|[2-9][0-9]|[0-9.]+rem)[^\]]*\]/g,
+    allow: (relativePath) => relativePath === "src/components/shop/product-device-preview.tsx",
+    message: "Kart ve kontroller 8px radius standardini korumali."
+  },
+  {
+    id: "tiny-text",
+    regex: /text-\[(?:9|10|11)px\]/g,
+    message: "Okunabilirlik icin 12px meta olceginin altina inilmemeli."
+  }
+];
+
 let hasFailure = false;
 const findings = [];
 
 checkDocs();
 checkRoutes();
+checkDesignSystemFiles();
+checkMotionContract();
+checkProductCardContract();
 scanSource();
 printSummary();
 
@@ -88,6 +124,66 @@ function checkRoutes() {
   }
 }
 
+function checkDesignSystemFiles() {
+  for (const file of requiredDesignSystemFiles) {
+    if (fs.existsSync(path.join(root, file))) {
+      pass("design-system", `${file} mevcut.`);
+    } else {
+      fail("design-system", `${file} eksik; ortak UI primitive sozlesmesi korunamaz.`);
+    }
+  }
+}
+
+function checkMotionContract() {
+  const scrollMotionPath = path.join(root, "src/components/layout/scroll-motion.tsx");
+  const globalsPath = path.join(root, "src/app/globals.css");
+
+  if (!fs.existsSync(scrollMotionPath) || !fs.existsSync(globalsPath)) {
+    fail("motion", "Motion runtime veya global reduced-motion stilleri eksik.");
+    return;
+  }
+
+  const runtime = fs.readFileSync(scrollMotionPath, "utf8");
+  const styles = fs.readFileSync(globalsPath, "utf8");
+
+  for (const token of ["[data-motion]", "[data-motion-scope]", "[data-motion-loop]"]) {
+    if (runtime.includes(token)) {
+      pass("motion", `${token} runtime tarafinda destekleniyor.`);
+    } else {
+      fail("motion", `${token} runtime sozlesmesi eksik.`);
+    }
+  }
+
+  if (styles.includes("prefers-reduced-motion: reduce") && styles.includes("[data-motion]")) {
+    pass("motion", "Reduced-motion data-motion stilleri mevcut.");
+  } else {
+    fail("motion", "Reduced-motion data-motion stilleri eksik.");
+  }
+}
+
+function checkProductCardContract() {
+  const productCardPath = path.join(root, "src/components/shop/product-card.tsx");
+
+  if (!fs.existsSync(productCardPath)) {
+    fail("product-card", "ProductCard dosyasi eksik.");
+    return;
+  }
+
+  const content = fs.readFileSync(productCardPath, "utf8");
+
+  if (content.includes("premium-product-card-link") && content.includes("aria-label")) {
+    pass("product-card", "Urun karti tek erisilebilir link yuzeyi sunuyor.");
+  } else {
+    fail("product-card", "Urun karti tek link/aria-label sozlesmesini karsilamiyor.");
+  }
+
+  if (content.includes("premium-product-card__actions") || /href=\{?`?\/iletisim/.test(content)) {
+    fail("product-card", "Urun kartinda tek hedef sozlesmesini bozan ikincil aksiyon kaldi.");
+  } else {
+    pass("product-card", "Urun kartinda ikincil Keşif/İncele link aksiyonu yok.");
+  }
+}
+
 function scanSource() {
   const files = sourceRoots
     .flatMap((sourceRoot) => walk(path.join(root, sourceRoot)))
@@ -105,10 +201,27 @@ function scanSource() {
         fail(pattern.id, `${relativePath}:${line} ${pattern.message}`);
       }
     }
+
+    for (const pattern of designSystemFailPatterns) {
+      pattern.regex.lastIndex = 0;
+
+      for (const match of content.matchAll(pattern.regex)) {
+        if (pattern.allow?.(relativePath)) {
+          continue;
+        }
+
+        const line = lineNumber(content, match.index ?? 0);
+        fail(pattern.id, `${relativePath}:${line} ${pattern.message}`);
+      }
+    }
   }
 
   if (!findings.some((finding) => failPatterns.some((pattern) => pattern.id === finding.group))) {
     pass("source-scan", "Bariz olu kontrol kalibi bulunmadi.");
+  }
+
+  if (!findings.some((finding) => designSystemFailPatterns.some((pattern) => pattern.id === finding.group))) {
+    pass("design-source-scan", "Tipografi, radius ve okunabilirlik kaliplari standarda uygun.");
   }
 }
 

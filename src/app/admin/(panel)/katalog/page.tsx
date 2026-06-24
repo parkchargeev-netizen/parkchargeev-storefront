@@ -43,7 +43,7 @@ export default async function AdminCatalogPage() {
         <h2 className="text-xl font-semibold text-slate-950">Markalar</h2>
         <div className="mt-5 grid gap-4 xl:grid-cols-2">
           {catalog.brands.map((brand) => (
-            <div key={brand.id} className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+            <div key={brand.id} className="rounded-lg border border-slate-200 bg-slate-50 p-4">
               <CatalogForm type="brand" item={brand} />
             </div>
           ))}
@@ -57,7 +57,7 @@ export default async function AdminCatalogPage() {
         <h2 className="text-xl font-semibold text-slate-950">Kategoriler</h2>
         <div className="mt-5 grid gap-4 xl:grid-cols-2">
           {catalog.categories.map((category) => (
-            <div key={category.id} className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+            <div key={category.id} className="rounded-lg border border-slate-200 bg-slate-50 p-4">
               <CatalogForm type="category" item={category} categories={catalog.categories} />
             </div>
           ))}

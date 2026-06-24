@@ -60,3 +60,11 @@ Bu checklist ParkChargeEV için her büyük kodlama batch'i sonrası uygulanır.
 - [ ] caution: polish gerekli
 - [ ] hold: broken-state riski var
 - [ ] hold: bilgi mimarisi veya interaction regresyonu var
+
+## G. 2026 Design System Gate
+
+- [ ] `src/components/ui` primitive'leri yeni ortak yuzeylerde kullaniliyor
+- [ ] urun kartlari tek tiklanabilir detay hedefi olarak calisiyor
+- [ ] kart/kontrol radius standardi 8px; rozetler disinda buyuk pill kullanilmiyor
+- [ ] `data-motion` animasyonlari reduced-motion altinda kapaniyor
+- [ ] negatif tracking, `font-black` ve 12px alti metin kaliplari release gate'ten gecmiyor

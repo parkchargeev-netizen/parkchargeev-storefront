@@ -75,7 +75,7 @@ export function ServiceLeadStatusForm({
   return (
     <form className="space-y-4" onSubmit={onSubmit}>
       <select
-        className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+        className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
         value={status}
         onChange={(event) => setStatus(event.target.value)}
       >
@@ -86,7 +86,7 @@ export function ServiceLeadStatusForm({
         ))}
       </select>
       <select
-        className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+        className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
         value={assignedAdminId}
         onChange={(event) => setAssignedAdminId(event.target.value)}
       >
@@ -99,20 +99,20 @@ export function ServiceLeadStatusForm({
       </select>
       <textarea
         rows={4}
-        className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+        className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
         placeholder="Operasyon notu"
         value={note}
         onChange={(event) => setNote(event.target.value)}
       />
       {feedback ? (
-        <p className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+        <p className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
           {feedback}
         </p>
       ) : null}
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white disabled:opacity-70"
+        className="w-full rounded-lg bg-slate-950 px-4 py-3 text-sm font-semibold text-white disabled:opacity-70"
       >
         {isSubmitting ? "Güncelleniyor..." : "Talebi güncelle"}
       </button>

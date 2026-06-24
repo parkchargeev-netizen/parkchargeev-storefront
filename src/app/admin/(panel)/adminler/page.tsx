@@ -66,21 +66,21 @@ export default async function AdminUsersPage({ searchParams }: AdminUsersPagePro
             name="q"
             defaultValue={query.q ?? ""}
             placeholder="Ad veya e-posta ara"
-            className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm"
+            className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm"
           />
           <select
             name="status"
             defaultValue={query.status ?? ""}
-            className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm"
+            className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm"
           >
             <option value="">Tüm durumlar</option>
             <option value="active">Aktif</option>
             <option value="invited">Davetli</option>
             <option value="disabled">Devre dışı</option>
           </select>
-          <input name="from" type="date" defaultValue={query.from ?? ""} className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm" />
-          <input name="to" type="date" defaultValue={query.to ?? ""} className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm" />
-          <button className="rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white">
+          <input name="from" type="date" defaultValue={query.from ?? ""} className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm" />
+          <input name="to" type="date" defaultValue={query.to ?? ""} className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm" />
+          <button className="rounded-lg bg-slate-950 px-4 py-3 text-sm font-semibold text-white">
             Filtrele
           </button>
         </form>
@@ -97,7 +97,7 @@ export default async function AdminUsersPage({ searchParams }: AdminUsersPagePro
         <h2 className="text-xl font-semibold text-slate-950">Adminler</h2>
         <div className="mt-5 space-y-4">
           {users.items.map((user) => (
-            <div key={user.id} className="grid gap-4 rounded-3xl border border-slate-200 bg-slate-50 p-4 xl:grid-cols-[minmax(0,1fr)_minmax(420px,0.9fr)]">
+            <div key={user.id} className="grid gap-4 rounded-lg border border-slate-200 bg-slate-50 p-4 xl:grid-cols-[minmax(0,1fr)_minmax(420px,0.9fr)]">
               <div>
                 <div className="flex flex-wrap items-center gap-3">
                   <p className="text-sm font-semibold text-slate-950">{user.fullName}</p>
@@ -128,7 +128,7 @@ export default async function AdminUsersPage({ searchParams }: AdminUsersPagePro
         <h2 className="text-xl font-semibold text-slate-950">Son oturumlar</h2>
         <div className="mt-5 overflow-x-auto">
           <table className="min-w-full text-left text-sm">
-            <thead className="text-xs uppercase tracking-[0.16em] text-slate-500">
+            <thead className="text-xs uppercase tracking-normal text-slate-500">
               <tr>
                 <th className="px-3 py-3">Admin</th>
                 <th className="px-3 py-3">IP</th>

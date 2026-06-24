@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 import { AccountDashboard } from "@/components/customer/account-dashboard";
+import { ActionLink } from "@/components/ui/action";
+import { PageHeader } from "@/components/ui/page-header";
 import { getCustomerAccountSnapshot } from "@/server/customer/account-repository";
 
 export const metadata: Metadata = {
@@ -19,25 +20,23 @@ export default async function AccountPage() {
 
   if (!snapshot) {
     return (
-      <div className="mx-auto max-w-5xl px-6 py-16 text-center lg:px-8">
-        <p className="text-sm font-black uppercase tracking-[0.3em] text-primary">
-          Müşteri paneli
-        </p>
-        <h1 className="mt-5 text-4xl font-black tracking-[-0.06em] text-on-surface md:text-6xl">
-          Hesabınızı görüntülemek için giriş yapın
-        </h1>
-        <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-on-surface-variant">
-          Siparişler, fatura talepleri, kurulum adresleri ve servis kayıtları güvenli müşteri
-          oturumu ile gösterilir.
-        </p>
-        <Link
-          href="/giris"
-          className="mt-8 inline-flex items-center gap-2 rounded-2xl bg-primary px-6 py-4 text-base font-black text-white"
-        >
-          Müşteri girişine git
-          <ArrowRight className="h-4 w-4" />
-        </Link>
-      </div>
+      <main className="mx-auto max-w-5xl px-6 py-16 lg:px-8">
+        <PageHeader
+          align="center"
+          eyebrow="Müşteri paneli"
+          title="Hesabınızı görüntülemek için giriş yapın"
+          body="Siparişler, fatura talepleri, kurulum adresleri ve servis kayıtları güvenli müşteri oturumu ile gösterilir."
+          actions={
+            <ActionLink
+              href="/giris"
+              className="mt-4"
+            >
+              Müşteri girişine git
+              <ArrowRight className="h-4 w-4" />
+            </ActionLink>
+          }
+        />
+      </main>
     );
   }
 

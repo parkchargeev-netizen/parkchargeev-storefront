@@ -22,7 +22,7 @@ export function AdminNavLink({ href, icon, label }: AdminNavLinkProps) {
       href={href}
       aria-current={isActive ? "page" : undefined}
       className={clsx(
-        "group flex items-center justify-between rounded-2xl border px-4 py-3 text-sm font-medium transition",
+        "group flex items-center justify-between rounded-lg border px-4 py-3 text-sm font-medium transition",
         isActive
           ? "border-emerald-200 bg-emerald-50 text-[#063326]"
           : "border-transparent text-slate-700 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-950"
@@ -31,7 +31,7 @@ export function AdminNavLink({ href, icon, label }: AdminNavLinkProps) {
       <span className="flex min-w-0 items-center gap-3">
         <span
           className={clsx(
-            "rounded-2xl p-2 transition",
+            "rounded-lg p-2 transition",
             isActive
               ? "bg-white text-emerald-800 shadow-sm"
               : "bg-slate-100 text-slate-500 group-hover:bg-emerald-50 group-hover:text-[#063326]"

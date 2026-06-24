@@ -100,7 +100,7 @@ export function CartPageClient() {
         <section className="cart-hero">
           <div className="relative z-10 max-w-3xl">
             <p className="premium-eyebrow text-emerald-300">Sepet boş</p>
-            <h1 className="mt-4 text-4xl font-black leading-tight text-white md:text-6xl">
+            <h1 className="mt-4 text-4xl font-bold leading-tight text-white md:text-6xl">
               Doğru şarj çözümünü mağazadan seçin.
             </h1>
             <p className="mt-4 max-w-2xl text-base leading-7 text-white/80">
@@ -127,12 +127,12 @@ export function CartPageClient() {
           <div>
             <Link
               href="/magaza"
-              className="inline-flex items-center gap-2 text-sm font-black text-white/80 transition hover:text-white"
+              className="inline-flex items-center gap-2 text-sm font-bold text-white/80 transition hover:text-white"
             >
               <ArrowLeft className="h-4 w-4" aria-hidden />
               Alışverişe devam et
             </Link>
-            <h1 className="mt-5 text-4xl font-black leading-tight text-white md:text-6xl">
+            <h1 className="mt-5 text-4xl font-bold leading-tight text-white md:text-6xl">
               Sepetin hazır. Ödeme ve teslimat net.
             </h1>
             <p className="mt-4 max-w-2xl text-base leading-7 text-white/80">
@@ -140,7 +140,7 @@ export function CartPageClient() {
             </p>
           </div>
 
-          <div className="rounded-[24px] border border-white/12 bg-white/[0.14] p-4 backdrop-blur">
+          <div className="rounded-lg border border-white/12 bg-white/[0.14] p-4 backdrop-blur">
             <div className="flex flex-wrap gap-2">
               {checkoutSteps.map((step, index) => (
                 <span key={step} className="cart-step-pill" data-active={index === 0}>
@@ -175,7 +175,7 @@ export function CartPageClient() {
                 <div className="grid gap-4 sm:grid-cols-[132px_1fr]">
                   <Link
                     href={`/urun/${item.product.slug}`}
-                    className="relative overflow-hidden rounded-[22px] bg-surface-container-low"
+                    className="relative overflow-hidden rounded-lg bg-surface-container-low"
                   >
                     {getProductImageUrl(item) ? (
                       <Image
@@ -191,7 +191,7 @@ export function CartPageClient() {
                       <ProductDevicePreview
                         productName={item.product.name}
                         powerLabel={item.product.powerLabel}
-                        className="rounded-[22px]"
+                        className="rounded-lg"
                       />
                     )}
                   </Link>
@@ -200,16 +200,16 @@ export function CartPageClient() {
                     <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                       <div>
                         <div className="flex flex-wrap gap-2">
-                          <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-black text-primary">
+                          <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
                             {profile.powerTier}
                           </span>
-                          <span className="rounded-full bg-secondary-container px-3 py-1 text-xs font-black text-secondary">
+                          <span className="rounded-full bg-secondary-container px-3 py-1 text-xs font-bold text-secondary">
                             {profile.installationMode}
                           </span>
                         </div>
                         <Link
                           href={`/urun/${item.product.slug}`}
-                          className="mt-3 block text-2xl font-black leading-tight text-on-surface transition hover:text-primary"
+                          className="mt-3 block text-2xl font-bold leading-tight text-on-surface transition hover:text-primary"
                         >
                           {item.product.name}
                         </Link>
@@ -221,7 +221,7 @@ export function CartPageClient() {
                       <button
                         type="button"
                         onClick={() => removeItem(item.product.id, item.cableOption)}
-                        className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-outline-variant/40 bg-white text-on-surface-variant transition hover:border-red-200 hover:text-red-600"
+                        className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-outline-variant/40 bg-white text-on-surface-variant transition hover:border-red-200 hover:text-red-600"
                         aria-label={`${item.product.name} ürününü sepetten kaldır`}
                       >
                         <Trash2 className="h-4 w-4" aria-hidden />
@@ -234,11 +234,11 @@ export function CartPageClient() {
                         ["Uyum", profile.connectorHint],
                         ["Kurulum", profile.installationHint]
                       ].map(([label, value]) => (
-                        <div key={label} className="rounded-2xl bg-surface-container-low px-4 py-3">
-                          <p className="text-[10px] font-black uppercase text-on-surface-variant">
+                        <div key={label} className="rounded-lg bg-surface-container-low px-4 py-3">
+                          <p className="text-xs font-bold uppercase text-on-surface-variant">
                             {label}
                           </p>
-                          <p className="mt-1 text-sm font-black leading-5 text-on-surface">
+                          <p className="mt-1 text-sm font-bold leading-5 text-on-surface">
                             {value}
                           </p>
                         </div>
@@ -257,7 +257,7 @@ export function CartPageClient() {
                         >
                           <Minus className="h-4 w-4" aria-hidden />
                         </button>
-                        <span className="min-w-9 text-center text-sm font-black text-on-surface">
+                        <span className="min-w-9 text-center text-sm font-bold text-on-surface">
                           {item.quantity}
                         </span>
                         <button
@@ -273,10 +273,10 @@ export function CartPageClient() {
                       </div>
 
                       <div className="text-left md:text-right">
-                        <p className="text-xs font-black uppercase text-on-surface-variant">
+                        <p className="text-xs font-bold uppercase text-on-surface-variant">
                           Satır toplamı
                         </p>
-                        <p className="mt-1 text-3xl font-black text-primary">
+                        <p className="mt-1 text-3xl font-bold text-primary">
                           {formatPriceTRY(item.lineTotalKurus)}
                         </p>
                       </div>
@@ -291,11 +291,11 @@ export function CartPageClient() {
             <div className="cart-summary-card p-5">
               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div className="flex gap-4">
-                  <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                  <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
                     <Wrench className="h-5 w-5" aria-hidden />
                   </span>
                   <div>
-                    <h2 className="text-xl font-black text-on-surface">
+                    <h2 className="text-xl font-bold text-on-surface">
                       Kurulum keşfini sepete bağlayın
                     </h2>
                     <p className="mt-1 text-sm leading-6 text-on-surface-variant">
@@ -306,7 +306,7 @@ export function CartPageClient() {
                 </div>
                 <Link
                   href={`/iletisim?reason=${encodeURIComponent("Ev tipi kurulum talebi")}`}
-                  className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-primary/20 bg-white px-5 py-3 text-sm font-black text-primary"
+                  className="inline-flex min-h-11 items-center justify-center rounded-lg border border-primary/20 bg-white px-5 py-3 text-sm font-bold text-primary"
                 >
                   Keşif Ekle
                 </Link>
@@ -319,12 +319,12 @@ export function CartPageClient() {
           <div className="cart-summary-card p-5 sm:p-6">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-sm font-black uppercase text-primary">Sipariş özeti</p>
-                <h2 className="mt-2 text-3xl font-black text-on-surface">
+                <p className="text-sm font-bold uppercase text-primary">Sipariş özeti</p>
+                <h2 className="mt-2 text-3xl font-bold text-on-surface">
                   {items.length} kalem
                 </h2>
               </div>
-              <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-secondary-container text-secondary">
+              <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-secondary-container text-secondary">
                 <CreditCard className="h-5 w-5" aria-hidden />
               </span>
             </div>
@@ -336,7 +336,7 @@ export function CartPageClient() {
               </div>
               <div className="flex items-center justify-between text-on-surface-variant">
                 <span>Kargo</span>
-                <span className="font-black text-secondary">81 il</span>
+                <span className="font-bold text-secondary">81 il</span>
               </div>
               <div className="flex items-center justify-between text-on-surface-variant">
                 <span>KDV (%20)</span>
@@ -346,8 +346,8 @@ export function CartPageClient() {
 
             <div className="mt-6 border-t border-outline-variant/35 pt-5">
               <div className="flex items-end justify-between gap-4">
-                <span className="text-base font-black text-on-surface">Genel toplam</span>
-                <span className="text-4xl font-black text-primary">
+                <span className="text-base font-bold text-on-surface">Genel toplam</span>
+                <span className="text-4xl font-bold text-primary">
                   {formatPriceTRY(totalKurus)}
                 </span>
               </div>
@@ -359,7 +359,7 @@ export function CartPageClient() {
 
             <Link
               href="/odeme"
-              className="mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-primary to-secondary px-6 py-4 text-sm font-black text-white shadow-[0_18px_50px_rgba(6,51,38,0.22)]"
+              className="mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-linear-to-r from-primary to-secondary px-6 py-4 text-sm font-bold text-white shadow-[0_18px_50px_rgba(6,51,38,0.22)]"
             >
               Güvenli Ödemeye Geç
               <Zap className="h-4 w-4" aria-hidden />
@@ -368,16 +368,16 @@ export function CartPageClient() {
               href={whatsappHref}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-3 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl border border-secondary/20 bg-secondary-container/35 px-6 py-4 text-sm font-black text-secondary"
+              className="mt-3 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg border border-secondary/20 bg-secondary-container/35 px-6 py-4 text-sm font-bold text-secondary"
             >
               <MessageCircle className="h-4 w-4" aria-hidden />
               WhatsApp Destek
             </a>
 
-            <div className="mt-5 rounded-[22px] bg-surface-container-low p-4">
+            <div className="mt-5 rounded-lg bg-surface-container-low p-4">
               <div className="flex items-center gap-3">
                 <Sparkles className="h-5 w-5 text-primary" aria-hidden />
-                <p className="text-sm font-black text-on-surface">Terk azaltıcı not</p>
+                <p className="text-sm font-bold text-on-surface">Terk azaltıcı not</p>
               </div>
               <p className="mt-2 text-xs leading-5 text-on-surface-variant">
                 Adres ve kurulum tercihini ödeme akışında kısa adımlarla alıyoruz; üyelik zorunlu değil.
@@ -392,7 +392,7 @@ export function CartPageClient() {
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
               <p className="premium-eyebrow">Sepeti tamamla</p>
-              <h2 className="mt-3 text-3xl font-black text-on-surface">
+              <h2 className="mt-3 text-3xl font-bold text-on-surface">
                 Kablo, aksesuar ve alternatif cihazlar
               </h2>
             </div>

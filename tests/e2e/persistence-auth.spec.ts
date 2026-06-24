@@ -32,9 +32,12 @@ test("@e2e Return from comparison to shopping", async ({ page }) => {
 
   await page.goBack({ waitUntil: "domcontentloaded" });
   await expect(page.getByText("Seçili").first()).toBeVisible();
-  await expect(page.locator("article", { hasText: "HomeCharge Pro 11kW" })).toContainText(
-    "Seçili"
-  );
+  await expect(
+    page
+      .locator(".premium-product-card", { hasText: "HomeCharge Pro 11kW" })
+      .filter({ hasText: "Seçili" })
+      .first()
+  ).toBeVisible();
 });
 
 test("@e2e Reject invalid login credentials", async ({ page }) => {

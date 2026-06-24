@@ -51,7 +51,7 @@ export function SiteMobileMenu({ navigation }: SiteMobileMenuProps) {
                   target={item.opensInNewTab ? "_blank" : undefined}
                   rel={item.rel ?? (item.opensInNewTab ? "noopener noreferrer" : undefined)}
                   onClick={() => setIsOpen(false)}
-                  className="rounded-lg border border-white/10 bg-white/[0.14] px-4 py-3 text-sm font-black text-white/80 transition hover:border-primary/35 hover:text-white"
+                  className="rounded-lg border border-white/10 bg-white/[0.14] px-4 py-3 text-sm font-bold text-white/80 transition hover:border-primary/35 hover:text-white"
                 >
                   {formatPublicNavigationLabel(item)}
                 </Link>

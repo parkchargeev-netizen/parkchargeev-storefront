@@ -29,7 +29,7 @@ export function ProofResourcesSection({
                   icon={signal.icon}
                   className="h-10 w-10 bg-primary/10 text-primary"
                 />
-                <p className="mt-3 text-sm font-black leading-5 text-on-surface">
+                <p className="mt-3 text-sm font-bold leading-5 text-on-surface">
                   {signal.label}
                 </p>
               </div>
@@ -42,7 +42,7 @@ export function ProofResourcesSection({
                 <p className="line-clamp-3 text-sm leading-6 text-on-surface-variant">
                   &quot;{item.quote}&quot;
                 </p>
-                <p className="mt-4 text-sm font-black text-on-surface">{item.name}</p>
+                <p className="mt-4 text-sm font-bold text-on-surface">{item.name}</p>
                 <p className="text-xs text-on-surface-variant">
                   {item.role}, {item.company}
                 </p>
@@ -51,15 +51,15 @@ export function ProofResourcesSection({
           </div>
         </div>
 
-        <div className="rounded-[8px] border border-outline-variant/45 bg-surface-container-low p-5">
+        <div className="rounded-lg border border-outline-variant/45 bg-surface-container-low p-5">
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="premium-eyebrow">Bilgi merkezi</p>
-              <h3 className="mt-2 text-2xl font-black text-on-surface">
+              <h3 className="mt-2 text-2xl font-bold text-on-surface">
                 Teknik karar rehberleri
               </h3>
             </div>
-            <Link href="/blog" className="text-sm font-black text-primary">
+            <Link href="/blog" className="text-sm font-bold text-primary">
               Tümü
             </Link>
           </div>
@@ -71,10 +71,10 @@ export function ProofResourcesSection({
                 href={`/blog/${article.slug}`}
                 className="premium-resource-link group"
               >
-                <span className="text-xs font-black uppercase text-primary">
+                <span className="text-xs font-bold uppercase text-primary">
                   {article.coverKicker}
                 </span>
-                <span className="mt-2 block text-lg font-black leading-tight text-on-surface">
+                <span className="mt-2 block text-lg font-bold leading-tight text-on-surface">
                   {article.title}
                 </span>
                 <span className="mt-2 line-clamp-2 text-sm leading-6 text-on-surface-variant">

@@ -34,7 +34,7 @@ export default async function AdminOrderDetailPage({ params }: OrderDetailPagePr
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_420px]">
       <section className="space-y-6">
         <div className="surface-card border border-slate-200 bg-white/95 p-8">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#0f8f6f]">
+          <p className="text-sm font-semibold uppercase tracking-normal text-[#0f8f6f]">
             Sipariş Detayı
           </p>
           <h1 className="mt-3 text-3xl font-semibold text-slate-950">{order.orderNumber}</h1>
@@ -47,7 +47,7 @@ export default async function AdminOrderDetailPage({ params }: OrderDetailPagePr
           <h2 className="text-xl font-semibold text-slate-950">Sipariş kalemleri</h2>
           <div className="mt-5 space-y-3">
             {order.items.map((item) => (
-              <div key={item.id} className="rounded-2xl bg-slate-50 px-4 py-4">
+              <div key={item.id} className="rounded-lg bg-slate-50 px-4 py-4">
                 <div className="flex items-center justify-between gap-4">
                   <div>
                     <p className="text-sm font-semibold text-slate-900">{item.productName}</p>
@@ -68,7 +68,7 @@ export default async function AdminOrderDetailPage({ params }: OrderDetailPagePr
           <h2 className="text-xl font-semibold text-slate-950">Durum geçmişi</h2>
           <div className="mt-5 space-y-3">
             {order.history.map((item) => (
-              <div key={item.id} className="rounded-2xl bg-slate-50 px-4 py-4">
+              <div key={item.id} className="rounded-lg bg-slate-50 px-4 py-4">
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <p className="text-sm font-semibold text-slate-900">

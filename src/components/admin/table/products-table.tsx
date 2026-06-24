@@ -60,7 +60,7 @@ const columns: Array<ColumnDef<ProductRow>> = [
         >
           {row.original.name}
         </Link>
-        <p className="mt-1 text-xs uppercase tracking-[0.18em] text-slate-500">
+        <p className="mt-1 text-xs uppercase tracking-normal text-slate-500">
           {row.original.slug}
         </p>
         <p className="mt-2 line-clamp-2 text-sm text-slate-600">

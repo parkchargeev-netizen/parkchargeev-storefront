@@ -83,12 +83,12 @@ export default async function AdminProductsPage({ searchParams }: ProductListPag
             name="q"
             defaultValue={query.q ?? ""}
             placeholder="Ürün, slug veya SKU ara"
-            className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm"
+            className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm"
           />
           <select
             name="status"
             defaultValue={query.status ?? ""}
-            className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm"
+            className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm"
           >
             <option value="">Tüm durumlar</option>
             <option value="draft">Taslak</option>
@@ -99,15 +99,15 @@ export default async function AdminProductsPage({ searchParams }: ProductListPag
             name="from"
             type="date"
             defaultValue={query.from ?? ""}
-            className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm"
+            className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm"
           />
           <input
             name="to"
             type="date"
             defaultValue={query.to ?? ""}
-            className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm"
+            className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm"
           />
-          <button className="rounded-2xl border border-slate-300 bg-slate-950 px-4 py-3 text-sm font-medium text-white">
+          <button className="rounded-lg border border-slate-300 bg-slate-950 px-4 py-3 text-sm font-medium text-white">
             Filtrele
           </button>
         </form>

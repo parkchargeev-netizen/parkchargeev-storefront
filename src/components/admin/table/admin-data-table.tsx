@@ -74,7 +74,7 @@ export function AdminDataTable<TData>({
                               ? "none"
                               : undefined
                       }
-                      className="border-b border-slate-200 bg-slate-50/80 px-4 py-3 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 first:pl-6 last:pr-6"
+                      className="border-b border-slate-200 bg-slate-50/80 px-4 py-3 text-left text-xs font-semibold uppercase tracking-normal text-slate-500 first:pl-6 last:pr-6"
                     >
                       {header.isPlaceholder ? null : canSort ? (
                         <button

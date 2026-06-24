@@ -88,8 +88,8 @@ export function NavigationItemForm({ mode, item }: NavigationItemFormProps) {
 
   return (
     <form className="grid gap-4" onSubmit={onSubmit}>
-      <div className="rounded-2xl border border-emerald-100 bg-emerald-50/70 p-4">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-800">
+      <div className="rounded-lg border border-emerald-100 bg-emerald-50/70 p-4">
+        <p className="text-xs font-semibold uppercase tracking-normal text-emerald-800">
           Menü yazım rehberi
         </p>
         <ul className="mt-2 grid gap-2 text-xs leading-5 text-slate-600 md:grid-cols-2">
@@ -103,10 +103,10 @@ export function NavigationItemForm({ mode, item }: NavigationItemFormProps) {
       </div>
       <div className="grid gap-3 lg:grid-cols-[170px_minmax(0,1fr)_minmax(0,1fr)_120px]">
         <label className="grid gap-1.5">
-          <span className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+          <span className="text-xs font-semibold uppercase tracking-normal text-slate-500">
             Alan
           </span>
-          <select className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" {...register("area")}>
+          <select className="rounded-lg border border-slate-300 px-4 py-3 text-sm" {...register("area")}>
             {areaOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
@@ -115,38 +115,38 @@ export function NavigationItemForm({ mode, item }: NavigationItemFormProps) {
           </select>
         </label>
         <label className="grid gap-1.5">
-          <span className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+          <span className="text-xs font-semibold uppercase tracking-normal text-slate-500">
             Etiket
           </span>
-          <input className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="Hizmetler" {...register("label")} />
+          <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Hizmetler" {...register("label")} />
           <FieldError message={errors.label?.message} />
         </label>
         <label className="grid gap-1.5">
-          <span className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+          <span className="text-xs font-semibold uppercase tracking-normal text-slate-500">
             Link
           </span>
-          <input className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="/hizmetler" {...register("href")} />
+          <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="/hizmetler" {...register("href")} />
           <FieldError message={errors.href?.message} />
         </label>
         <label className="grid gap-1.5">
-          <span className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+          <span className="text-xs font-semibold uppercase tracking-normal text-slate-500">
             Sira
           </span>
-          <input type="number" className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="10" {...register("sortOrder", { valueAsNumber: true })} />
+          <input type="number" className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="10" {...register("sortOrder", { valueAsNumber: true })} />
         </label>
       </div>
       <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_180px_180px]">
         <label className="grid gap-1.5">
-          <span className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+          <span className="text-xs font-semibold uppercase tracking-normal text-slate-500">
             Rel
           </span>
-          <input className="rounded-2xl border border-slate-300 px-4 py-3 text-sm" placeholder="noopener noreferrer" {...register("rel")} />
+          <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="noopener noreferrer" {...register("rel")} />
         </label>
-        <label className="flex min-h-12 items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+        <label className="flex min-h-12 items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
           <input type="checkbox" {...register("isActive")} />
           Aktif
         </label>
-        <label className="flex min-h-12 items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+        <label className="flex min-h-12 items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
           <input type="checkbox" {...register("opensInNewTab")} />
           Yeni sekme
         </label>
@@ -155,7 +155,7 @@ export function NavigationItemForm({ mode, item }: NavigationItemFormProps) {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white disabled:opacity-70"
+        className="rounded-lg bg-slate-950 px-4 py-3 text-sm font-semibold text-white disabled:opacity-70"
       >
         {isSubmitting ? "Kaydediliyor..." : mode === "create" ? "Menü linki ekle" : "Menü linkini güncelle"}
       </button>

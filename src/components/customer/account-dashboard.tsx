@@ -32,6 +32,7 @@ import {
 import { CustomerLogoutButton } from "@/components/customer/customer-logout-button";
 import { OrdersSection } from "@/components/customer/orders-section";
 import { RequestsPanel } from "@/components/customer/requests-panel";
+import { Surface } from "@/components/ui/surface";
 import {
   customerSelfServiceCards,
   customerTrustTimeline
@@ -64,16 +65,16 @@ function PanelMetric({
   icon: ReactNode;
 }) {
   return (
-    <div className="surface-card p-5">
+    <Surface density="compact" motion="scale">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-sm font-semibold text-on-surface-variant">{label}</p>
-          <p className="mt-3 text-3xl font-black tracking-[-0.04em] text-on-surface">{value}</p>
+          <p className="mt-3 text-3xl font-bold tracking-normal text-on-surface">{value}</p>
         </div>
-        <span className="rounded-2xl bg-primary/10 p-2 text-primary">{icon}</span>
+        <span className="rounded-lg bg-primary/10 p-2 text-primary">{icon}</span>
       </div>
       <p className="mt-3 text-sm leading-6 text-on-surface-variant">{detail}</p>
-    </div>
+    </Surface>
   );
 }
 
@@ -145,24 +146,27 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
   ];
 
   return (
-    <div className="mx-auto grid max-w-[1500px] gap-6 px-4 py-8 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-8">
+    <div
+      className="mx-auto grid max-w-[1500px] gap-6 px-4 py-8 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-8"
+      data-motion-scope
+    >
       <aside className="h-fit space-y-4 lg:sticky lg:top-24">
         <section className="surface-card overflow-hidden p-5">
-          <div className="rounded-[26px] bg-[#063326] p-5 text-white">
+          <div className="rounded-lg bg-[#063326] p-5 text-white">
             <div className="flex items-center gap-3">
-              <span className="grid h-12 w-12 place-items-center rounded-2xl bg-white/[0.16] text-sm font-black">
+              <span className="grid h-12 w-12 place-items-center rounded-lg bg-white/[0.16] text-sm font-bold">
                 {initials}
               </span>
               <div className="min-w-0">
-                <p className="truncate text-sm font-black">{fullName || customer.email}</p>
+                <p className="truncate text-sm font-bold">{fullName || customer.email}</p>
                 <p className="truncate text-xs text-white/76">{customer.email}</p>
               </div>
             </div>
-            <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.12] p-4">
-              <p className="text-xs font-black uppercase tracking-[0.2em] text-white/84">
+            <div className="mt-5 rounded-lg border border-white/10 bg-white/[0.12] p-4">
+              <p className="text-xs font-bold uppercase tracking-normal text-white/84">
                 Müşteri segmenti
               </p>
-              <p className="mt-2 text-sm font-black">{customerSegment}</p>
+              <p className="mt-2 text-sm font-bold">{customerSegment}</p>
             </div>
           </div>
 
@@ -174,7 +178,7 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
                 <a
                   key={item.href}
                   href={item.href}
-                  className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold text-on-surface-variant transition hover:bg-surface-container-low hover:text-primary"
+                  className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-bold text-on-surface-variant transition hover:bg-surface-container-low hover:text-primary"
                 >
                   <Icon className="h-4 w-4" />
                   {item.label}
@@ -188,7 +192,7 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
         </section>
 
         <section className="surface-card p-5">
-          <p className="text-xs font-black uppercase tracking-[0.22em] text-primary">
+          <p className="text-xs font-bold uppercase tracking-normal text-primary">
             Hızlı işlemler
           </p>
           <div className="mt-4 grid gap-2">
@@ -208,7 +212,7 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="flex items-center gap-3 rounded-2xl bg-surface-container-low px-4 py-3 text-sm font-bold text-on-surface transition hover:bg-surface-container hover:text-primary"
+                  className="flex items-center gap-3 rounded-lg bg-surface-container-low px-4 py-3 text-sm font-bold text-on-surface transition hover:bg-surface-container hover:text-primary"
                 >
                   <Icon className="h-4 w-4" />
                   {item.label}
@@ -219,14 +223,14 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
         </section>
       </aside>
 
-      <main id="genel" className="min-w-0 space-y-6">
+      <main id="genel" className="min-w-0 space-y-6" data-motion-scope>
         <header className="surface-card overflow-hidden p-6 lg:p-8">
           <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px] xl:items-stretch">
             <div>
-              <p className="text-sm font-black uppercase tracking-[0.28em] text-primary">
+              <p className="text-sm font-bold uppercase tracking-normal text-primary">
                 Müşteri hesap merkezi
               </p>
-              <h1 className="mt-4 max-w-4xl text-3xl font-black tracking-[-0.05em] text-on-surface md:text-5xl">
+              <h1 className="mt-4 max-w-4xl text-3xl font-bold tracking-normal text-on-surface md:text-5xl">
                 {fullName ? `Merhaba ${fullName}` : "Hesabiniz hazır"}
               </h1>
               <p className="mt-4 max-w-2xl text-base leading-7 text-on-surface-variant">
@@ -242,7 +246,7 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
                 ].map((item) => (
                   <span
                     key={item}
-                    className="rounded-full bg-primary/10 px-3 py-1.5 text-xs font-black text-primary"
+                    className="rounded-full bg-primary/10 px-3 py-1.5 text-xs font-bold text-primary"
                   >
                     {item}
                   </span>
@@ -251,14 +255,14 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
               <div className="mt-6 flex flex-col gap-3 sm:flex-row">
                 <Link
                   href="/urun-secici"
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-black text-white"
+                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3 text-sm font-bold text-white"
                 >
                   Doğru cihazı seç
                   <Zap className="h-4 w-4" />
                 </Link>
                 <Link
                   href={`/iletisim?reason=${encodeURIComponent("Ücretsiz keşif talebi")}`}
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-primary/20 bg-white px-5 py-3 text-sm font-black text-primary"
+                  className="inline-flex items-center justify-center gap-2 rounded-lg border border-primary/20 bg-white px-5 py-3 text-sm font-bold text-primary"
                 >
                   Keşif talebi oluştur
                   <MapPin className="h-4 w-4" />
@@ -266,17 +270,17 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
               </div>
             </div>
 
-            <div className="rounded-[30px] bg-[#063326] p-5 text-white">
-              <p className="text-xs font-black uppercase tracking-[0.22em] text-emerald-200">
+            <div className="rounded-lg bg-[#063326] p-5 text-white">
+              <p className="text-xs font-bold uppercase tracking-normal text-emerald-200">
                 Sıradaki en iyi adım
               </p>
-              <h2 className="mt-3 text-3xl font-black tracking-[-0.04em]">
+              <h2 className="mt-3 text-3xl font-bold tracking-normal">
                 {currentStage.label}
               </h2>
               <p className="mt-3 text-sm leading-6 text-white/82">{currentStage.detail}</p>
               <Link
                 href={currentStage.href}
-                className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-black text-primary"
+                className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-white px-5 py-3 text-sm font-bold text-primary"
               >
                 Sıradaki adıma git
                 <ArrowRight className="h-4 w-4" />
@@ -322,12 +326,12 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
                 href={item.href}
                 className="surface-card group p-5 transition hover:-translate-y-0.5 hover:border-primary/20"
               >
-                <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-primary">
                   <Icon className="h-5 w-5" />
                 </span>
-                <p className="mt-4 text-sm font-black text-on-surface">{item.label}</p>
+                <p className="mt-4 text-sm font-bold text-on-surface">{item.label}</p>
                 <p className="mt-2 text-xs leading-5 text-on-surface-variant">{item.detail}</p>
-                <span className="mt-4 inline-flex items-center gap-2 text-xs font-black text-primary">
+                <span className="mt-4 inline-flex items-center gap-2 text-xs font-bold text-primary">
                   Ac
                   <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
                 </span>
@@ -339,11 +343,11 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
         <section className="grid gap-5 xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
           <div className="surface-card p-6 lg:p-8">
             <div className="flex items-start gap-3">
-              <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-secondary-container text-secondary">
+              <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-secondary-container text-secondary">
                 <Bell className="h-5 w-5" />
               </span>
               <div>
-                <h2 className="text-2xl font-black tracking-[-0.04em] text-on-surface">
+                <h2 className="text-2xl font-bold tracking-normal text-on-surface">
                   Bugunun aksiyonlari
                 </h2>
                 <p className="mt-2 text-sm leading-6 text-on-surface-variant">
@@ -356,10 +360,10 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
                 <a
                   key={item.title}
                   href={item.href}
-                  className="grid gap-3 rounded-[24px] bg-surface-container-low p-5 transition hover:bg-surface-container md:grid-cols-[1fr_auto] md:items-center"
+                  className="grid gap-3 rounded-lg bg-surface-container-low p-5 transition hover:bg-surface-container md:grid-cols-[1fr_auto] md:items-center"
                 >
                   <span>
-                    <span className="block font-black text-on-surface">{item.title}</span>
+                    <span className="block font-bold text-on-surface">{item.title}</span>
                     <span className="mt-1 block text-sm leading-6 text-on-surface-variant">
                       {item.detail}
                     </span>
@@ -372,11 +376,11 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
 
           <div className="surface-card p-6 lg:p-8">
             <div className="flex items-start gap-3">
-              <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+              <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 <ClipboardCheck className="h-5 w-5" />
               </span>
               <div>
-                <h2 className="text-2xl font-black tracking-[-0.04em] text-on-surface">
+                <h2 className="text-2xl font-bold tracking-normal text-on-surface">
                   Self servis merkezi
                 </h2>
                 <p className="mt-2 text-sm leading-6 text-on-surface-variant">
@@ -389,15 +393,15 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
                 <Link
                   key={item.label}
                   href={item.href}
-                  className="group rounded-[24px] bg-surface-container-low p-5 transition hover:bg-surface-container"
+                  className="group rounded-lg bg-surface-container-low p-5 transition hover:bg-surface-container"
                 >
                   <div className="flex items-start justify-between gap-4">
-                    <span className="rounded-full bg-white px-3 py-1 text-xs font-black text-primary">
+                    <span className="rounded-full bg-white px-3 py-1 text-xs font-bold text-primary">
                       {item.signal}
                     </span>
                     <ArrowRight className="h-5 w-5 text-primary transition group-hover:translate-x-0.5" />
                   </div>
-                  <p className="mt-4 font-black text-on-surface">{item.label}</p>
+                  <p className="mt-4 font-bold text-on-surface">{item.label}</p>
                   <p className="mt-2 text-sm leading-6 text-on-surface-variant">{item.detail}</p>
                 </Link>
               ))}
@@ -407,11 +411,11 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
 
         <section className="surface-card p-6 lg:p-8">
           <div className="flex items-start gap-3">
-            <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-secondary-container text-secondary">
+            <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-secondary-container text-secondary">
               <Cable className="h-5 w-5" />
             </span>
             <div>
-              <h2 className="text-2xl font-black tracking-[-0.04em] text-on-surface">
+              <h2 className="text-2xl font-bold tracking-normal text-on-surface">
                 Şarj yol haritaniz
               </h2>
               <p className="mt-2 text-sm leading-6 text-on-surface-variant">
@@ -429,15 +433,15 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
                 <Link
                   key={item.title}
                   href={item.href}
-                  className="group rounded-[24px] bg-surface-container-low p-5 transition hover:bg-surface-container"
+                  className="group rounded-lg bg-surface-container-low p-5 transition hover:bg-surface-container"
                 >
                   <div className="flex items-start justify-between gap-4">
-                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-primary">
+                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-white text-primary">
                       <Icon className="h-5 w-5" />
                     </span>
                     <ArrowRight className="h-5 w-5 text-primary transition group-hover:translate-x-0.5" />
                   </div>
-                  <p className="mt-4 font-black text-on-surface">{item.title}</p>
+                  <p className="mt-4 font-bold text-on-surface">{item.title}</p>
                   <p className="mt-2 text-sm leading-6 text-on-surface-variant">{item.detail}</p>
                 </Link>
               );
@@ -448,11 +452,11 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
         <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
           <div className="surface-card p-6 lg:p-8">
             <div className="flex items-start gap-3">
-              <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+              <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 <ShieldCheck className="h-5 w-5" />
               </span>
               <div>
-                <h2 className="text-2xl font-black tracking-[-0.04em] text-on-surface">
+                <h2 className="text-2xl font-bold tracking-normal text-on-surface">
                   Güvenli şarj süreci
                 </h2>
                 <p className="mt-2 text-sm leading-6 text-on-surface-variant">
@@ -463,11 +467,11 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
 
             <div className="mt-6 grid gap-3 md:grid-cols-4">
               {customerTrustTimeline.map((item, index) => (
-                <div key={item.label} className="rounded-[24px] bg-surface-container-low p-5">
-                  <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-white text-sm font-black text-primary">
+                <div key={item.label} className="rounded-lg bg-surface-container-low p-5">
+                  <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-white text-sm font-bold text-primary">
                     {index + 1}
                   </span>
-                  <p className="mt-4 font-black text-on-surface">{item.label}</p>
+                  <p className="mt-4 font-bold text-on-surface">{item.label}</p>
                   <p className="mt-2 text-sm leading-6 text-on-surface-variant">{item.detail}</p>
                 </div>
               ))}
@@ -476,7 +480,7 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
 
           <aside className="space-y-5">
             <section className="surface-card p-5">
-              <h2 className="text-xl font-black tracking-[-0.03em] text-on-surface">
+              <h2 className="text-xl font-bold tracking-normal text-on-surface">
                 Hizmet kapsamı
               </h2>
               <div className="mt-4 grid gap-3">
@@ -503,14 +507,14 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
                   const Icon = item.icon;
 
                   return (
-                    <div key={item.label} className="rounded-2xl bg-surface-container-low p-4">
+                    <div key={item.label} className="rounded-lg bg-surface-container-low p-4">
                       <div className="flex items-start gap-3">
-                        <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-white text-primary">
+                        <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white text-primary">
                           <Icon className="h-4 w-4" />
                         </span>
                         <div>
-                          <p className="text-sm font-black text-on-surface">{item.label}</p>
-                          <p className="mt-1 text-lg font-black text-primary">{item.value}</p>
+                          <p className="text-sm font-bold text-on-surface">{item.label}</p>
+                          <p className="mt-1 text-lg font-bold text-primary">{item.value}</p>
                           <p className="mt-1 text-xs leading-5 text-on-surface-variant">
                             {item.detail}
                           </p>
@@ -523,7 +527,7 @@ export function AccountDashboard({ snapshot }: { snapshot: AccountSnapshot }) {
             </section>
 
             <section id="güvenlik" className="surface-card scroll-mt-28 p-5">
-              <h2 className="text-xl font-black tracking-[-0.03em] text-on-surface">
+              <h2 className="text-xl font-bold tracking-normal text-on-surface">
                 Güvenlik özeti
               </h2>
               <div className="mt-4 grid gap-3 text-sm leading-6 text-on-surface-variant">

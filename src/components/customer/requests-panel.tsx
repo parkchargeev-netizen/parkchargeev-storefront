@@ -40,14 +40,14 @@ export function RequestsPanel({ snapshot }: { snapshot: AccountSnapshot }) {
     <section id="destek" className="surface-card scroll-mt-28 p-6 lg:p-8">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div className="flex items-start gap-3">
-          <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+          <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
             <Headphones className="h-5 w-5" />
           </span>
           <div>
-            <p className="text-sm font-black uppercase tracking-[0.28em] text-primary">
+            <p className="text-sm font-bold uppercase tracking-normal text-primary">
               Teklif ve servis
             </p>
-            <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-on-surface">
+            <h2 className="mt-2 text-2xl font-bold tracking-normal text-on-surface">
               Keşif, kurulum ve destek talepleri
             </h2>
             <p className="mt-2 text-sm leading-6 text-on-surface-variant">
@@ -57,7 +57,7 @@ export function RequestsPanel({ snapshot }: { snapshot: AccountSnapshot }) {
         </div>
         <Link
           href={`/iletisim?konu=${encodeURIComponent("Teknik servis ve bakım")}`}
-          className="inline-flex items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-black text-white"
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3 text-sm font-bold text-white"
         >
           Yeni talep oluştur
           <ArrowRight className="h-4 w-4" />
@@ -69,21 +69,21 @@ export function RequestsPanel({ snapshot }: { snapshot: AccountSnapshot }) {
           requests.map((request) => (
             <div
               key={request.id}
-              className="grid gap-3 rounded-[24px] bg-surface-container-low p-5 md:grid-cols-[1fr_auto] md:items-center"
+              className="grid gap-3 rounded-lg bg-surface-container-low p-5 md:grid-cols-[1fr_auto] md:items-center"
             >
               <div>
-                <p className="font-black text-on-surface">{request.title}</p>
+                <p className="font-bold text-on-surface">{request.title}</p>
                 <p className="mt-1 text-sm text-on-surface-variant">
                   {request.detail} - {formatAccountDate(request.date)}
                 </p>
               </div>
-              <span className="h-fit rounded-full bg-white px-3 py-1 text-xs font-black text-primary">
+              <span className="h-fit rounded-full bg-white px-3 py-1 text-xs font-bold text-primary">
                 {requestStatusLabels[request.status] ?? request.status}
               </span>
             </div>
           ))
         ) : (
-          <div className="rounded-[24px] bg-surface-container-low p-5 text-sm leading-6 text-on-surface-variant">
+          <div className="rounded-lg bg-surface-container-low p-5 text-sm leading-6 text-on-surface-variant">
             Açık teklif veya servis kaydı yok. Yeni keşif, bakım veya kurulum ihtiyacı için hızlı
             talep oluşturabilirsiniz.
           </div>

@@ -27,3 +27,11 @@ Release öncesi tam kontrol:
 ```bash
 npm run verify:release
 ```
+
+## 2026 Site Geneli Tasarim Sistemi
+
+- ParkChargeEV arayuzu `src/components/ui` altindaki ortak `PageHeader`, `Text`, `Surface`, `ActionLink/ActionButton` ve `StatusBadge` primitive'leriyle ilerler.
+- Font ailesi sistem yigininda kalir; ana baslik mobilde 32/40, masaustunde 40/48; bolum basliklari 26/34 ve 32/40 olcegindedir.
+- Kart ve kontrol radius standardi 8px'tir; yalniz durum rozetleri pill formunda kalabilir.
+- Urun karti tek tiklanabilir hedef olarak urun detayina gider; kart icinde ayri Kesif/Incele linki bulunmaz.
+- Motion sistemi `data-motion`, `data-motion-scope`, `data-motion-loop` ve `data-motion-skip` sozlesmeleriyle calisir; `prefers-reduced-motion` altinda icerik dogrudan gorunur olur.

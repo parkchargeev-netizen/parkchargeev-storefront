@@ -12,7 +12,7 @@ export function HomeFinalCta({ whatsappHref }: HomeFinalCtaProps) {
     <section className="premium-section premium-final-cta">
       <div className="mx-auto max-w-5xl px-4 text-center sm:px-6 lg:px-8">
         <p className="premium-eyebrow text-emerald-300">Projenizi başlatın</p>
-        <h2 className="mt-4 text-3xl font-black leading-tight text-white md:text-5xl">
+        <h2 className="mt-4 text-3xl font-bold leading-tight text-white md:text-5xl">
           Ürün, altyapı ve kurulum kapsamını tek görüşmede netleştirin.
         </h2>
         <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-white/76 md:text-base">

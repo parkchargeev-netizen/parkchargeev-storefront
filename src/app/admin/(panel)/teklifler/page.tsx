@@ -75,12 +75,12 @@ export default async function AdminQuotesPage({ searchParams }: QuotesPageProps)
             name="q"
             defaultValue={query.q ?? ""}
             placeholder="Kişi, firma veya telefon ara"
-            className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm"
+            className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm"
           />
           <select
             name="status"
             defaultValue={query.status ?? ""}
-            className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm"
+            className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm"
           >
             <option value="">Tüm durumlar</option>
             {quoteStatusOptions.map((option) => (
@@ -93,15 +93,15 @@ export default async function AdminQuotesPage({ searchParams }: QuotesPageProps)
             name="from"
             type="date"
             defaultValue={query.from ?? ""}
-            className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm"
+            className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm"
           />
           <input
             name="to"
             type="date"
             defaultValue={query.to ?? ""}
-            className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm"
+            className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm"
           />
-          <button className="rounded-2xl border border-slate-300 bg-slate-950 px-4 py-3 text-sm font-medium text-white">
+          <button className="rounded-lg border border-slate-300 bg-slate-950 px-4 py-3 text-sm font-medium text-white">
             Filtrele
           </button>
         </form>

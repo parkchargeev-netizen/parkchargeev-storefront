@@ -72,8 +72,8 @@ export function LeadForm({
   const [selectedReason, setSelectedReason] = useState(defaultReason ?? "");
   const [selectedCity, setSelectedCity] = useState("");
   const fieldClassName = compact
-    ? "rounded-2xl border border-outline-variant/45 bg-white/90 px-4 py-3 text-sm outline-none transition focus:border-primary"
-    : "rounded-2xl border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary";
+    ? "rounded-lg border border-outline-variant/45 bg-white/90 px-4 py-3 text-sm outline-none transition focus:border-primary"
+    : "rounded-lg border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary";
   const labelClassName = compact ? "grid gap-1.5" : "grid gap-2";
   const coverageHelp = getLeadCoverageHelp(selectedReason);
 
@@ -123,7 +123,7 @@ export function LeadForm({
 
   return (
     <div className={`lead-form-card surface-card ${compact ? "lead-form-card--compact p-5 lg:p-6" : "p-8"}`}>
-      <p className="text-xs font-black uppercase text-primary">
+      <p className="text-xs font-bold uppercase text-primary">
         {title}
       </p>
       <p className={`${compact ? "mt-2 text-sm leading-6" : "mt-4 text-base leading-7"} max-w-2xl text-on-surface-variant`}>
@@ -230,8 +230,8 @@ export function LeadForm({
           </select>
         </label>
 
-        <div className={`${compact ? "px-4 py-3 text-xs leading-5" : "px-4 py-4 text-sm leading-6"} md:col-span-2 rounded-2xl border border-primary/15 bg-primary/5 text-on-surface-variant`}>
-          <span className="font-black text-primary">{coverageHelp}</span>
+        <div className={`${compact ? "px-4 py-3 text-xs leading-5" : "px-4 py-4 text-sm leading-6"} md:col-span-2 rounded-lg border border-primary/15 bg-primary/5 text-on-surface-variant`}>
+          <span className="font-bold text-primary">{coverageHelp}</span>
           <span className="mt-1 block">
             Ürün kargosu Türkiye&apos;nin 81 iline yapılır; ücretsiz keşif yalnızca Sakarya, kurulum hizmeti Sakarya ve Kocaeli için planlanır.
           </span>
@@ -246,14 +246,14 @@ export function LeadForm({
             name="message"
             rows={compact ? 3 : 6}
             placeholder="Araç adedi, kullanım tipi, lokasyon ve beklentinizi paylaşın."
-            className={`${fieldClassName} min-h-0 resize-y rounded-3xl`}
+            className={`${fieldClassName} min-h-0 resize-y rounded-lg`}
           />
         </label>
 
         <label
           className={`${
             compact ? "px-4 py-3 text-xs leading-5" : "px-4 py-4 text-sm"
-          } md:col-span-2 grid grid-cols-[18px_1fr] items-start gap-3 rounded-2xl bg-surface-container-low text-on-surface-variant`}
+          } md:col-span-2 grid grid-cols-[18px_1fr] items-start gap-3 rounded-lg bg-surface-container-low text-on-surface-variant`}
         >
           <input
             required
@@ -272,7 +272,7 @@ export function LeadForm({
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`${compact ? "px-5 py-3 text-sm" : "px-6 py-4 text-base"} rounded-2xl bg-linear-to-r from-primary to-secondary font-black text-white disabled:opacity-70`}
+            className={`${compact ? "px-5 py-3 text-sm" : "px-6 py-4 text-base"} rounded-lg bg-linear-to-r from-primary to-secondary font-bold text-white disabled:opacity-70`}
           >
             {isSubmitting ? "Gönderiliyor..." : "Talebi Gönder"}
           </button>

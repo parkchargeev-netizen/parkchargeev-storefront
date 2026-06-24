@@ -20,7 +20,7 @@ export default async function EditBlogPostPage({ params }: EditBlogPostPageProps
   return (
     <div className="space-y-6">
       <section className="surface-card border border-slate-200 bg-white/95 p-8">
-        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#0f8f6f]">
+        <p className="text-sm font-semibold uppercase tracking-normal text-[#0f8f6f]">
           İçerik Düzenle
         </p>
         <h1 className="mt-3 text-3xl font-semibold text-slate-950">{post.title}</h1>

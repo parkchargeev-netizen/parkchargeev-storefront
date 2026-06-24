@@ -143,10 +143,10 @@ export function ProductComparisonClient({ products }: ProductComparisonClientPro
     <section className="mt-12 grid gap-6">
       <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-primary">
+          <p className="text-sm font-semibold uppercase tracking-normal text-primary">
             Canlı karşılaştırma
           </p>
-          <h2 className="mt-3 text-3xl font-black tracking-[-0.05em] text-on-surface md:text-4xl">
+          <h2 className="mt-3 text-3xl font-bold tracking-normal text-on-surface md:text-4xl">
             Ürünleri seç, farkları tek tabloda gör
           </h2>
         </div>
@@ -156,7 +156,7 @@ export function ProductComparisonClient({ products }: ProductComparisonClientPro
               type="button"
               onClick={() => commitSelection([])}
               disabled={!isHydrated}
-              className="rounded-2xl border border-outline-variant/60 bg-surface-container-low px-4 py-3 text-sm font-semibold text-on-surface transition hover:border-primary hover:text-primary"
+              className="rounded-lg border border-outline-variant/60 bg-surface-container-low px-4 py-3 text-sm font-semibold text-on-surface transition hover:border-primary hover:text-primary"
             >
               Seçimi temizle
             </button>
@@ -167,7 +167,7 @@ export function ProductComparisonClient({ products }: ProductComparisonClientPro
               type="button"
               onClick={() => applyPreset(preset)}
               disabled={!isHydrated}
-              className="rounded-2xl border border-outline-variant/60 bg-white px-4 py-3 text-sm font-semibold text-on-surface transition hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-lg border border-outline-variant/60 bg-white px-4 py-3 text-sm font-semibold text-on-surface transition hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-60"
               title={preset.description}
             >
               {preset.label}
@@ -187,7 +187,7 @@ export function ProductComparisonClient({ products }: ProductComparisonClientPro
               aria-pressed={isSelected}
               onClick={() => toggleProduct(product.id)}
               disabled={!isHydrated}
-              className={`flex min-h-[148px] flex-col justify-between rounded-[24px] border p-5 text-left transition ${
+              className={`flex min-h-[148px] flex-col justify-between rounded-lg border p-5 text-left transition ${
                 isSelected
                   ? "border-primary bg-primary/5 shadow-sm"
                   : "border-outline-variant/50 bg-white hover:border-primary/50"
@@ -195,10 +195,10 @@ export function ProductComparisonClient({ products }: ProductComparisonClientPro
             >
               <span className="flex items-start justify-between gap-3">
                 <span>
-                  <span className="block text-xs font-semibold uppercase tracking-[0.2em] text-on-surface-variant">
+                  <span className="block text-xs font-semibold uppercase tracking-normal text-on-surface-variant">
                     {product.category}
                   </span>
-                  <span className="mt-2 block text-lg font-bold tracking-[-0.03em] text-on-surface">
+                  <span className="mt-2 block text-lg font-bold tracking-normal text-on-surface">
                     {product.name}
                   </span>
                 </span>
@@ -218,7 +218,7 @@ export function ProductComparisonClient({ products }: ProductComparisonClientPro
               ) : null}
               <span className="mt-4 flex items-end justify-between gap-3">
                 <span className="text-sm font-semibold text-primary">{product.powerLabel}</span>
-                <span className="text-base font-black text-on-surface">
+                <span className="text-base font-bold text-on-surface">
                   {formatPriceTRY(product.priceKurus)}
                 </span>
               </span>
@@ -228,11 +228,11 @@ export function ProductComparisonClient({ products }: ProductComparisonClientPro
       </div>
 
       {selectedProducts.length === 0 ? (
-        <div className="rounded-[28px] border border-dashed border-outline-variant/70 bg-white p-8 text-center">
-          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-primary">
+        <div className="rounded-lg border border-dashed border-outline-variant/70 bg-white p-8 text-center">
+          <p className="text-sm font-semibold uppercase tracking-normal text-primary">
             Karşılaştırma boş
           </p>
-          <h3 className="mt-3 text-3xl font-black tracking-[-0.05em] text-on-surface">
+          <h3 className="mt-3 text-3xl font-bold tracking-normal text-on-surface">
             Karşılaştırmak için ürün seçin
           </h3>
           <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-on-surface-variant">
@@ -241,12 +241,12 @@ export function ProductComparisonClient({ products }: ProductComparisonClientPro
           </p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-[28px] border border-outline-variant/50 bg-white">
+        <div className="overflow-hidden rounded-lg border border-outline-variant/50 bg-white">
           <div className="overflow-x-auto">
             <table className="min-w-[760px] w-full border-collapse text-left">
               <thead>
                 <tr className="border-b border-outline-variant/50 bg-surface-container-low">
-                  <th className="w-44 px-5 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-on-surface-variant">
+                  <th className="w-44 px-5 py-4 text-xs font-semibold uppercase tracking-normal text-on-surface-variant">
                     Kriter
                   </th>
                   {selectedProducts.map((product) => (
@@ -254,7 +254,7 @@ export function ProductComparisonClient({ products }: ProductComparisonClientPro
                       <span className="block text-sm font-semibold text-primary">
                         {product.powerLabel}
                       </span>
-                      <span className="mt-1 block text-lg font-black tracking-[-0.03em] text-on-surface">
+                      <span className="mt-1 block text-lg font-bold tracking-normal text-on-surface">
                         {product.name}
                       </span>
                     </th>
@@ -283,7 +283,7 @@ export function ProductComparisonClient({ products }: ProductComparisonClientPro
                     <td key={`action-${product.id}`} className="px-5 py-4">
                       <Link
                         href={`/urun/${product.slug}`}
-                        className="inline-flex items-center gap-2 rounded-2xl bg-primary px-4 py-3 text-sm font-semibold text-white transition hover:bg-primary-container"
+                        className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-white transition hover:bg-primary-container"
                       >
                         Ürünü incele
                         <ArrowRight className="h-4 w-4" />

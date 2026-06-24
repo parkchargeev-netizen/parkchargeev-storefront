@@ -74,7 +74,7 @@ export function LoginForm() {
           type="email"
           autoComplete="username"
           disabled={!isHydrated || isSubmitting}
-          className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-emerald-600"
+          className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-emerald-600"
           {...register("email")}
         />
         {errors.email ? (
@@ -91,7 +91,7 @@ export function LoginForm() {
           type="password"
           autoComplete="current-password"
           disabled={!isHydrated || isSubmitting}
-          className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-emerald-600"
+          className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-emerald-600"
           {...register("password")}
         />
         {errors.password ? (
@@ -100,14 +100,14 @@ export function LoginForm() {
       </div>
 
       {errorMessage ? (
-        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {errorMessage}
         </div>
       ) : null}
 
       <button
         type="submit"
-        className="w-full rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
+        className="w-full rounded-lg bg-slate-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
         disabled={!isHydrated || isSubmitting}
       >
         {!isHydrated ? "Hazırlanıyor..." : isSubmitting ? "Giriş yapılıyor..." : "Admin Girişi"}

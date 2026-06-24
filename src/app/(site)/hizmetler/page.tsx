@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { ManagedPageRenderer } from "@/components/site/managed-page-renderer";
+import { PageHeader } from "@/components/ui/page-header";
 import { services } from "@/lib/mock-data";
 import { serviceCoverageSummary } from "@/lib/service-coverage";
 import { absoluteUrl } from "@/lib/site";
@@ -47,29 +48,26 @@ export default async function ServicesPage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
-      <section className="mx-auto max-w-4xl text-center">
-        <p className="text-sm font-semibold uppercase tracking-[0.34em] text-primary">
-          Kurulum ve teknik destek
-        </p>
-        <h1 className="mt-4 text-5xl font-black tracking-[-0.08em] text-on-surface">
-          Şarj cihazınızı
-          <span className="text-gradient"> güvenli kurulumla tamamlayın</span>
-        </h1>
-        <p className="mt-6 text-lg leading-8 text-on-surface-variant">
-          Ev kullanıcısından site yönetimine, ofis otoparkından ticari sahaya kadar
-          cihaz, keşif, kurulum ve servis sürecini tek plan içinde yönetiyoruz.
-          {` ${serviceCoverageSummary.shipping}; ${serviceCoverageSummary.freeSurvey}; ${serviceCoverageSummary.installation}.`}
-        </p>
-      </section>
+    <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8" data-motion-scope>
+      <PageHeader
+        align="center"
+        eyebrow="Kurulum ve teknik destek"
+        title={
+          <>
+            Şarj cihazınızı
+            <span className="text-gradient"> güvenli kurulumla tamamlayın</span>
+          </>
+        }
+        body={`Ev kullanıcısından site yönetimine, ofis otoparkından ticari sahaya kadar cihaz, keşif, kurulum ve servis sürecini tek plan içinde yönetiyoruz. ${serviceCoverageSummary.shipping}; ${serviceCoverageSummary.freeSurvey}; ${serviceCoverageSummary.installation}.`}
+      />
 
       <div className="mt-12 grid gap-6 lg:grid-cols-2">
         {services.map((service, index) => (
           <article
             key={service.id}
-            className={index === 1 ? "overflow-hidden rounded-[28px] bg-primary p-8 text-white" : "surface-card p-8"}
+            className={index === 1 ? "overflow-hidden rounded-lg bg-primary p-8 text-white" : "surface-card p-8"}
           >
-            <h2 className="text-3xl font-bold tracking-[-0.05em]">
+            <h2 className="text-3xl font-bold tracking-normal">
               {service.title}
             </h2>
             <p
@@ -91,8 +89,8 @@ export default async function ServicesPage() {
         ))}
       </div>
 
-      <section className="mt-12 overflow-hidden rounded-[32px] border border-outline-variant/35 bg-surface-container-low p-8 lg:p-12">
-        <h2 className="text-4xl font-black tracking-[-0.07em] text-on-surface">
+      <section className="mt-12 overflow-hidden rounded-lg border border-outline-variant/35 bg-surface-container-low p-8 lg:p-12">
+        <h2 className="text-4xl font-bold tracking-normal text-on-surface">
           Net kurulum süreci
         </h2>
         <p className="mt-4 max-w-3xl text-lg leading-8 text-on-surface-variant">
@@ -130,10 +128,10 @@ export default async function ServicesPage() {
             <div key={item.step} className="surface-card p-6">
               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.3em] text-primary">
+                  <p className="text-sm font-semibold uppercase tracking-normal text-primary">
                     {item.step}
                   </p>
-                  <h3 className="mt-2 text-2xl font-bold tracking-[-0.05em] text-on-surface">
+                  <h3 className="mt-2 text-2xl font-bold tracking-normal text-on-surface">
                     {item.title}
                   </h3>
                 </div>
@@ -145,6 +143,6 @@ export default async function ServicesPage() {
           ))}
         </div>
       </section>
-    </div>
+    </main>
   );
 }

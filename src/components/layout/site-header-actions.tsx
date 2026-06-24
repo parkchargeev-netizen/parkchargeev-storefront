@@ -40,7 +40,7 @@ export function SiteHeaderActions({ className = "" }: SiteHeaderActionsProps) {
       <SiteCartLink />
       <Link
         href={surveyHref}
-        className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-black text-white shadow-[0_14px_34px_rgba(6,51,38,0.2)] transition hover:-translate-y-0.5 hover:bg-secondary hover:shadow-[0_18px_44px_rgba(6,51,38,0.25)]"
+        className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-bold text-white shadow-[0_14px_34px_rgba(6,51,38,0.2)] transition hover:-translate-y-0.5 hover:bg-secondary hover:shadow-[0_18px_44px_rgba(6,51,38,0.25)]"
         {...conversionDataAttributes("installation_quote_click", {
           placement: "header",
           href: surveyHref

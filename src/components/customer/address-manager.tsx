@@ -94,11 +94,11 @@ export function AddressManager({ addresses }: { addresses: CustomerAddressFormMo
   return (
     <section id="adresler" className="surface-card scroll-mt-28 p-6 lg:p-8">
       <div className="flex items-start gap-3">
-        <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-secondary-container text-secondary">
+        <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-secondary-container text-secondary">
           <Plus className="h-5 w-5" />
         </span>
         <div>
-          <h2 className="text-2xl font-black tracking-[-0.04em] text-on-surface">
+          <h2 className="text-2xl font-bold tracking-normal text-on-surface">
             Adres defteri
           </h2>
           <p className="mt-2 text-sm leading-6 text-on-surface-variant">
@@ -113,7 +113,7 @@ export function AddressManager({ addresses }: { addresses: CustomerAddressFormMo
           addresses.map((address) => (
             <div
               key={address.id}
-              className="grid gap-4 rounded-[24px] bg-surface-container-low p-5 md:grid-cols-[1fr_auto] md:items-center"
+              className="grid gap-4 rounded-lg bg-surface-container-low p-5 md:grid-cols-[1fr_auto] md:items-center"
             >
               <div>
                 <div className="flex flex-wrap items-center gap-2">
@@ -136,7 +136,7 @@ export function AddressManager({ addresses }: { addresses: CustomerAddressFormMo
                 type="button"
                 onClick={() => handleDelete(address.id)}
                 disabled={pendingAction === `delete-${address.id}`}
-                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-red-200 px-4 py-3 text-sm font-semibold text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-65"
+                className="inline-flex items-center justify-center gap-2 rounded-lg border border-red-200 px-4 py-3 text-sm font-semibold text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-65"
               >
                 {pendingAction === `delete-${address.id}` ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -148,7 +148,7 @@ export function AddressManager({ addresses }: { addresses: CustomerAddressFormMo
             </div>
           ))
         ) : (
-          <div className="rounded-[24px] bg-surface-container-low p-5 text-sm leading-6 text-on-surface-variant">
+          <div className="rounded-lg bg-surface-container-low p-5 text-sm leading-6 text-on-surface-variant">
             Kayıtlı adres yok. İlk adresinizi eklediğinizde checkout ve kurulum formları daha hızlı ilerler.
           </div>
         )}
@@ -161,7 +161,7 @@ export function AddressManager({ addresses }: { addresses: CustomerAddressFormMo
             name="label"
             required
             placeholder="Ev, iş yeri, depo"
-            className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 outline-none transition focus:border-primary"
+            className="rounded-lg border border-outline-variant/45 bg-white px-4 py-3 outline-none transition focus:border-primary"
           />
         </label>
         <label className="grid gap-2">
@@ -170,7 +170,7 @@ export function AddressManager({ addresses }: { addresses: CustomerAddressFormMo
             name="fullName"
             autoComplete="name"
             placeholder="Ad Soyad"
-            className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 outline-none transition focus:border-primary"
+            className="rounded-lg border border-outline-variant/45 bg-white px-4 py-3 outline-none transition focus:border-primary"
           />
         </label>
         <label className="grid gap-2">
@@ -180,7 +180,7 @@ export function AddressManager({ addresses }: { addresses: CustomerAddressFormMo
             required
             autoComplete="address-level1"
             placeholder="İlinizi yazın"
-            className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 outline-none transition focus:border-primary"
+            className="rounded-lg border border-outline-variant/45 bg-white px-4 py-3 outline-none transition focus:border-primary"
           />
         </label>
         <label className="grid gap-2">
@@ -189,7 +189,7 @@ export function AddressManager({ addresses }: { addresses: CustomerAddressFormMo
             name="district"
             required
             autoComplete="address-level2"
-            className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 outline-none transition focus:border-primary"
+            className="rounded-lg border border-outline-variant/45 bg-white px-4 py-3 outline-none transition focus:border-primary"
           />
         </label>
         <label className="grid gap-2 md:col-span-2">
@@ -199,14 +199,14 @@ export function AddressManager({ addresses }: { addresses: CustomerAddressFormMo
             required
             minLength={5}
             autoComplete="street-address"
-            className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 outline-none transition focus:border-primary"
+            className="rounded-lg border border-outline-variant/45 bg-white px-4 py-3 outline-none transition focus:border-primary"
           />
         </label>
         <label className="grid gap-2">
           <span className="text-sm font-medium text-on-surface-variant">Adres devamı</span>
           <input
             name="line2"
-            className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 outline-none transition focus:border-primary"
+            className="rounded-lg border border-outline-variant/45 bg-white px-4 py-3 outline-none transition focus:border-primary"
           />
         </label>
         <label className="grid gap-2">
@@ -214,7 +214,7 @@ export function AddressManager({ addresses }: { addresses: CustomerAddressFormMo
           <input
             name="postalCode"
             autoComplete="postal-code"
-            className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 outline-none transition focus:border-primary"
+            className="rounded-lg border border-outline-variant/45 bg-white px-4 py-3 outline-none transition focus:border-primary"
           />
         </label>
         <label className="flex items-start gap-3 text-sm leading-6 text-on-surface-variant md:col-span-2">
@@ -226,7 +226,7 @@ export function AddressManager({ addresses }: { addresses: CustomerAddressFormMo
           <button
             type="submit"
             disabled={pendingAction === "address"}
-            className="inline-flex w-fit items-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-primary-container disabled:cursor-not-allowed disabled:opacity-65"
+            className="inline-flex w-fit items-center gap-2 rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-primary-container disabled:cursor-not-allowed disabled:opacity-65"
           >
             {pendingAction === "address" ? (
               <Loader2 className="h-4 w-4 animate-spin" />

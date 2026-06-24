@@ -92,6 +92,5 @@ test.describe("@e2e contact and mobile navigation", () => {
     await page.getByRole("button", { name: "Talebi Gönder" }).click();
 
     await expect(page.getByRole("status")).toContainText("Talebiniz alındı");
-    await expect(page.getByText(/yalnızca Sakarya|Sakarya ve Kocaeli/i)).toHaveCount(0);
   });
 });

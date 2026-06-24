@@ -49,10 +49,10 @@ function OfficeMapCard() {
   return (
     <div className="contact-map-card surface-card overflow-hidden p-0">
       <div className="p-4 lg:p-5">
-        <p className="text-xs font-black uppercase text-on-surface-variant">
+        <p className="text-xs font-bold uppercase text-on-surface-variant">
           Adres haritası
         </p>
-        <h2 className="mt-2 text-xl font-black text-on-surface">Merkez ofis konumu</h2>
+        <h2 className="mt-2 text-xl font-bold text-on-surface">Merkez ofis konumu</h2>
         <p className="mt-2 text-sm leading-6 text-on-surface-variant">{address}</p>
       </div>
       <iframe
@@ -74,18 +74,18 @@ function ContactInfoCards() {
   return (
     <div className="contact-info-grid grid gap-3">
       <div className="contact-info-card surface-card p-4">
-        <p className="text-xs font-black uppercase text-on-surface-variant">
+        <p className="text-xs font-bold uppercase text-on-surface-variant">
           Telefon
         </p>
-        <p className="mt-2 text-xl font-black text-on-surface">
+        <p className="mt-2 text-xl font-bold text-on-surface">
           {siteConfig.phone}
         </p>
       </div>
       <div className="contact-info-card surface-card p-4">
-        <p className="text-xs font-black uppercase text-on-surface-variant">
+        <p className="text-xs font-bold uppercase text-on-surface-variant">
           E-posta
         </p>
-        <p className="mt-2 text-xl font-black text-on-surface">
+        <p className="mt-2 text-xl font-bold text-on-surface">
           {siteConfig.email}
         </p>
       </div>

@@ -43,7 +43,7 @@ type DashboardChartsProps = {
 
 function ChartEmptyState() {
   return (
-    <div className="flex h-full min-h-48 items-center justify-center rounded-3xl bg-white/70 text-sm font-bold text-slate-500">
+    <div className="flex h-full min-h-48 items-center justify-center rounded-lg bg-white/70 text-sm font-bold text-slate-500">
       Henüz veri yok
     </div>
   );
@@ -79,7 +79,7 @@ function RevenueTrendChart({ data }: { data: DashboardChartsProps["revenueTrend"
       <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="text-sm font-semibold text-slate-500">Son değer</p>
-          <p className="mt-1 text-2xl font-black tracking-[-0.04em] text-slate-950">
+          <p className="mt-1 text-2xl font-bold tracking-normal text-slate-950">
             {formatPriceTRY(latest?.total ?? 0)}
           </p>
         </div>
@@ -160,7 +160,7 @@ function DistributionBars({
           <div key={item.status} className="space-y-2">
             <div className="flex items-center justify-between gap-3 text-sm">
               <span className="font-bold text-slate-700">{formatStatus(item.status)}</span>
-              <span className="font-black text-slate-950">{item.total}</span>
+              <span className="font-bold text-slate-950">{item.total}</span>
             </div>
             <div className="h-3 overflow-hidden rounded-full bg-slate-100">
               <div
@@ -187,10 +187,10 @@ export function DashboardCharts({
     <div className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
       <section className="surface-card border border-white/70 p-6">
         <div className="mb-6">
-          <p className="text-sm font-black uppercase tracking-[0.24em] text-[#0f8f6f]">
+          <p className="text-sm font-bold uppercase tracking-normal text-[#0f8f6f]">
             Finans
           </p>
-          <h2 className="mt-2 text-lg font-black text-slate-950">Aylik ciro trendi</h2>
+          <h2 className="mt-2 text-lg font-bold text-slate-950">Aylik ciro trendi</h2>
           <p className="mt-1 text-sm text-slate-600">Son 12 ay içindeki onaylı sipariş akışı</p>
         </div>
         <RevenueTrendChart data={revenueTrend} />
@@ -199,10 +199,10 @@ export function DashboardCharts({
       <div className="grid gap-6">
         <section className="surface-card border border-white/70 p-6">
           <div className="mb-6">
-            <p className="text-sm font-black uppercase tracking-[0.24em] text-[#0f8f6f]">
+            <p className="text-sm font-bold uppercase tracking-normal text-[#0f8f6f]">
               CRM
             </p>
-            <h2 className="mt-2 text-lg font-black text-slate-950">Teklif dağılımı</h2>
+            <h2 className="mt-2 text-lg font-bold text-slate-950">Teklif dağılımı</h2>
             <p className="mt-1 text-sm text-slate-600">Durum bazlı teklif akışı</p>
           </div>
           <DistributionBars
@@ -214,10 +214,10 @@ export function DashboardCharts({
 
         <section className="surface-card border border-white/70 p-6">
           <div className="mb-6">
-            <p className="text-sm font-black uppercase tracking-[0.24em] text-[#0f8f6f]">
+            <p className="text-sm font-bold uppercase tracking-normal text-[#0f8f6f]">
               Fulfillment
             </p>
-            <h2 className="mt-2 text-lg font-black text-slate-950">Sipariş dağılımı</h2>
+            <h2 className="mt-2 text-lg font-bold text-slate-950">Sipariş dağılımı</h2>
             <p className="mt-1 text-sm text-slate-600">Anlık sipariş durum dağılımı</p>
           </div>
           <DistributionBars

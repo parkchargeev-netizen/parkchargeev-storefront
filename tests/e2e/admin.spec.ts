@@ -27,7 +27,7 @@ async function loginAsAdmin(page: Page) {
 }
 
 async function goToAdminSection(page: Page, href: string, urlPattern: RegExp) {
-  const link = page.locator(`aside nav a[href="${href}"]`).first();
+  const link = page.locator(`a[href="${href}"]:visible`).first();
 
   await expect(link).toBeVisible();
   await link.click();
@@ -39,7 +39,9 @@ test("@e2e admin login -> dashboard -> temel modul navigasyonu", async ({ page }
 
   expect(loginResponse.ok()).toBeTruthy();
   await expect(page).toHaveURL(/\/admin$/, { timeout: 30_000 });
-  await expect(page.getByText(/Bugunun|Kontrol Merkezi/i).first()).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: /Bugunun|Bugünün|Kontrol merkezi|Kontrol Merkezi/i })
+  ).toBeVisible();
 
   await goToAdminSection(page, "/admin/urunler", /\/admin\/urunler/);
 
@@ -58,7 +60,7 @@ test("@e2e admin urun ekleme linki form ekranini acar", async ({ page }) => {
   await page.locator('a[href="/admin/urunler/yeni"]').first().click();
 
   await expect(page).toHaveURL(/\/admin\/urunler\/yeni/, { timeout: 30_000 });
-  await expect(page.locator('form button[type="submit"]')).toBeEnabled({ timeout: 15_000 });
+  await expect(page.getByRole("button", { name: /Ürün oluştur|ÃœrÃ¼n oluÅŸtur/i })).toBeEnabled({ timeout: 15_000 });
   await expect(page.getByText(/Application error|Unhandled Runtime/i)).toHaveCount(0);
 });
 
@@ -95,7 +97,7 @@ test("@e2e admin urun duzenleme linki form ekranini acar", async ({ page }) => {
   await editLink.click();
 
   await expect(page).toHaveURL(/\/admin\/urunler\/[0-9a-f-]+/, { timeout: 30_000 });
-  await expect(page.locator('form button[type="submit"]')).toBeEnabled({ timeout: 15_000 });
+  await expect(page.getByRole("button", { name: /Değişiklikleri kaydet|DeÄŸiÅŸiklikleri kaydet/i })).toBeEnabled({ timeout: 15_000 });
   await expect(page.getByText(/Application error|Unhandled Runtime/i)).toHaveCount(0);
 });
 

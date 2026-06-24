@@ -43,7 +43,7 @@ export default async function ServiceLeadDetailPage({ params }: ServiceLeadDetai
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_420px]">
       <section className="space-y-6">
         <div className="surface-card border border-slate-200 bg-white/95 p-8">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#0f8f6f]">
+          <p className="text-sm font-semibold uppercase tracking-normal text-[#0f8f6f]">
             Saha Talebi
           </p>
           <h1 className="mt-3 text-3xl font-semibold text-slate-950">{lead.fullName}</h1>
@@ -55,24 +55,24 @@ export default async function ServiceLeadDetailPage({ params }: ServiceLeadDetai
         <div className="surface-card border border-slate-200 bg-white/95 p-6">
           <h2 className="text-xl font-semibold text-slate-950">Talep detayı</h2>
           <dl className="mt-5 grid gap-4 md:grid-cols-2">
-            <div className="rounded-2xl bg-slate-50 p-4">
-              <dt className="text-xs uppercase tracking-[0.16em] text-slate-500">Telefon</dt>
+            <div className="rounded-lg bg-slate-50 p-4">
+              <dt className="text-xs uppercase tracking-normal text-slate-500">Telefon</dt>
               <dd className="mt-2 text-sm font-semibold text-slate-900">{lead.phone}</dd>
             </div>
-            <div className="rounded-2xl bg-slate-50 p-4">
-              <dt className="text-xs uppercase tracking-[0.16em] text-slate-500">E-posta</dt>
+            <div className="rounded-lg bg-slate-50 p-4">
+              <dt className="text-xs uppercase tracking-normal text-slate-500">E-posta</dt>
               <dd className="mt-2 text-sm font-semibold text-slate-900">{lead.email ?? "-"}</dd>
             </div>
-            <div className="rounded-2xl bg-slate-50 p-4">
-              <dt className="text-xs uppercase tracking-[0.16em] text-slate-500">Lokasyon</dt>
+            <div className="rounded-lg bg-slate-50 p-4">
+              <dt className="text-xs uppercase tracking-normal text-slate-500">Lokasyon</dt>
               <dd className="mt-2 text-sm font-semibold text-slate-900">{[lead.city, lead.district].filter(Boolean).join(" / ") || "-"}</dd>
             </div>
-            <div className="rounded-2xl bg-slate-50 p-4">
-              <dt className="text-xs uppercase tracking-[0.16em] text-slate-500">Atanan</dt>
+            <div className="rounded-lg bg-slate-50 p-4">
+              <dt className="text-xs uppercase tracking-normal text-slate-500">Atanan</dt>
               <dd className="mt-2 text-sm font-semibold text-slate-900">{assignedAdmin?.fullName ?? "Atanmamış"}</dd>
             </div>
           </dl>
-          <p className="mt-5 rounded-2xl bg-slate-50 p-4 text-sm leading-7 text-slate-700">
+          <p className="mt-5 rounded-lg bg-slate-50 p-4 text-sm leading-7 text-slate-700">
             {lead.message || "Mesaj bulunmuyor."}
           </p>
         </div>
@@ -84,7 +84,7 @@ export default async function ServiceLeadDetailPage({ params }: ServiceLeadDetai
               notes.map((note, index) => {
                 const item = getPayloadObject(note);
                 return (
-                  <div key={`${String(item.createdAt ?? index)}-${index}`} className="rounded-2xl bg-slate-50 p-4">
+                  <div key={`${String(item.createdAt ?? index)}-${index}`} className="rounded-lg bg-slate-50 p-4">
                     <p className="text-sm text-slate-700">{String(item.note ?? "")}</p>
                     <p className="mt-2 text-xs text-slate-500">{String(item.createdAt ?? "")}</p>
                   </div>
@@ -98,7 +98,7 @@ export default async function ServiceLeadDetailPage({ params }: ServiceLeadDetai
 
         <details className="surface-card border border-slate-200 bg-white/95 p-6">
           <summary className="cursor-pointer text-sm font-semibold text-slate-900">Ham veri</summary>
-          <pre className="mt-4 overflow-auto rounded-2xl bg-slate-950 p-4 text-xs text-slate-100">
+          <pre className="mt-4 overflow-auto rounded-lg bg-slate-950 p-4 text-xs text-slate-100">
             {JSON.stringify(payload, null, 2)}
           </pre>
         </details>

@@ -14,7 +14,7 @@ export function HomePageView({
   whatsappHref
 }: HomePageData) {
   return (
-    <main className="premium-home-page">
+    <main className="premium-home-page" data-motion-scope>
       <HomeHero whatsappHref={whatsappHref} />
       <SolutionRoutesSection />
       <DecisionSystemSection />

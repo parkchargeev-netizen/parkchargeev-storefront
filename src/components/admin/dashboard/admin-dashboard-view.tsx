@@ -332,9 +332,9 @@ function KpiCard({
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-sm font-semibold text-slate-500">{label}</p>
-          <p className="mt-3 text-3xl font-black tracking-[-0.04em] text-slate-950">{value}</p>
+          <p className="mt-3 text-3xl font-bold tracking-normal text-slate-950">{value}</p>
         </div>
-        <span className={`rounded-2xl p-2 ${iconToneClass(tone)}`}>{icon}</span>
+        <span className={`rounded-lg p-2 ${iconToneClass(tone)}`}>{icon}</span>
       </div>
       <p className="mt-3 text-sm leading-6 text-slate-600">{detail}</p>
     </div>
@@ -364,17 +364,17 @@ function QueueCard({
       className="surface-card group flex h-full flex-col justify-between border border-white/70 p-5 transition hover:-translate-y-0.5 hover:border-emerald-200"
     >
       <div className="flex items-start justify-between gap-4">
-        <span className={`rounded-2xl p-2 ${iconToneClass(tone)}`}>{icon}</span>
-        <span className={`rounded-full border px-3 py-1 text-xs font-black ${toneClass(tone)}`}>
+        <span className={`rounded-lg p-2 ${iconToneClass(tone)}`}>{icon}</span>
+        <span className={`rounded-full border px-3 py-1 text-xs font-bold ${toneClass(tone)}`}>
           {value > 0 ? "Aksiyon var" : "Temiz"}
         </span>
       </div>
       <div className="mt-6">
-        <p className="text-sm font-black text-slate-800">{label}</p>
-        <p className="mt-2 text-4xl font-black tracking-[-0.05em] text-slate-950">{value}</p>
+        <p className="text-sm font-bold text-slate-800">{label}</p>
+        <p className="mt-2 text-4xl font-bold tracking-normal text-slate-950">{value}</p>
         <p className="mt-3 text-sm leading-6 text-slate-600">{detail}</p>
       </div>
-      <span className="mt-5 inline-flex items-center gap-2 text-sm font-black text-[#063326]">
+      <span className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-[#063326]">
         {action}
         <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
       </span>
@@ -384,7 +384,7 @@ function QueueCard({
 
 function EmptyState({ label }: { label: string }) {
   return (
-    <div className="rounded-3xl border border-dashed border-slate-200 bg-white/60 px-4 py-8 text-center text-sm font-semibold text-slate-500">
+    <div className="rounded-lg border border-dashed border-slate-200 bg-white/60 px-4 py-8 text-center text-sm font-semibold text-slate-500">
       {label}
     </div>
   );
@@ -478,7 +478,7 @@ export function AdminDashboardView({
     <div className="space-y-6">
       {!databaseEnabled ? (
         <section className="surface-card border border-amber-200 bg-amber-50/85 p-5">
-          <p className="text-sm font-black uppercase tracking-[0.22em] text-amber-700">
+          <p className="text-sm font-bold uppercase tracking-normal text-amber-700">
             Yerel yedek mod
           </p>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-700">
@@ -491,10 +491,10 @@ export function AdminDashboardView({
       <section className="surface-card overflow-hidden border border-white/70 p-6 lg:p-8">
         <div className="grid gap-7 xl:grid-cols-[minmax(0,1.35fr)_minmax(340px,0.65fr)] xl:items-stretch">
           <div>
-            <p className="text-sm font-black uppercase tracking-[0.24em] text-[#0f8f6f]">
+            <p className="text-sm font-bold uppercase tracking-normal text-[#0f8f6f]">
               Admin operasyon merkezi
             </p>
-            <h1 className="mt-3 max-w-4xl text-3xl font-black tracking-[-0.05em] text-slate-950 lg:text-5xl">
+            <h1 className="mt-3 max-w-4xl text-3xl font-bold tracking-normal text-slate-950 lg:text-5xl">
               Satılabilir ürün, doğru teklif ve saha aksiyonu tek masada.
             </h1>
             <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-600">
@@ -502,25 +502,25 @@ export function AdminDashboardView({
               taleplerini, içerik operasyonunu ve güvenlik sinyallerini aynı karar ekranında toplar.
             </p>
             <div className="mt-6 grid gap-3 sm:grid-cols-3">
-              <div className="rounded-3xl border border-slate-200 bg-white/70 p-4">
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">
+              <div className="rounded-lg border border-slate-200 bg-white/70 p-4">
+                <p className="text-xs font-bold uppercase tracking-normal text-slate-500">
                   Açık kuyruk
                 </p>
-                <p className="mt-2 text-3xl font-black text-slate-950">{openQueueTotal}</p>
+                <p className="mt-2 text-3xl font-bold text-slate-950">{openQueueTotal}</p>
               </div>
-              <div className="rounded-3xl border border-slate-200 bg-white/70 p-4">
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">
+              <div className="rounded-lg border border-slate-200 bg-white/70 p-4">
+                <p className="text-xs font-bold uppercase tracking-normal text-slate-500">
                   7 gun yeni müşteri
                 </p>
-                <p className="mt-2 text-3xl font-black text-slate-950">
+                <p className="mt-2 text-3xl font-bold text-slate-950">
                   {snapshot.kpis.newCustomers}
                 </p>
               </div>
-              <div className="rounded-3xl border border-slate-200 bg-white/70 p-4">
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">
+              <div className="rounded-lg border border-slate-200 bg-white/70 p-4">
+                <p className="text-xs font-bold uppercase tracking-normal text-slate-500">
                   Kapsam
                 </p>
-                <p className="mt-2 text-xs font-black leading-5 text-slate-950">
+                <p className="mt-2 text-xs font-bold leading-5 text-slate-950">
                   {serviceCoverageSummary.shipping}
                   <br />
                   {serviceCoverageSummary.freeSurvey}
@@ -531,13 +531,13 @@ export function AdminDashboardView({
             </div>
           </div>
 
-          <div className="rounded-[30px] bg-[#063326] p-5 text-white">
+          <div className="rounded-lg bg-[#063326] p-5 text-white">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.22em] text-white/84">
+                <p className="text-xs font-bold uppercase tracking-normal text-white/84">
                   Aylik hedef
                 </p>
-                <p className="mt-3 text-5xl font-black tracking-[-0.05em]">
+                <p className="mt-3 text-5xl font-bold tracking-normal">
                   %{snapshot.kpis.targetProgress.toFixed(1)}
                 </p>
               </div>
@@ -550,12 +550,12 @@ export function AdminDashboardView({
               />
             </div>
             <div className="mt-6 grid gap-2">
-              <span className={`rounded-full border px-3 py-1 text-xs font-black ${toneClass(targetTone)}`}>
+              <span className={`rounded-full border px-3 py-1 text-xs font-bold ${toneClass(targetTone)}`}>
                 Hedef sinyali
               </span>
               <AdminPrefetchLink
                 href="/admin/siparisler"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-4 py-3 text-sm font-black text-[#063326]"
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-white px-4 py-3 text-sm font-bold text-[#063326]"
               >
                 Sipariş performansi
                 <ArrowRight className="h-4 w-4" />
@@ -568,10 +568,10 @@ export function AdminDashboardView({
       <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
         {adminWorkflowCards.map((item) => (
           <div key={item.label} className="surface-card border border-white/70 p-5">
-            <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-100 text-[#063326]">
+            <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-emerald-100 text-[#063326]">
               {item.icon}
             </span>
-            <p className="mt-4 text-sm font-black text-slate-950">{item.label}</p>
+            <p className="mt-4 text-sm font-bold text-slate-950">{item.label}</p>
             <p className="mt-2 text-xs leading-5 text-slate-600">{item.detail}</p>
           </div>
         ))}
@@ -580,10 +580,10 @@ export function AdminDashboardView({
       <section className="surface-card border border-white/70 p-6">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-sm font-black uppercase tracking-[0.24em] text-[#0f8f6f]">
+            <p className="text-sm font-bold uppercase tracking-normal text-[#0f8f6f]">
               E-ticaret admin standardı
             </p>
-            <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-slate-950">
+            <h2 className="mt-2 text-2xl font-bold tracking-normal text-slate-950">
               Panel, satışın bütün arka ofisini tek akışta toplar.
             </h2>
             <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">
@@ -593,7 +593,7 @@ export function AdminDashboardView({
           </div>
           <AdminPrefetchLink
             href="/admin/urunler"
-            className="rounded-2xl bg-[#063326] px-5 py-3 text-center text-sm font-black text-white transition hover:bg-[#0b4b39]"
+            className="rounded-lg bg-[#063326] px-5 py-3 text-center text-sm font-bold text-white transition hover:bg-[#0b4b39]"
           >
             Ürün merkezini ac
           </AdminPrefetchLink>
@@ -604,15 +604,15 @@ export function AdminDashboardView({
             <AdminPrefetchLink
               key={item.label}
               href={item.href}
-              className="group rounded-3xl border border-slate-200 bg-white/70 p-4 transition hover:-translate-y-0.5 hover:border-emerald-200 hover:bg-emerald-50"
+              className="group rounded-lg border border-slate-200 bg-white/70 p-4 transition hover:-translate-y-0.5 hover:border-emerald-200 hover:bg-emerald-50"
             >
               <div className="flex items-start justify-between gap-3">
-                <span className="rounded-2xl bg-[#d8fff0] p-2 text-[#063326]">{item.icon}</span>
+                <span className="rounded-lg bg-[#d8fff0] p-2 text-[#063326]">{item.icon}</span>
                 <ArrowRight className="h-4 w-4 text-slate-400 transition group-hover:translate-x-0.5 group-hover:text-[#063326]" />
               </div>
-              <p className="mt-4 text-sm font-black text-slate-950">{item.label}</p>
+              <p className="mt-4 text-sm font-bold text-slate-950">{item.label}</p>
               <p className="mt-2 text-xs leading-5 text-slate-600">{item.detail}</p>
-              <span className="mt-4 inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-black text-[#063326]">
+              <span className="mt-4 inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-bold text-[#063326]">
                 {item.proof}
               </span>
             </AdminPrefetchLink>
@@ -670,16 +670,16 @@ export function AdminDashboardView({
         <div className="surface-card border border-white/70 p-6">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <p className="text-sm font-black uppercase tracking-[0.24em] text-[#0f8f6f]">
+              <p className="text-sm font-bold uppercase tracking-normal text-[#0f8f6f]">
                 Bugunun aksiyonlari
               </p>
-              <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-slate-950">
+              <h2 className="mt-2 text-2xl font-bold tracking-normal text-slate-950">
                 Panel once bekleyen isi kapatsin.
               </h2>
             </div>
             <AdminPrefetchLink
               href="/admin/erisim"
-              className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-center text-sm font-black text-slate-800 transition hover:border-emerald-200 hover:bg-emerald-50"
+              className="rounded-lg border border-slate-200 bg-white px-5 py-3 text-center text-sm font-bold text-slate-800 transition hover:border-emerald-200 hover:bg-emerald-50"
             >
               Tüm modüller
             </AdminPrefetchLink>
@@ -699,14 +699,14 @@ export function AdminDashboardView({
               <AdminPrefetchLink
                 key={action.label}
                 href={action.href}
-                className="group rounded-3xl border border-slate-200 bg-white/70 p-5 transition hover:border-emerald-200 hover:bg-emerald-50"
+                className="group rounded-lg border border-slate-200 bg-white/70 p-5 transition hover:border-emerald-200 hover:bg-emerald-50"
               >
-                <p className="text-sm font-black text-slate-950">{action.label}</p>
-                <p className="mt-3 text-4xl font-black tracking-[-0.05em] text-[#063326]">
+                <p className="text-sm font-bold text-slate-950">{action.label}</p>
+                <p className="mt-3 text-4xl font-bold tracking-normal text-[#063326]">
                   {action.count}
                 </p>
                 <p className="mt-3 text-xs leading-5 text-slate-600">{action.detail}</p>
-                <span className="mt-4 inline-flex items-center gap-2 text-xs font-black text-[#063326]">
+                <span className="mt-4 inline-flex items-center gap-2 text-xs font-bold text-[#063326]">
                   Islemi ac
                   <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
                 </span>
@@ -716,7 +716,7 @@ export function AdminDashboardView({
         </div>
 
         <div className="surface-card border border-white/70 bg-[#063326] p-6 text-white">
-          <p className="text-sm font-black uppercase tracking-[0.24em] text-emerald-200">
+          <p className="text-sm font-bold uppercase tracking-normal text-emerald-200">
             Sistem sagligi
           </p>
           <div className="mt-5 grid gap-3">
@@ -746,12 +746,12 @@ export function AdminDashboardView({
                 icon: <LockKeyhole className="h-4 w-4" />
               }
             ].map((item) => (
-              <div key={item.label} className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.12] px-4 py-3">
+              <div key={item.label} className="flex items-center justify-between gap-4 rounded-lg border border-white/10 bg-white/[0.12] px-4 py-3">
                 <span className="flex items-center gap-3 text-sm font-semibold">
                   {item.icon}
                   {item.label}
                 </span>
-                <span className={`rounded-full border px-3 py-1 text-xs font-black ${toneClass(item.tone as Tone)}`}>
+                <span className={`rounded-full border px-3 py-1 text-xs font-bold ${toneClass(item.tone as Tone)}`}>
                   {item.status}
                 </span>
               </div>
@@ -763,10 +763,10 @@ export function AdminDashboardView({
       <section className="surface-card border border-white/70 p-6">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-sm font-black uppercase tracking-[0.24em] text-[#0f8f6f]">
+            <p className="text-sm font-bold uppercase tracking-normal text-[#0f8f6f]">
               Persona satış rotaları
             </p>
-            <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-slate-950">
+            <h2 className="mt-2 text-2xl font-bold tracking-normal text-slate-950">
               Her müşteri tipi doğru modüle düşsün.
             </h2>
           </div>
@@ -776,15 +776,15 @@ export function AdminDashboardView({
             <AdminPrefetchLink
               key={item.label}
               href={item.href}
-              className="group rounded-3xl border border-slate-200 bg-white/70 p-4 transition hover:border-emerald-200 hover:bg-emerald-50"
+              className="group rounded-lg border border-slate-200 bg-white/70 p-4 transition hover:border-emerald-200 hover:bg-emerald-50"
             >
               <div className="flex items-start justify-between gap-3">
-                <span className={`rounded-2xl p-2 ${iconToneClass(item.tone)}`}>{item.icon}</span>
+                <span className={`rounded-lg p-2 ${iconToneClass(item.tone)}`}>{item.icon}</span>
                 <ArrowRight className="h-4 w-4 text-slate-400 transition group-hover:translate-x-0.5 group-hover:text-[#063326]" />
               </div>
-              <p className="mt-4 text-sm font-black text-slate-950">{item.label}</p>
+              <p className="mt-4 text-sm font-bold text-slate-950">{item.label}</p>
               <p className="mt-2 text-xs leading-5 text-slate-600">{item.detail}</p>
-              <span className={`mt-3 inline-flex rounded-full border px-2.5 py-1 text-[11px] font-black ${toneClass(item.tone)}`}>
+              <span className={`mt-3 inline-flex rounded-full border px-2.5 py-1 text-xs font-bold ${toneClass(item.tone)}`}>
                 {item.signal}
               </span>
             </AdminPrefetchLink>
@@ -794,10 +794,10 @@ export function AdminDashboardView({
 
       <section className="grid gap-5 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
         <div className="surface-card border border-white/70 p-6">
-          <p className="text-sm font-black uppercase tracking-[0.24em] text-[#0f8f6f]">
+          <p className="text-sm font-bold uppercase tracking-normal text-[#0f8f6f]">
             Modul kisayollari
           </p>
-          <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-slate-950">
+          <h2 className="mt-2 text-2xl font-bold tracking-normal text-slate-950">
             Admin panelde beklenen ana özellikler.
           </h2>
           <div className="mt-5 grid gap-3 md:grid-cols-2">
@@ -805,13 +805,13 @@ export function AdminDashboardView({
               <AdminPrefetchLink
                 key={item.href}
                 href={item.href}
-                className="group rounded-3xl border border-slate-200 bg-white/70 p-4 transition hover:border-emerald-200 hover:bg-emerald-50"
+                className="group rounded-lg border border-slate-200 bg-white/70 p-4 transition hover:border-emerald-200 hover:bg-emerald-50"
               >
                 <div className="flex items-start justify-between gap-3">
-                  <span className="rounded-2xl bg-emerald-100 p-2 text-[#063326]">{item.icon}</span>
+                  <span className="rounded-lg bg-emerald-100 p-2 text-[#063326]">{item.icon}</span>
                   <ArrowRight className="h-4 w-4 text-slate-400 transition group-hover:translate-x-0.5 group-hover:text-[#063326]" />
                 </div>
-                <p className="mt-4 text-sm font-black text-slate-950">{item.label}</p>
+                <p className="mt-4 text-sm font-bold text-slate-950">{item.label}</p>
                 <p className="mt-2 text-xs leading-5 text-slate-600">{item.detail}</p>
               </AdminPrefetchLink>
             ))}
@@ -819,10 +819,10 @@ export function AdminDashboardView({
         </div>
 
         <div className="surface-card border border-white/70 p-6">
-          <p className="text-sm font-black uppercase tracking-[0.24em] text-[#0f8f6f]">
+          <p className="text-sm font-bold uppercase tracking-normal text-[#0f8f6f]">
             Pazar playbook
           </p>
-          <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-slate-950">
+          <h2 className="mt-2 text-2xl font-bold tracking-normal text-slate-950">
             Satış ekibinin günlük rehberi.
           </h2>
           <div className="mt-5 grid gap-3">
@@ -830,12 +830,12 @@ export function AdminDashboardView({
               <AdminPrefetchLink
                 key={play.label}
                 href={play.href}
-                className="rounded-3xl border border-slate-200 bg-white/70 p-4 transition hover:border-emerald-200 hover:bg-emerald-50"
+                className="rounded-lg border border-slate-200 bg-white/70 p-4 transition hover:border-emerald-200 hover:bg-emerald-50"
               >
-                <span className={`rounded-full border px-3 py-1 text-xs font-black ${toneClass(play.tone)}`}>
+                <span className={`rounded-full border px-3 py-1 text-xs font-bold ${toneClass(play.tone)}`}>
                   {play.signal}
                 </span>
-                <p className="mt-3 text-sm font-black text-slate-950">{play.label}</p>
+                <p className="mt-3 text-sm font-bold text-slate-950">{play.label}</p>
                 <p className="mt-2 text-xs leading-5 text-slate-600">{play.detail}</p>
               </AdminPrefetchLink>
             ))}
@@ -851,24 +851,24 @@ export function AdminDashboardView({
 
       <section className="grid gap-5 xl:grid-cols-3">
         <div className="surface-card border border-white/70 p-6">
-          <h2 className="text-lg font-black text-slate-950">Son 10 sipariş</h2>
+          <h2 className="text-lg font-bold text-slate-950">Son 10 sipariş</h2>
           <div className="mt-5 space-y-3">
             {snapshot.activity.recentOrders.length > 0 ? (
               snapshot.activity.recentOrders.map((order) => (
                 <AdminPrefetchLink
                   key={order.id}
                   href={`/admin/siparisler/${order.id}`}
-                  className="block rounded-2xl bg-white/70 px-4 py-3 transition hover:bg-emerald-50"
+                  className="block rounded-lg bg-white/70 px-4 py-3 transition hover:bg-emerald-50"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <p className="text-sm font-black text-slate-950">{order.orderNumber}</p>
+                      <p className="text-sm font-bold text-slate-950">{order.orderNumber}</p>
                       <p className="mt-1 text-sm text-slate-600">
                         {order.customerName || "Misafir müşteri"}
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-black text-slate-950">
+                      <p className="text-sm font-bold text-slate-950">
                         {formatPriceTRY(order.totalKurus)}
                       </p>
                       <p className="mt-1 text-xs text-slate-500">
@@ -885,16 +885,16 @@ export function AdminDashboardView({
         </div>
 
         <div className="surface-card border border-white/70 p-6">
-          <h2 className="text-lg font-black text-slate-950">Son 5 teklif</h2>
+          <h2 className="text-lg font-bold text-slate-950">Son 5 teklif</h2>
           <div className="mt-5 space-y-3">
             {snapshot.activity.recentQuotes.length > 0 ? (
               snapshot.activity.recentQuotes.map((quote) => (
                 <AdminPrefetchLink
                   key={quote.id}
                   href={`/admin/teklifler/${quote.id}`}
-                  className="block rounded-2xl bg-white/70 px-4 py-3 transition hover:bg-emerald-50"
+                  className="block rounded-lg bg-white/70 px-4 py-3 transition hover:bg-emerald-50"
                 >
-                  <p className="text-sm font-black text-slate-950">{quote.fullName}</p>
+                  <p className="text-sm font-bold text-slate-950">{quote.fullName}</p>
                   <p className="mt-1 text-sm text-slate-600">
                     {quote.companyName || "Bireysel talep"}
                   </p>
@@ -910,18 +910,18 @@ export function AdminDashboardView({
         </div>
 
         <div className="surface-card border border-white/70 p-6">
-          <h2 className="text-lg font-black text-slate-950">Son saha talepleri</h2>
+          <h2 className="text-lg font-bold text-slate-950">Son saha talepleri</h2>
           <div className="mt-5 space-y-3">
             {snapshot.activity.recentServiceRequests.length > 0 ? (
               snapshot.activity.recentServiceRequests.map((item) => (
                 <AdminPrefetchLink
                   key={item.id}
                   href={`/admin/saha/${item.id}`}
-                  className="block rounded-2xl bg-white/70 px-4 py-3 transition hover:bg-emerald-50"
+                  className="block rounded-lg bg-white/70 px-4 py-3 transition hover:bg-emerald-50"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="text-sm font-black text-slate-950">{item.fullName}</p>
+                      <p className="text-sm font-bold text-slate-950">{item.fullName}</p>
                       <p className="mt-1 text-sm text-slate-600">{item.leadType}</p>
                     </div>
                     <Clock3 className="mt-0.5 h-4 w-4 text-slate-400" />
@@ -942,10 +942,10 @@ export function AdminDashboardView({
         <div className="surface-card border border-white/70 bg-[#063326] p-6 text-white">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="text-sm font-black uppercase tracking-[0.24em] text-emerald-200">
+              <p className="text-sm font-bold uppercase tracking-normal text-emerald-200">
                 Risk radari
               </p>
-              <h2 className="mt-2 text-2xl font-black tracking-[-0.04em]">
+              <h2 className="mt-2 text-2xl font-bold tracking-normal">
                 Kritik kontrolleri her gun kapatin.
               </h2>
             </div>
@@ -953,10 +953,10 @@ export function AdminDashboardView({
           </div>
           <div className="mt-5 grid gap-3">
             {marketPanelInsights.map((insight) => (
-              <div key={insight.label} className="rounded-2xl border border-white/10 bg-white/[0.12] p-4">
-                <p className="text-sm font-black">{insight.label}</p>
+              <div key={insight.label} className="rounded-lg border border-white/10 bg-white/[0.12] p-4">
+                <p className="text-sm font-bold">{insight.label}</p>
                 <p className="mt-2 text-xs leading-5 text-white/80">{insight.detail}</p>
-                <p className="mt-3 text-[11px] font-black uppercase tracking-[0.18em] text-emerald-200">
+                <p className="mt-3 text-xs font-bold uppercase tracking-normal text-emerald-200">
                   {insight.source}
                 </p>
               </div>
@@ -967,14 +967,14 @@ export function AdminDashboardView({
         <div className="surface-card border border-white/70 p-6">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <p className="text-sm font-black uppercase tracking-[0.24em] text-[#0f8f6f]">
+              <p className="text-sm font-bold uppercase tracking-normal text-[#0f8f6f]">
                 Operasyon checklist
               </p>
-              <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-slate-950">
+              <h2 className="mt-2 text-2xl font-bold tracking-normal text-slate-950">
                 Satış, saha, içerik ve güvenlik kapanislari.
               </h2>
             </div>
-            <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-black text-[#063326]">
+            <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold text-[#063326]">
               Günlük rutin
             </span>
           </div>
@@ -983,14 +983,14 @@ export function AdminDashboardView({
               <AdminPrefetchLink
                 key={item.label}
                 href={item.href}
-                className="group rounded-3xl border border-slate-200 bg-white/70 p-4 transition hover:border-emerald-200 hover:bg-emerald-50"
+                className="group rounded-lg border border-slate-200 bg-white/70 p-4 transition hover:border-emerald-200 hover:bg-emerald-50"
               >
-                <span className="grid h-9 w-9 place-items-center rounded-2xl bg-emerald-100 text-sm font-black text-[#063326]">
+                <span className="grid h-9 w-9 place-items-center rounded-lg bg-emerald-100 text-sm font-bold text-[#063326]">
                   {index + 1}
                 </span>
-                <p className="mt-4 text-sm font-black text-slate-950">{item.label}</p>
+                <p className="mt-4 text-sm font-bold text-slate-950">{item.label}</p>
                 <p className="mt-2 text-xs leading-5 text-slate-600">{item.detail}</p>
-                <span className="mt-4 inline-flex items-center gap-2 text-xs font-black text-[#063326]">
+                <span className="mt-4 inline-flex items-center gap-2 text-xs font-bold text-[#063326]">
                   Modulu ac
                   <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
                 </span>

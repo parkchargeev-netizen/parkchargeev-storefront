@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 
 import { LoginForm } from "@/components/admin/login-form";
+import { PageHeader } from "@/components/ui/page-header";
+import { Surface } from "@/components/ui/surface";
 import { getAuthenticatedAdmin } from "@/server/auth/guards";
 
 export default async function AdminLoginPage() {
@@ -11,32 +13,31 @@ export default async function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(6,51,38,0.14),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(126,236,201,0.16),transparent_28%),#f8fafc] px-4 py-10">
+    <main
+      className="admin-experience min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(6,51,38,0.14),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(126,236,201,0.16),transparent_28%),#f8fafc] px-4 py-10"
+      data-motion-scope
+    >
       <div className="mx-auto grid min-h-[80vh] max-w-6xl items-center gap-10 lg:grid-cols-[1.1fr_0.9fr]">
         <section className="space-y-6">
-          <p className="text-sm font-semibold uppercase tracking-[0.28em] text-emerald-800">
-            ParkChargeEV Admin
-          </p>
-          <h1 className="max-w-xl text-4xl font-semibold leading-tight text-slate-950 md:text-5xl">
-            E-ticaret, teklif ve sipariş operasyonlarını tek panelden yönetin.
-          </h1>
-          <p className="max-w-2xl text-lg text-slate-600">
-            Faz 1 kapsamında ürün yönetimi, sipariş durum yönetimi, teklif akışı takibi ve temel KPI gösterge paneli bu panelde bir araya getirildi.
-          </p>
+          <PageHeader
+            eyebrow="ParkChargeEV Admin"
+            title="E-ticaret, teklif ve sipariş operasyonlarını tek panelden yönetin."
+            body="Ürün yönetimi, sipariş durumları, teklif akışı ve temel KPI göstergeleri aynı çalışma alanında birleşir."
+          />
           <div className="grid gap-4 md:grid-cols-3">
             {[
               "Rol bazlı JWT koruması",
               "PayTR ödeme durum takibi",
               "Audit log hazır veri modeli"
             ].map((item) => (
-              <div key={item} className="rounded-3xl border border-white/60 bg-white/80 p-5 shadow-[0_24px_60px_rgba(15,23,42,0.08)] backdrop-blur">
+              <Surface key={item} density="compact" motion="scale">
                 <p className="text-sm font-medium text-slate-700">{item}</p>
-              </div>
+              </Surface>
             ))}
           </div>
         </section>
 
-        <section className="surface-card border border-white/70 bg-white/90 p-8">
+        <Surface as="section" className="border-white/70 bg-white/90 p-8" motion="slide">
           <div className="mb-6">
             <h2 className="text-2xl font-semibold text-slate-950">Yönetici Girişi</h2>
             <p className="mt-2 text-sm text-slate-600">
@@ -44,8 +45,8 @@ export default async function AdminLoginPage() {
             </p>
           </div>
           <LoginForm />
-        </section>
+        </Surface>
       </div>
-    </div>
+    </main>
   );
 }

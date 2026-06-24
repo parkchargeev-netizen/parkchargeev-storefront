@@ -10,7 +10,7 @@ export function InstallationSection() {
       <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[0.72fr_1.28fr] lg:px-8">
         <div>
           <p className="premium-eyebrow text-emerald-300">Mühendislik ve kurulum</p>
-          <h2 className="mt-3 text-2xl font-black leading-tight tracking-normal text-white md:text-4xl">
+          <h2 className="mt-3 text-2xl font-bold leading-tight tracking-normal text-white md:text-4xl">
             Cihazdan önce altyapıyı, teslimden önce işletimi planlayın.
           </h2>
           <p className="mt-4 max-w-xl text-sm leading-7 text-white/80 md:text-base">
@@ -37,9 +37,9 @@ export function InstallationSection() {
                   icon={item.icon}
                   className="h-11 w-11 bg-white/[0.14] text-emerald-300"
                 />
-                <span className="text-sm font-black text-white/76">{item.step}</span>
+                <span className="text-sm font-bold text-white/76">{item.step}</span>
               </div>
-              <h3 className="mt-5 text-xl font-black text-white">{item.title}</h3>
+              <h3 className="mt-5 text-xl font-bold text-white">{item.title}</h3>
               <p className="mt-2 text-sm leading-6 text-white/76">{item.body}</p>
             </article>
           ))}

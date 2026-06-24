@@ -9,10 +9,10 @@ type ArticleCardProps = {
 export function ArticleCard({ article }: ArticleCardProps) {
   return (
     <article className="surface-card flex h-full flex-col p-6">
-      <p className="text-sm font-semibold uppercase tracking-[0.28em] text-primary">
+      <p className="text-sm font-semibold uppercase tracking-normal text-primary">
         {article.coverKicker}
       </p>
-      <h3 className="mt-4 text-3xl font-bold tracking-[-0.05em] text-on-surface">
+      <h3 className="mt-4 text-3xl font-bold tracking-normal text-on-surface">
         {article.title}
       </h3>
       <p className="mt-4 flex-1 text-sm leading-7 text-on-surface-variant">

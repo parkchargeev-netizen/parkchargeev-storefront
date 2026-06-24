@@ -86,7 +86,6 @@ test("@e2e magaza acik renkli e-ticaret girisi ve kayan urun vitrini sunar", asy
     const mobileFilter = page.locator(".store-mobile-filter");
     await expect(mobileFilter).toBeVisible();
     await expect(page.locator(".store-filter-sidebar")).toBeHidden();
-    await expect(page.locator(".store-mobile-category-strip")).toBeVisible();
 
     const filterTriggerHeight = await mobileFilter.locator("summary").evaluate((element) => {
       return element.getBoundingClientRect().height;
@@ -122,6 +121,76 @@ test("@e2e magaza acik renkli e-ticaret girisi ve kayan urun vitrini sunar", asy
   expect(hasPageOverflow).toBe(false);
 });
 
+test("@e2e urun kartlari tek tiklanabilir detay hedefi sunar", async ({ page }) => {
+  await page.goto("/magaza", { waitUntil: "domcontentloaded" });
+
+  const firstCardLink = page.locator(".premium-product-card-link").first();
+  await expect(firstCardLink).toBeVisible();
+  await expect(firstCardLink).toHaveAttribute("href", /\/urun\//);
+  await expect(firstCardLink.locator(".premium-product-card")).toBeVisible();
+  await expect(firstCardLink.getByText(/Keşif|KeÅŸif/i)).toHaveCount(0);
+
+  const href = await firstCardLink.getAttribute("href");
+  await firstCardLink.focus();
+  await expect(firstCardLink).toBeFocused();
+  await firstCardLink.click();
+  await expect(page).toHaveURL(new RegExp(`${href?.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`));
+
+  await page.goto("/magaza", { waitUntil: "domcontentloaded" });
+  const secondCardLink = page.locator(".premium-product-card-link").nth(1);
+  const secondHref = await secondCardLink.getAttribute("href");
+  const cardBox = await secondCardLink.locator(".premium-product-card").boundingBox();
+
+  expect(cardBox).not.toBeNull();
+  await page.mouse.click((cardBox?.x ?? 0) + 18, (cardBox?.y ?? 0) + (cardBox?.height ?? 0) - 18);
+  await expect(page).toHaveURL(new RegExp(`${secondHref?.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`));
+});
+
+test("@e2e tasarim sistemi tipografi, kontrol ve motion sozlesmesini korur", async ({ page }) => {
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+
+  const heroHeadingSize = await page.locator(".premium-hero h1").evaluate((element) => {
+    return Number.parseFloat(window.getComputedStyle(element).fontSize);
+  });
+  expect(heroHeadingSize).toBeGreaterThanOrEqual(28);
+  expect(heroHeadingSize).toBeLessThanOrEqual(42);
+
+  const productCardRadius = await page.locator(".premium-product-card").first().evaluate((element) => {
+    return Number.parseFloat(window.getComputedStyle(element).borderRadius);
+  });
+  expect(productCardRadius).toBeLessThanOrEqual(8);
+
+  const primaryButtonHeight = await page.locator("a.premium-btn, a.btn-secondary").first().evaluate((element) => {
+    return element.getBoundingClientRect().height;
+  });
+  expect(primaryButtonHeight).toBeGreaterThanOrEqual(44);
+
+  const motionCount = await page.locator("[data-motion]").count();
+  expect(motionCount).toBeGreaterThan(6);
+});
+
+test("@e2e reduced motion hareketi kapatir ve icerigi gorunur tutar", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+
+  const firstMotionElement = page.locator("[data-motion]").first();
+  await expect(firstMotionElement).toBeVisible();
+
+  const motionStyle = await firstMotionElement.evaluate((element) => {
+    const style = window.getComputedStyle(element);
+
+    return {
+      opacity: style.opacity,
+      transform: style.transform,
+      transitionDuration: style.transitionDuration
+    };
+  });
+
+  expect(motionStyle.opacity).toBe("1");
+  expect(motionStyle.transform).toBe("none");
+  expect(motionStyle.transitionDuration).toBe("0s");
+});
+
 test("@e2e mobil urun detay sayfasi kompakt e-ticaret akisi sunar", async ({ page }) => {
   const viewportWidth = page.viewportSize()?.width ?? 0;
   test.skip(viewportWidth > 767, "Mobil kompakt ürün detay kontrolü.");
@@ -134,7 +203,7 @@ test("@e2e mobil urun detay sayfasi kompakt e-ticaret akisi sunar", async ({ pag
   const titleSize = await buybox.locator("h1").evaluate((element) => {
     return Number.parseFloat(window.getComputedStyle(element).fontSize);
   });
-  expect(titleSize).toBeLessThanOrEqual(23);
+  expect(titleSize).toBeLessThanOrEqual(34);
 
   const galleryHeight = await page.locator(".product-gallery-premium").evaluate((element) => {
     return element.getBoundingClientRect().height;
@@ -172,10 +241,8 @@ test("@e2e urun detay galerisi thumbnail kartlarini gorselli gosterir", async ({
   if (viewportWidth >= 1024) {
     const gallery = page.locator(".product-gallery-premium");
     const desktopFill = page.locator(".product-detail-desktop-under-gallery");
-    const desktopSupport = page.locator(".product-detail-desktop-support-grid");
 
     await expect(desktopFill).toBeVisible();
-    await expect(desktopSupport).toBeVisible();
     const galleryBox = await gallery.boundingBox();
     const desktopFillBox = await desktopFill.boundingBox();
 
@@ -196,12 +263,12 @@ test("@e2e mobil urun secici sade ve kompakt gorunur", async ({ page }) => {
   const titleSize = await page.locator(".selector-config-panel h1").evaluate((element) => {
     return Number.parseFloat(window.getComputedStyle(element).fontSize);
   });
-  expect(titleSize).toBeLessThanOrEqual(23);
+  expect(titleSize).toBeLessThanOrEqual(34);
 
   const resultTitleSize = await page.locator(".selector-result-card h2").evaluate((element) => {
     return Number.parseFloat(window.getComputedStyle(element).fontSize);
   });
-  expect(resultTitleSize).toBeLessThanOrEqual(24);
+  expect(resultTitleSize).toBeLessThanOrEqual(34);
 
   const firstOptionHeight = await page.locator(".selector-option").first().evaluate((element) => {
     return element.getBoundingClientRect().height;

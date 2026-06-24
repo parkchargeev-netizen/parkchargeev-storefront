@@ -77,10 +77,10 @@ export function AdminSessionGuard() {
     <div
       role="status"
       aria-live="polite"
-      className="fixed bottom-4 right-4 z-40 w-[min(92vw,420px)] rounded-[24px] border border-amber-200 bg-white p-4 shadow-[0_24px_70px_rgba(15,23,42,0.18)]"
+      className="fixed bottom-4 right-4 z-40 w-[min(92vw,420px)] rounded-lg border border-amber-200 bg-white p-4 shadow-[0_24px_70px_rgba(15,23,42,0.18)]"
     >
       <div className="flex items-start gap-3">
-        <span className="rounded-2xl bg-amber-50 p-2 text-amber-700">
+        <span className="rounded-lg bg-amber-50 p-2 text-amber-700">
           <ShieldAlert className="h-5 w-5" />
         </span>
         <div className="min-w-0 flex-1">
@@ -91,7 +91,7 @@ export function AdminSessionGuard() {
           <button
             type="button"
             onClick={keepSessionVisible}
-            className="mt-3 rounded-2xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
+            className="mt-3 rounded-lg bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
           >
             Çalışmaya devam et
           </button>

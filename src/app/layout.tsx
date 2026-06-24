@@ -1,13 +1,16 @@
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
+import Script from "next/script";
 
 import { ConversionEventListener } from "@/components/analytics/conversion-event-listener";
+import { ScrollMotion } from "@/components/layout/scroll-motion";
 import { absoluteUrl, siteConfig } from "@/lib/site";
 
 import "@/app/globals.css";
 
 const defaultTitle = `${siteConfig.name} | EV Şarj Cihazı ve Kurulum Çözümleri`;
 const defaultOgImage = absoluteUrl("/api/og/product/homecharge-pro-11kw");
+const googleTagId = "AW-17739531406";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -71,8 +74,21 @@ export default function RootLayout({
   return (
     <html lang="tr">
       <body className="font-sans">
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${googleTagId}`}
+          strategy="afterInteractive"
+        />
+        <Script id="google-ads-gtag" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${googleTagId}');
+          `}
+        </Script>
         <ConversionEventListener />
         {children}
+        <ScrollMotion />
       </body>
     </html>
   );

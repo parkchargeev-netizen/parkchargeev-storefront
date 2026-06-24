@@ -94,7 +94,7 @@ export default async function ProductDetailPage({
   const faqJsonLd = getFaqJsonLd(detailContent.faqs);
   const renderSpecsCard = () => (
     <div className="product-detail-spec-card surface-card p-8">
-      <h2 className="text-3xl font-bold tracking-[-0.05em] text-on-surface">
+      <h2 className="text-3xl font-bold tracking-normal text-on-surface">
         {detailContent.specsHeading}
       </h2>
       <div className="mt-6 space-y-4">
@@ -113,8 +113,8 @@ export default async function ProductDetailPage({
     </div>
   );
   const renderIntentCard = () => (
-    <div className="product-detail-intent-card overflow-hidden rounded-[28px] bg-linear-to-br from-primary to-primary-container p-8 text-white shadow-[0_24px_80px_rgba(6,51,38,0.26)]">
-      <h2 className="text-3xl font-bold tracking-[-0.05em]">
+    <div className="product-detail-intent-card overflow-hidden rounded-lg bg-linear-to-br from-primary to-primary-container p-8 text-white shadow-[0_24px_80px_rgba(6,51,38,0.26)]">
+      <h2 className="text-3xl font-bold tracking-normal">
         {detailContent.intentHeading}
       </h2>
       <p className="mt-4 text-base leading-7 text-white/80">
@@ -178,7 +178,7 @@ export default async function ProductDetailPage({
             </span>
           </div>
 
-          <h1 className="mt-6 text-3xl font-black tracking-normal text-on-surface md:text-4xl">
+          <h1 className="mt-6 text-3xl font-bold tracking-normal text-on-surface md:text-4xl">
             {product.name}
           </h1>
           <p className="mt-4 line-clamp-2 text-base leading-7 text-on-surface-variant">
@@ -191,8 +191,8 @@ export default async function ProductDetailPage({
               ["Kurulum", storeProfile.installationMode],
               ["Uyum", storeProfile.connectorHint]
             ].map(([label, value]) => (
-              <div key={label} className="rounded-2xl bg-surface-container-low px-4 py-3">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-on-surface-variant">
+              <div key={label} className="rounded-lg bg-surface-container-low px-4 py-3">
+                <p className="text-xs font-semibold uppercase tracking-normal text-on-surface-variant">
                   {label}
                 </p>
                 <p className="mt-1 text-sm font-bold leading-5 text-on-surface">{value}</p>
@@ -226,7 +226,7 @@ export default async function ProductDetailPage({
             </div>
           </details>
 
-          <div className="mt-6 overflow-hidden rounded-[24px] border border-outline-variant/40 bg-white">
+          <div className="mt-6 overflow-hidden rounded-lg border border-outline-variant/40 bg-white">
             {detailContent.policyDetails.map((detail, index) => (
               <details
                 key={detail.title}
@@ -253,10 +253,10 @@ export default async function ProductDetailPage({
       <section className="mt-8 surface-card p-8">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-primary">
+            <p className="text-sm font-semibold uppercase tracking-normal text-primary">
               Uygunluk kontrolü
             </p>
-            <h2 className="mt-3 text-3xl font-bold tracking-[-0.05em] text-on-surface">
+            <h2 className="mt-3 text-3xl font-bold tracking-normal text-on-surface">
               Bu ürün sizin senaryonuza uyuyor mu?
             </h2>
           </div>
@@ -272,9 +272,9 @@ export default async function ProductDetailPage({
           ].map(([label, value, detail]) => (
             <div
               key={label}
-              className="rounded-[22px] border border-outline-variant/35 bg-surface-container-low p-5"
+              className="rounded-lg border border-outline-variant/35 bg-surface-container-low p-5"
             >
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-on-surface-variant">
+              <p className="text-xs font-semibold uppercase tracking-normal text-on-surface-variant">
                 {label}
               </p>
               <p className="mt-3 text-xl font-bold text-on-surface">{value}</p>
@@ -288,12 +288,12 @@ export default async function ProductDetailPage({
 
       <section className="product-detail-related mt-12">
         <div className="surface-card p-8">
-          <h2 className="text-3xl font-bold tracking-[-0.05em] text-on-surface">
+          <h2 className="text-3xl font-bold tracking-normal text-on-surface">
             {detailContent.faqHeading}
           </h2>
           <div className="mt-6 grid gap-4">
             {detailContent.faqs.map((faq) => (
-              <article key={faq.question} className="rounded-[24px] bg-surface-container-low p-5">
+              <article key={faq.question} className="rounded-lg bg-surface-container-low p-5">
                 <h3 className="text-lg font-semibold text-on-surface">{faq.question}</h3>
                 <p className="mt-3 text-sm leading-7 text-on-surface-variant">
                   {faq.answer}
@@ -307,10 +307,10 @@ export default async function ProductDetailPage({
       <section className="mt-12">
         <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.34em] text-primary">
+            <p className="text-sm font-semibold uppercase tracking-normal text-primary">
               {detailContent.relatedEyebrow}
             </p>
-            <h2 className="mt-3 text-4xl font-black tracking-[-0.07em] text-on-surface">
+            <h2 className="mt-3 text-4xl font-bold tracking-normal text-on-surface">
               {detailContent.relatedHeading}
             </h2>
           </div>

@@ -41,7 +41,7 @@ export function ProductCompareMarker({ productId }: ProductCompareMarkerProps) {
   }
 
   return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-1 text-[11px] font-semibold text-primary">
+    <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-1 text-xs font-semibold text-primary">
       <Check className="h-3 w-3" />
       Seçili
     </span>

@@ -4,6 +4,9 @@ import { type FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, LogIn, UserPlus } from "lucide-react";
 
+import { PageHeader } from "@/components/ui/page-header";
+import { Surface } from "@/components/ui/surface";
+
 type Mode = "login" | "register";
 
 type AuthResponse = {
@@ -78,33 +81,28 @@ export function CustomerAuthPanel() {
 
   return (
     <div className="grid gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(360px,1.05fr)] lg:items-start">
-      <section className="space-y-6">
-        <p className="text-sm font-semibold uppercase tracking-[0.3em] text-primary">
-          Müşteri paneli
-        </p>
-        <h1 className="max-w-3xl text-4xl font-black tracking-[-0.06em] text-on-surface md:text-6xl">
-          Sipariş, cihaz ve servis sürecini tek yerden takip edin
-        </h1>
-        <p className="max-w-2xl text-lg leading-8 text-on-surface-variant">
-          ParkChargeEV hesabınızla teklif taleplerinizi, ödeme sonrası siparişlerinizi,
-          kurulum adreslerinizi ve servis kayıtlarınızı yönetebilirsiniz.
-        </p>
+      <section className="space-y-6" data-motion="reveal">
+        <PageHeader
+          eyebrow="Müşteri paneli"
+          title="Sipariş, cihaz ve servis sürecini tek yerden takip edin"
+          body="ParkChargeEV hesabınızla teklif taleplerinizi, ödeme sonrası siparişlerinizi, kurulum adreslerinizi ve servis kayıtlarınızı yönetebilirsiniz."
+        />
         <div className="grid gap-4 sm:grid-cols-3">
           {[
             ["Sipariş takibi", "PayTR sonrası sipariş ve ödeme durumu"],
             ["Adres defteri", "Kurulum ve teslimat adresleri"],
             ["Servis geçmişi", "Bakım, keşif ve teknik destek kayıtları"]
           ].map(([title, detail]) => (
-            <div key={title} className="rounded-[24px] bg-surface-container-low p-5">
+            <Surface key={title} tone="soft" density="compact" motion="scale">
               <p className="text-sm font-semibold text-on-surface">{title}</p>
               <p className="mt-2 text-sm leading-6 text-on-surface-variant">{detail}</p>
-            </div>
+            </Surface>
           ))}
         </div>
       </section>
 
-      <section className="surface-card p-6 lg:p-8">
-        <div className="grid grid-cols-2 gap-2 rounded-2xl bg-surface-container-low p-1">
+      <Surface as="section" className="lg:p-8" motion="slide">
+        <div className="grid grid-cols-2 gap-2 rounded-lg bg-surface-container-low p-1">
           <button
             type="button"
             disabled={!isHydrated}
@@ -112,7 +110,7 @@ export function CustomerAuthPanel() {
               setMode("login");
               setMessage(null);
             }}
-            className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-65 ${
+            className={`inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-65 ${
               mode === "login" ? "bg-white text-primary shadow-sm" : "text-on-surface-variant"
             }`}
           >
@@ -126,7 +124,7 @@ export function CustomerAuthPanel() {
               setMode("register");
               setMessage(null);
             }}
-            className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-65 ${
+            className={`inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-65 ${
               mode === "register" ? "bg-white text-primary shadow-sm" : "text-on-surface-variant"
             }`}
           >
@@ -146,7 +144,7 @@ export function CustomerAuthPanel() {
                   minLength={2}
                   autoComplete="given-name"
                   disabled={!isHydrated || isSubmitting}
-                  className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary"
+                  className="rounded-lg border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary"
                 />
               </label>
               <label className="grid gap-2">
@@ -157,7 +155,7 @@ export function CustomerAuthPanel() {
                   minLength={2}
                   autoComplete="family-name"
                   disabled={!isHydrated || isSubmitting}
-                  className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary"
+                  className="rounded-lg border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary"
                 />
               </label>
             </div>
@@ -172,7 +170,7 @@ export function CustomerAuthPanel() {
               autoComplete="email"
               placeholder="ornek@sirket.com"
               disabled={!isHydrated || isSubmitting}
-              className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary"
+              className="rounded-lg border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary"
             />
           </label>
 
@@ -187,7 +185,7 @@ export function CustomerAuthPanel() {
                 inputMode="tel"
                 placeholder="0555 555 55 55"
                 disabled={!isHydrated || isSubmitting}
-                className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary"
+                className="rounded-lg border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary"
               />
             </label>
           ) : null}
@@ -201,7 +199,7 @@ export function CustomerAuthPanel() {
               minLength={8}
               autoComplete={mode === "login" ? "current-password" : "new-password"}
               disabled={!isHydrated || isSubmitting}
-              className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary"
+              className="rounded-lg border border-outline-variant/45 bg-white px-4 py-4 outline-none transition focus:border-primary"
             />
           </label>
 
@@ -220,7 +218,7 @@ export function CustomerAuthPanel() {
           {message ? (
             <div
               role="alert"
-              className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+              className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
             >
               {message}
             </div>
@@ -229,7 +227,7 @@ export function CustomerAuthPanel() {
           <button
             type="submit"
             disabled={!isHydrated || isSubmitting}
-            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-primary px-6 py-4 text-base font-semibold text-white transition hover:bg-primary-container disabled:cursor-not-allowed disabled:opacity-65"
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-4 text-base font-semibold text-white transition hover:bg-primary-container disabled:cursor-not-allowed disabled:opacity-65"
           >
             {!isHydrated
               ? "Hazırlanıyor..."
@@ -241,7 +239,7 @@ export function CustomerAuthPanel() {
             <ArrowRight className="h-4 w-4" />
           </button>
         </form>
-      </section>
+      </Surface>
     </div>
   );
 }

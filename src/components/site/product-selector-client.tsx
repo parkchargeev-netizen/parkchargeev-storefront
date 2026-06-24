@@ -169,10 +169,10 @@ export function ProductSelectorClient({ products }: { products: ProductModel[] }
   return (
     <div className="product-selector-experience grid gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
       <section className="selector-config-panel p-6 lg:p-8">
-        <p className="text-sm font-semibold uppercase tracking-[0.28em] text-primary">
+        <p className="text-sm font-semibold uppercase tracking-normal text-primary">
           Akıllı uygunluk seçici
         </p>
-        <h1 className="mt-4 text-4xl font-black tracking-[-0.06em] text-on-surface md:text-5xl">
+        <h1 className="mt-4 text-4xl font-bold tracking-normal text-on-surface md:text-5xl">
           Aracınıza ve otoparkınıza göre doğru ürünü bulun
         </h1>
         <ol className="selector-progress mt-6" aria-label="Ürün seçici akışı">
@@ -196,7 +196,7 @@ export function ProductSelectorClient({ products }: { products: ProductModel[] }
                   key={option.value}
                   type="button"
                   onClick={() => updateValue("parking", option.value)}
-                  className={`selector-option rounded-2xl border px-4 py-4 text-left transition ${
+                  className={`selector-option rounded-lg border px-4 py-4 text-left transition ${
                     values.parking === option.value
                       ? "selector-option--active border-primary bg-primary/5"
                       : "border-outline-variant/45 bg-white hover:border-primary/40"
@@ -224,7 +224,7 @@ export function ProductSelectorClient({ products }: { products: ProductModel[] }
                   key={option.value}
                   type="button"
                   onClick={() => updateValue("phase", option.value)}
-                  className={`selector-option rounded-2xl border px-4 py-4 text-left transition ${
+                  className={`selector-option rounded-lg border px-4 py-4 text-left transition ${
                     values.phase === option.value
                       ? "selector-option--active border-primary bg-primary/5"
                       : "border-outline-variant/45 bg-white hover:border-primary/40"
@@ -252,7 +252,7 @@ export function ProductSelectorClient({ products }: { products: ProductModel[] }
                   key={option.value}
                   type="button"
                   onClick={() => updateValue("priority", option.value)}
-                  className={`selector-option rounded-2xl border px-4 py-4 text-left transition ${
+                  className={`selector-option rounded-lg border px-4 py-4 text-left transition ${
                     values.priority === option.value
                       ? "selector-option--active border-primary bg-primary/5"
                       : "border-outline-variant/45 bg-white hover:border-primary/40"
@@ -280,7 +280,7 @@ export function ProductSelectorClient({ products }: { products: ProductModel[] }
                   key={option.value}
                   type="button"
                   onClick={() => updateValue("vehicleCount", option.value)}
-                  className={`selector-option rounded-2xl border px-4 py-3 text-sm font-semibold transition ${
+                  className={`selector-option rounded-lg border px-4 py-3 text-sm font-semibold transition ${
                     values.vehicleCount === option.value
                       ? "selector-option--active border-primary bg-primary/5 text-primary"
                       : "border-outline-variant/45 bg-white text-on-surface hover:border-primary/40"
@@ -296,11 +296,11 @@ export function ProductSelectorClient({ products }: { products: ProductModel[] }
 
       <section className="space-y-5">
         {topRecommendation ? (
-          <article className="selector-result-card overflow-hidden rounded-[28px] bg-slate-950 p-7 text-white">
-            <p className="text-sm font-semibold uppercase tracking-[0.28em] text-emerald-200">
+          <article className="selector-result-card overflow-hidden rounded-lg bg-slate-950 p-7 text-white">
+            <p className="text-sm font-semibold uppercase tracking-normal text-emerald-200">
               En güçlü öneri
             </p>
-            <h2 className="mt-4 text-4xl font-black tracking-[-0.06em]">
+            <h2 className="mt-4 text-4xl font-bold tracking-normal">
               {topRecommendation.product.name}
             </h2>
             <p className="mt-4 max-w-2xl text-sm leading-7 text-white/84">
@@ -336,7 +336,7 @@ export function ProductSelectorClient({ products }: { products: ProductModel[] }
             <div className="mt-7 flex flex-wrap gap-3">
               <Link
                 href={`/urun/${topRecommendation.product.slug}`}
-                className="inline-flex items-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950"
+                className="inline-flex items-center gap-2 rounded-lg bg-white px-5 py-3 text-sm font-semibold text-slate-950"
                 {...conversionDataAttributes("selector_result_click", {
                   productId: topRecommendation.product.id,
                   cta: "Ürünü İncele ve Sepete Ekle"
@@ -347,7 +347,7 @@ export function ProductSelectorClient({ products }: { products: ProductModel[] }
               </Link>
               <Link
                 href={`/iletisim?reason=${encodeURIComponent(`${topRecommendation.product.name} keşif talebi`)}`}
-                className="rounded-2xl border border-white/20 px-5 py-3 text-sm font-semibold text-white"
+                className="rounded-lg border border-white/20 px-5 py-3 text-sm font-semibold text-white"
                 {...conversionDataAttributes("selector_result_click", {
                   productId: topRecommendation.product.id,
                   cta: "Keşif Planla"
@@ -376,7 +376,7 @@ export function ProductSelectorClient({ products }: { products: ProductModel[] }
             >
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                  <p className="text-lg font-bold tracking-[-0.03em] text-on-surface">
+                  <p className="text-lg font-bold tracking-normal text-on-surface">
                     {recommendation.product.name}
                   </p>
                   <p className="mt-2 text-sm leading-6 text-on-surface-variant">

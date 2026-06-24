@@ -3,22 +3,25 @@ type SectionHeadingProps = {
   title: string;
   body?: string;
   align?: "left" | "center";
+  as?: "h1" | "h2" | "h3";
 };
 
 export function SectionHeading({
   eyebrow,
   title,
   body,
-  align = "left"
+  align = "left",
+  as: Heading = "h2"
 }: SectionHeadingProps) {
   return (
-    <div className={align === "center" ? "mx-auto max-w-3xl text-center" : "max-w-3xl"}>
-      <p className="premium-eyebrow">{eyebrow}</p>
-      <h2 className="mt-3 text-2xl font-black leading-tight tracking-normal text-on-surface md:text-4xl">
-        {title}
-      </h2>
+    <div
+      className={align === "center" ? "ds-section-heading mx-auto text-center" : "ds-section-heading"}
+      data-motion="reveal"
+    >
+      <p className="ds-eyebrow">{eyebrow}</p>
+      <Heading className="ds-section-title">{title}</Heading>
       {body ? (
-        <p className="mt-4 text-sm leading-7 text-on-surface-variant md:text-base">{body}</p>
+        <p className="ds-section-heading__body">{body}</p>
       ) : null}
     </div>
   );

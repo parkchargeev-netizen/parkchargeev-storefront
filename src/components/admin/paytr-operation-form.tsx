@@ -51,7 +51,7 @@ export function PaytrOperationForm({ transactionId }: PaytrOperationFormProps) {
   return (
     <form className="grid gap-3" onSubmit={onSubmit}>
       <select
-        className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+        className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
         value={action}
         onChange={(event) => setAction(event.target.value)}
       >
@@ -59,7 +59,7 @@ export function PaytrOperationForm({ transactionId }: PaytrOperationFormProps) {
         <option value="mark_refunded">İade olarak işaretle</option>
       </select>
       <input
-        className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+        className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
         placeholder="Operasyon notu"
         value={note}
         onChange={(event) => setNote(event.target.value)}
@@ -68,7 +68,7 @@ export function PaytrOperationForm({ transactionId }: PaytrOperationFormProps) {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="rounded-2xl border border-slate-300 px-4 py-3 text-sm font-semibold text-slate-800 disabled:opacity-70"
+        className="rounded-lg border border-slate-300 px-4 py-3 text-sm font-semibold text-slate-800 disabled:opacity-70"
       >
         {isSubmitting ? "İşleniyor..." : "Uygula"}
       </button>

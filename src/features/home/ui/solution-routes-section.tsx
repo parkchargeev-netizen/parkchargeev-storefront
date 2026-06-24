@@ -41,20 +41,20 @@ export function SolutionRoutesSection() {
                   icon={route.icon}
                   className="h-11 w-11 bg-primary/10 text-primary"
                 />
-                <span className="rounded-full bg-surface-container-low px-3 py-1 text-xs font-black text-primary">
+                <span className="rounded-full bg-surface-container-low px-3 py-1 text-xs font-bold text-primary">
                   {route.accent}
                 </span>
               </div>
               <div>
-                <p className="text-xs font-black uppercase text-secondary">{route.label}</p>
-                <h3 className="mt-2 text-xl font-black leading-tight text-on-surface">
+                <p className="text-xs font-bold uppercase text-secondary">{route.label}</p>
+                <h3 className="mt-2 text-xl font-bold leading-tight text-on-surface">
                   {route.title}
                 </h3>
                 <p className="mt-3 line-clamp-3 text-sm leading-6 text-on-surface-variant">
                   {route.body}
                 </p>
               </div>
-              <span className="mt-auto inline-flex items-center gap-2 text-sm font-black text-primary">
+              <span className="mt-auto inline-flex items-center gap-2 text-sm font-bold text-primary">
                 {route.cta}
                 <ArrowRight
                   className="h-4 w-4 transition group-hover:translate-x-1"

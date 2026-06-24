@@ -120,7 +120,7 @@ export function AdminCommandMenu({
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="flex min-h-12 w-full items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-left shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50/70 lg:w-[420px]"
+        className="flex min-h-12 w-full items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-4 py-3 text-left shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50/70 lg:w-[420px]"
       >
         <span className="flex min-w-0 items-center gap-3">
           <Search className="h-4 w-4 shrink-0 text-slate-400" />
@@ -147,10 +147,10 @@ export function AdminCommandMenu({
             role="dialog"
             aria-modal="true"
             aria-label="Admin komut menüsü"
-            className="mx-auto mt-8 max-w-2xl overflow-hidden rounded-[28px] border border-white/70 bg-white shadow-[0_28px_90px_rgba(15,23,42,0.22)]"
+            className="mx-auto mt-8 max-w-2xl overflow-hidden rounded-lg border border-white/70 bg-white shadow-[0_28px_90px_rgba(15,23,42,0.22)]"
           >
             <div className="border-b border-slate-200 p-4">
-              <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+              <div className="flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
                 <Search className="h-4 w-4 text-slate-400" />
                 <input
                   autoFocus
@@ -187,7 +187,7 @@ export function AdminCommandMenu({
               {Object.entries(groupedItems).length > 0 ? (
                 Object.entries(groupedItems).map(([group, groupItems]) => (
                   <div key={group} className="py-2">
-                    <p className="px-3 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                    <p className="px-3 text-xs font-semibold uppercase tracking-normal text-slate-400">
                       {group}
                     </p>
                     <div className="mt-2 space-y-1">
@@ -196,7 +196,7 @@ export function AdminCommandMenu({
                           key={`${item.href}-${item.label}`}
                           href={item.href}
                           onClick={() => setIsOpen(false)}
-                          className="flex items-center justify-between gap-4 rounded-2xl px-3 py-3 transition hover:bg-emerald-50"
+                          className="flex items-center justify-between gap-4 rounded-lg px-3 py-3 transition hover:bg-emerald-50"
                         >
                           <span className="min-w-0">
                             <span className="block text-sm font-semibold text-slate-950">

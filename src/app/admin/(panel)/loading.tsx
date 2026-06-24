@@ -20,7 +20,7 @@ export default function AdminPanelLoading() {
         <div className="h-5 w-48 animate-pulse rounded-full bg-slate-200" />
         <div className="mt-6 space-y-3">
           {Array.from({ length: 5 }).map((_, index) => (
-            <div key={index} className="h-12 animate-pulse rounded-2xl bg-slate-100" />
+            <div key={index} className="h-12 animate-pulse rounded-lg bg-slate-100" />
           ))}
         </div>
       </div>

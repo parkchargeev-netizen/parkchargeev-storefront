@@ -26,7 +26,7 @@ export function AdminLogoutButton() {
     <button
       type="button"
       onClick={handleLogout}
-      className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-300 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-white disabled:cursor-not-allowed disabled:opacity-70"
+      className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-slate-300 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-white disabled:cursor-not-allowed disabled:opacity-70"
       disabled={isPending}
     >
       <LogOut className="h-4 w-4" />

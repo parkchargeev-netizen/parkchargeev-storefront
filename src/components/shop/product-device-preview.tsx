@@ -28,7 +28,7 @@ export function ProductDevicePreview({
         </div>
         <span className="absolute bottom-3 right-3 h-3 w-3 rounded-full bg-secondary-container shadow-[0_0_18px_rgba(126,236,201,0.75)]" />
       </div>
-      <span className="absolute bottom-4 left-4 rounded-full bg-white/14 px-3 py-1 text-xs font-black text-white backdrop-blur">
+      <span className="absolute bottom-4 left-4 rounded-full bg-white/14 px-3 py-1 text-xs font-bold text-white backdrop-blur">
         {powerLabel}
       </span>
     </div>

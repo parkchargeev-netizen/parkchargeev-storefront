@@ -82,7 +82,7 @@ export function QuoteStatusForm({
 
   return (
     <form className="space-y-4" onSubmit={onSubmit}>
-      <select className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm" {...register("status")}>
+      <select className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" {...register("status")}>
         {quoteStatusOptions.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}
@@ -91,7 +91,7 @@ export function QuoteStatusForm({
       </select>
 
       <select
-        className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+        className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
         {...register("assignedAdminId")}
       >
         <option value="">Atanmamış</option>
@@ -104,13 +104,13 @@ export function QuoteStatusForm({
 
       <textarea
         rows={4}
-        className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+        className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
         placeholder="Not"
         {...register("note")}
       />
 
       {feedback ? (
-        <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+        <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
           {feedback}
         </div>
       ) : null}
@@ -118,7 +118,7 @@ export function QuoteStatusForm({
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white disabled:opacity-70"
+        className="w-full rounded-lg bg-slate-950 px-4 py-3 text-sm font-semibold text-white disabled:opacity-70"
       >
         {isSubmitting ? "Güncelleniyor..." : "Teklifi Güncelle"}
       </button>

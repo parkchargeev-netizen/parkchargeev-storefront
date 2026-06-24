@@ -273,7 +273,7 @@ export default async function StorePage({ searchParams }: StorePageProps) {
           <div className="flex items-end justify-between gap-4">
             <div>
               <p className="premium-eyebrow">Öne çıkanlar</p>
-              <h2 id="store-featured-title" className="mt-2 text-2xl font-black text-on-surface md:text-3xl">
+              <h2 id="store-featured-title" className="mt-2 text-2xl font-bold text-on-surface md:text-3xl">
                 Popüler şarj ürünleri
               </h2>
             </div>
@@ -367,7 +367,7 @@ export default async function StorePage({ searchParams }: StorePageProps) {
                 {(selectedCategory || query || selectedPower || selectedInstallation || selectedSort !== "recommended" || selectedView !== "grid") ? (
                   <Link
                     href="/magaza"
-                    className="rounded-full border border-outline-variant/40 px-4 py-3 text-sm font-black text-primary"
+                    className="rounded-full border border-outline-variant/40 px-4 py-3 text-sm font-bold text-primary"
                   >
                     Filtreleri temizle
                   </Link>
@@ -379,13 +379,13 @@ export default async function StorePage({ searchParams }: StorePageProps) {
 
           {sortedProducts.length === 0 ? (
             <div className="surface-card p-10 text-center">
-              <h2 className="text-3xl font-black text-on-surface">Sonuç bulunamadı</h2>
+              <h2 className="text-3xl font-bold text-on-surface">Sonuç bulunamadı</h2>
               <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-on-surface-variant">
                 Filtreleri sadeleştirerek tekrar deneyin ya da aracınız ve otoparkınız için keşif talebi bırakın.
               </p>
               <Link
                 href="/magaza"
-                className="mt-7 inline-flex rounded-2xl bg-primary px-6 py-4 text-base font-black text-white"
+                className="mt-7 inline-flex rounded-lg bg-primary px-6 py-4 text-base font-bold text-white"
               >
                 Tüm ürünler
               </Link>

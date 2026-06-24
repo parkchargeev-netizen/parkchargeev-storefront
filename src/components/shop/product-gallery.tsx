@@ -51,12 +51,12 @@ function ProductThumbnailFallback({ label }: { label: string }) {
       <span className="absolute left-2 top-2 h-2 w-2 rounded-full bg-secondary shadow-[0_0_14px_rgba(126,236,201,0.9)]" />
       <span className="absolute left-3 right-8 top-1/2 h-0.5 -translate-y-1/2 rounded-full bg-linear-to-r from-secondary/80 via-primary/45 to-transparent" />
       <span className="absolute bottom-6 left-1/2 h-10 w-14 -translate-x-1/2 rounded-t-[28px] bg-primary shadow-[0_14px_28px_rgba(6,51,38,0.18)]" />
-      <span className="absolute right-4 top-5 flex h-14 w-10 items-center justify-center rounded-[16px] bg-white shadow-[0_16px_32px_rgba(15,23,42,0.16)]">
+      <span className="absolute right-4 top-5 flex h-14 w-10 items-center justify-center rounded-lg bg-white shadow-[0_16px_32px_rgba(15,23,42,0.16)]">
         <span className="flex h-6 w-6 items-center justify-center rounded-full border-[5px] border-primary">
           <span className="h-2 w-2 rounded-full bg-secondary" />
         </span>
       </span>
-      <span className="absolute left-3 top-4 rounded-full bg-white/86 px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-primary">
+      <span className="absolute left-3 top-4 rounded-full bg-white/86 px-2 py-1 text-xs font-bold uppercase tracking-normal text-primary">
         {label === "Video" ? "Play" : "EV"}
       </span>
     </div>
@@ -72,7 +72,7 @@ function ProductGalleryMedia({
 }) {
   if (!media) {
     return (
-      <div className="relative h-72 w-48 rounded-[34px] border border-white/20 bg-white p-5 shadow-[0_30px_80px_rgba(0,0,0,0.35)]">
+      <div className="relative h-72 w-48 rounded-lg border border-white/20 bg-white p-5 shadow-[0_30px_80px_rgba(0,0,0,0.35)]">
         <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full border-[14px] border-primary bg-primary/10">
           <span className="h-8 w-8 rounded-full bg-secondary" />
         </div>
@@ -90,7 +90,7 @@ function ProductGalleryMedia({
     const embeddedUrl = getEmbeddableVideoUrl(media.url);
 
     return (
-      <div className="relative aspect-[4/3] w-full max-w-sm overflow-hidden rounded-[24px] border border-white/15 bg-black shadow-[0_30px_80px_rgba(0,0,0,0.35)]">
+      <div className="relative aspect-[4/3] w-full max-w-sm overflow-hidden rounded-lg border border-white/15 bg-black shadow-[0_30px_80px_rgba(0,0,0,0.35)]">
         {embeddedUrl ? (
           <iframe
             src={embeddedUrl}
@@ -114,7 +114,7 @@ function ProductGalleryMedia({
   }
 
   return (
-    <div className="relative aspect-[4/3] w-full max-w-sm overflow-hidden rounded-[24px] border border-white/15 bg-white shadow-[0_30px_80px_rgba(0,0,0,0.35)]">
+    <div className="relative aspect-[4/3] w-full max-w-sm overflow-hidden rounded-lg border border-white/15 bg-white shadow-[0_30px_80px_rgba(0,0,0,0.35)]">
       <Image
         src={media.url}
         alt={media.altText || productName}
@@ -203,9 +203,9 @@ export function ProductGallery({
 
   return (
     <div className="product-gallery-premium surface-card p-5">
-      <div className="overflow-hidden rounded-[28px] bg-linear-to-br from-secondary-container/20 via-white to-primary/12 p-6">
+      <div className="overflow-hidden rounded-lg bg-linear-to-br from-secondary-container/20 via-white to-primary/12 p-6">
         <div
-          className={`relative min-h-[340px] overflow-hidden rounded-[24px] bg-slate-950 ${
+          className={`relative min-h-[340px] overflow-hidden rounded-lg bg-slate-950 ${
             hasRealMedia
               ? "product-gallery-stage--cover flex aspect-[4/3]"
               : "grid aspect-[4/3] px-6 py-7 text-white md:grid-cols-[1fr_0.8fr]"
@@ -218,10 +218,10 @@ export function ProductGallery({
           {activeMedia ? null : (
             <div className="relative z-10 flex min-h-[286px] flex-1 flex-col justify-between">
               <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.28em] text-white/76">
+                <p className="text-sm font-semibold uppercase tracking-normal text-white/76">
                   {activeItem}
                 </p>
-                <p className="mt-4 max-w-md text-3xl font-bold tracking-[-0.05em]">
+                <p className="mt-4 max-w-md text-3xl font-bold tracking-normal">
                   {productName}
                 </p>
               </div>
@@ -229,7 +229,7 @@ export function ProductGallery({
                 {featureLabels.map((label) => (
                   <div
                     key={label}
-                    className="rounded-2xl border border-white/10 bg-white/8 px-3 py-3"
+                    className="rounded-lg border border-white/10 bg-white/8 px-3 py-3"
                   >
                     <p className="text-xs font-semibold text-white/82">{label}</p>
                   </div>
@@ -245,7 +245,7 @@ export function ProductGallery({
           )}
 
           {activeMedia ? null : (
-            <div className="absolute bottom-6 right-6 z-20 rounded-2xl bg-slate-950/45 px-3 py-2 text-xs font-semibold text-white/84 backdrop-blur">
+            <div className="absolute bottom-6 right-6 z-20 rounded-lg bg-slate-950/45 px-3 py-2 text-xs font-semibold text-white/84 backdrop-blur">
               {deviceCaption}
             </div>
           )}
@@ -265,13 +265,13 @@ export function ProductGallery({
               key={`${item.altText}-${index}`}
               type="button"
               onClick={() => setActiveIndex(index)}
-              className={`group overflow-hidden rounded-[20px] p-2 text-left transition ${
+              className={`group overflow-hidden rounded-lg p-2 text-left transition ${
                 index === activeIndex
                   ? "border-2 border-primary bg-white shadow-[0_16px_36px_rgba(6,51,38,0.12)]"
                   : "border border-outline-variant/30 bg-white hover:border-primary/25"
               }`}
             >
-              <div className="relative aspect-square overflow-hidden rounded-[16px] bg-surface-container-high">
+              <div className="relative aspect-square overflow-hidden rounded-lg bg-surface-container-high">
                 {hasImage ? (
                   <Image
                     src={item.url}
@@ -284,7 +284,7 @@ export function ProductGallery({
                 ) : (
                   <ProductThumbnailFallback label={item.altText} />
                 )}
-                <span className="absolute inset-x-2 bottom-2 rounded-full bg-white/86 px-2 py-1 text-center text-[11px] font-black text-on-surface shadow-[0_8px_18px_rgba(15,23,42,0.12)] backdrop-blur">
+                <span className="absolute inset-x-2 bottom-2 rounded-full bg-white/86 px-2 py-1 text-center text-xs font-bold text-on-surface shadow-[0_8px_18px_rgba(15,23,42,0.12)] backdrop-blur">
                   {item.altText}
                 </span>
               </div>

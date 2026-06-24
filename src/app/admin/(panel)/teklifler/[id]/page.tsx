@@ -36,7 +36,7 @@ export default async function AdminQuoteDetailPage({ params }: QuoteDetailPagePr
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_420px]">
       <section className="space-y-6">
         <div className="surface-card border border-slate-200 bg-white/95 p-8">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#0f8f6f]">
+          <p className="text-sm font-semibold uppercase tracking-normal text-[#0f8f6f]">
             Teklif Detayı
           </p>
           <h1 className="mt-3 text-3xl font-semibold text-slate-950">{quote.fullName}</h1>
@@ -56,7 +56,7 @@ export default async function AdminQuoteDetailPage({ params }: QuoteDetailPagePr
           <h2 className="text-xl font-semibold text-slate-950">Aktivite geçmişi</h2>
           <div className="mt-5 space-y-3">
             {quote.activities.map((activity) => (
-              <div key={activity.id} className="rounded-2xl bg-slate-50 px-4 py-4">
+              <div key={activity.id} className="rounded-lg bg-slate-50 px-4 py-4">
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <p className="text-sm font-semibold text-slate-900">{activity.activityType}</p>

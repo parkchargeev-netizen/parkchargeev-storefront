@@ -52,18 +52,18 @@ export default async function AdminAuditPage({ searchParams }: AdminAuditPagePro
 
       <AdminFilterBar>
         <form className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_180px_170px_170px_auto]">
-          <input name="q" defaultValue={query.q ?? ""} placeholder="Varlık, aksiyon veya özet ara" className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm" />
-          <input name="status" defaultValue={query.status ?? ""} placeholder="Varlık tipi" className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm" />
-          <input name="from" type="date" defaultValue={query.from ?? ""} className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm" />
-          <input name="to" type="date" defaultValue={query.to ?? ""} className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm" />
-          <button className="rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white">Filtrele</button>
+          <input name="q" defaultValue={query.q ?? ""} placeholder="Varlık, aksiyon veya özet ara" className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm" />
+          <input name="status" defaultValue={query.status ?? ""} placeholder="Varlık tipi" className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm" />
+          <input name="from" type="date" defaultValue={query.from ?? ""} className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm" />
+          <input name="to" type="date" defaultValue={query.to ?? ""} className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm" />
+          <button className="rounded-lg bg-slate-950 px-4 py-3 text-sm font-semibold text-white">Filtrele</button>
         </form>
       </AdminFilterBar>
 
       <section className="surface-card border border-slate-200 bg-white/95 p-6">
         <div className="space-y-4">
           {result.items.map((log) => (
-            <article key={log.id} className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+            <article key={log.id} className="rounded-lg border border-slate-200 bg-slate-50 p-4">
               <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                 <div>
                   <p className="text-sm font-semibold text-slate-950">
@@ -80,7 +80,7 @@ export default async function AdminAuditPage({ searchParams }: AdminAuditPagePro
               </div>
               <details className="mt-4">
                 <summary className="cursor-pointer text-sm font-semibold text-slate-700">Veri detayları</summary>
-                <pre className="mt-3 max-h-96 overflow-auto rounded-2xl bg-slate-950 p-4 text-xs text-slate-100">
+                <pre className="mt-3 max-h-96 overflow-auto rounded-lg bg-slate-950 p-4 text-xs text-slate-100">
                   {JSON.stringify(
                     { before: log.beforePayload, after: log.afterPayload, userAgent: log.userAgent },
                     null,

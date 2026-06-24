@@ -15,12 +15,12 @@ type HomeHeroProps = {
 
 export function HomeHero({ whatsappHref }: HomeHeroProps) {
   return (
-    <section className="premium-hero relative isolate overflow-hidden">
+    <section className="premium-hero relative isolate overflow-hidden" data-motion="fade">
       <ChargingVisual />
       <div className="premium-hero__mesh" aria-hidden />
 
       <div className="premium-hero__inner relative z-10 mx-auto flex max-w-7xl flex-col justify-center px-4 py-12 sm:px-6 lg:px-8">
-        <div className="premium-hero__copy max-w-[43rem]">
+        <div className="premium-hero__copy max-w-[43rem]" data-motion="reveal">
           <p className="premium-hero__eyebrow">Elektrikli araç şarj sistemleri</p>
 
           <div className="premium-hero__mobile-trust">
@@ -36,7 +36,7 @@ export function HomeHero({ whatsappHref }: HomeHeroProps) {
             })}
           </div>
 
-          <h1 className="mt-5 max-w-[43rem] text-[2.45rem] font-black leading-[1.02] tracking-normal text-white sm:text-5xl lg:text-[3.55rem]">
+          <h1 className="mt-5 max-w-[43rem] text-4xl font-bold leading-tight tracking-normal text-white sm:text-5xl">
             Aracınız ve otoparkınız için doğru şarj çözümünü seçin.
           </h1>
           <p className="mt-5 max-w-xl text-base leading-7 text-white/82 sm:text-lg">
@@ -44,7 +44,11 @@ export function HomeHero({ whatsappHref }: HomeHeroProps) {
             katmanlarıyla tek projede yönetin.
           </p>
 
-          <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+          <div
+            className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap"
+            data-motion="reveal"
+            data-motion-order="2"
+          >
             <Link
               href="/magaza"
               className="premium-btn premium-btn--primary"
@@ -83,7 +87,12 @@ export function HomeHero({ whatsappHref }: HomeHeroProps) {
           </div>
         </div>
 
-        <div className="premium-hero__routes" aria-label="Şarj çözümü kullanım alanları">
+        <div
+          className="premium-hero__routes"
+          aria-label="Şarj çözümü kullanım alanları"
+          data-motion="slide"
+          data-motion-order="3"
+        >
           {solutionRoutes.slice(0, 3).map((route) => (
             <Link key={route.label} href={route.href} className="premium-hero-route group">
               <HomeIcon icon={route.icon} className="premium-hero-route__icon" />

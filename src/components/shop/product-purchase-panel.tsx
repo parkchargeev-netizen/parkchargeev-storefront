@@ -109,7 +109,7 @@ export function ProductPurchasePanel({
       </div>
 
       <div className="product-purchase-panel__price mt-8 flex flex-wrap items-end gap-4">
-        <p className="text-5xl font-black text-primary">
+        <p className="text-5xl font-bold text-primary">
           {formatPriceTRY(selectedOption.priceKurus)}
         </p>
         {selectedOption.compareAtKurus ? (
@@ -128,19 +128,19 @@ export function ProductPurchasePanel({
 
       <div className="product-purchase-panel__trust mt-5 grid gap-2 sm:grid-cols-3">
         {purchaseTrustSignals.map((signal) => (
-          <div key={signal.label} className="rounded-2xl border border-outline-variant/35 bg-white px-4 py-3">
-            <p className="text-[10px] font-semibold uppercase text-on-surface-variant">
+          <div key={signal.label} className="rounded-lg border border-outline-variant/35 bg-white px-4 py-3">
+            <p className="text-xs font-semibold uppercase text-on-surface-variant">
               {signal.label}
             </p>
             <p className="mt-1 text-sm font-bold leading-5 text-on-surface">{signal.detail}</p>
           </div>
         ))}
       </div>
-      <p className="product-purchase-panel__fit-note mt-3 rounded-2xl bg-surface-container-low px-4 py-3 text-xs leading-5 text-on-surface-variant">
+      <p className="product-purchase-panel__fit-note mt-3 rounded-lg bg-surface-container-low px-4 py-3 text-xs leading-5 text-on-surface-variant">
         Emin değilseniz keşifle ilerleyin.
       </p>
 
-      <div className="product-purchase-panel__route mt-8 rounded-[24px] bg-surface-container-low p-6">
+      <div className="product-purchase-panel__route mt-8 rounded-lg bg-surface-container-low p-6">
         <p className="text-sm font-semibold uppercase text-on-surface-variant">
           1 karar yeterli
         </p>
@@ -165,7 +165,7 @@ export function ProductPurchasePanel({
                 type="button"
                 aria-pressed={purchaseMode === option.value}
                 onClick={() => selectPurchaseMode(option.value as "product" | "survey")}
-                className={`rounded-2xl border px-4 py-3 text-left text-sm font-medium transition ${
+                className={`rounded-lg border px-4 py-3 text-left text-sm font-medium transition ${
                   purchaseMode === option.value
                     ? "border-primary bg-white text-primary"
                     : "border-outline-variant/40 bg-surface text-on-surface hover:border-primary/20"
@@ -179,7 +179,7 @@ export function ProductPurchasePanel({
             ))}
           </div>
           {purchaseMode === "survey" ? (
-            <p className="mt-3 rounded-2xl border border-primary/15 bg-white px-4 py-3 text-xs leading-5 text-on-surface-variant">
+            <p className="mt-3 rounded-lg border border-primary/15 bg-white px-4 py-3 text-xs leading-5 text-on-surface-variant">
               Sepete ekleyin, keşifte hat, pano ve randevu bilgisi netleşsin.
             </p>
           ) : null}
@@ -195,7 +195,7 @@ export function ProductPurchasePanel({
                 aria-pressed={option.label === cableOption}
                 disabled={!isHydrated}
                 onClick={() => selectCableOption(option.label)}
-                className={`rounded-2xl border px-4 py-3 text-sm font-medium transition ${
+                className={`rounded-lg border px-4 py-3 text-sm font-medium transition ${
                   option.label === cableOption
                     ? "border-primary bg-white text-primary"
                     : "border-outline-variant/40 bg-surface text-on-surface hover:border-primary/20"
@@ -215,7 +215,7 @@ export function ProductPurchasePanel({
         <div className="mt-6">
           <p className="text-sm font-medium text-on-surface-variant">Miktar</p>
           <div className="product-purchase-panel__action-row mt-3 flex flex-col gap-4 sm:flex-row sm:items-center">
-            <div className="flex items-center gap-4 rounded-2xl bg-white px-4 py-3">
+            <div className="flex items-center gap-4 rounded-lg bg-white px-4 py-3">
               <button
                 type="button"
                 onClick={() => setQuantity((current) => Math.max(1, current - 1))}
@@ -241,7 +241,7 @@ export function ProductPurchasePanel({
               onClick={handleAddToCart}
               disabled={isAddDisabled}
               aria-busy={!isHydrated}
-              className="product-purchase-panel__add-button flex-1 rounded-2xl bg-linear-to-r from-primary to-secondary px-6 py-4 text-center text-base font-semibold text-white shadow-[0_18px_50px_rgba(6,51,38,0.22)] disabled:cursor-not-allowed disabled:opacity-60"
+              className="product-purchase-panel__add-button flex-1 rounded-lg bg-linear-to-r from-primary to-secondary px-6 py-4 text-center text-base font-semibold text-white shadow-[0_18px_50px_rgba(6,51,38,0.22)] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isOutOfStock ? "Stokta Yok" : "Sepete Ekle"}
             </button>
@@ -256,7 +256,7 @@ export function ProductPurchasePanel({
           ) : null}
         </div>
 
-        <div className="mt-6 rounded-2xl border border-outline-variant/35 bg-white p-4">
+        <div className="mt-6 rounded-lg border border-outline-variant/35 bg-white p-4">
           <div className="flex items-center justify-between gap-4">
             <span className="text-sm text-on-surface-variant">Tahmini ara toplam</span>
             <span className="text-lg font-bold text-on-surface">
@@ -281,7 +281,7 @@ export function ProductPurchasePanel({
         {purchaseMode === "survey" ? (
           <Link
             href={`/iletisim?reason=${encodeURIComponent(`${product.name} kurulum keşfi`)}`}
-            className="mt-4 block rounded-2xl border border-primary/20 bg-white px-5 py-4 text-center text-sm font-semibold text-primary"
+            className="mt-4 block rounded-lg border border-primary/20 bg-white px-5 py-4 text-center text-sm font-semibold text-primary"
           >
             Kurulum keşfi iste
           </Link>

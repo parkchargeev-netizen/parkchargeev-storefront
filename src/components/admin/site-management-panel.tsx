@@ -159,7 +159,7 @@ export async function SiteManagementPanel({
         <section className="surface-card border border-emerald-100 bg-white/95 p-5 lg:p-6">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-emerald-700">
+              <p className="text-xs font-semibold uppercase tracking-normal text-emerald-700">
                 Site genel kontrol merkezi
               </p>
               <h2 className="mt-2 text-2xl font-semibold text-slate-950">
@@ -168,7 +168,7 @@ export async function SiteManagementPanel({
             </div>
             <AdminPrefetchLink
               href="/admin/audit"
-              className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-800"
+              className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-800"
             >
               Değişiklik geçmişi
             </AdminPrefetchLink>
@@ -178,7 +178,7 @@ export async function SiteManagementPanel({
               <AdminPrefetchLink
                 key={item.href}
                 href={item.href}
-                className="rounded-[22px] border border-slate-200 bg-slate-50/80 p-4 transition hover:border-emerald-200 hover:bg-emerald-50"
+                className="rounded-lg border border-slate-200 bg-slate-50/80 p-4 transition hover:border-emerald-200 hover:bg-emerald-50"
               >
                 <p className="text-sm font-semibold text-slate-950">{item.title}</p>
                 <p className="mt-2 text-xs leading-5 text-slate-600">{item.body}</p>
@@ -191,7 +191,7 @@ export async function SiteManagementPanel({
         </section>
 
         <aside className="surface-card border border-slate-200 bg-slate-950 p-5 text-white lg:p-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-emerald-200">
+          <p className="text-xs font-semibold uppercase tracking-normal text-emerald-200">
             Yazım rehberi
           </p>
           <h2 className="mt-2 text-xl font-semibold">Nereye, ne, nasıl yazılır?</h2>
@@ -209,7 +209,7 @@ export async function SiteManagementPanel({
       <section className="surface-card border border-emerald-100 bg-white/95 p-5 lg:p-6">
         <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-emerald-700">
+            <p className="text-xs font-semibold uppercase tracking-normal text-emerald-700">
               Site strateji notları
             </p>
             <h2 className="mt-2 text-2xl font-semibold text-slate-950">
@@ -217,8 +217,8 @@ export async function SiteManagementPanel({
             </h2>
             <div className="mt-4 grid gap-3">
               {primarySiteMessages.map((item) => (
-                <article key={item.label} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                  <span className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">
+                <article key={item.label} className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+                  <span className="text-xs font-semibold uppercase tracking-normal text-emerald-700">
                     {item.label}
                   </span>
                   <strong className="mt-2 block text-sm text-slate-950">{item.message}</strong>
@@ -229,14 +229,14 @@ export async function SiteManagementPanel({
           </div>
 
           <div className="grid gap-4 lg:grid-cols-2">
-            <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-4">
+            <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
               <p className="text-sm font-semibold text-slate-950">SEO / AIEO kümeleri</p>
               <div className="mt-3 grid gap-2">
                 {seoIntentClusters.map((cluster) => (
                   <AdminPrefetchLink
                     key={cluster.cluster}
                     href={cluster.href}
-                    className="rounded-2xl bg-white px-3 py-2 text-xs leading-5 text-slate-600 transition hover:bg-emerald-50 hover:text-[#063326]"
+                    className="rounded-lg bg-white px-3 py-2 text-xs leading-5 text-slate-600 transition hover:bg-emerald-50 hover:text-[#063326]"
                   >
                     <b className="block text-slate-950">{cluster.cluster}</b>
                     {cluster.query}
@@ -245,7 +245,7 @@ export async function SiteManagementPanel({
               </div>
             </div>
 
-            <div className="rounded-[24px] border border-slate-200 bg-slate-950 p-4 text-white">
+            <div className="rounded-lg border border-slate-200 bg-slate-950 p-4 text-white">
               <p className="text-sm font-semibold text-emerald-200">Faz kontrol listesi</p>
               <ol className="mt-3 space-y-2 text-xs leading-5 text-white/74">
                 {funnelAuditPhases.map((phase, index) => (
@@ -305,12 +305,12 @@ export async function SiteManagementPanel({
             name="q"
             defaultValue={query.q ?? ""}
             placeholder="Link, sayfa veya slug ara"
-            className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm"
+            className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm"
           />
           <select
             name="status"
             defaultValue={query.status ?? ""}
-            className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm"
+            className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm"
           >
             <option value="">Tüm durum / alanlar</option>
             <option value="published">Yayında sayfalar</option>
@@ -319,7 +319,7 @@ export async function SiteManagementPanel({
             <option value="footer">Footer</option>
             <option value="legal">Destek</option>
           </select>
-          <button className="rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white">
+          <button className="rounded-lg bg-slate-950 px-4 py-3 text-sm font-semibold text-white">
             Filtrele
           </button>
         </form>
@@ -337,7 +337,7 @@ export async function SiteManagementPanel({
           <AdminPrefetchLink
             key={item.href}
             href={item.href}
-            className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-center text-sm font-semibold text-slate-700 transition hover:border-emerald-200 hover:bg-emerald-50 hover:text-[#063326]"
+            className="rounded-lg border border-slate-200 bg-white px-4 py-3 text-center text-sm font-semibold text-slate-700 transition hover:border-emerald-200 hover:bg-emerald-50 hover:text-[#063326]"
           >
             {item.label}
           </AdminPrefetchLink>
@@ -364,7 +364,7 @@ export async function SiteManagementPanel({
           ) : (
             <AdminPrefetchLink
               href={createHref(basePath, "newNav")}
-              className="mt-5 inline-flex rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white"
+              className="mt-5 inline-flex rounded-lg bg-slate-950 px-4 py-3 text-sm font-semibold text-white"
             >
               Menü linki ekle
             </AdminPrefetchLink>
@@ -383,7 +383,7 @@ export async function SiteManagementPanel({
           ) : (
             <AdminPrefetchLink
               href={createHref(basePath, "newPage")}
-              className="mt-5 inline-flex rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white"
+              className="mt-5 inline-flex rounded-lg bg-slate-950 px-4 py-3 text-sm font-semibold text-white"
             >
               Detaylı sayfa ekle
             </AdminPrefetchLink>
@@ -395,7 +395,7 @@ export async function SiteManagementPanel({
         <section id="navigation-editor" className="surface-card scroll-mt-6 border border-emerald-200 bg-emerald-50/80 p-5 lg:p-6">
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-800">
+              <p className="text-xs font-semibold uppercase tracking-normal text-emerald-800">
                 Navigasyon düzenle
               </p>
               <h2 className="mt-2 text-xl font-semibold text-slate-950">
@@ -430,7 +430,7 @@ export async function SiteManagementPanel({
         <section id="site-page-editor" className="surface-card scroll-mt-6 border border-emerald-200 bg-emerald-50/80 p-5 lg:p-6">
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-800">
+              <p className="text-xs font-semibold uppercase tracking-normal text-emerald-800">
                 Sayfa düzenle
               </p>
               <h2 className="mt-2 text-xl font-semibold text-slate-950">{selectedPage.title}</h2>
@@ -477,7 +477,7 @@ export async function SiteManagementPanel({
         <h2 className="text-xl font-semibold text-slate-950">Navigasyon linkleri</h2>
         <div className="mt-5 space-y-4">
           {navigation.items.map((item) => (
-            <div key={item.id} className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+            <div key={item.id} className="rounded-lg border border-slate-200 bg-slate-50 p-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="min-w-0">
                   <p className="font-semibold text-slate-950">{item.label}</p>
@@ -506,7 +506,7 @@ export async function SiteManagementPanel({
         <h2 className="text-xl font-semibold text-slate-950">Yönetilebilir sayfalar</h2>
         <div className="mt-5 space-y-4">
           {pages.items.map((page) => (
-            <div key={page.id} className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+            <div key={page.id} className="rounded-lg border border-slate-200 bg-slate-50 p-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="min-w-0">
                   <p className="font-semibold text-slate-950">{page.title}</p>

@@ -22,7 +22,7 @@ export function AdminPageHeader({
     <section className="surface-card border border-slate-200 bg-white/95 p-8">
       <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
         <div className="max-w-3xl">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#0f8f6f]">
+          <p className="text-sm font-semibold uppercase tracking-normal text-[#0f8f6f]">
             {eyebrow}
           </p>
           <h1 className="mt-3 text-3xl font-semibold text-slate-950">{title}</h1>

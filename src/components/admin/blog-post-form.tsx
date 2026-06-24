@@ -23,7 +23,7 @@ const RichTextEditor = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="min-h-[220px] rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-500">
+      <div className="min-h-[220px] rounded-lg border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-500">
         Editör yükleniyor...
       </div>
     )
@@ -144,19 +144,19 @@ export function BlogPostForm({ mode, postId, initialValues }: BlogPostFormProps)
     <form className="space-y-5" onSubmit={onSubmit}>
       <div className="grid gap-4 md:grid-cols-2">
         <input
-          className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+          className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
           placeholder="Başlık"
           {...register("title")}
         />
         <input
-          className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+          className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
           placeholder="Slug"
           {...register("slug")}
         />
       </div>
       <textarea
         rows={3}
-        className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+        className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
         placeholder="Özet"
         {...register("excerpt")}
       />
@@ -167,12 +167,12 @@ export function BlogPostForm({ mode, postId, initialValues }: BlogPostFormProps)
       />
       <div className="grid gap-4 md:grid-cols-2">
         <input
-          className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+          className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
           placeholder="SEO title"
           {...register("seoTitle")}
         />
         <input
-          className="rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+          className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
           placeholder="Yayın tarihi"
           type="datetime-local"
           {...register("publishedAt")}
@@ -180,11 +180,11 @@ export function BlogPostForm({ mode, postId, initialValues }: BlogPostFormProps)
       </div>
       <textarea
         rows={3}
-        className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm"
+        className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
         placeholder="SEO description"
         {...register("seoDescription")}
       />
-      <section className="rounded-3xl border border-slate-200 bg-slate-50/80 p-5">
+      <section className="rounded-lg border border-slate-200 bg-slate-50/80 p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-sm font-semibold text-slate-950">
@@ -202,7 +202,7 @@ export function BlogPostForm({ mode, postId, initialValues }: BlogPostFormProps)
           {seoSignals.map((signal) => (
             <div
               key={signal.label}
-              className={`rounded-2xl border px-4 py-3 ${
+              className={`rounded-lg border px-4 py-3 ${
                 signal.ok
                   ? "border-emerald-200 bg-emerald-50 text-emerald-900"
                   : "border-amber-200 bg-amber-50 text-amber-900"
@@ -225,14 +225,14 @@ export function BlogPostForm({ mode, postId, initialValues }: BlogPostFormProps)
         </p>
       ) : null}
       {feedback ? (
-        <p className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+        <p className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
           {feedback}
         </p>
       ) : null}
       <button
         type="submit"
         disabled={isSubmitting}
-        className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white disabled:opacity-70"
+        className="rounded-lg bg-slate-950 px-5 py-3 text-sm font-semibold text-white disabled:opacity-70"
       >
         {isSubmitting ? "Kaydediliyor..." : "İçeriği kaydet"}
       </button>

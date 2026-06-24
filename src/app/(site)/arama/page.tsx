@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArticleCard } from "@/components/content/article-card";
 import { ProductCard } from "@/components/shop/product-card";
 import { SolutionCard } from "@/components/solutions/solution-card";
+import { PageHeader } from "@/components/ui/page-header";
 import { products, solutionPages } from "@/lib/mock-data";
 import { matchesSearchQuery } from "@/lib/search-normalization";
 import { stripHtml } from "@/lib/blog-content";
@@ -98,14 +99,9 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     matchedSolutions.length;
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
+    <main className="mx-auto max-w-7xl px-6 py-12 lg:px-8" data-motion-scope>
       <section className="surface-card p-8">
-        <p className="text-sm font-semibold uppercase tracking-[0.34em] text-primary">
-          Site içi arama
-        </p>
-        <h1 className="mt-4 text-5xl font-black tracking-[-0.08em] text-on-surface">
-          Ne arıyorsunuz?
-        </h1>
+        <PageHeader eyebrow="Site içi arama" title="Ne arıyorsunuz?" />
         <form action="/arama" className="mt-8 flex flex-col gap-4 sm:flex-row">
           <label htmlFor="site-search-query" className="sr-only">
             Site içinde ara
@@ -115,9 +111,9 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             name="q"
             defaultValue={q}
             placeholder="Örn: 11 kW, apartman, kurulum, wallbox..."
-            className="flex-1 rounded-2xl border border-outline-variant/45 bg-white px-5 py-4 outline-none transition focus:border-primary"
+            className="flex-1 rounded-lg border border-outline-variant/45 bg-white px-5 py-4 outline-none transition focus:border-primary"
           />
-          <button className="rounded-2xl bg-primary px-6 py-4 font-semibold text-white">
+          <button className="rounded-lg bg-primary px-6 py-4 font-semibold text-white">
             Ara
           </button>
         </form>
@@ -142,7 +138,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         </section>
       ) : totalResults === 0 ? (
         <section className="mt-10 surface-card p-8">
-          <h2 className="text-3xl font-bold tracking-[-0.05em] text-on-surface">
+          <h2 className="text-3xl font-bold tracking-normal text-on-surface">
             Sonuç bulunamadı
           </h2>
           <p className="mt-4 text-base leading-8 text-on-surface-variant">
@@ -163,7 +159,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       ) : (
         <>
           <section className="mt-10">
-            <h2 className="text-3xl font-bold tracking-[-0.05em] text-on-surface">
+            <h2 className="text-3xl font-bold tracking-normal text-on-surface">
               Ürünler ({matchedProducts.length})
             </h2>
             <div className="mt-6 grid gap-6 lg:grid-cols-3">
@@ -174,7 +170,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           </section>
 
           <section className="mt-12">
-            <h2 className="text-3xl font-bold tracking-[-0.05em] text-on-surface">
+            <h2 className="text-3xl font-bold tracking-normal text-on-surface">
               Kurumsal çözümler ({matchedSolutions.length})
             </h2>
             <div className="mt-6 grid gap-6 lg:grid-cols-3">
@@ -186,7 +182,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
 
           <section className="mt-12">
-            <h2 className="text-3xl font-bold tracking-[-0.05em] text-on-surface">
+            <h2 className="text-3xl font-bold tracking-normal text-on-surface">
               İçerikler ({matchedArticles.length})
             </h2>
             <div className="mt-6 grid gap-6 lg:grid-cols-3">
@@ -197,6 +193,6 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           </section>
         </>
       )}
-    </div>
+    </main>
   );
 }

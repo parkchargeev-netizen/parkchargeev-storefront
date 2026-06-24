@@ -13,8 +13,8 @@ export const metadata: Metadata = {
 
 export default async function LoginPage() {
   return (
-    <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
+    <main className="mx-auto max-w-7xl px-6 py-12 lg:px-8" data-motion-scope>
       <CustomerAuthPanel />
-    </div>
+    </main>
   );
 }

@@ -48,10 +48,10 @@ export default async function AboutPage() {
     <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
       <section className="grid gap-8 lg:grid-cols-[1fr_360px]">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.34em] text-primary">
+          <p className="text-sm font-semibold uppercase tracking-normal text-primary">
             ParkChargeEV yaklaşımı
           </p>
-          <h1 className="mt-5 text-5xl font-black tracking-[-0.08em] text-on-surface">
+          <h1 className="mt-5 text-5xl font-bold tracking-normal text-on-surface">
             ParkChargeEV,
             <span className="text-gradient"> doğru cihazı güvenli kurulumla</span>
             birlikte sunar
@@ -64,10 +64,10 @@ export default async function AboutPage() {
         </div>
 
         <aside className="surface-card h-fit p-8">
-          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-secondary">
+          <p className="text-sm font-semibold uppercase tracking-normal text-secondary">
             Ne sunuyoruz?
           </p>
-          <p className="mt-4 text-3xl font-bold tracking-[-0.05em] text-on-surface">
+          <p className="mt-4 text-3xl font-bold tracking-normal text-on-surface">
             Cihaz + keşif + kurulum
           </p>
           <p className="mt-4 text-sm leading-7 text-on-surface-variant">
@@ -80,10 +80,10 @@ export default async function AboutPage() {
       <section className="mt-14 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
         {trustMetrics.map((metric) => (
           <div key={metric.label} className="surface-card p-6">
-            <p className="text-sm uppercase tracking-[0.26em] text-on-surface-variant">
+            <p className="text-sm uppercase tracking-normal text-on-surface-variant">
               {metric.label}
             </p>
-            <p className="mt-3 text-4xl font-black tracking-[-0.06em] text-primary">
+            <p className="mt-3 text-4xl font-bold tracking-normal text-primary">
               {metric.value}
             </p>
             <p className="mt-3 text-sm leading-7 text-on-surface-variant">
@@ -112,7 +112,7 @@ export default async function AboutPage() {
           }
         ].map((item) => (
           <article key={item.title} className="surface-card p-8">
-            <h2 className="text-3xl font-bold tracking-[-0.05em] text-on-surface">
+            <h2 className="text-3xl font-bold tracking-normal text-on-surface">
               {item.title}
             </h2>
             <p className="mt-4 text-base leading-7 text-on-surface-variant">
@@ -123,10 +123,10 @@ export default async function AboutPage() {
       </section>
 
       <section className="mt-14">
-        <p className="text-sm font-semibold uppercase tracking-[0.34em] text-secondary">
+        <p className="text-sm font-semibold uppercase tracking-normal text-secondary">
           Sosyal kanıt
         </p>
-        <h2 className="mt-4 text-4xl font-black tracking-[-0.07em] text-on-surface">
+        <h2 className="mt-4 text-4xl font-bold tracking-normal text-on-surface">
           Karar vericilerin duyduğu gerçek ihtiyaçlar
         </h2>
 

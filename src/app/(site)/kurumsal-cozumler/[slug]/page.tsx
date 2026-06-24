@@ -80,7 +80,7 @@ export default async function SolutionDetailPage({
           <p className="text-xs font-semibold uppercase text-primary">
             {solution.segment}
           </p>
-          <h1 className="mt-3 max-w-4xl text-3xl font-black leading-tight text-on-surface md:text-5xl">
+          <h1 className="mt-3 max-w-4xl text-3xl font-bold leading-tight text-on-surface md:text-5xl">
             {solution.title}
           </h1>
           <p className="mt-4 max-w-3xl text-base leading-7 text-on-surface-variant">
@@ -92,7 +92,7 @@ export default async function SolutionDetailPage({
           <p className="text-xs font-semibold uppercase text-secondary">
             Ana metrik
           </p>
-          <p className="mt-3 text-3xl font-black text-primary">
+          <p className="mt-3 text-3xl font-bold text-primary">
             {solution.heroMetric}
           </p>
           <p className="mt-2 text-sm leading-6 text-on-surface-variant">
@@ -100,7 +100,7 @@ export default async function SolutionDetailPage({
           </p>
           <Link
             href="/iletisim"
-            className="mt-5 inline-flex min-h-11 items-center rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-white"
+            className="mt-5 inline-flex min-h-11 items-center rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-white"
           >
             Projeyi Değerlendir
           </Link>
@@ -114,7 +114,7 @@ export default async function SolutionDetailPage({
           </h2>
           <div className="mt-4 grid gap-3">
             {solution.features.map((feature) => (
-              <div key={feature} className="rounded-2xl bg-surface-container-low px-4 py-3 text-sm leading-6 text-on-surface-variant">
+              <div key={feature} className="rounded-lg bg-surface-container-low px-4 py-3 text-sm leading-6 text-on-surface-variant">
                 {feature}
               </div>
             ))}
@@ -127,7 +127,7 @@ export default async function SolutionDetailPage({
           </h2>
           <div className="mt-4 grid gap-3">
             {solution.outcomes.map((outcome) => (
-              <div key={outcome} className="rounded-2xl bg-surface-container-low px-4 py-3 text-sm leading-6 text-on-surface-variant">
+              <div key={outcome} className="rounded-lg bg-surface-container-low px-4 py-3 text-sm leading-6 text-on-surface-variant">
                 {outcome}
               </div>
             ))}
@@ -135,13 +135,13 @@ export default async function SolutionDetailPage({
         </div>
       </section>
 
-      <section className="mt-9 overflow-hidden rounded-[24px] bg-linear-to-br from-primary to-primary-container p-5 text-white shadow-[0_20px_60px_rgba(6,51,38,0.2)] sm:p-7">
+      <section className="mt-9 overflow-hidden rounded-lg bg-linear-to-br from-primary to-primary-container p-5 text-white shadow-[0_20px_60px_rgba(6,51,38,0.2)] sm:p-7">
         <p className="text-xs font-semibold uppercase text-white/82">
           Kullanım senaryoları
         </p>
         <div className="mt-4 grid gap-3 md:grid-cols-3">
           {solution.useCases.map((item) => (
-            <div key={item} className="rounded-2xl bg-white/[0.12] p-4">
+            <div key={item} className="rounded-lg bg-white/[0.12] p-4">
               <p className="text-base font-semibold">{item}</p>
             </div>
           ))}
@@ -155,7 +155,7 @@ export default async function SolutionDetailPage({
           </h2>
           <div className="mt-4 grid gap-3">
             {solution.faq.map((item) => (
-              <article key={item.question} className="rounded-2xl bg-surface-container-low p-4">
+              <article key={item.question} className="rounded-lg bg-surface-container-low p-4">
                 <h3 className="text-base font-semibold text-on-surface">{item.question}</h3>
                 <p className="mt-2 text-sm leading-6 text-on-surface-variant">
                   {item.answer}
@@ -180,7 +180,7 @@ export default async function SolutionDetailPage({
               <p className="text-xs font-semibold uppercase text-secondary">
                 İçerik kümeleri
               </p>
-              <h2 className="mt-3 text-2xl font-black text-on-surface md:text-3xl">
+              <h2 className="mt-3 text-2xl font-bold text-on-surface md:text-3xl">
                 Bu çözüme bağlı rehber içerikler
               </h2>
             </div>

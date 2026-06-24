@@ -57,7 +57,7 @@ const SitePageForm = lazy(() =>
 
 function FormSkeleton({ label }: { label: string }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5 text-sm font-medium text-slate-500">
+    <div className="rounded-lg border border-slate-200 bg-white p-5 text-sm font-medium text-slate-500">
       {label}
     </div>
   );

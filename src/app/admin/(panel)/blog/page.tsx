@@ -68,22 +68,22 @@ export default async function AdminBlogPage({ searchParams }: AdminBlogPageProps
 
       <AdminFilterBar>
         <form className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_220px_170px_170px_auto]">
-          <input name="q" defaultValue={query.q ?? ""} placeholder="Başlık veya slug ara" className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm" />
-          <select name="status" defaultValue={query.status ?? ""} className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm">
+          <input name="q" defaultValue={query.q ?? ""} placeholder="Başlık veya slug ara" className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm" />
+          <select name="status" defaultValue={query.status ?? ""} className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm">
             <option value="">Tüm durumlar</option>
             <option value="published">Yayında</option>
             <option value="draft">Taslak</option>
           </select>
-          <input name="from" type="date" defaultValue={query.from ?? ""} className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm" />
-          <input name="to" type="date" defaultValue={query.to ?? ""} className="rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm" />
-          <button className="rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white">Filtrele</button>
+          <input name="from" type="date" defaultValue={query.from ?? ""} className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm" />
+          <input name="to" type="date" defaultValue={query.to ?? ""} className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm" />
+          <button className="rounded-lg bg-slate-950 px-4 py-3 text-sm font-semibold text-white">Filtrele</button>
         </form>
       </AdminFilterBar>
 
       <section className="surface-card border border-slate-200 bg-white/95 p-6">
         <div className="overflow-x-auto">
           <table className="min-w-full text-left text-sm">
-            <thead className="text-xs uppercase tracking-[0.16em] text-slate-500">
+            <thead className="text-xs uppercase tracking-normal text-slate-500">
               <tr>
                 <th className="px-3 py-3">İçerik</th>
                 <th className="px-3 py-3">Durum</th>

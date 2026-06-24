@@ -57,11 +57,11 @@ export function PasswordForm() {
   return (
     <section id="guvenlik" className="surface-card scroll-mt-28 p-6 lg:p-8">
       <div className="flex items-start gap-3">
-        <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+        <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
           <ShieldCheck className="h-5 w-5" />
         </span>
         <div>
-          <h2 className="text-2xl font-black tracking-[-0.04em] text-on-surface">
+          <h2 className="text-2xl font-bold tracking-normal text-on-surface">
             Güvenlik
           </h2>
           <p className="mt-2 text-sm leading-6 text-on-surface-variant">
@@ -79,7 +79,7 @@ export function PasswordForm() {
             required
             minLength={8}
             autoComplete="current-password"
-            className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 outline-none transition focus:border-primary"
+            className="rounded-lg border border-outline-variant/45 bg-white px-4 py-3 outline-none transition focus:border-primary"
           />
         </label>
         <label className="grid gap-2">
@@ -90,7 +90,7 @@ export function PasswordForm() {
             required
             minLength={10}
             autoComplete="new-password"
-            className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 outline-none transition focus:border-primary"
+            className="rounded-lg border border-outline-variant/45 bg-white px-4 py-3 outline-none transition focus:border-primary"
           />
         </label>
         <label className="grid gap-2">
@@ -101,7 +101,7 @@ export function PasswordForm() {
             required
             minLength={10}
             autoComplete="new-password"
-            className="rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 outline-none transition focus:border-primary"
+            className="rounded-lg border border-outline-variant/45 bg-white px-4 py-3 outline-none transition focus:border-primary"
           />
         </label>
         <div className="grid gap-3 md:col-span-3">
@@ -109,7 +109,7 @@ export function PasswordForm() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="inline-flex w-fit items-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-primary-container disabled:cursor-not-allowed disabled:opacity-65"
+            className="inline-flex w-fit items-center gap-2 rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-primary-container disabled:cursor-not-allowed disabled:opacity-65"
           >
             {isSubmitting ? (
               <Loader2 className="h-4 w-4 animate-spin" />

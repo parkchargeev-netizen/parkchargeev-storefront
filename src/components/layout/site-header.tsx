@@ -62,7 +62,7 @@ export function SiteHeader({ navigation = siteConfig.primaryNavigation }: SiteHe
 
         <nav
           aria-label="Birincil navigasyon"
-          className="hidden min-w-0 items-center gap-1 rounded-full border border-outline-variant/35 bg-white/76 p-1 text-sm font-black text-on-surface-variant shadow-[inset_0_1px_0_rgba(255,255,255,0.78)] xl:flex"
+          className="hidden min-w-0 items-center gap-1 rounded-full border border-outline-variant/35 bg-white/76 p-1 text-sm font-bold text-on-surface-variant shadow-[inset_0_1px_0_rgba(255,255,255,0.78)] xl:flex"
         >
           {visibleNavigation.map((item) => (
             <Link

@@ -703,13 +703,13 @@ export function CheckoutPageClient({
 
   return (
     <main className="checkout-page mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
-      <div className="checkout-command-center rounded-[32px] border border-white/80 bg-white/82 p-4 shadow-[0_24px_80px_rgba(6,51,38,0.10)] backdrop-blur-xl sm:p-6 lg:p-8">
+      <div className="checkout-command-center rounded-lg border border-white/80 bg-white/82 p-4 shadow-[0_24px_80px_rgba(6,51,38,0.10)] backdrop-blur-xl sm:p-6 lg:p-8">
         <header className="grid gap-6 lg:grid-cols-[1fr_420px] lg:items-end">
           <div>
-            <p className="text-xs font-black uppercase tracking-[0.34em] text-primary">
+            <p className="text-xs font-bold uppercase tracking-normal text-primary">
               PayTR uyumlu güvenli ödeme
             </p>
-            <h1 className="mt-3 max-w-3xl text-3xl font-black tracking-[-0.06em] text-on-surface sm:text-5xl">
+            <h1 className="mt-3 max-w-3xl text-3xl font-bold tracking-normal text-on-surface sm:text-5xl">
               Siparişi doğrulayın, kartı PayTR ile güvenli onaylayın.
             </h1>
             <p className="mt-4 max-w-2xl text-sm leading-7 text-on-surface-variant sm:text-base">
@@ -718,14 +718,14 @@ export function CheckoutPageClient({
             </p>
           </div>
 
-          <div className="grid gap-2 rounded-[24px] border border-primary/12 bg-primary/6 p-3 sm:grid-cols-3">
+          <div className="grid gap-2 rounded-lg border border-primary/12 bg-primary/6 p-3 sm:grid-cols-3">
             {trustItems.map((item) => {
               const Icon = item.icon;
 
               return (
-                <div key={item.title} className="rounded-[18px] bg-white/78 p-3">
+                <div key={item.title} className="rounded-lg bg-white/78 p-3">
                   <Icon className="h-5 w-5 text-primary" aria-hidden="true" />
-                  <p className="mt-2 text-sm font-black text-on-surface">{item.title}</p>
+                  <p className="mt-2 text-sm font-bold text-on-surface">{item.title}</p>
                   <p className="mt-1 text-xs leading-5 text-on-surface-variant">{item.detail}</p>
                 </div>
               );
@@ -737,13 +737,13 @@ export function CheckoutPageClient({
           {checkoutSteps.map((step, index) => (
             <li
               key={step.title}
-              className={`rounded-[22px] border p-4 ${
+              className={`rounded-lg border p-4 ${
                 index <= 3
                   ? "border-primary/25 bg-primary/7"
                   : "border-outline-variant/35 bg-white/78"
               }`}
             >
-              <span className="text-xs font-black uppercase tracking-[0.24em] text-primary">
+              <span className="text-xs font-bold uppercase tracking-normal text-primary">
                 Adım {index + 1}
               </span>
               <strong className="mt-2 block text-base text-on-surface">{step.title}</strong>
@@ -756,8 +756,8 @@ export function CheckoutPageClient({
       </div>
 
       {initialStatus ? (
-        <section className="mt-6 rounded-[28px] border border-primary/15 bg-white/86 p-5 shadow-[0_16px_50px_rgba(6,51,38,0.08)] backdrop-blur-xl">
-          <p className="text-sm font-black uppercase tracking-[0.24em] text-primary">
+        <section className="mt-6 rounded-lg border border-primary/15 bg-white/86 p-5 shadow-[0_16px_50px_rgba(6,51,38,0.08)] backdrop-blur-xl">
+          <p className="text-sm font-bold uppercase tracking-normal text-primary">
             PayTR dönüş bilgisi
           </p>
           <p className="mt-2 text-sm leading-6 text-on-surface-variant">
@@ -771,14 +771,14 @@ export function CheckoutPageClient({
         <section className="space-y-6">
           <form
             onSubmit={handleSubmit}
-            className="rounded-[30px] border border-white/80 bg-white/88 p-4 shadow-[0_24px_80px_rgba(6,51,38,0.10)] backdrop-blur-xl sm:p-6 lg:p-8"
+            className="rounded-lg border border-white/80 bg-white/88 p-4 shadow-[0_24px_80px_rgba(6,51,38,0.10)] backdrop-blur-xl sm:p-6 lg:p-8"
           >
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.28em] text-primary">
+                <p className="text-xs font-bold uppercase tracking-normal text-primary">
                   İletişim ve adres
                 </p>
-                <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-on-surface">
+                <h2 className="mt-2 text-2xl font-bold tracking-normal text-on-surface">
                   Sipariş bilgileri
                 </h2>
                 <p className="mt-2 max-w-2xl text-sm leading-6 text-on-surface-variant">
@@ -796,7 +796,7 @@ export function CheckoutPageClient({
                   autoComplete="name"
                   value={draft.fullName}
                   onChange={(event) => updateField("fullName", event.target.value)}
-                  className="min-h-12 rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
+                  className="min-h-12 rounded-lg border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
                 />
               </label>
 
@@ -808,7 +808,7 @@ export function CheckoutPageClient({
                   autoComplete="email"
                   value={draft.email}
                   onChange={(event) => updateField("email", event.target.value)}
-                  className="min-h-12 rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
+                  className="min-h-12 rounded-lg border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
                 />
               </label>
 
@@ -821,7 +821,7 @@ export function CheckoutPageClient({
                   inputMode="tel"
                   value={draft.phone}
                   onChange={(event) => updateField("phone", event.target.value)}
-                  className="min-h-12 rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
+                  className="min-h-12 rounded-lg border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
                 />
                 <span id="checkout-phone-help" className="text-xs leading-5 text-on-surface-variant">
                   Kargo ve kurulum planı için kullanılır.
@@ -835,7 +835,7 @@ export function CheckoutPageClient({
                   autoComplete="address-level1"
                   value={draft.city}
                   onChange={(event) => updateField("city", event.target.value)}
-                  className="min-h-12 rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
+                  className="min-h-12 rounded-lg border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
                 />
                 <span className="text-xs leading-5 text-on-surface-variant">
                   Ürün kargosu Türkiye geneline planlanır.
@@ -848,7 +848,7 @@ export function CheckoutPageClient({
                   autoComplete="address-level2"
                   value={draft.district}
                   onChange={(event) => updateField("district", event.target.value)}
-                  className="min-h-12 rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
+                  className="min-h-12 rounded-lg border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
                 />
               </label>
 
@@ -859,7 +859,7 @@ export function CheckoutPageClient({
                   value={draft.deliveryNote}
                   onChange={(event) => updateField("deliveryNote", event.target.value)}
                   placeholder="Site adı, daire, kurulum notu"
-                  className="min-h-12 rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
+                  className="min-h-12 rounded-lg border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
                 />
               </label>
 
@@ -871,19 +871,19 @@ export function CheckoutPageClient({
                   rows={4}
                   value={draft.address}
                   onChange={(event) => updateField("address", event.target.value)}
-                  className="rounded-3xl border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
+                  className="rounded-lg border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
                 />
               </label>
             </fieldset>
 
-            <section className="checkout-payment-card mt-6 rounded-[26px] border border-primary/12 bg-linear-to-br from-primary/7 via-white to-secondary/8 p-4 sm:p-5">
+            <section className="checkout-payment-card mt-6 rounded-lg border border-primary/12 bg-linear-to-br from-primary/7 via-white to-secondary/8 p-4 sm:p-5">
               <div className="checkout-payment-card__head">
                 <div className="flex gap-3">
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary text-white">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary text-white">
                     <CreditCard className="h-5 w-5" aria-hidden="true" />
                   </span>
                   <div>
-                    <h3 className="text-lg font-black text-on-surface">Kart bilgileri</h3>
+                    <h3 className="text-lg font-bold text-on-surface">Kart bilgileri</h3>
                     <p className="mt-1 text-sm leading-6 text-on-surface-variant">
                       Kart bilgileri ParkChargeEV tarafında saklanmaz. Doğrulama formu PayTR
                       güvenli ödeme sistemine iletilir.
@@ -906,7 +906,7 @@ export function CheckoutPageClient({
                     name="cc_owner"
                     autoComplete="cc-name"
                     placeholder="Ad Soyad"
-                    className="min-h-12 rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
+                    className="min-h-12 rounded-lg border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
                   />
                 </label>
 
@@ -919,7 +919,7 @@ export function CheckoutPageClient({
                     inputMode="numeric"
                     pattern="[0-9 ]{13,23}"
                     placeholder="0000 0000 0000 0000"
-                    className="min-h-12 rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
+                    className="min-h-12 rounded-lg border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
                   />
                 </label>
 
@@ -933,7 +933,7 @@ export function CheckoutPageClient({
                       inputMode="numeric"
                       pattern="0?[1-9]|1[0-2]"
                       placeholder="AA"
-                      className="min-h-12 rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
+                      className="min-h-12 rounded-lg border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
                     />
                   </label>
 
@@ -946,7 +946,7 @@ export function CheckoutPageClient({
                       inputMode="numeric"
                       pattern="[0-9]{2,4}"
                       placeholder="YY"
-                      className="min-h-12 rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
+                      className="min-h-12 rounded-lg border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
                     />
                   </label>
 
@@ -959,13 +959,13 @@ export function CheckoutPageClient({
                       inputMode="numeric"
                       pattern="[0-9]{3,4}"
                       placeholder="000"
-                      className="min-h-12 rounded-2xl border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
+                      className="min-h-12 rounded-lg border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
                     />
                   </label>
                 </div>
               </fieldset>
 
-              <label className="mt-5 flex gap-3 rounded-2xl bg-white/78 p-3 text-sm leading-6 text-on-surface-variant">
+              <label className="mt-5 flex gap-3 rounded-lg bg-white/78 p-3 text-sm leading-6 text-on-surface-variant">
                 <input
                   type="checkbox"
                   checked={agreementAccepted}
@@ -980,7 +980,7 @@ export function CheckoutPageClient({
               </label>
 
               {error ? (
-                <p className="mt-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+                <p className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
                   {error}
                 </p>
               ) : null}
@@ -988,7 +988,7 @@ export function CheckoutPageClient({
               <button
                 type="submit"
                 disabled={isSubmitting || !isCheckoutInfoComplete}
-                className="checkout-pay-button mt-5 min-h-12 rounded-2xl bg-primary px-6 py-3 text-base font-black text-white shadow-[0_16px_38px_rgba(6,51,38,0.22)] transition hover:-translate-y-0.5 hover:bg-primary/92 disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0"
+                className="checkout-pay-button mt-5 min-h-12 rounded-lg bg-primary px-6 py-3 text-base font-bold text-white shadow-[0_16px_38px_rgba(6,51,38,0.22)] transition hover:-translate-y-0.5 hover:bg-primary/92 disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0"
               >
                 {isSubmitting ? "PayTR doğruluyor..." : "Kartı Doğrula ve Öde"}
               </button>
@@ -1011,11 +1011,11 @@ export function CheckoutPageClient({
             totalKurus={totalKurus}
           />
 
-          <div className="rounded-[26px] border border-white/80 bg-white/84 p-4 shadow-[0_16px_50px_rgba(6,51,38,0.08)] backdrop-blur-xl">
+          <div className="rounded-lg border border-white/80 bg-white/84 p-4 shadow-[0_16px_50px_rgba(6,51,38,0.08)] backdrop-blur-xl">
             <div className="flex items-start gap-3">
               <MapPin className="mt-1 h-5 w-5 text-primary" aria-hidden="true" />
               <div>
-                <p className="text-sm font-black text-on-surface">Teslimat ve kurulum notu</p>
+                <p className="text-sm font-bold text-on-surface">Teslimat ve kurulum notu</p>
                 <p className="mt-1 text-xs leading-5 text-on-surface-variant">
                   {serviceCoverageSummary.note}
                 </p>

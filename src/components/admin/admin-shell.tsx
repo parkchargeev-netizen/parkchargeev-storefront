@@ -177,7 +177,10 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
   const mobileQuickItems = items.slice(0, 8);
 
   return (
-    <div className="min-h-screen bg-[#f4f8f6] text-slate-950">
+    <div
+      className="admin-experience min-h-screen bg-[#f4f8f6] text-slate-950"
+      data-motion-scope
+    >
       <AdminSessionGuard />
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div className="absolute -left-24 top-10 h-80 w-80 rounded-full bg-emerald-200/28 blur-3xl" />
@@ -190,9 +193,9 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
           <aside className="hidden xl:block">
             <div className="sticky top-5 space-y-4">
               <section className="surface-card overflow-hidden border border-white/70 p-5">
-                <div className="rounded-[26px] bg-[#063326] p-5 text-white">
+                <div className="rounded-lg bg-[#063326] p-5 text-white">
                   <div className="flex items-center gap-3">
-                    <span className="grid h-12 w-12 place-items-center rounded-2xl bg-white/[0.16] text-sm font-black">
+                    <span className="grid h-12 w-12 place-items-center rounded-lg bg-white/[0.16] text-sm font-bold">
                       {getAdminInitials(admin.fullName)}
                     </span>
                     <div className="min-w-0">
@@ -201,7 +204,7 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
                     </div>
                   </div>
                   <div className="mt-5 flex flex-wrap gap-2">
-                    <span className="rounded-full bg-white px-3 py-1 text-xs font-black text-[#063326]">
+                    <span className="rounded-full bg-white px-3 py-1 text-xs font-bold text-[#063326]">
                       {adminRoleLabels[admin.role]}
                     </span>
                     <span className="inline-flex items-center gap-1.5 rounded-full bg-white/[0.14] px-3 py-1 text-xs font-semibold text-white">
@@ -219,7 +222,7 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
                   ].map((item) => (
                     <span
                       key={item}
-                      className="rounded-2xl border border-emerald-100 bg-emerald-50/70 px-4 py-2 text-xs font-black text-[#063326]"
+                      className="rounded-lg border border-emerald-100 bg-emerald-50/70 px-4 py-2 text-xs font-bold text-[#063326]"
                     >
                       {item}
                     </span>
@@ -228,7 +231,7 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
               </section>
 
               <section className="surface-card border border-white/70 p-4">
-                <div className="flex items-center gap-2 px-2 text-xs font-black uppercase tracking-[0.22em] text-slate-500">
+                <div className="flex items-center gap-2 px-2 text-xs font-bold uppercase tracking-normal text-slate-500">
                   <Sparkles className="h-4 w-4" />
                   Çalışma Alanı
                 </div>
@@ -247,7 +250,7 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
 
                     return (
                       <div key={group.label}>
-                        <p className="mb-2 flex items-center gap-2 px-2 text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">
+                        <p className="mb-2 flex items-center gap-2 px-2 text-xs font-bold uppercase tracking-normal text-slate-400">
                           <GroupIcon className="h-3.5 w-3.5" />
                           {group.label}
                         </p>
@@ -274,19 +277,19 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
               </section>
 
               <section className="surface-card border border-white/70 p-4">
-                <p className="text-xs font-black uppercase tracking-[0.22em] text-slate-500">
+                <p className="text-xs font-bold uppercase tracking-normal text-slate-500">
                   Hızlı panel
                 </p>
                 <div className="mt-3 grid gap-2">
                   <AdminPrefetchLink
                     href="/admin/teklifler"
-                    className="rounded-2xl bg-emerald-50 px-4 py-3 text-sm font-bold text-[#063326] transition hover:bg-emerald-100"
+                    className="rounded-lg bg-emerald-50 px-4 py-3 text-sm font-bold text-[#063326] transition hover:bg-emerald-100"
                   >
                     Teklifleri önceliklendir
                   </AdminPrefetchLink>
                   <AdminPrefetchLink
                     href="/admin/saha"
-                    className="rounded-2xl bg-slate-100 px-4 py-3 text-sm font-bold text-slate-800 transition hover:bg-slate-200"
+                    className="rounded-lg bg-slate-100 px-4 py-3 text-sm font-bold text-slate-800 transition hover:bg-slate-200"
                   >
                     Saha planını aç
                   </AdminPrefetchLink>
@@ -296,23 +299,23 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
             </div>
           </aside>
 
-          <main className="min-w-0 space-y-5">
+          <main className="min-w-0 space-y-5" data-motion-scope>
             <section className="surface-card border border-white/70 p-4 xl:hidden">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <p className="text-xs font-black uppercase tracking-[0.24em] text-[#063326]">
+                  <p className="text-xs font-bold uppercase tracking-normal text-[#063326]">
                     ParkChargeEV Admin
                   </p>
-                  <h1 className="mt-2 text-2xl font-black tracking-[-0.04em] text-slate-950">
+                  <h1 className="mt-2 text-2xl font-bold tracking-normal text-slate-950">
                     Kontrol merkezi
                   </h1>
                   <p className="mt-1 text-sm text-slate-600">{admin.fullName}</p>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-[#063326]">
+                  <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-[#063326]">
                     {adminRoleLabels[admin.role]}
                   </span>
-                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-700">
+                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-700">
                     {databaseEnabled ? "Canlı veri" : "Yerel veri"}
                   </span>
                 </div>
@@ -341,11 +344,11 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
             <section className="surface-card border border-white/70 px-5 py-4">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div className="min-w-0">
-                  <p className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.24em] text-[#0f8f6f]">
+                  <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-normal text-[#0f8f6f]">
                     <Search className="h-4 w-4" />
                     Admin operasyonu
                   </p>
-                  <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-slate-950">
+                  <h2 className="mt-2 text-2xl font-bold tracking-normal text-slate-950">
                     Satış, saha, içerik ve güvenlik tek ekranda.
                   </h2>
                 </div>
