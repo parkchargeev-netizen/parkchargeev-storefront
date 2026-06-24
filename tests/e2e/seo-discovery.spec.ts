@@ -93,4 +93,63 @@ test.describe("@e2e SEO and AI discovery", () => {
     expect(combinedJsonLd).toContain('"@type":"OfferCatalog"');
     expect(combinedJsonLd).toContain('"areaServed"');
   });
+
+  test("store targets the electric vehicle charger search intent", async ({ page }) => {
+    await page.goto("/magaza", { waitUntil: "domcontentloaded" });
+
+    await expect(page).toHaveTitle(
+      /Elektrikli Araç Şarj Cihazları ve Fiyatları/
+    );
+    await expect(
+      page.getByRole("heading", {
+        level: 1,
+        name: "Elektrikli araç şarj cihazları ve fiyatları"
+      })
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", {
+        name: "Elektrikli araç şarj cihazı nasıl seçilir?"
+      })
+    ).toBeVisible();
+    await expect(
+      page.getByText(/elektrikli araç şarj aleti, EV charger veya wallbox/i)
+    ).toBeVisible();
+
+    const jsonLd = await page
+      .locator('script[type="application/ld+json"]')
+      .allTextContents();
+    const combinedJsonLd = jsonLd.join("\n");
+
+    expect(combinedJsonLd).toContain('"@type":"CollectionPage"');
+    expect(combinedJsonLd).toContain('"@type":"ItemList"');
+    expect(combinedJsonLd).toContain("Elektrikli araç şarj aleti");
+  });
+
+  test("charger selection guide is indexable and linked from the store", async ({
+    page
+  }) => {
+    await page.goto("/magaza", { waitUntil: "domcontentloaded" });
+
+    const guideLink = page.getByRole("link", {
+      name: "Ev tipi seçim rehberi"
+    });
+    await expect(guideLink).toHaveAttribute(
+      "href",
+      "/blog/elektrikli-arac-sarj-cihazi-secim-rehberi"
+    );
+
+    await guideLink.click();
+    await expect(page).toHaveURL(
+      /\/blog\/elektrikli-arac-sarj-cihazi-secim-rehberi$/
+    );
+    await expect(
+      page.getByRole("heading", {
+        level: 1,
+        name: /Elektrikli Araç Şarj Cihazı Seçim Rehberi/
+      })
+    ).toBeVisible();
+    await expect(
+      page.getByText("ParkChargeEV teknik içerik ekibi tarafından hazırlanmıştır.")
+    ).toBeVisible();
+  });
 });

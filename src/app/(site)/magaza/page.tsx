@@ -10,24 +10,28 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { ProductCard } from "@/components/shop/product-card";
 import { StoreProductSelectorAccordion } from "@/components/shop/store-product-selector-accordion";
 import { conversionDataAttributes } from "@/lib/conversion-events";
+import { storeSearchFaqs } from "@/features/store/domain/store-search-content";
+import { StoreSearchGuide } from "@/features/store/ui/store-search-guide";
 import { absoluteUrl } from "@/lib/site";
 import { getProductStoreProfile, getStoreFilterOptions } from "@/lib/shop-merchandising";
 import {
   getBreadcrumbJsonLd,
+  getFaqJsonLd,
   getProductImageUrl
 } from "@/lib/structured-data";
 import { listPublicProducts } from "@/server/admin/repository";
 
 export const metadata: Metadata = {
-  title: "EV Şarj Mağazası | Ev, Site ve İşletme Çözümleri",
+  title: "Elektrikli Araç Şarj Cihazları ve Fiyatları",
   description:
-    "Ev tipi wallbox, site ve apartman şarj altyapısı, işletme otoparkı, DC hızlı şarj ve Type 2 aksesuarları araç uyumu ve kurulum ihtiyacıyla karşılaştırın.",
+    "Elektrikli araç şarj cihazı fiyatlarını karşılaştırın. Ev tipi 7.4 kW, 11 kW, 22 kW wallbox, DC hızlı şarj ve Type 2 ürünleri inceleyin.",
   alternates: {
     canonical: "/magaza"
   },
   openGraph: {
-    title: "ParkChargeEV EV Şarj Mağazası",
-    description: "Doğru cihazı, kurulum ihtiyacını ve araç uyumunu tek ekranda karşılaştırın.",
+    title: "Elektrikli Araç Şarj Cihazları | ParkChargeEV",
+    description:
+      "Ev tipi ve kurumsal elektrikli araç şarj cihazlarını güç, fiyat, araç uyumu ve kurulum ihtiyacına göre karşılaştırın.",
     url: "/magaza",
     type: "website"
   }
@@ -178,6 +182,24 @@ export default async function StorePage({ searchParams }: StorePageProps) {
       }
     }))
   };
+  const collectionPageJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "@id": absoluteUrl("/magaza#collection"),
+    name: "Elektrikli Araç Şarj Cihazları ve Fiyatları",
+    description:
+      "Ev tipi wallbox, iş yeri şarj cihazı, DC hızlı şarj ve Type 2 aksesuar ürünleri.",
+    url: absoluteUrl("/magaza"),
+    inLanguage: "tr-TR",
+    about: [
+      "Elektrikli araç şarj cihazı",
+      "Elektrikli araç şarj aleti",
+      "Ev tipi şarj cihazı",
+      "Wallbox",
+      "Type 2 şarj"
+    ],
+    mainEntity: itemListJsonLd
+  };
   const breadcrumbJsonLd = getBreadcrumbJsonLd([
     { name: "Ana Sayfa", path: "/" },
     { name: "Mağaza", path: "/magaza" }
@@ -242,15 +264,22 @@ export default async function StorePage({ searchParams }: StorePageProps) {
 
   return (
     <div className="store-page mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <JsonLd data={[itemListJsonLd, breadcrumbJsonLd]} />
+      <JsonLd
+        data={[
+          collectionPageJsonLd,
+          breadcrumbJsonLd,
+          getFaqJsonLd([...storeSearchFaqs])
+        ]}
+      />
 
       <section className="store-commerce-header">
         <div className="store-commerce-header__top">
           <div className="store-commerce-header__lead">
-            <p className="premium-eyebrow">Mağaza</p>
-            <h1>Doğru şarj ürününü hızlı seçin.</h1>
+            <p className="premium-eyebrow">Elektrikli araç şarj mağazası</p>
+            <h1>Elektrikli araç şarj cihazları ve fiyatları</h1>
             <p>
-              Güç, uyum ve stok kararını tek ekranda görün.
+              Ev tipi wallbox, 7.4 kW, 11 kW, 22 kW ve Type 2 ürünleri güç,
+              araç uyumu, stok ve kurulum ihtiyacına göre karşılaştırın.
             </p>
           </div>
           <form action="/magaza" className="store-hero-search">
@@ -403,6 +432,8 @@ export default async function StorePage({ searchParams }: StorePageProps) {
           )}
         </section>
       </div>
+
+      <StoreSearchGuide />
     </div>
   );
 }

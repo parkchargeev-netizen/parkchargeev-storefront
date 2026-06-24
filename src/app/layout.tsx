@@ -8,7 +8,7 @@ import { absoluteUrl, siteConfig } from "@/lib/site";
 
 import "@/app/globals.css";
 
-const defaultTitle = `${siteConfig.name} | EV Şarj Cihazı ve Kurulum Çözümleri`;
+const defaultTitle = `Elektrikli Araç Şarj Cihazı ve Kurulum | ${siteConfig.name}`;
 const defaultOgImage = absoluteUrl("/api/og/product/homecharge-pro-11kw");
 const googleTagId = "AW-17739531406";
 const clarityProjectId = "xc0amcuu8z";
@@ -23,6 +23,9 @@ export const metadata: Metadata = {
   applicationName: siteConfig.name,
   keywords: [
     "elektrikli araç şarj cihazı",
+    "elektrikli araç şarj aleti",
+    "elektrikli araç şarj cihazı fiyatları",
+    "ev tipi elektrikli araç şarj cihazı",
     "EV şarj cihazı",
     "wallbox",
     "şarj cihazı kurulumu",

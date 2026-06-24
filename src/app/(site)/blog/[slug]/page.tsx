@@ -46,6 +46,7 @@ export async function generateMetadata({
       url: `/blog/${article.slug}`,
       type: "article",
       publishedTime: article.publishedAt,
+      modifiedTime: article.updatedAt ?? article.publishedAt,
       authors: ["ParkChargeEV"],
       images: [
         {
@@ -115,8 +116,12 @@ export default async function ArticleDetailPage({
         <div className="mt-5 flex flex-wrap gap-4 text-sm text-on-surface-variant">
           <span>{article.category}</span>
           <span>{article.readingMinutes} dk okuma</span>
-          <span>{article.publishedAt}</span>
+          <span>Yayın: {article.publishedAt}</span>
+          <span>Güncelleme: {article.updatedAt ?? article.publishedAt}</span>
         </div>
+        <p className="mt-4 text-sm font-semibold text-on-surface">
+          ParkChargeEV teknik içerik ekibi tarafından hazırlanmıştır.
+        </p>
         <p className="mt-8 text-lg leading-8 text-on-surface-variant">
           {article.excerpt}
         </p>

@@ -1,7 +1,7 @@
 export const siteConfig = {
   name: "ParkChargeEV",
   description:
-    "Ev, site, işletme ve ticari lokasyonlar için elektrikli araç şarj cihazı, keşif, kurulum ve teknik destek çözümleri.",
+    "Elektrikli araç şarj cihazları, ev tipi wallbox ürünleri, Type 2 aksesuarlar, keşif, kurulum ve teknik destek çözümleri.",
   domain: "parkchargeev.com",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://parkchargeev.com",
   phone: process.env.NEXT_PUBLIC_SUPPORT_PHONE ?? "05514914320",

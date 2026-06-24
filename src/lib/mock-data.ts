@@ -531,6 +531,101 @@ export const solutionPages: SolutionModel[] = [
 
 export const articles: ArticleModel[] = [
   {
+    id: "art_ev_charger_selection",
+    slug: "elektrikli-arac-sarj-cihazi-secim-rehberi",
+    title:
+      "Elektrikli Araç Şarj Cihazı Seçim Rehberi: Ev Tipi, 7.4 kW, 11 kW ve 22 kW",
+    category: "Satın Alma Rehberi",
+    excerpt:
+      "Elektrikli araç şarj cihazı seçerken güç, araç uyumu, faz yapısı, Type 2 bağlantı ve kurulum maliyetini birlikte değerlendirmenizi sağlayan kapsamlı rehber.",
+    coverKicker: "Elektrikli Araç Şarj Cihazları",
+    publishedAt: "2026-06-24",
+    updatedAt: "2026-06-24",
+    readingMinutes: 10,
+    seoDescription:
+      "Elektrikli araç şarj cihazı ve ev tipi şarj aleti seçimi için 7.4 kW, 11 kW ve 22 kW farklarını, fiyatı etkileyen unsurları ve kurulum gereksinimlerini öğrenin.",
+    sections: [
+      {
+        heading: "Elektrikli araç şarj aleti mi, şarj cihazı mı?",
+        paragraphs: [
+          "Günlük aramalarda elektrikli araç şarj aleti ifadesi sık kullanılır. Teknik ve ticari ürün sınıflandırmasında ise elektrikli araç şarj cihazı, EV charger veya ev tipi sabit ürünlerde wallbox ifadeleri tercih edilir.",
+          "Bu isimler çoğu aramada aynı ihtiyacı anlatır. Satın alma kararında asıl önemli olan cihazın AC veya DC olması, güç seviyesi, aracın bağlantı tipi, elektrik altyapısı ve güvenli kurulum şartlarıdır."
+        ]
+      },
+      {
+        heading: "7.4 kW, 11 kW ve 22 kW arasından hangisi seçilmeli?",
+        paragraphs: [
+          "7.4 kW cihazlar monofaze altyapıda ev kullanımı için pratik bir başlangıç sunar. Araç gece boyunca park ediyorsa günlük enerji ihtiyacının önemli bölümünü karşılayabilir.",
+          "11 kW wallbox, trifaze altyapıya sahip ev ve iş yerlerinde hız ile altyapı maliyeti arasında dengeli bir seçenektir. 22 kW ise kısa park süresi veya daha yoğun kullanım senaryolarında anlamlı olabilir."
+        ],
+        bullets: [
+          "7.4 kW: monofaze evler ve uzun gece parkı",
+          "11 kW: trifaze ev, villa ve dengeli günlük kullanım",
+          "22 kW: uygun araç ve altyapıda iş yeri veya yoğun kullanım"
+        ]
+      },
+      {
+        heading: "Cihaz gücü aracın gerçek şarj hızını tek başına belirlemez",
+        paragraphs: [
+          "Bir aracın AC şarjda alabileceği güç, araç üzerindeki dahili şarj ünitesinin kapasitesiyle sınırlıdır. 22 kW cihaz satın almak, araç yalnızca 11 kW AC kabul ediyorsa şarj hızını 22 kW'a çıkarmaz.",
+          "Bu nedenle araç modeli, bağlantı standardı ve maksimum AC kabul gücü ürün seçmeden önce kontrol edilmelidir. Type 2 bağlantı yaygın olsa da güç ve faz desteği araçtan araca değişebilir."
+        ]
+      },
+      {
+        heading: "Elektrik altyapısı ve kurulum neden birlikte değerlendirilir?",
+        paragraphs: [
+          "Sabit bir şarj cihazı yüksek süreli elektrik yükü oluşturur. Elektrik panosu, faz yapısı, mevcut güç, kablo kesiti, hat mesafesi, kaçak akım koruması ve montaj alanı güvenli kurulum için birlikte incelenmelidir.",
+          "Teknik keşif, gereğinden yüksek güçlü cihaz alınmasını veya kurulum sırasında beklenmeyen pano ve kablo maliyetleri çıkmasını önlemeye yardımcı olur."
+        ],
+        bullets: [
+          "Pano ve abonelik gücü",
+          "Monofaze veya trifaze altyapı",
+          "Kablo güzergahı ve mesafesi",
+          "Koruma ekipmanları",
+          "Kapalı veya açık montaj alanı"
+        ]
+      },
+      {
+        heading: "Elektrikli araç şarj cihazı fiyatını neler etkiler?",
+        paragraphs: [
+          "Cihaz fiyatı güç seviyesine ek olarak sabit kablo veya soket seçimi, kablo uzunluğu, RFID, Wi-Fi, mobil uygulama, yük yönetimi, koruma sınıfı ve ticari yönetim özelliklerine göre değişir.",
+          "Toplam yatırım hesabında yalnızca ürün bedeline bakılmamalıdır. Kablo hattı, pano düzenlemesi, koruma elemanları, montaj ve devreye alma ayrı kalemler olarak değerlendirilmelidir."
+        ]
+      },
+      {
+        heading: "Satın almadan önce kısa kontrol listesi",
+        paragraphs: [
+          "Doğru ürün, en yüksek güce sahip ürün değil; aracın, elektrik altyapısının ve günlük kullanım alışkanlığının birlikte desteklediği üründür."
+        ],
+        bullets: [
+          "Aracın AC şarj kapasitesini doğrulayın.",
+          "Type 2 veya diğer bağlantı tipini kontrol edin.",
+          "Günlük kilometre ve park süresini hesaplayın.",
+          "Elektrik altyapısı için teknik ön değerlendirme alın.",
+          "Cihaz ve kurulum maliyetini ayrı ayrı gösteren teklif isteyin.",
+          "Garanti ve satış sonrası teknik destek kapsamını inceleyin."
+        ]
+      }
+    ],
+    faq: [
+      {
+        question: "Ev tipi elektrikli araç şarj cihazı kaç saatte şarj eder?",
+        answer:
+          "Süre; araç bataryasının kapasitesine, mevcut doluluk oranına, aracın kabul ettiği AC güce ve cihaz gücüne bağlıdır. Aynı 11 kW wallbox farklı araçlarda farklı sürelerde sonuç verebilir."
+      },
+      {
+        question: "22 kW şarj cihazı her elektrikli araç için uygun mudur?",
+        answer:
+          "Type 2 bağlantı fiziksel olarak uyumlu olsa bile her araç 22 kW AC kabul etmez. Aracın dahili şarj kapasitesi ve tesisat uygunluğu kontrol edilmeden yalnızca yüksek güce göre karar verilmemelidir."
+      },
+      {
+        question: "Taşınabilir şarj aleti mi sabit wallbox mı seçilmeli?",
+        answer:
+          "Taşınabilir ürünler yedek veya seyahat çözümü olabilir. Düzenli ev şarjında sabit wallbox; özel hat, koruma ekipmanı, daha kontrollü kullanım ve montaj disiplini açısından daha uygun olabilir."
+      }
+    ]
+  },
+  {
     id: "art_home_installation",
     slug: "evde-elektrikli-arac-sarj-cihazi-kurulumu",
     title: "Evde Elektrikli Araç Şarj Cihazı Kurulumu Nasıl Planlanır?",

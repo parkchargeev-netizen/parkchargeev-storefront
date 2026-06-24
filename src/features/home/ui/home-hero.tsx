@@ -21,7 +21,7 @@ export function HomeHero({ whatsappHref }: HomeHeroProps) {
 
       <div className="premium-hero__inner relative z-10 mx-auto flex max-w-7xl flex-col justify-center px-4 py-12 sm:px-6 lg:px-8">
         <div className="premium-hero__copy max-w-[43rem]" data-motion="reveal">
-          <p className="premium-hero__eyebrow">Elektrikli araç şarj sistemleri</p>
+          <p className="premium-hero__eyebrow">Elektrikli araç şarj cihazları</p>
 
           <div className="premium-hero__mobile-trust">
             {heroTrustSignals.map((item) => {
@@ -37,11 +37,12 @@ export function HomeHero({ whatsappHref }: HomeHeroProps) {
           </div>
 
           <h1 className="mt-5 max-w-[43rem] text-4xl font-bold leading-tight tracking-normal text-white sm:text-5xl">
-            Aracınız ve otoparkınız için doğru şarj çözümünü seçin.
+            Elektrikli araç şarj cihazınızı doğru güç ve kurulumla seçin.
           </h1>
           <p className="mt-5 max-w-xl text-base leading-7 text-white/82 sm:text-lg">
-            Evden filoya kadar şarj ihtiyacınızı ürün, keşif, kurulum ve servis
-            katmanlarıyla tek projede yönetin.
+            Ev tipi 7.4 kW, 11 kW ve 22 kW wallbox seçeneklerini karşılaştırın;
+            aracınıza ve elektrik altyapınıza uygun ürünü keşif, kurulum ve servis
+            desteğiyle alın.
           </p>
 
           <div
@@ -53,12 +54,12 @@ export function HomeHero({ whatsappHref }: HomeHeroProps) {
               href="/magaza"
               className="premium-btn premium-btn--primary"
               {...conversionDataAttributes("hero_cta_click", {
-                cta: "Ürünleri İncele",
+                cta: "Şarj Cihazlarını İncele",
                 href: "/magaza"
               })}
             >
               <ShoppingBag className="h-5 w-5" aria-hidden />
-              Ürünleri İncele
+              Şarj Cihazlarını İncele
             </Link>
             <Link
               href="/urun-secici"

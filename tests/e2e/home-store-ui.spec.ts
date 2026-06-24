@@ -5,7 +5,7 @@ test("@e2e ana sayfa sade karar akisini gosterir", async ({ page }) => {
 
   await expect(
     page.getByRole("heading", {
-      name: "Aracınız ve otoparkınız için doğru şarj çözümünü seçin."
+      name: "Elektrikli araç şarj cihazınızı doğru güç ve kurulumla seçin."
     })
   ).toBeVisible();
   await expect(page.locator(".premium-hero-route")).toHaveCount(3);
@@ -60,7 +60,7 @@ test("@e2e magaza acik renkli e-ticaret girisi ve kayan urun vitrini sunar", asy
 
   await expect(
     page.getByRole("heading", {
-      name: "Doğru şarj ürününü hızlı seçin."
+      name: "Elektrikli araç şarj cihazları ve fiyatları"
     })
   ).toBeVisible();
   await expect(page.getByRole("textbox", { name: "Mağazada ürün ara" })).toBeVisible();
@@ -75,6 +75,20 @@ test("@e2e magaza acik renkli e-ticaret girisi ve kayan urun vitrini sunar", asy
     return element.getBoundingClientRect().width;
   });
   expect(firstCardWidth).toBeLessThanOrEqual(250);
+
+  const firstFixedBadge = productRail.locator(".premium-product-card__fixed-badge").first();
+  await expect(firstFixedBadge).toBeVisible();
+  const badgeOffset = await firstFixedBadge.evaluate((badge) => {
+    const badgeBox = badge.getBoundingClientRect();
+    const cardBox = badge.closest(".premium-product-card")?.getBoundingClientRect();
+
+    return {
+      left: badgeBox.left - (cardBox?.left ?? 0),
+      top: badgeBox.top - (cardBox?.top ?? 0)
+    };
+  });
+  expect(badgeOffset.left).toBeLessThanOrEqual(24);
+  expect(badgeOffset.top).toBeLessThanOrEqual(24);
 
   const isScrollable = await productRail.evaluate((element) => {
     return element.scrollWidth > element.clientWidth;
@@ -124,7 +138,10 @@ test("@e2e magaza acik renkli e-ticaret girisi ve kayan urun vitrini sunar", asy
 test("@e2e urun kartlari tek tiklanabilir detay hedefi sunar", async ({ page }) => {
   await page.goto("/magaza", { waitUntil: "domcontentloaded" });
 
-  const firstCardLink = page.locator(".premium-product-card-link").first();
+  const catalogCardLinks = page.locator(
+    ".store-product-grid--commerce .premium-product-card-link"
+  );
+  const firstCardLink = catalogCardLinks.first();
   await expect(firstCardLink).toBeVisible();
   await expect(firstCardLink).toHaveAttribute("href", /\/urun\//);
   await expect(firstCardLink.locator(".premium-product-card")).toBeVisible();
@@ -137,12 +154,12 @@ test("@e2e urun kartlari tek tiklanabilir detay hedefi sunar", async ({ page }) 
   await expect(page).toHaveURL(new RegExp(`${href?.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`));
 
   await page.goto("/magaza", { waitUntil: "domcontentloaded" });
-  const secondCardLink = page.locator(".premium-product-card-link").nth(1);
+  const secondCardLink = page
+    .locator(".store-product-grid--commerce .premium-product-card-link")
+    .nth(1);
   const secondHref = await secondCardLink.getAttribute("href");
-  const cardBox = await secondCardLink.locator(".premium-product-card").boundingBox();
-
-  expect(cardBox).not.toBeNull();
-  await page.mouse.click((cardBox?.x ?? 0) + 18, (cardBox?.y ?? 0) + (cardBox?.height ?? 0) - 18);
+  await secondCardLink.scrollIntoViewIfNeeded();
+  await secondCardLink.click({ position: { x: 18, y: 18 } });
   await expect(page).toHaveURL(new RegExp(`${secondHref?.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`));
 });
 

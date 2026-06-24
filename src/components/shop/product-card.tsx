@@ -84,12 +84,17 @@ export function ProductCard({ product, layout = "standard" }: ProductCardProps) 
         data-motion="reveal"
       >
         <article className="premium-product-card premium-product-card--store surface-card grid h-full gap-4 rounded-lg p-3 transition-transform duration-200 group-hover:-translate-y-1 group-hover:border-primary/30 md:grid-cols-[180px_1fr]">
+          {product.badge ? (
+            <StatusBadge
+              tone="success"
+              className="premium-product-card__fixed-badge"
+            >
+              {product.badge}
+            </StatusBadge>
+          ) : null}
           <div className="premium-product-card__media relative min-h-44 overflow-hidden rounded-lg bg-surface-container">
             <ProductMedia imageUrl={imageUrl} product={product} store />
-            <div className="premium-product-card__badges absolute left-3 top-3 z-10 flex items-center gap-2">
-              {product.badge ? (
-                <StatusBadge tone="success">{product.badge}</StatusBadge>
-              ) : null}
+            <div className="premium-product-card__compare absolute right-3 top-3 z-10">
               <ProductCompareMarker productId={product.id} />
             </div>
           </div>
@@ -164,12 +169,17 @@ export function ProductCard({ product, layout = "standard" }: ProductCardProps) 
       data-motion="reveal"
     >
       <article className="premium-product-card surface-card flex h-full flex-col rounded-lg p-3 transition-transform duration-200 group-hover:-translate-y-1 group-hover:border-primary/30">
+        {product.badge ? (
+          <StatusBadge
+            tone="success"
+            className="premium-product-card__fixed-badge"
+          >
+            {product.badge}
+          </StatusBadge>
+        ) : null}
         <div className="premium-product-card__media relative mb-4 overflow-hidden rounded-lg bg-surface-container">
           <ProductMedia imageUrl={imageUrl} product={product} />
-          <div className="premium-product-card__badges absolute left-3 top-3 z-10 flex items-center gap-2">
-            {product.badge ? (
-              <StatusBadge tone="success">{product.badge}</StatusBadge>
-            ) : null}
+          <div className="premium-product-card__compare absolute right-3 top-3 z-10">
             <ProductCompareMarker productId={product.id} />
           </div>
         </div>
