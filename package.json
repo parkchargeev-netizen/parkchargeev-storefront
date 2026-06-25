@@ -22,6 +22,7 @@
     "verify:release": "npm run verify:runtime && npm run verify:architecture && npm run verify:uiux && npm run verify:admin && npm run verify:app && npm run verify:e2e && npm run verify:a11y && npm run verify:visual",
     "db:bootstrap:supabase": "node scripts/bootstrap-supabase-db.mjs",
     "db:site-cms": "node scripts/apply-site-cms-migration.mjs",
+    "db:media-assets": "node scripts/ensure-media-assets.mjs",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push"
   },

@@ -1,6 +1,7 @@
 import {
   type AnyPgColumn,
   boolean,
+  customType,
   index,
   integer,
   jsonb,
@@ -109,6 +110,12 @@ export const navigationAreaEnum = pgEnum("navigation_area", [
   "footer",
   "legal"
 ]);
+
+const bytea = customType<{ data: Buffer; driverData: Buffer }>({
+  dataType() {
+    return "bytea";
+  }
+});
 
 export const sitePages = pgTable(
   "site_pages",
@@ -328,6 +335,23 @@ export const productMedia = pgTable(
   },
   (table) => ({
     productIndex: index("product_media_product_idx").on(table.productId)
+  })
+);
+
+export const mediaAssets = pgTable(
+  "media_assets",
+  {
+    id: uuid("id").primaryKey(),
+    fileName: varchar("file_name", { length: 180 }).notNull(),
+    mimeType: varchar("mime_type", { length: 120 }).notNull(),
+    byteSize: integer("byte_size").notNull(),
+    data: bytea("data").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+  },
+  (table) => ({
+    createdAtIndex: index("media_assets_created_at_idx").on(table.createdAt)
   })
 );
 

@@ -4,6 +4,7 @@ import path from "node:path";
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 
+import { absoluteUrl } from "@/lib/site";
 import { inferProductMediaType } from "@/lib/product-media";
 import {
   getRuntimeConfigErrorPayload,
@@ -11,6 +12,7 @@ import {
   isRuntimeConfigError
 } from "@/lib/runtime-config";
 import { requireAdminRole } from "@/server/auth/guards";
+import { storeMediaAsset } from "@/server/media-assets";
 
 export const runtime = "nodejs";
 
@@ -52,7 +54,7 @@ function getMediaValidationMessage(file: File) {
 }
 
 function getSupabaseSetupPayload(error: unknown) {
-  if (!isRuntimeConfigError(error)) {
+  if (!isRuntimeConfigError(error) || error.area !== "supabase") {
     return null;
   }
 
@@ -85,6 +87,38 @@ async function uploadToLocalPublic(file: File, request: Request) {
     path: publicPath,
     bucket: "local-public",
     mediaType: inferProductMediaType(publicPath, file.type)
+  };
+}
+
+function getPublicDatabaseMediaUrl(pathname: string, request: Request) {
+  if (process.env.NODE_ENV !== "production") {
+    return new URL(pathname, request.url).toString();
+  }
+
+  return absoluteUrl(pathname);
+}
+
+async function uploadToDatabaseMedia(file: File, request: Request) {
+  const id = crypto.randomUUID();
+  const fileName = sanitizeFileName(file.name);
+  const bytes = Buffer.from(await file.arrayBuffer());
+  const mediaPath = `/api/media/${id}`;
+  const mimeType = file.type || "application/octet-stream";
+
+  await storeMediaAsset({
+    id,
+    fileName,
+    mimeType,
+    byteSize: bytes.byteLength,
+    data: bytes
+  });
+
+  return {
+    ok: true,
+    url: getPublicDatabaseMediaUrl(mediaPath, request),
+    path: mediaPath,
+    bucket: "database-media",
+    mediaType: inferProductMediaType(fileName, mimeType)
   };
 }
 
@@ -122,6 +156,10 @@ export async function POST(request: Request) {
     } catch (error) {
       if (isRuntimeConfigError(error) && process.env.VERCEL !== "1") {
         return NextResponse.json(await uploadToLocalPublic(file, request));
+      }
+
+      if (isRuntimeConfigError(error)) {
+        return NextResponse.json(await uploadToDatabaseMedia(file, request));
       }
 
       const supabaseSetupPayload = getSupabaseSetupPayload(error);
