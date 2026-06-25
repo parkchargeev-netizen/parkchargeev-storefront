@@ -35,11 +35,29 @@ try {
     )
   `;
   await sql`create index if not exists media_assets_created_at_idx on media_assets (created_at)`;
+  await sql`
+    create table if not exists media_asset_chunks (
+      media_asset_id uuid not null references media_assets(id) on delete cascade,
+      chunk_index integer not null,
+      byte_size integer not null,
+      data bytea not null,
+      created_at timestamptz not null default now(),
+      primary key (media_asset_id, chunk_index)
+    )
+  `;
+  await sql`create index if not exists media_asset_chunks_asset_idx on media_asset_chunks (media_asset_id)`;
 
   const smokeId = crypto.randomUUID();
   await sql`
     insert into media_assets (id, file_name, mime_type, byte_size, data)
     values (${smokeId}, 'smoke.txt', 'text/plain', 2, ${Buffer.from("ok")})
+  `;
+  await sql`
+    insert into media_asset_chunks (media_asset_id, chunk_index, byte_size, data)
+    values (${smokeId}, 0, 2, ${Buffer.from("ok")})
+    on conflict (media_asset_id, chunk_index) do update set
+      byte_size = excluded.byte_size,
+      data = excluded.data
   `;
   const rows = await sql`select byte_size from media_assets where id = ${smokeId}`;
   await sql`delete from media_assets where id = ${smokeId}`;

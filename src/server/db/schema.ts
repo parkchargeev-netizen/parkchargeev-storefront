@@ -355,6 +355,25 @@ export const mediaAssets = pgTable(
   })
 );
 
+export const mediaAssetChunks = pgTable(
+  "media_asset_chunks",
+  {
+    mediaAssetId: uuid("media_asset_id")
+      .notNull()
+      .references(() => mediaAssets.id, { onDelete: "cascade" }),
+    chunkIndex: integer("chunk_index").notNull(),
+    byteSize: integer("byte_size").notNull(),
+    data: bytea("data").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.mediaAssetId, table.chunkIndex] }),
+    mediaAssetIndex: index("media_asset_chunks_asset_idx").on(table.mediaAssetId)
+  })
+);
+
 export const productSpecs = pgTable(
   "product_specs",
   {

@@ -72,6 +72,9 @@ type MediaUploadResponse = {
   ok: boolean;
   url?: string;
   mediaType?: "image" | "video";
+  done?: boolean;
+  receivedChunks?: number;
+  totalChunks?: number;
   message?: string;
   missingEnvironment?: string[];
   setupAction?: string;
@@ -259,14 +262,121 @@ const adminPriceFormatter = new Intl.NumberFormat("tr-TR", {
   maximumFractionDigits: 0
 });
 
-function formatPriceKurus(value: unknown) {
+const maxImageUploadBytes = 12 * 1024 * 1024;
+const maxVideoUploadBytes = 80 * 1024 * 1024;
+const videoChunkBytes = 1.5 * 1024 * 1024;
+
+function formatBytes(bytes: number) {
+  return `${Math.round((bytes / 1024 / 1024) * 10) / 10} MB`;
+}
+
+function formatPriceAmount(value: unknown) {
   const numberValue = Number(value ?? 0);
 
   if (!Number.isFinite(numberValue) || numberValue <= 0) {
     return "Fiyat yok";
   }
 
-  return adminPriceFormatter.format(numberValue / 100);
+  return adminPriceFormatter.format(numberValue);
+}
+
+function storedKurusToFormAmount(value: unknown) {
+  const numberValue = Number(value ?? 0);
+
+  if (!Number.isFinite(numberValue) || numberValue <= 0) {
+    return 0;
+  }
+
+  return Math.round(numberValue / 100);
+}
+
+function formAmountToStoredKurus(value: unknown) {
+  const numberValue = Number(value ?? 0);
+
+  if (!Number.isFinite(numberValue) || numberValue <= 0) {
+    return 0;
+  }
+
+  return Math.round(numberValue * 100);
+}
+
+function nullableFormAmountToStoredKurus(value: unknown) {
+  if (value === null || value === undefined || value === "") {
+    return null;
+  }
+
+  const amount = formAmountToStoredKurus(value);
+
+  return amount > 0 ? amount : null;
+}
+
+function withFormPriceAmounts(values: ProductFormValues): ProductFormValues {
+  return {
+    ...values,
+    priceKurus: storedKurusToFormAmount(values.priceKurus),
+    compareAtKurus: storedKurusToFormAmount(values.compareAtKurus),
+    discountedPriceKurus:
+      values.discountedPriceKurus === null || values.discountedPriceKurus === undefined
+        ? null
+        : storedKurusToFormAmount(values.discountedPriceKurus),
+    variants: (values.variants ?? []).map((variant) => ({
+      ...variant,
+      priceKurus: storedKurusToFormAmount(variant.priceKurus),
+      compareAtKurus: storedKurusToFormAmount(variant.compareAtKurus)
+    }))
+  };
+}
+
+function withStoredKurusPrices<T extends Record<string, unknown>>(values: T): T {
+  const variants = Array.isArray(values.variants)
+    ? values.variants.map((variant) => {
+        if (!variant || typeof variant !== "object") {
+          return variant;
+        }
+
+        const row = variant as Record<string, unknown>;
+
+        return {
+          ...row,
+          priceKurus: formAmountToStoredKurus(row.priceKurus),
+          compareAtKurus: formAmountToStoredKurus(row.compareAtKurus)
+        };
+      })
+    : values.variants;
+
+  return {
+    ...values,
+    priceKurus: formAmountToStoredKurus(values.priceKurus),
+    compareAtKurus: formAmountToStoredKurus(values.compareAtKurus),
+    discountedPriceKurus: nullableFormAmountToStoredKurus(values.discountedPriceKurus),
+    variants
+  };
+}
+
+async function parseJsonResponse<T>(response: Response, fallbackMessage: string): Promise<T> {
+  const text = await response.text().catch(() => "");
+
+  if (!text) {
+    return {
+      ok: false,
+      message:
+        response.status === 413
+          ? "Dosya sunucu yükleme sınırını aşıyor. Video yükleme için parçalara bölünmüş akış kullanılmalı."
+          : fallbackMessage
+    } as T;
+  }
+
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    return {
+      ok: false,
+      message:
+        response.status === 413
+          ? "Dosya sunucu yükleme sınırını aşıyor. Video yükleme için parçalara bölünmüş akış kullanılmalı."
+          : fallbackMessage
+    } as T;
+  }
 }
 
 function specKey(label: string) {
@@ -313,7 +423,7 @@ export function ProductForm({
   const [vehicleBrandInput, setVehicleBrandInput] = useState("");
 
   const mergedDefaults = useMemo<ProductFormValues>(
-    () => ({
+    () => withFormPriceAmounts({
       ...emptyValues,
       ...initialValues,
       categories: initialValues?.categories ?? emptyValues.categories,
@@ -507,7 +617,7 @@ export function ProductForm({
   const primaryMedia = mediaValues.find((item) => item.isPrimary) ?? mediaValues[0];
   const hasPrimaryMedia = Boolean(primaryMedia?.url);
   const defaultVariantFromForm = variantValues.find((variant) => variant.isDefault) ?? variantValues[0];
-  const displayPrice = formatPriceKurus(defaultVariantFromForm?.priceKurus ?? watch("priceKurus"));
+  const displayPrice = formatPriceAmount(defaultVariantFromForm?.priceKurus ?? watch("priceKurus"));
   const displayStock = Number(defaultVariantFromForm?.stockQuantity ?? watch("stockQuantity") ?? 0);
   const stockThreshold = Number(watch("minimumStockThreshold") ?? 0);
   const stockState =
@@ -827,27 +937,127 @@ export function ProductForm({
     );
   }
 
+  function applyUploadedMedia(data: MediaUploadResponse, targetIndex?: number) {
+    if (!data.url) {
+      return;
+    }
+
+    if (typeof targetIndex === "number") {
+      setValue(`media.${targetIndex}.url`, data.url, { shouldValidate: true });
+      setValue(`media.${targetIndex}.mediaType`, data.mediaType ?? inferProductMediaType(data.url), {
+        shouldValidate: true
+      });
+      return;
+    }
+
+    mediaFields.append({
+      mediaType: data.mediaType ?? inferProductMediaType(data.url),
+      url: data.url,
+      altText: watch("name") || "Ürün medyası",
+      isPrimary: mediaFields.fields.length === 0
+    });
+  }
+
+  async function uploadVideoFileInChunks(file: File, targetIndex?: number) {
+    if (file.size > maxVideoUploadBytes) {
+      setUploadNotice({
+        tone: "error",
+        message: `Video yükleme sınırı ${formatBytes(maxVideoUploadBytes)}.`
+      });
+      return;
+    }
+
+    const assetId = crypto.randomUUID();
+    const totalChunks = Math.ceil(file.size / videoChunkBytes);
+    let completedResponse: MediaUploadResponse | null = null;
+
+    for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex += 1) {
+      const start = chunkIndex * videoChunkBytes;
+      const chunk = file.slice(start, Math.min(start + videoChunkBytes, file.size), file.type);
+      const formData = new FormData();
+      formData.append("assetId", assetId);
+      formData.append("fileName", file.name);
+      formData.append("mimeType", file.type || "video/mp4");
+      formData.append("totalSize", String(file.size));
+      formData.append("chunkIndex", String(chunkIndex));
+      formData.append("totalChunks", String(totalChunks));
+      formData.append(
+        "chunk",
+        new File([chunk], `${file.name}.part-${chunkIndex}`, {
+          type: file.type || "application/octet-stream"
+        })
+      );
+
+      setUploadNotice({
+        tone: "info",
+        message: "Video yükleniyor.",
+        detail: `${chunkIndex + 1}/${totalChunks} parça aktarıldı.`
+      });
+
+      const response = await fetch("/api/admin/media/upload/chunk", {
+        method: "POST",
+        body: formData
+      });
+      const data = await parseJsonResponse<MediaUploadResponse>(
+        response,
+        "Video yükleme yanıtı okunamadı."
+      );
+
+      if (!response.ok || !data.ok) {
+        throw new Error(data.message ?? "Video yüklenemedi.");
+      }
+
+      if (data.done) {
+        completedResponse = data;
+      }
+    }
+
+    if (!completedResponse?.url) {
+      throw new Error("Video tamamlandı bilgisi alınamadı.");
+    }
+
+    applyUploadedMedia(completedResponse, targetIndex);
+    setUploadNotice({
+      tone: "success",
+      message: "Video yüklendi.",
+      detail: `${totalChunks} parça başarıyla birleştirildi.`
+    });
+  }
+
   async function uploadMediaFile(file: File, targetIndex?: number) {
     setUploadNotice(null);
     setIsUploading(true);
 
-    const formData = new FormData();
-    formData.append("file", file);
-
     try {
+      if (file.type.startsWith("video/")) {
+        await uploadVideoFileInChunks(file, targetIndex);
+        return;
+      }
+
+      if (file.size > maxImageUploadBytes) {
+        setUploadNotice({
+          tone: "error",
+          message: `Görsel yükleme sınırı ${formatBytes(maxImageUploadBytes)}.`
+        });
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+
       const response = await fetch("/api/admin/media/upload", {
         method: "POST",
         body: formData
       });
-      const data = (await response.json().catch(() => ({
-        ok: false,
-        message: "Sunucu yanıtı okunamadı."
-      }))) as MediaUploadResponse;
+      const data = await parseJsonResponse<MediaUploadResponse>(
+        response,
+        "Sunucu yanıtı okunamadı."
+      );
 
       if (!response.ok || !data.ok || !data.url) {
         setUploadNotice({
           tone: "error",
-          message: data.message ?? "Görsel yüklenemedi.",
+          message: data.message ?? "Medya yüklenemedi.",
           detail:
             data.missingEnvironment?.length
               ? `Eksik ortam değişkenleri: ${data.missingEnvironment.join(", ")}. ${data.setupAction ?? ""}`
@@ -856,29 +1066,19 @@ export function ProductForm({
         return;
       }
 
-      if (typeof targetIndex === "number") {
-        setValue(`media.${targetIndex}.url`, data.url, { shouldValidate: true });
-        setValue(`media.${targetIndex}.mediaType`, data.mediaType ?? inferProductMediaType(data.url), {
-          shouldValidate: true
-        });
-      } else {
-        mediaFields.append({
-          mediaType: data.mediaType ?? inferProductMediaType(data.url),
-          url: data.url,
-          altText: watch("name") || "Ürün görseli",
-          isPrimary: mediaFields.fields.length === 0
-        });
-      }
-
+      applyUploadedMedia(data, targetIndex);
       setUploadNotice({
         tone: "success",
         message: "Görsel yüklendi.",
         detail: data.storageBucket ? `Bucket: ${data.storageBucket}` : undefined
       });
-    } catch {
+    } catch (error) {
       setUploadNotice({
         tone: "error",
-        message: "Görsel yüklenirken sunucuya ulaşılamadı."
+        message:
+          error instanceof Error
+            ? error.message
+            : "Medya yüklenirken sunucuya ulaşılamadı."
       });
     } finally {
       setIsUploading(false);
@@ -910,7 +1110,7 @@ export function ProductForm({
 
     const variants = (values.variants ?? []).filter((variant) => variant.sku && variant.title);
     const defaultVariant = variants.find((variant) => variant.isDefault) ?? variants[0];
-    const payload = {
+    const payload = normalizeAdminProductPayload(withStoredKurusPrices({
       ...values,
       ...(defaultVariant
         ? {
@@ -931,7 +1131,7 @@ export function ProductForm({
         isDefault: defaultVariant ? variant === defaultVariant : index === 0
       })),
       searchKeywords: (values.searchKeywords ?? []).filter(Boolean)
-    };
+    }));
 
     try {
       const response = await fetch(endpoint, {
@@ -942,10 +1142,10 @@ export function ProductForm({
         body: JSON.stringify(payload)
       });
 
-      const data = (await response.json().catch(() => ({
-        ok: false,
-        message: "Sunucu yanıtı okunamadı."
-      }))) as ProductMutationResponse;
+      const data = await parseJsonResponse<ProductMutationResponse>(
+        response,
+        "Sunucu yanıtı okunamadı."
+      );
 
       if (!response.ok || !data.ok) {
         const issueText = data.issues?.length
@@ -1275,33 +1475,39 @@ export function ProductForm({
             <ExampleHint>Örnek: 5 Metre Kablo</ExampleHint>
           </div>
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">Fiyat (kurus)</label>
+            <label className="mb-2 block text-sm font-medium text-slate-700">Satış fiyatı (TL)</label>
             <input
               type="number"
+              min={0}
+              step={1}
               className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
               {...register("priceKurus", { valueAsNumber: true })}
             />
-            <ExampleHint>Örnek: 12.490 TL için 1249000 girin.</ExampleHint>
+            <ExampleHint>Örnek: 12.490 TL için 12490 yazın; ekranda ve önizlemede TL olarak görünür.</ExampleHint>
           </div>
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">Karşılaştırma fiyatı</label>
+            <label className="mb-2 block text-sm font-medium text-slate-700">Karşılaştırma fiyatı (TL)</label>
             <input
               type="number"
+              min={0}
+              step={1}
               className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
               {...register("compareAtKurus", { valueAsNumber: true })}
             />
-            <ExampleHint>Örnek: Eski fiyat 13.990 TL ise 1399000 girin.</ExampleHint>
+            <ExampleHint>Örnek: Eski fiyat 13.990 TL ise 13990 yazın.</ExampleHint>
           </div>
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">Kampanyalı fiyat</label>
+            <label className="mb-2 block text-sm font-medium text-slate-700">Kampanyalı fiyat (TL)</label>
             <input
               type="number"
+              min={0}
+              step={1}
               className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
               {...register("discountedPriceKurus", {
                 setValueAs: (value) => (value === "" ? null : Number(value))
               })}
             />
-            <ExampleHint>Örnek: Kampanya fiyatı 11.990 TL ise 1199000 girin.</ExampleHint>
+            <ExampleHint>Örnek: Kampanya fiyatı 11.990 TL ise 11990 yazın.</ExampleHint>
           </div>
           <div>
             <label className="mb-2 block text-sm font-medium text-slate-700">Kampanya bitişi</label>
@@ -1385,8 +1591,10 @@ export function ProductForm({
               />
               <input
                 type="number"
+                min={0}
+                step={1}
                 className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
-                placeholder="Fiyat"
+                placeholder="Fiyat (TL)"
                 {...register(`variants.${index}.priceKurus`, { valueAsNumber: true })}
               />
               <input
@@ -1425,8 +1633,10 @@ export function ProductForm({
               />
               <input
                 type="number"
+                min={0}
+                step={1}
                 className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
-                placeholder="Karşılaştırma"
+                placeholder="Karşılaştırma (TL)"
                 {...register(`variants.${index}.compareAtKurus`, { valueAsNumber: true })}
               />
             </div>
@@ -1569,44 +1779,89 @@ export function ProductForm({
       </section>
 
       <section id="teknik" className="surface-card scroll-mt-28 border border-slate-200 bg-white/95 p-6">
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold text-slate-950">Teknik Alanlar</h2>
-          <ExampleHint>Örnek: Güç 11, konnektör Type 2, IP sınıfı IP54, kablo uzunluğu 5 Metre.</ExampleHint>
+        <div className="mb-6 grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+          <div>
+            <h2 className="text-xl font-semibold text-slate-950">Teknik alanlar</h2>
+            <p className="mt-1 text-sm leading-6 text-slate-600">
+              Ürün kartı, ürün detay sayfası, karşılaştırma ve schema verisi bu temel teknik alanlardan beslenir.
+            </p>
+            <ExampleHint>Örnek: Güç 11, konnektör Type 2, IP sınıfı IP54, kablo uzunluğu 5 Metre.</ExampleHint>
+          </div>
+          <button
+            type="button"
+            onClick={appendCoreSpecsFromFields}
+            className="inline-flex items-center justify-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-5 py-3 text-sm font-bold text-emerald-800 transition hover:bg-emerald-100"
+          >
+            <Sparkles className="h-4 w-4" aria-hidden />
+            Alanlardan özellik üret
+          </button>
         </div>
 
         <TechnicalFieldExamples />
 
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-          <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Güç (kW)" {...register("powerKw")} />
-          <select className="rounded-lg border border-slate-300 px-4 py-3 text-sm" {...register("chargeType")}>
-            <option value="ac">AC</option>
-            <option value="dc">DC</option>
-          </select>
-          <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Konnektör tipi" {...register("connectorType")} />
-          <select className="rounded-lg border border-slate-300 px-4 py-3 text-sm" {...register("phaseType")}>
-            <option value="single_phase">Monofaz</option>
-            <option value="three_phase">Trifaz</option>
-          </select>
-          <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="IP sınıfı" {...register("ipClass")} />
-          <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Power label" {...register("powerLabel")} />
-          <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Kablo uzunluğu" {...register("cableLength")} />
-          <div className="flex flex-wrap gap-3 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
-            <label className="flex items-center gap-2 text-sm text-slate-700">
-              <input type="checkbox" {...register("hasWifi")} />
-              WiFi
-            </label>
-            <label className="flex items-center gap-2 text-sm text-slate-700">
-              <input type="checkbox" {...register("hasRfid")} />
-              RFID
-            </label>
-            <label className="flex items-center gap-2 text-sm text-slate-700">
-              <input type="checkbox" {...register("has4g")} />
-              4G
-            </label>
-            <label className="flex items-center gap-2 text-sm text-slate-700">
-              <input type="checkbox" {...register("installRequired")} />
-              Kurulum gerekir
-            </label>
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-slate-800">Güç değeri</label>
+            <input className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="11, 22 veya 60" {...register("powerKw")} />
+            <ExampleHint>Sadece sayı veya kısa değer yazın; kW etiketi sistemde tamamlanır.</ExampleHint>
+          </div>
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-slate-800">Şarj tipi</label>
+            <select className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" {...register("chargeType")}>
+              <option value="ac">AC</option>
+              <option value="dc">DC</option>
+            </select>
+            <ExampleHint>Wallbox ve kablolar için AC, hızlı şarj cihazları için DC seçin.</ExampleHint>
+          </div>
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-slate-800">Konnektör tipi</label>
+            <input className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Type 2, CCS2" {...register("connectorType")} />
+            <ExampleHint>Ürün detayındaki araç uyumu ve filtreleme için kullanılır.</ExampleHint>
+          </div>
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-slate-800">Faz yapısı</label>
+            <select className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" {...register("phaseType")}>
+              <option value="single_phase">Monofaz</option>
+              <option value="three_phase">Trifaz</option>
+            </select>
+            <ExampleHint>Ev altyapısı ve kurulum uygunluğu metinlerine yansır.</ExampleHint>
+          </div>
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-slate-800">Koruma sınıfı</label>
+            <input className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="IP54, IP65" {...register("ipClass")} />
+            <ExampleHint>Dış ortam veya otopark kullanımı için kritik bilgidir.</ExampleHint>
+          </div>
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-slate-800">Kart güç etiketi</label>
+            <input className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="11 kW AC" {...register("powerLabel")} />
+            <ExampleHint>Mağaza kartında kısa teknik etiket olarak görünür.</ExampleHint>
+          </div>
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-slate-800">Kablo uzunluğu</label>
+            <input className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="5 Metre, Soketli" {...register("cableLength")} />
+            <ExampleHint>Varyant başlığı ve ürün açıklaması için kullanılır.</ExampleHint>
+          </div>
+          <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
+            <p className="mb-3 text-sm font-semibold text-slate-800">Akıllı özellikler</p>
+            <div className="grid gap-2">
+              <label className="flex items-center gap-2 text-sm text-slate-700">
+                <input type="checkbox" {...register("hasWifi")} />
+                WiFi
+              </label>
+              <label className="flex items-center gap-2 text-sm text-slate-700">
+                <input type="checkbox" {...register("hasRfid")} />
+                RFID
+              </label>
+              <label className="flex items-center gap-2 text-sm text-slate-700">
+                <input type="checkbox" {...register("has4g")} />
+                4G
+              </label>
+              <label className="flex items-center gap-2 text-sm text-slate-700">
+                <input type="checkbox" {...register("installRequired")} />
+                Kurulum gerekir
+              </label>
+            </div>
+            <ExampleHint>Seçimler teknik özellik ve satış metni üretiminde kullanılır.</ExampleHint>
           </div>
         </div>
       </section>
@@ -1765,31 +2020,57 @@ export function ProductForm({
       </section>
 
       <section id="özellikler" className="surface-card scroll-mt-28 border border-slate-200 bg-white/95 p-6">
-        <div className="mb-6 flex items-center justify-between">
+        <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <h2 className="text-xl font-semibold text-slate-950">Teknik özellikler</h2>
-            <ExampleHint>Örnek satır: Grup general, başlık Koruma sınıfı, değer IP54.</ExampleHint>
+            <p className="mt-1 text-sm leading-6 text-slate-600">
+              Ürün detayındaki teknik özellik listesi burada görünür. Başlık ve değer alanı boş olmayan satırlar kaydedilir.
+            </p>
+            <ExampleHint>Örnek satır: Grup Teknik, başlık Koruma sınıfı, değer IP54.</ExampleHint>
           </div>
           <button
             type="button"
-            onClick={() => specFields.append({ groupName: "general", label: "", value: "" })}
-            className="rounded-full border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700"
+            onClick={() => specFields.append({ groupName: "Teknik", label: "", value: "" })}
+            className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
           >
-            Özellik ekle
+            <Plus className="h-4 w-4" aria-hidden />
+            Özellik satırı ekle
           </button>
         </div>
         <TechnicalSpecExamples />
         <div className="space-y-4">
           {specFields.fields.map((field, index) => (
-            <div key={field.fieldId} className="grid gap-4 rounded-lg border border-slate-200 bg-slate-50 p-4 lg:grid-cols-[180px_1fr_1fr_auto]">
-              <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Grup" {...register(`specs.${index}.groupName`)} />
-              <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Başlık" {...register(`specs.${index}.label`)} />
-              <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Değer" {...register(`specs.${index}.value`)} />
-              <button type="button" onClick={() => specFields.remove(index)} className="rounded-full border border-red-200 px-3 py-2 text-sm text-red-700">
+            <div key={field.fieldId} className="grid gap-4 rounded-lg border border-slate-200 bg-slate-50 p-4 lg:grid-cols-[180px_minmax(0,1fr)_minmax(0,1.15fr)_auto] lg:items-end">
+              <div>
+                <label className="mb-2 block text-xs font-bold uppercase tracking-normal text-slate-500">Grup</label>
+                <select className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm" {...register(`specs.${index}.groupName`)}>
+                  <option value="Teknik">Teknik</option>
+                  <option value="Kurulum">Kurulum</option>
+                  <option value="Akıllı özellik">Akıllı özellik</option>
+                  <option value="Uyum">Uyum</option>
+                  <option value="Varyant">Varyant</option>
+                  <option value="Ticari">Ticari</option>
+                  <option value="general">Diğer</option>
+                </select>
+              </div>
+              <div>
+                <label className="mb-2 block text-xs font-bold uppercase tracking-normal text-slate-500">Başlık</label>
+                <input className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Maksimum güç" {...register(`specs.${index}.label`)} />
+              </div>
+              <div>
+                <label className="mb-2 block text-xs font-bold uppercase tracking-normal text-slate-500">Değer</label>
+                <input className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="22 kW AC" {...register(`specs.${index}.value`)} />
+              </div>
+              <button type="button" onClick={() => specFields.remove(index)} className="rounded-lg border border-red-200 px-3 py-3 text-sm font-bold text-red-700 transition hover:bg-red-50">
                 Sil
               </button>
             </div>
           ))}
+          {specFields.fields.length === 0 ? (
+            <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-sm text-slate-600">
+              Henüz teknik özellik satırı yok. Üstteki teknik alanları doldurup “Alanlardan özellik üret” aksiyonunu kullanabilirsiniz.
+            </div>
+          ) : null}
         </div>
       </section>
 

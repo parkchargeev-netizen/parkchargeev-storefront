@@ -1,4 +1,4 @@
-import { getMediaAssetById } from "@/server/media-assets";
+import { getMediaAssetById, listMediaAssetChunks } from "@/server/media-assets";
 
 export const runtime = "nodejs";
 
@@ -10,7 +10,37 @@ type MediaAssetRouteProps = {
 
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-export async function GET(_request: Request, { params }: MediaAssetRouteProps) {
+function parseRange(rangeHeader: string | null, byteLength: number) {
+  if (!rangeHeader?.startsWith("bytes=") || byteLength <= 0) {
+    return null;
+  }
+
+  const [startRaw, endRaw] = rangeHeader.slice(6).split("-");
+  const suffixLength = !startRaw && endRaw ? Number(endRaw) : null;
+  const start = suffixLength
+    ? Math.max(byteLength - suffixLength, 0)
+    : startRaw
+      ? Number(startRaw)
+      : 0;
+  const end = suffixLength ? byteLength - 1 : endRaw ? Number(endRaw) : byteLength - 1;
+
+  if (
+    !Number.isInteger(start) ||
+    !Number.isInteger(end) ||
+    start < 0 ||
+    end < start ||
+    start >= byteLength
+  ) {
+    return null;
+  }
+
+  return {
+    start,
+    end: Math.min(end, byteLength - 1)
+  };
+}
+
+export async function GET(request: Request, { params }: MediaAssetRouteProps) {
   const { id } = await params;
 
   if (!uuidPattern.test(id)) {
@@ -23,15 +53,34 @@ export async function GET(_request: Request, { params }: MediaAssetRouteProps) {
     return new Response("Media not found", { status: 404 });
   }
 
-  const body = asset.data instanceof Buffer ? asset.data : Buffer.from(asset.data);
-  const mediaBody = new Blob([new Uint8Array(body)], { type: asset.mimeType });
+  const chunks = await listMediaAssetChunks(id);
+  const body = chunks.length
+    ? Buffer.concat(
+        chunks.map((chunk) =>
+          chunk.data instanceof Buffer ? chunk.data : Buffer.from(chunk.data)
+        ),
+        asset.byteSize
+      )
+    : asset.data instanceof Buffer
+      ? asset.data
+      : Buffer.from(asset.data);
+  const range = parseRange(request.headers.get("range"), body.byteLength);
+  const responseBody = range ? body.subarray(range.start, range.end + 1) : body;
+  const mediaBody = new Blob([new Uint8Array(responseBody)], { type: asset.mimeType });
+  const headers = new Headers({
+    "Accept-Ranges": "bytes",
+    "Cache-Control": "public, max-age=31536000, immutable",
+    "Content-Disposition": `inline; filename="${asset.fileName.replace(/"/g, "")}"`,
+    "Content-Length": String(responseBody.byteLength),
+    "Content-Type": asset.mimeType
+  });
+
+  if (range) {
+    headers.set("Content-Range", `bytes ${range.start}-${range.end}/${body.byteLength}`);
+  }
 
   return new Response(mediaBody, {
-    headers: {
-      "Cache-Control": "public, max-age=31536000, immutable",
-      "Content-Disposition": `inline; filename="${asset.fileName.replace(/"/g, "")}"`,
-      "Content-Length": String(asset.byteSize),
-      "Content-Type": asset.mimeType
-    }
+    status: range ? 206 : 200,
+    headers
   });
 }

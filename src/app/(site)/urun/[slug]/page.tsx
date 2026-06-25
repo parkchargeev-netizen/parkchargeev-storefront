@@ -112,23 +112,17 @@ export default async function ProductDetailPage({
       </div>
     </div>
   );
-  const renderIntentCard = () => (
-    <div className="product-detail-intent-card overflow-hidden rounded-lg bg-linear-to-br from-primary to-primary-container p-8 text-white shadow-[0_24px_80px_rgba(6,51,38,0.26)]">
-      <h2 className="text-3xl font-bold tracking-normal">
-        {detailContent.intentHeading}
-      </h2>
-      <p className="mt-4 text-base leading-7 text-white/80">
-        {detailContent.intentBody}
+  const renderDescriptionCard = () => (
+    <div className="product-detail-description-card surface-card p-8">
+      <p className="text-sm font-semibold uppercase tracking-normal text-primary">
+        Ürün açıklaması
       </p>
-      <div className="mt-8 flex flex-wrap gap-3">
-        {detailContent.seoIntents.map((intent) => (
-          <span
-            key={intent}
-            className="rounded-full bg-white/[0.16] px-4 py-3 text-sm font-semibold text-white"
-          >
-            {intent}
-          </span>
-        ))}
+      <h2 className="mt-3 text-3xl font-bold tracking-normal text-on-surface">
+        {product.name} hakkında
+      </h2>
+      <div className="mt-5 space-y-4 text-base leading-8 text-on-surface-variant">
+        <p>{product.description}</p>
+        <p>{product.summary}</p>
       </div>
     </div>
   );
@@ -161,8 +155,8 @@ export default async function ProductDetailPage({
             deviceCaption={detailContent.galleryDeviceCaption}
           />
           <div className="product-detail-desktop-under-gallery mt-5 hidden gap-4 lg:grid">
+            {renderDescriptionCard()}
             {renderSpecsCard()}
-            {renderIntentCard()}
           </div>
         </section>
 
@@ -246,8 +240,8 @@ export default async function ProductDetailPage({
       </div>
 
       <section className="product-detail-info-grid mt-8 grid gap-6 lg:hidden">
+        {renderDescriptionCard()}
         {renderSpecsCard()}
-        {renderIntentCard()}
       </section>
 
       <section className="mt-8 surface-card p-8">
