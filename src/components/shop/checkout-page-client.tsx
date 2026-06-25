@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  CreditCard,
   LockKeyhole,
   MapPin,
   ShieldCheck,
@@ -14,6 +13,7 @@ import { CheckoutEmptyCartPanel, CheckoutLoadingPanel } from "@/components/shop/
 import { CheckoutOrderSummary } from "@/components/shop/checkout-order-summary";
 import { CheckoutResultPanel } from "@/components/shop/checkout-result-panel";
 import { CheckoutStatusSummary } from "@/components/shop/checkout-status-summary";
+import { PaytrIframePanel } from "@/components/shop/paytr-iframe-panel";
 import {
   enrichCartItems,
   getEnrichedCartSubtotalKurus,
@@ -50,11 +50,10 @@ type CheckoutApiResponse<T extends object> = T & {
   message?: string;
 };
 
-type PaytrDirectFormResponse = {
+type PaytrIframeTokenResponse = {
   ok: boolean;
-  action?: string;
+  iframeToken?: string;
   merchantOid?: string;
-  fields?: Record<string, string>;
   message?: string;
 };
 
@@ -188,6 +187,30 @@ function getCheckoutValidationError({
   return null;
 }
 
+function getSubmittedCheckoutDraft(
+  form: HTMLFormElement,
+  fallbackDraft: CheckoutDraft
+) {
+  const formData = new FormData(form);
+  const readField = (name: keyof CheckoutDraft) => {
+    const value = formData.get(name);
+    return typeof value === "string" ? value : fallbackDraft[name];
+  };
+
+  return {
+    draft: {
+      fullName: readField("fullName"),
+      email: readField("email"),
+      phone: readField("phone"),
+      city: readField("city"),
+      district: readField("district"),
+      address: readField("address"),
+      deliveryNote: readField("deliveryNote")
+    },
+    agreementAccepted: formData.get("agreementAccepted") === "yes"
+  };
+}
+
 async function readCheckoutApiResponse<T extends object>(
   response: Response,
   fallbackMessage: string
@@ -222,6 +245,7 @@ export function CheckoutPageClient({
   const totalKurus = getEnrichedCartTotalKurus(items);
   const [draft, setDraft] = useState<CheckoutDraft>(initialDraft);
   const [agreementAccepted, setAgreementAccepted] = useState(false);
+  const [iframeToken, setIframeToken] = useState<string | null>(null);
   const [merchantOid, setMerchantOid] = useState<string | null>(initialMerchantOid ?? null);
   const [orderStatus, setOrderStatus] = useState<OrderStatusResponse | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -238,7 +262,6 @@ export function CheckoutPageClient({
     agreementAccepted,
     itemCount: items.length
   });
-  const isCheckoutInfoComplete = !checkoutValidationError;
   const hasPaidOrderStatus = isPaidOrderStatus(orderStatus);
   const hasTerminalOrderStatus = isTerminalOrderStatus(orderStatus);
 
@@ -458,19 +481,21 @@ export function CheckoutPageClient({
     }));
   }
 
-  function getPaytrCheckoutPayload() {
+  function getPaytrCheckoutPayload(checkoutDraft: CheckoutDraft) {
     const addressParts = [
-      draft.address.trim(),
-      draft.district.trim(),
-      draft.city.trim(),
-      draft.deliveryNote.trim() ? `Not: ${draft.deliveryNote.trim()}` : ""
+      checkoutDraft.address.trim(),
+      checkoutDraft.district.trim(),
+      checkoutDraft.city.trim(),
+      checkoutDraft.deliveryNote.trim()
+        ? `Not: ${checkoutDraft.deliveryNote.trim()}`
+        : ""
     ].filter(Boolean);
 
     return {
-      email: draft.email.trim(),
-      userName: draft.fullName.trim(),
+      email: checkoutDraft.email.trim(),
+      userName: checkoutDraft.fullName.trim(),
       userAddress: addressParts.join(", "),
-      userPhone: normalizePhoneForPayment(draft.phone),
+      userPhone: normalizePhoneForPayment(checkoutDraft.phone),
       items: items.map((item) => ({
         productId: item.productId,
         cableOption: item.cableOption.trim() || "Standart",
@@ -479,107 +504,13 @@ export function CheckoutPageClient({
     };
   }
 
-  function getNormalizedCardData(form: HTMLFormElement) {
-    const formData = new FormData(form);
-    const cardNumber = String(formData.get("card_number") ?? "").replace(/\D/g, "");
-    const expiryMonth = String(formData.get("expiry_month") ?? "").padStart(2, "0");
-    const expiryYear = String(formData.get("expiry_year") ?? "").replace(/\D/g, "").slice(-2);
-    const cvv = String(formData.get("cvv") ?? "").replace(/\D/g, "");
-
-    return {
-      cc_owner: String(formData.get("cc_owner") ?? "").trim(),
-      card_number: cardNumber,
-      expiry_month: expiryMonth,
-      expiry_year: expiryYear,
-      cvv
-    };
-  }
-
-  function isValidCardNumber(cardNumber: string) {
-    if (!/^\d{13,19}$/.test(cardNumber)) {
-      return false;
-    }
-
-    let sum = 0;
-    let shouldDouble = false;
-
-    for (let index = cardNumber.length - 1; index >= 0; index -= 1) {
-      let digit = Number(cardNumber[index]);
-
-      if (shouldDouble) {
-        digit *= 2;
-
-        if (digit > 9) {
-          digit -= 9;
-        }
-      }
-
-      sum += digit;
-      shouldDouble = !shouldDouble;
-    }
-
-    return sum % 10 === 0;
-  }
-
-  function validateCardData(cardData: ReturnType<typeof getNormalizedCardData>) {
-    if (cardData.cc_owner.length < 3) {
-      return "Kart sahibi adını girin.";
-    }
-
-    if (!isValidCardNumber(cardData.card_number)) {
-      return "Kart numarasını kontrol edin.";
-    }
-
-    if (!/^(0[1-9]|1[0-2])$/.test(cardData.expiry_month)) {
-      return "Son kullanma ayını kontrol edin.";
-    }
-
-    if (!/^\d{2}$/.test(cardData.expiry_year)) {
-      return "Son kullanma yılını iki haneli girin.";
-    }
-
-    if (!/^\d{3,4}$/.test(cardData.cvv)) {
-      return "CVV kodunu kontrol edin.";
-    }
-
-    return null;
-  }
-
-  function postCardDataToPaytr({
-    action,
-    cardData,
-    fields
-  }: {
-    action: string;
-    cardData: ReturnType<typeof getNormalizedCardData>;
-    fields: Record<string, string>;
-  }) {
-    const form = document.createElement("form");
-    form.action = action;
-    form.method = "post";
-    form.style.display = "none";
-
-    const values = {
-      ...fields,
-      ...cardData
-    };
-
-    Object.entries(values).forEach(([name, value]) => {
-      const input = document.createElement("input");
-      input.type = "hidden";
-      input.name = name;
-      input.value = value;
-      form.appendChild(input);
-    });
-
-    document.body.appendChild(form);
-    form.submit();
-  }
-
-  async function handlePrepareDirectPayment(form: HTMLFormElement) {
+  async function handlePrepareIframePayment(form: HTMLFormElement) {
+    const submitted = getSubmittedCheckoutDraft(form, draft);
+    setDraft(submitted.draft);
+    setAgreementAccepted(submitted.agreementAccepted);
     const infoError = getCheckoutValidationError({
-      draft,
-      agreementAccepted,
+      draft: submitted.draft,
+      agreementAccepted: submitted.agreementAccepted,
       itemCount: items.length
     });
 
@@ -590,22 +521,7 @@ export function CheckoutPageClient({
         message: infoError,
         itemCount: items.length,
         totalKurus,
-        city: draft.city || null
-      });
-      return;
-    }
-
-    const cardData = getNormalizedCardData(form);
-    const cardError = validateCardData(cardData);
-
-    if (cardError) {
-      setError(cardError);
-      trackConversionEvent("checkout_validation_error", {
-        area: "card",
-        message: cardError,
-        itemCount: items.length,
-        totalKurus,
-        city: draft.city || null
+        city: submitted.draft.city || null
       });
       return;
     }
@@ -614,41 +530,45 @@ export function CheckoutPageClient({
       setIsSubmitting(true);
       setError(null);
       setOrderStatus(null);
+      setIframeToken(null);
       trackConversionEvent("checkout_start", {
         itemCount: items.length,
         totalKurus,
-        city: draft.city,
-        hasDeliveryNote: Boolean(draft.deliveryNote.trim())
+        city: submitted.draft.city,
+        hasDeliveryNote: Boolean(submitted.draft.deliveryNote.trim())
       });
       trackConversionEvent("checkout_paytr_submit", {
         itemCount: items.length,
         totalKurus,
-        city: draft.city
+        city: submitted.draft.city,
+        flow: "iframe"
       });
 
-      const response = await fetch("/api/paytr/direct-form", {
+      const response = await fetch("/api/paytr/token", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify(getPaytrCheckoutPayload())
+        body: JSON.stringify(getPaytrCheckoutPayload(submitted.draft))
       });
 
-      const result = await readCheckoutApiResponse<PaytrDirectFormResponse>(
+      const result = await readCheckoutApiResponse<PaytrIframeTokenResponse>(
         response,
-        "PayTR ödeme formu hazırlanamadı. Lütfen tekrar deneyin."
+        "PayTR güvenli ödeme ekranı hazırlanamadı. Lütfen tekrar deneyin."
       );
 
-      if (!response.ok || !result.ok || !result.action || !result.fields || !result.merchantOid) {
-        throw new Error(result.message || "PayTR ödeme formu hazırlanamadı.");
+      if (!response.ok || !result.ok || !result.iframeToken || !result.merchantOid) {
+        throw new Error(result.message || "PayTR güvenli ödeme ekranı hazırlanamadı.");
       }
 
       setMerchantOid(result.merchantOid);
+      setIframeToken(result.iframeToken);
       window.sessionStorage.setItem(ACTIVE_ORDER_STORAGE_KEY, result.merchantOid);
-      postCardDataToPaytr({
-        action: result.action,
-        cardData,
-        fields: result.fields
+      window.requestAnimationFrame(() => {
+        document.getElementById("paytr-payment-frame")?.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
       });
     } catch (submissionError) {
       setError(
@@ -664,21 +584,11 @@ export function CheckoutPageClient({
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!isCheckoutInfoComplete || isSubmitting) {
-      if (checkoutValidationError) {
-        setError(checkoutValidationError);
-        trackConversionEvent("checkout_validation_error", {
-          area: "checkout_info",
-          message: checkoutValidationError,
-          itemCount: items.length,
-          totalKurus,
-          city: draft.city || null
-        });
-      }
+    if (isSubmitting || iframeToken) {
       return;
     }
 
-    void handlePrepareDirectPayment(event.currentTarget);
+    void handlePrepareIframePayment(event.currentTarget);
   }
 
   if (!isHydrated) {
@@ -771,6 +681,7 @@ export function CheckoutPageClient({
         <section className="space-y-6">
           <form
             onSubmit={handleSubmit}
+            noValidate
             className="rounded-lg border border-white/80 bg-white/88 p-4 shadow-[0_24px_80px_rgba(6,51,38,0.10)] backdrop-blur-xl sm:p-6 lg:p-8"
           >
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -793,6 +704,7 @@ export function CheckoutPageClient({
                 <span className="text-sm font-semibold text-on-surface">Ad Soyad</span>
                 <input
                   required
+                  name="fullName"
                   autoComplete="name"
                   value={draft.fullName}
                   onChange={(event) => updateField("fullName", event.target.value)}
@@ -804,6 +716,7 @@ export function CheckoutPageClient({
                 <span className="text-sm font-semibold text-on-surface">E-posta</span>
                 <input
                   required
+                  name="email"
                   type="email"
                   autoComplete="email"
                   value={draft.email}
@@ -816,6 +729,7 @@ export function CheckoutPageClient({
                 <span className="text-sm font-semibold text-on-surface">Telefon</span>
                 <input
                   required
+                  name="phone"
                   aria-describedby="checkout-phone-help"
                   autoComplete="tel"
                   inputMode="tel"
@@ -832,6 +746,7 @@ export function CheckoutPageClient({
                 <span className="text-sm font-semibold text-on-surface">İl</span>
                 <input
                   required
+                  name="city"
                   autoComplete="address-level1"
                   value={draft.city}
                   onChange={(event) => updateField("city", event.target.value)}
@@ -845,6 +760,7 @@ export function CheckoutPageClient({
               <label className="grid gap-2">
                 <span className="text-sm font-semibold text-on-surface">İlçe</span>
                 <input
+                  name="district"
                   autoComplete="address-level2"
                   value={draft.district}
                   onChange={(event) => updateField("district", event.target.value)}
@@ -855,6 +771,7 @@ export function CheckoutPageClient({
               <label className="grid gap-2">
                 <span className="text-sm font-semibold text-on-surface">Teslimat notu</span>
                 <input
+                  name="deliveryNote"
                   autoComplete="off"
                   value={draft.deliveryNote}
                   onChange={(event) => updateField("deliveryNote", event.target.value)}
@@ -867,6 +784,7 @@ export function CheckoutPageClient({
                 <span className="text-sm font-semibold text-on-surface">Açık adres</span>
                 <textarea
                   required
+                  name="address"
                   autoComplete="street-address"
                   rows={4}
                   value={draft.address}
@@ -877,97 +795,27 @@ export function CheckoutPageClient({
             </fieldset>
 
             <section className="checkout-payment-card mt-6 rounded-lg border border-primary/12 bg-linear-to-br from-primary/7 via-white to-secondary/8 p-4 sm:p-5">
-              <div className="checkout-payment-card__head">
-                <div className="flex gap-3">
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary text-white">
-                    <CreditCard className="h-5 w-5" aria-hidden="true" />
-                  </span>
-                  <div>
-                    <h3 className="text-lg font-bold text-on-surface">Kart bilgileri</h3>
-                    <p className="mt-1 text-sm leading-6 text-on-surface-variant">
-                      Kart bilgileri ParkChargeEV tarafında saklanmaz. Doğrulama formu PayTR
-                      güvenli ödeme sistemine iletilir.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="checkout-card-preview" aria-hidden="true">
-                  <span>ParkChargeEV</span>
-                  <strong>PayTR Secure</strong>
-                  <small>**** **** **** 2026</small>
+              <div className="flex items-start gap-3">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary text-white">
+                  <LockKeyhole className="h-5 w-5" aria-hidden="true" />
+                </span>
+                <div>
+                  <h3 className="text-lg font-bold text-on-surface">
+                    PayTR güvenli ödeme ekranı
+                  </h3>
+                  <p className="mt-1 text-sm leading-6 text-on-surface-variant">
+                    Bu form yalnızca teslimat bilgilerini hazırlar. Kart numarası,
+                    son kullanma tarihi ve CVV bilgileri bir sonraki adımda yalnızca
+                    PayTR iframe alanına girilir.
+                  </p>
                 </div>
               </div>
-
-              <fieldset disabled={isSubmitting} className="checkout-card-fields mt-5 grid gap-4 md:grid-cols-2">
-                <label className="grid gap-2 md:col-span-2">
-                  <span className="text-sm font-semibold text-on-surface">Kart üzerindeki ad</span>
-                  <input
-                    required
-                    name="cc_owner"
-                    autoComplete="cc-name"
-                    placeholder="Ad Soyad"
-                    className="min-h-12 rounded-lg border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
-                  />
-                </label>
-
-                <label className="grid gap-2 md:col-span-2">
-                  <span className="text-sm font-semibold text-on-surface">Kart numarası</span>
-                  <input
-                    required
-                    name="card_number"
-                    autoComplete="cc-number"
-                    inputMode="numeric"
-                    pattern="[0-9 ]{13,23}"
-                    placeholder="0000 0000 0000 0000"
-                    className="min-h-12 rounded-lg border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
-                  />
-                </label>
-
-                <div className="checkout-card-expiry-grid md:col-span-2">
-                  <label className="grid gap-2">
-                    <span className="text-sm font-semibold text-on-surface">Ay</span>
-                    <input
-                      required
-                      name="expiry_month"
-                      autoComplete="cc-exp-month"
-                      inputMode="numeric"
-                      pattern="0?[1-9]|1[0-2]"
-                      placeholder="AA"
-                      className="min-h-12 rounded-lg border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
-                    />
-                  </label>
-
-                  <label className="grid gap-2">
-                    <span className="text-sm font-semibold text-on-surface">Yıl</span>
-                    <input
-                      required
-                      name="expiry_year"
-                      autoComplete="cc-exp-year"
-                      inputMode="numeric"
-                      pattern="[0-9]{2,4}"
-                      placeholder="YY"
-                      className="min-h-12 rounded-lg border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
-                    />
-                  </label>
-
-                  <label className="grid gap-2">
-                    <span className="text-sm font-semibold text-on-surface">CVV</span>
-                    <input
-                      required
-                      name="cvv"
-                      autoComplete="cc-csc"
-                      inputMode="numeric"
-                      pattern="[0-9]{3,4}"
-                      placeholder="000"
-                      className="min-h-12 rounded-lg border border-outline-variant/45 bg-white px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:bg-surface-container-low disabled:text-on-surface-variant"
-                    />
-                  </label>
-                </div>
-              </fieldset>
 
               <label className="mt-5 flex gap-3 rounded-lg bg-white/78 p-3 text-sm leading-6 text-on-surface-variant">
                 <input
                   type="checkbox"
+                  name="agreementAccepted"
+                  value="yes"
                   checked={agreementAccepted}
                   onChange={(event) => setAgreementAccepted(event.target.checked)}
                   disabled={isSubmitting}
@@ -987,13 +835,24 @@ export function CheckoutPageClient({
 
               <button
                 type="submit"
-                disabled={isSubmitting || !isCheckoutInfoComplete}
+                disabled={isSubmitting || Boolean(iframeToken)}
                 className="checkout-pay-button mt-5 min-h-12 rounded-lg bg-primary px-6 py-3 text-base font-bold text-white shadow-[0_16px_38px_rgba(6,51,38,0.22)] transition hover:-translate-y-0.5 hover:bg-primary/92 disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0"
               >
-                {isSubmitting ? "PayTR doğruluyor..." : "Kartı Doğrula ve Öde"}
+                {isSubmitting
+                  ? "PayTR ekranı hazırlanıyor..."
+                  : iframeToken
+                    ? "PayTR ödeme ekranı açık"
+                    : "PayTR ödeme ekranını aç"}
               </button>
+              {!iframeToken && checkoutValidationError ? (
+                <p className="mt-3 text-xs leading-5 text-on-surface-variant">
+                  Butona bastığınızda eksik bilgiler açıkça gösterilir.
+                </p>
+              ) : null}
             </section>
           </form>
+
+          <PaytrIframePanel iframeToken={iframeToken} />
 
           <CheckoutStatusSummary
             merchantOid={merchantOid}

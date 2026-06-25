@@ -13,9 +13,9 @@ type OrderDetailPageProps = {
 
 const paytrStatusLabels: Record<string, string> = {
   created: "Oluşturuldu",
-  token_received: "Token alındı",
-  callback_success: "Callback başarılı",
-  callback_failed: "Callback başarısız"
+  token_received: "Ödeme ekranı hazır",
+  callback_success: "Ödeme doğrulandı",
+  callback_failed: "PayTR ödeme hatası"
 };
 
 function formatPaytrStatus(status?: string | null) {

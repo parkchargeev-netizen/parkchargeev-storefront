@@ -48,12 +48,14 @@ const microsoftClarityScriptSources = [
 
 const microsoftClarityConnectSources = ["https://*.clarity.ms"];
 const microsoftClarityImageSources = ["https://*.clarity.ms"];
+const paytrScriptSources = ["https://www.paytr.com"];
 
 const scriptSources = [
   "'self'",
   "'unsafe-inline'",
   ...googleMeasurementScriptSources,
   ...microsoftClarityScriptSources,
+  ...paytrScriptSources,
   ...(isProduction ? [] : ["'unsafe-eval'"])
 ].join(" ");
 

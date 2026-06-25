@@ -20,9 +20,9 @@ type AdminPaytrPageProps = {
 const paytrStatusOptions = ["created", "token_received", "callback_success", "callback_failed"];
 const paytrStatusLabels: Record<string, string> = {
   created: "Oluşturuldu",
-  token_received: "Token alındı",
-  callback_success: "Callback başarılı",
-  callback_failed: "Callback başarısız"
+  token_received: "Ödeme ekranı hazır",
+  callback_success: "Ödeme doğrulandı",
+  callback_failed: "PayTR ödeme hatası"
 };
 const paymentStatusLabels: Record<string, string> = {
   paid: "Ödendi",
@@ -73,7 +73,13 @@ export default async function AdminPaytrPage({ searchParams }: AdminPaytrPagePro
   const paytrEnvStatus = [
     { key: "PAYTR_MERCHANT_ID", configured: Boolean(process.env.PAYTR_MERCHANT_ID?.trim()) },
     { key: "PAYTR_MERCHANT_KEY", configured: Boolean(process.env.PAYTR_MERCHANT_KEY?.trim()) },
-    { key: "PAYTR_MERCHANT_SALT", configured: Boolean(process.env.PAYTR_MERCHANT_SALT?.trim()) }
+    { key: "PAYTR_MERCHANT_SALT", configured: Boolean(process.env.PAYTR_MERCHANT_SALT?.trim()) },
+    {
+      key: "PAYTR_TEST_MODE",
+      configured: process.env.PAYTR_TEST_MODE?.trim() === "1",
+      configuredLabel: "Test modu açık",
+      missingLabel: "Canlı mod"
+    }
   ];
 
   return (
@@ -81,7 +87,7 @@ export default async function AdminPaytrPage({ searchParams }: AdminPaytrPagePro
       <AdminPageHeader
         eyebrow="PayTR Operasyonları"
         title="Ödeme mutabakatı ve iade takibi"
-        description="PayTR işlem kayıtlarını inceleyin, callback sonucuna göre manuel mutabakat veya iade işaretleme yapın."
+        description="PayTR işlem kayıtlarını inceleyin. Mutabakat yalnızca PayTR tarafında başarılı ödeme bulunursa durumu değiştirir; başarısız sorgu callback olarak kaydedilmez."
         action={
           <a href={buildExportHref(query)} className="inline-flex rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-white">
             CSV indir
@@ -96,12 +102,14 @@ export default async function AdminPaytrPage({ searchParams }: AdminPaytrPagePro
 
       <section className="surface-card border border-slate-200 bg-white/95 p-6">
         <h2 className="text-xl font-semibold text-slate-950">Canlı ödeme ayarları</h2>
-        <div className="mt-5 grid gap-3 md:grid-cols-3">
+        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
           {paytrEnvStatus.map((item) => (
             <div key={item.key} className="rounded-lg border border-slate-200 bg-slate-50 p-4">
               <p className="text-xs uppercase tracking-normal text-slate-500">{item.key}</p>
-              <p className={`mt-2 text-sm font-semibold ${item.configured ? "text-emerald-700" : "text-rose-700"}`}>
-                {item.configured ? "Tanımlı" : "Eksik"}
+              <p className={`mt-2 text-sm font-semibold ${item.configured ? "text-emerald-700" : item.missingLabel ? "text-amber-700" : "text-rose-700"}`}>
+                {item.configured
+                  ? item.configuredLabel ?? "Tanımlı"
+                  : item.missingLabel ?? "Eksik"}
               </p>
             </div>
           ))}

@@ -1,12 +1,70 @@
+"use client";
+
 import { CreditCard, LockKeyhole } from "lucide-react";
+import { useEffect, useRef } from "react";
 
 type PaytrIframePanelProps = {
   iframeToken: string | null;
 };
 
 export function PaytrIframePanel({ iframeToken }: PaytrIframePanelProps) {
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  useEffect(() => {
+    if (!iframeToken || !iframeRef.current) {
+      return;
+    }
+
+    const paytrWindow = window as Window & {
+      iFrameResize?: (
+        options: Record<string, unknown>,
+        target: HTMLIFrameElement | string
+      ) => void;
+    };
+    const initializeResizer = () => {
+      if (paytrWindow.iFrameResize && iframeRef.current) {
+        paytrWindow.iFrameResize(
+          {
+            checkOrigin: ["https://www.paytr.com"],
+            scrolling: true
+          },
+          iframeRef.current
+        );
+      }
+    };
+    const existingScript = document.querySelector<HTMLScriptElement>(
+      'script[data-paytr-iframe-resizer="true"]'
+    );
+
+    if (existingScript) {
+      if (paytrWindow.iFrameResize) {
+        initializeResizer();
+      } else {
+        existingScript.addEventListener("load", initializeResizer, { once: true });
+      }
+
+      return () => {
+        existingScript.removeEventListener("load", initializeResizer);
+      };
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://www.paytr.com/js/iframeResizer.min.js";
+    script.async = true;
+    script.dataset.paytrIframeResizer = "true";
+    script.addEventListener("load", initializeResizer, { once: true });
+    document.head.appendChild(script);
+
+    return () => {
+      script.removeEventListener("load", initializeResizer);
+    };
+  }, [iframeToken]);
+
   return (
-    <section className="rounded-lg border border-white/80 bg-white/88 p-4 shadow-[0_24px_80px_rgba(6,51,38,0.10)] backdrop-blur-xl sm:p-6 lg:p-8">
+    <section
+      id="paytr-payment-frame"
+      className="scroll-mt-28 rounded-lg border border-white/80 bg-white/88 p-4 shadow-[0_24px_80px_rgba(6,51,38,0.10)] backdrop-blur-xl sm:p-6 lg:p-8"
+    >
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p className="text-xs font-bold uppercase tracking-normal text-primary">
@@ -28,6 +86,7 @@ export function PaytrIframePanel({ iframeToken }: PaytrIframePanelProps) {
       {iframeToken ? (
         <div className="mt-6 overflow-hidden rounded-lg border border-outline-variant/35 bg-white shadow-inner">
           <iframe
+            ref={iframeRef}
             src={`https://www.paytr.com/odeme/guvenli/${iframeToken}`}
             id="paytriframe"
             frameBorder="0"

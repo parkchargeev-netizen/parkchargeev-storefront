@@ -356,6 +356,12 @@ function normalizePaytrCurrency(value?: string | null) {
   return currency === "TL" ? "TRY" : currency;
 }
 
+function asJsonRecord(value: unknown) {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {};
+}
+
 export async function runAdminPaytrOperation(
   transactionId: string,
   input: PaytrOperationInput,
@@ -397,20 +403,25 @@ export async function runAdminPaytrOperation(
     input.action === "reconcile"
       ? await requestPaytrTransactionStatus(transaction.merchantOid)
       : null;
+
+  if (input.action === "reconcile" && statusQuery?.status !== "success") {
+    throw new PaytrReconciliationError(
+      statusQuery?.errMsg
+        ? `PayTR başarılı ödeme doğrulaması yapılamadı: ${statusQuery.errMsg}. İşlem durumu değiştirilmedi.`
+        : "PayTR tarafında başarılı ödeme doğrulanamadı. İşlem durumu değiştirilmedi."
+    );
+  }
+
   const nextTransactionValues =
-    input.action === "reconcile" && statusQuery
+    input.action === "reconcile" && statusQuery?.status === "success"
       ? {
-          status:
-            statusQuery.status === "success"
-              ? ("callback_success" as const)
-              : ("callback_failed" as const),
+          status: "callback_success" as const,
           totalAmountKurus:
-            statusQuery.status === "success"
-              ? statusQuery.paymentTotalKurus ??
-                statusQuery.paymentAmountKurus ??
-                transaction.totalAmountKurus
-              : transaction.totalAmountKurus,
-          rawCallback: {
+            statusQuery.paymentTotalKurus ??
+            statusQuery.paymentAmountKurus ??
+            transaction.totalAmountKurus,
+          rawRequest: {
+            ...asJsonRecord(transaction.rawRequest),
             paytrStatusQuery: statusQuery.raw
           },
           updatedAt: now
@@ -432,16 +443,7 @@ export async function runAdminPaytrOperation(
             paytrLastSyncedAt: now,
             updatedAt: now
           }
-        : {
-            status: "failed" as const,
-            paymentStatus: "failed",
-            statusNote:
-              input.note ||
-              statusQuery?.errMsg ||
-              "PayTR durum sorgusunda başarılı ödeme bulunamadı.",
-            paytrLastSyncedAt: now,
-            updatedAt: now
-          };
+        : null;
 
   if (input.action === "reconcile" && statusQuery?.status === "success") {
     const paytrTotalKurus =
@@ -461,6 +463,12 @@ export async function runAdminPaytrOperation(
         "PayTR durum sorgusunda dönen para birimi sipariş para birimiyle eşleşmiyor."
       );
     }
+  }
+
+  if (!nextOrderValues) {
+    throw new PaytrReconciliationError(
+      "PayTR operasyonu için geçerli bir sonraki durum üretilemedi."
+    );
   }
 
   await db.transaction(async (tx) => {

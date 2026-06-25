@@ -36,7 +36,11 @@ export function PaytrOperationForm({ transactionId }: PaytrOperationFormProps) {
         message: "Sunucu yanıtı okunamadı."
       }))) as { ok: boolean; message?: string };
 
-    setFeedback(data.ok ? "PayTR operasyonu uygulandı." : data.message ?? "İşlem başarısız.");
+    setFeedback(
+      data.ok
+        ? "PayTR başarılı ödeme durumu doğrulandı."
+        : data.message ?? "İşlem başarısız."
+    );
     if (response.ok && data.ok) {
       setNote("");
       router.refresh();
@@ -55,7 +59,7 @@ export function PaytrOperationForm({ transactionId }: PaytrOperationFormProps) {
         value={action}
         onChange={(event) => setAction(event.target.value)}
       >
-        <option value="reconcile">PayTR durum sorgusu ile mutabakat</option>
+        <option value="reconcile">PayTR başarılı ödeme kontrolü</option>
         <option value="mark_refunded">İade olarak işaretle</option>
       </select>
       <input
@@ -70,7 +74,7 @@ export function PaytrOperationForm({ transactionId }: PaytrOperationFormProps) {
         disabled={isSubmitting}
         className="rounded-lg border border-slate-300 px-4 py-3 text-sm font-semibold text-slate-800 disabled:opacity-70"
       >
-        {isSubmitting ? "İşleniyor..." : "Uygula"}
+        {isSubmitting ? "PayTR kontrol ediliyor..." : "PayTR'de kontrol et"}
       </button>
     </form>
   );

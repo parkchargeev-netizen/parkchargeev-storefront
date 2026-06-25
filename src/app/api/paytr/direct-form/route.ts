@@ -54,6 +54,21 @@ export async function POST(request: Request) {
   const startedAt = Date.now();
   let createdMerchantOid: string | null = null;
 
+  if (process.env.PAYTR_DIRECT_API_ENABLED?.trim() !== "1") {
+    logWarn("paytr.direct_form.disabled", {
+      durationMs: durationSince(startedAt)
+    });
+
+    return NextResponse.json(
+      {
+        ok: false,
+        message:
+          "PayTR Direkt API devre dışı. Güvenli ödeme için PayTR iFrame akışını kullanın."
+      },
+      { status: 410 }
+    );
+  }
+
   try {
     let requestBody: unknown;
 
@@ -113,14 +128,15 @@ export async function POST(request: Request) {
     await db
       .update(paytrTransactions)
       .set({
-        status: "token_received",
+        status: "created",
         rawRequest: {
           requestBody: {
             email: body.email,
             flow: "direct_api",
             itemCount: body.items.length,
             paymentAmountKurus,
-            serverPriced: true
+            serverPriced: true,
+            providerRequestSent: false
           },
           paytrPayload: redactPaytrPayload(fields)
         },
