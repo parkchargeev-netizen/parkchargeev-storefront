@@ -21,6 +21,10 @@ import {
   getEnrichedCartTotalKurus
 } from "@/lib/cart";
 import { trackConversionEvent } from "@/lib/conversion-events";
+import {
+  PAYTR_CHECKOUT_CLIENT_VERSION,
+  PAYTR_CHECKOUT_VERSION_HEADER
+} from "@/lib/paytr-checkout-contract";
 import { serviceCoverageSummary } from "@/lib/service-coverage";
 
 type CheckoutPageClientProps = {
@@ -565,7 +569,8 @@ export function CheckoutPageClient({
       const response = await fetch("/api/paytr/token", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          [PAYTR_CHECKOUT_VERSION_HEADER]: PAYTR_CHECKOUT_CLIENT_VERSION
         },
         body: JSON.stringify(getPaytrCheckoutPayload(submitted.draft))
       });

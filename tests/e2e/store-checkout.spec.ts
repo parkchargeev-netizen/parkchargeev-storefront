@@ -182,6 +182,24 @@ test("@e2e legacy PayTR Direct API varsayilan olarak kapalidir", async ({
   expect(body.message).toContain("iFrame");
 });
 
+test("@e2e eski checkout istemcisi acik yenileme mesaji alir", async ({
+  request
+}) => {
+  const response = await request.post("/api/paytr/token", {
+    data: {}
+  });
+  const body = (await response.json()) as {
+    ok: boolean;
+    code: string;
+    message: string;
+  };
+
+  expect(response.status()).toBe(409);
+  expect(body.ok).toBe(false);
+  expect(body.code).toBe("checkout_client_outdated");
+  expect(body.message).toContain("Ctrl+F5");
+});
+
 test("@e2e PayTR Link callback gecersiz hash ile reddedilir", async ({
   request
 }) => {

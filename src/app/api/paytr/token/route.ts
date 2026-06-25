@@ -8,6 +8,10 @@ import {
   redactPaytrPayload
 } from "@/lib/paytr";
 import {
+  PAYTR_CHECKOUT_CLIENT_VERSION,
+  PAYTR_CHECKOUT_VERSION_HEADER
+} from "@/lib/paytr-checkout-contract";
+import {
   getRuntimeConfigErrorPayload,
   isRuntimeConfigError
 } from "@/lib/runtime-config";
@@ -85,6 +89,27 @@ function getPaytrLinkCallbackUrl() {
 export async function POST(request: Request) {
   const startedAt = Date.now();
   let createdMerchantOid: string | null = null;
+
+  if (
+    request.headers.get(PAYTR_CHECKOUT_VERSION_HEADER) !==
+    PAYTR_CHECKOUT_CLIENT_VERSION
+  ) {
+    return NextResponse.json(
+      {
+        ok: false,
+        code: "checkout_client_outdated",
+        message:
+          "Ödeme ekranı güncellendi. Lütfen bu sekmeyi Ctrl+F5 ile yenileyip ödemeyi tekrar başlatın."
+      },
+      {
+        status: 409,
+        headers: {
+          "Cache-Control": "no-store",
+          [PAYTR_CHECKOUT_VERSION_HEADER]: PAYTR_CHECKOUT_CLIENT_VERSION
+        }
+      }
+    );
+  }
 
   try {
     let requestBody: unknown;
