@@ -53,6 +53,8 @@ type CheckoutApiResponse<T extends object> = T & {
 type PaytrIframeTokenResponse = {
   ok: boolean;
   iframeToken?: string;
+  paymentFlow?: "iframe" | "link";
+  paymentUrl?: string;
   merchantOid?: string;
   message?: string;
 };
@@ -145,6 +147,22 @@ function normalizePhoneForPayment(value: string) {
 
 function isValidCheckoutEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+}
+
+function getTrustedPaytrPaymentUrl(value?: string) {
+  if (!value) {
+    return null;
+  }
+
+  try {
+    const url = new URL(value);
+
+    return url.origin === "https://www.paytr.com" && url.pathname.startsWith("/link/")
+      ? url.href
+      : null;
+  } catch {
+    return null;
+  }
 }
 
 function getCheckoutValidationError({
@@ -541,7 +559,7 @@ export function CheckoutPageClient({
         itemCount: items.length,
         totalKurus,
         city: submitted.draft.city,
-        flow: "iframe"
+        flow: "auto"
       });
 
       const response = await fetch("/api/paytr/token", {
@@ -557,13 +575,26 @@ export function CheckoutPageClient({
         "PayTR güvenli ödeme ekranı hazırlanamadı. Lütfen tekrar deneyin."
       );
 
-      if (!response.ok || !result.ok || !result.iframeToken || !result.merchantOid) {
+      const paymentUrl = getTrustedPaytrPaymentUrl(result.paymentUrl);
+
+      if (
+        !response.ok ||
+        !result.ok ||
+        !result.merchantOid ||
+        (!result.iframeToken && !paymentUrl)
+      ) {
         throw new Error(result.message || "PayTR güvenli ödeme ekranı hazırlanamadı.");
       }
 
       setMerchantOid(result.merchantOid);
-      setIframeToken(result.iframeToken);
       window.sessionStorage.setItem(ACTIVE_ORDER_STORAGE_KEY, result.merchantOid);
+
+      if (paymentUrl) {
+        window.location.assign(paymentUrl);
+        return;
+      }
+
+      setIframeToken(result.iframeToken ?? null);
       window.requestAnimationFrame(() => {
         document.getElementById("paytr-payment-frame")?.scrollIntoView({
           behavior: "smooth",

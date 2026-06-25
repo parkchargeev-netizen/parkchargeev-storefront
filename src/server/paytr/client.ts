@@ -6,7 +6,12 @@ export type PaytrTokenResponse =
   | { status: "success"; token: string }
   | { status: "failed"; reason?: string };
 
+export type PaytrLinkCreateResponse =
+  | { status: "success"; id: string; link: string }
+  | { status: "failed"; reason?: string; raw: Record<string, unknown> };
+
 const paytrTokenUrl = "https://www.paytr.com/odeme/api/get-token";
+const paytrLinkCreateUrl = "https://www.paytr.com/odeme/api/link/create";
 const paytrStatusQueryUrl = "https://www.paytr.com/odeme/durum-sorgu";
 
 export type PaytrStatusQueryResponse =
@@ -128,6 +133,80 @@ export async function requestPaytrIframeToken(payload: Record<string, string>) {
       return {
         status: "failed" as const,
         reason: "PayTR token isteği zaman aşımına uğradı."
+      };
+    }
+
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
+export async function requestPaytrPaymentLink(
+  payload: Record<string, string>
+): Promise<PaytrLinkCreateResponse> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), getPaytrRequestTimeoutMs());
+
+  try {
+    const response = await fetch(paytrLinkCreateUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: new URLSearchParams(payload).toString(),
+      cache: "no-store",
+      signal: controller.signal
+    });
+    const rawBody = await response.text();
+    let body: Record<string, unknown>;
+
+    try {
+      body = rawBody.trim()
+        ? (JSON.parse(rawBody) as Record<string, unknown>)
+        : {
+            status: "failed",
+            reason: "PayTR Link API boş yanıt döndürdü."
+          };
+    } catch {
+      body = {
+        status: "failed",
+        reason: "PayTR Link API okunamayan bir yanıt döndürdü."
+      };
+    }
+
+    if (
+      response.ok &&
+      body.status === "success" &&
+      typeof body.id === "string" &&
+      typeof body.link === "string"
+    ) {
+      return {
+        status: "success",
+        id: body.id,
+        link: body.link
+      };
+    }
+
+    return {
+      status: "failed",
+      reason:
+        typeof body.reason === "string"
+          ? body.reason
+          : typeof body.err_msg === "string"
+            ? body.err_msg
+            : "PayTR Link API ödeme linkini oluşturamadı.",
+      raw: body
+    };
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      return {
+        status: "failed",
+        reason: "PayTR Link API isteği zaman aşımına uğradı.",
+        raw: {
+          status: "failed",
+          reason: "PayTR Link API isteği zaman aşımına uğradı."
+        }
       };
     }
 

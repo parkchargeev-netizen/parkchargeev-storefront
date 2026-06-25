@@ -49,6 +49,8 @@ const microsoftClarityScriptSources = [
 const microsoftClarityConnectSources = ["https://*.clarity.ms"];
 const microsoftClarityImageSources = ["https://*.clarity.ms"];
 const paytrScriptSources = ["https://www.paytr.com"];
+const cloudflareInsightsScriptSources = ["https://static.cloudflareinsights.com"];
+const cloudflareInsightsConnectSources = ["https://cloudflareinsights.com"];
 
 const scriptSources = [
   "'self'",
@@ -56,6 +58,7 @@ const scriptSources = [
   ...googleMeasurementScriptSources,
   ...microsoftClarityScriptSources,
   ...paytrScriptSources,
+  ...cloudflareInsightsScriptSources,
   ...(isProduction ? [] : ["'unsafe-eval'"])
 ].join(" ");
 
@@ -65,7 +68,7 @@ const contentSecurityPolicy = [
   "form-action 'self' https://www.paytr.com",
   "frame-ancestors 'self'",
   `frame-src 'self' https://www.paytr.com https://www.google.com https://maps.google.com https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com ${googleMeasurementFrameSources.join(" ")}`,
-  `connect-src 'self' https://www.paytr.com ${sentryIngestOrigin} ${googleMeasurementConnectSources.join(" ")} ${microsoftClarityConnectSources.join(" ")}${isProduction ? "" : " ws: http: https:"}`,
+  `connect-src 'self' https://www.paytr.com ${sentryIngestOrigin} ${googleMeasurementConnectSources.join(" ")} ${microsoftClarityConnectSources.join(" ")} ${cloudflareInsightsConnectSources.join(" ")}${isProduction ? "" : " ws: http: https:"}`,
   `img-src 'self' data: blob: https: ${googleMeasurementImageSources.join(" ")} ${microsoftClarityImageSources.join(" ")}`,
   "font-src 'self' data: https://fonts.gstatic.com",
   "style-src 'self' 'unsafe-inline'",

@@ -52,11 +52,25 @@ export type PaytrDirectFormRequestInput = {
   merchantOid?: string;
 };
 
+export type PaytrLinkRequestInput = {
+  name: string;
+  paymentAmountKurus: number;
+  callbackUrl: string;
+  callbackId: string;
+  userName?: string;
+  currency?: PaytrCurrency;
+  maxInstallment?: number;
+  debugOn?: 0 | 1;
+  lang?: "tr" | "en";
+};
+
 export type PaytrCallbackPayload = {
   merchant_oid: string;
   status: "success" | "failed";
   total_amount: string;
   hash: string;
+  callback_id?: string;
+  merchant_id?: string;
   payment_type?: string;
   currency?: string;
   payment_amount?: string;
@@ -241,6 +255,48 @@ export function buildPaytrDirectFormPayload(input: PaytrDirectFormRequestInput) 
   };
 }
 
+export function buildPaytrLinkPayload(input: PaytrLinkRequestInput) {
+  const env = getPaytrConfig();
+  assertPaytrMerchantIdFormat(env.merchantId);
+  const { currency, debugOn } = getPaytrRuntimeOptions(input);
+  const normalizedCurrency = currency === "TRY" ? "TL" : currency;
+  const maxInstallment = String(input.maxInstallment ?? 1);
+  const linkType = "product";
+  const lang = input.lang ?? "tr";
+  const minCount = "1";
+  const name = input.name.trim().slice(0, 200);
+  const price = String(input.paymentAmountKurus);
+  const hashString =
+    name +
+    price +
+    normalizedCurrency +
+    maxInstallment +
+    linkType +
+    lang +
+    minCount;
+  const paytrToken = createHmac("sha256", env.merchantKey)
+    .update(hashString + env.merchantSalt)
+    .digest("base64");
+
+  return {
+    merchant_id: env.merchantId,
+    name,
+    price,
+    currency: normalizedCurrency,
+    max_installment: maxInstallment,
+    link_type: linkType,
+    lang,
+    min_count: minCount,
+    max_count: "1",
+    callback_link: input.callbackUrl,
+    callback_id: input.callbackId,
+    debug_on: String(debugOn),
+    get_qr: "0",
+    paytr_token: paytrToken,
+    user_name: input.userName?.trim().slice(0, 60) ?? ""
+  };
+}
+
 export function verifyPaytrCallbackHash(payload: PaytrCallbackPayload) {
   const env = getPaytrConfig();
   const computedHash = createHmac("sha256", env.merchantKey)
@@ -252,6 +308,30 @@ export function verifyPaytrCallbackHash(payload: PaytrCallbackPayload) {
     )
     .digest("base64");
 
+  const expectedHash = Buffer.from(computedHash);
+  const receivedHash = Buffer.from(payload.hash);
+
+  return (
+    expectedHash.length === receivedHash.length &&
+    timingSafeEqual(expectedHash, receivedHash)
+  );
+}
+
+export function verifyPaytrLinkCallbackHash(payload: PaytrCallbackPayload) {
+  if (!payload.callback_id) {
+    return false;
+  }
+
+  const env = getPaytrConfig();
+  const computedHash = createHmac("sha256", env.merchantKey)
+    .update(
+      payload.callback_id +
+        payload.merchant_oid +
+        env.merchantSalt +
+        payload.status +
+        payload.total_amount
+    )
+    .digest("base64");
   const expectedHash = Buffer.from(computedHash);
   const receivedHash = Buffer.from(payload.hash);
 

@@ -40,9 +40,33 @@ async function mockPaytrIframeFlow(page: Page) {
   };
 }
 
+async function mockPaytrLinkFlow(page: Page) {
+  await page.route("**/api/paytr/token", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        ok: true,
+        paymentFlow: "link",
+        paymentUrl: "https://www.paytr.com/link/PCEVE2E",
+        merchantOid: "PCEV-E2E-LINK-ORDER"
+      })
+    });
+  });
+
+  await page.route("https://www.paytr.com/link/PCEVE2E", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "text/html",
+      body: "<html><body><h1>PayTR Link API secure payment</h1></body></html>"
+    });
+  });
+}
+
 test("@e2e magaza -> urun -> sepet -> odeme akisi PayTR iframe mock ile tamamlanir", async ({
   page
 }) => {
+  test.setTimeout(75_000);
   const paytrMock = await mockPaytrIframeFlow(page);
 
   await page.goto("/urun/homecharge-pro-11kw", { waitUntil: "domcontentloaded" });
@@ -71,6 +95,33 @@ test("@e2e magaza -> urun -> sepet -> odeme akisi PayTR iframe mock ile tamamlan
     "src",
     "https://www.paytr.com/odeme/guvenli/mock_iframe_token"
   );
+});
+
+test("@e2e Basic API hesabinda PayTR Link odeme sayfasina yonlendirilir", async ({
+  page
+}) => {
+  await mockPaytrLinkFlow(page);
+  await page.addInitScript(() => {
+    window.localStorage.setItem(
+      "parkchargeev-cart-v1",
+      JSON.stringify([
+        {
+          productId: "prod_homecharge_pro_11",
+          cableOption: "5 Metre",
+          quantity: 1
+        }
+      ])
+    );
+  });
+  await page.goto("/odeme", { waitUntil: "domcontentloaded" });
+  await fillCheckoutContact(page);
+  await page.getByRole("checkbox").check();
+  await page.getByRole("button", { name: /PayTR ödeme ekranını aç/i }).click();
+
+  await expect(page).toHaveURL("https://www.paytr.com/link/PCEVE2E");
+  await expect(
+    page.getByRole("heading", { name: "PayTR Link API secure payment" })
+  ).toBeVisible();
 });
 
 test("@e2e kablo uzunlugu fiyat ve sepet tutarini gunceller", async ({ page }) => {
@@ -129,6 +180,25 @@ test("@e2e legacy PayTR Direct API varsayilan olarak kapalidir", async ({
   expect(response.status()).toBe(410);
   expect(body.ok).toBe(false);
   expect(body.message).toContain("iFrame");
+});
+
+test("@e2e PayTR Link callback gecersiz hash ile reddedilir", async ({
+  request
+}) => {
+  const response = await request.post("/api/paytr/callback", {
+    form: {
+      callback_id: "PCEVINVALIDLINKCALLBACK",
+      merchant_oid: "PROVIDERORDER",
+      status: "success",
+      total_amount: "1498800",
+      payment_amount: "1498800",
+      currency: "TL",
+      hash: "invalid"
+    }
+  });
+
+  expect(response.status()).toBe(400);
+  expect(await response.text()).toContain("bad hash");
 });
 
 test("@e2e PayTR bos cevapta teknik JSON hatasi yerine Turkce mesaj gosterir", async ({ page }) => {

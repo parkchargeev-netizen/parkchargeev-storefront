@@ -74,8 +74,8 @@ export function PaytrIframePanel({ iframeToken }: PaytrIframePanelProps) {
             Kart bilgileri sadece PayTR alanında girilir.
           </h2>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-on-surface-variant">
-            Ödeme oturumu başarıyla hazırlandığında PayTR iframe bu bölümde açılır. Bu alan dışındaki
-            hiçbir ParkChargeEV formu kart numarası, son kullanma tarihi veya CVV istemez.
+            Hesap yetkisine göre PayTR güvenli formu bu bölümde açılır veya PayTR ödeme sayfasına
+            yönlendirilirsiniz. ParkChargeEV kart numarası, son kullanma tarihi veya CVV istemez.
           </p>
         </div>
         <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary text-white">
@@ -102,8 +102,8 @@ export function PaytrIframePanel({ iframeToken }: PaytrIframePanelProps) {
           </span>
           <p className="mt-4 text-lg font-bold text-on-surface">Ödeme formu beklemede</p>
           <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-on-surface-variant">
-            İletişim ve adres bilgilerini tamamlayıp onay verdiğinizde PayTR güvenli ödeme oturumu
-            bu alanda açılır.
+            İletişim ve adres bilgilerini tamamlayıp onay verdiğinizde uygun PayTR güvenli ödeme
+            akışı otomatik olarak başlatılır.
           </p>
         </div>
       )}

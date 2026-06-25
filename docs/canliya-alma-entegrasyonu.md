@@ -21,11 +21,12 @@ Kodda bulunan kritik yuzeyler:
 
 | Alan | Dosya | Durum |
 |---|---|---|
-| PayTR payload ve hash yardimcilari | `src/lib/paytr.ts` | iFrame ve Direkt API payload uretiyor, callback hash dogruluyor. |
+| PayTR payload ve hash yardimcilari | `src/lib/paytr.ts` | iFrame, Link API ve Direkt API payload uretiyor; callback hash dogruluyor. |
 | Checkout siparis olusturma | `src/server/paytr/checkout-order.ts` | Sepeti server tarafinda fiyatlandirmak icin kullaniliyor. |
+| PayTR token ve Link API istemcisi | `src/server/paytr/client.ts` | Pro/iFrame tokenini ister; hesap yalnizca Link/Basic API destekliyorsa tek kullanimlik odeme linki olusturur. |
 | Direkt API form hazirlama | `src/app/api/paytr/direct-form/route.ts` | Varsayilan kapali; yalnizca PayTR onayi ve `PAYTR_DIRECT_API_ENABLED=1` ile signed alan uretir. |
-| PayTR callback | `src/app/api/paytr/callback/route.ts` | Hash, tutar, para birimi, idempotency ve stok dusme kontrolleri yapiyor. |
-| Checkout UI | `src/components/shop/checkout-page-client.tsx` | Kart verisini gizli form ile `https://www.paytr.com/odeme` adresine gonderiyor. |
+| PayTR callback | `src/app/api/paytr/callback/route.ts` | iFrame ve Link API hash, tutar, para birimi, idempotency ve stok dusme kontrolleri yapiyor. |
+| Checkout UI | `src/components/shop/checkout-page-client.tsx` | Kart verisi toplamaz; iFrame'i acar veya PayTR Link sayfasina yonlendirir. |
 | Runtime smoke | `scripts/runtime-smoke.mjs` | DB ve PayTR env kontrolleri yapiyor. |
 
 ## 3. Production Ortam Degiskenleri
@@ -47,6 +48,7 @@ CUSTOMER_JWT_SECRET=<strong-random-secret>
 PAYTR_MERCHANT_ID=<paytr-merchant-id>
 PAYTR_MERCHANT_KEY=<paytr-merchant-key>
 PAYTR_MERCHANT_SALT=<paytr-merchant-salt>
+PAYTR_CALLBACK_URL=https://parkchargeev.com/api/paytr/callback
 PAYTR_DIRECT_API_ENABLED=0
 PAYTR_TEST_MODE=0
 PAYTR_DEBUG_ON=0
