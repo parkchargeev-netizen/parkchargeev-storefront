@@ -182,10 +182,10 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
       data-motion-scope
     >
       <AdminSessionGuard />
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -left-24 top-10 h-80 w-80 rounded-full bg-emerald-200/28 blur-3xl" />
-        <div className="absolute right-0 top-1/4 h-96 w-96 rounded-full bg-cyan-200/20 blur-3xl" />
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(6,51,38,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(15,143,111,0.035)_1px,transparent_1px)] bg-[size:64px_64px]" />
+      <div className="admin-ambient-layer" data-motion-loop="ambient" aria-hidden>
+        <span className="admin-ambient-layer__line admin-ambient-layer__line--one" />
+        <span className="admin-ambient-layer__line admin-ambient-layer__line--two" />
+        <span className="admin-ambient-layer__line admin-ambient-layer__line--three" />
       </div>
 
       <div className="relative mx-auto max-w-[1680px] px-4 py-5 lg:px-6">

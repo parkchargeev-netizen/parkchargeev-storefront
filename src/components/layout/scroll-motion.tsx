@@ -48,8 +48,46 @@ export function ScrollMotion() {
     const loopElements = new WeakSet<HTMLElement>();
     let frame = 0;
     let scrollFrame = 0;
+    let pointerFrame = 0;
+    let pointerX = window.innerWidth / 2;
+    let pointerY = window.innerHeight / 2;
 
     document.body.dataset.scrollMotionRuntime = "ready";
+
+    const syncPointerLight = () => {
+      pointerFrame = 0;
+
+      if (mediaQuery.matches) {
+        document.documentElement.style.setProperty("--ambient-x", "0px");
+        document.documentElement.style.setProperty("--ambient-y", "0px");
+        return;
+      }
+
+      const normalizedX = (pointerX / Math.max(window.innerWidth, 1) - 0.5) * 2;
+      const normalizedY = (pointerY / Math.max(window.innerHeight, 1) - 0.5) * 2;
+
+      document.documentElement.style.setProperty(
+        "--ambient-x",
+        `${Math.round(normalizedX * 18)}px`
+      );
+      document.documentElement.style.setProperty(
+        "--ambient-y",
+        `${Math.round(normalizedY * 14)}px`
+      );
+    };
+
+    const schedulePointerLight = (event?: Event) => {
+      if (event instanceof PointerEvent && event.pointerType !== "touch") {
+        pointerX = event.clientX;
+        pointerY = event.clientY;
+      }
+
+      if (pointerFrame) {
+        return;
+      }
+
+      pointerFrame = window.requestAnimationFrame(syncPointerLight);
+    };
 
     const syncScrollProgress = () => {
       scrollFrame = 0;
@@ -186,6 +224,7 @@ export function ScrollMotion() {
 
     schedulePrepare();
     scheduleScrollProgress();
+    schedulePointerLight();
 
     const mutationObserver = new MutationObserver(() => {
       schedulePrepare();
@@ -203,16 +242,21 @@ export function ScrollMotion() {
 
     window.addEventListener("scroll", scheduleScrollProgress, { passive: true });
     window.addEventListener("resize", scheduleScrollProgress);
+    window.addEventListener("resize", schedulePointerLight);
+    window.addEventListener("pointermove", schedulePointerLight, { passive: true });
     mediaQuery.addEventListener("change", handleMotionPreference);
 
     return () => {
       window.cancelAnimationFrame(frame);
       window.cancelAnimationFrame(scrollFrame);
+      window.cancelAnimationFrame(pointerFrame);
       mutationObserver.disconnect();
       revealObserver.disconnect();
       loopObserver.disconnect();
       window.removeEventListener("scroll", scheduleScrollProgress);
       window.removeEventListener("resize", scheduleScrollProgress);
+      window.removeEventListener("resize", schedulePointerLight);
+      window.removeEventListener("pointermove", schedulePointerLight);
       mediaQuery.removeEventListener("change", handleMotionPreference);
       delete document.body.dataset.scrollMotionRuntime;
     };

@@ -14,9 +14,14 @@ export default async function AdminLoginPage() {
 
   return (
     <main
-      className="admin-experience min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(6,51,38,0.14),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(126,236,201,0.16),transparent_28%),#f8fafc] px-4 py-10"
+      className="admin-experience admin-login-experience min-h-screen px-4 py-10"
       data-motion-scope
     >
+      <div className="admin-ambient-layer" data-motion-loop="ambient" aria-hidden>
+        <span className="admin-ambient-layer__line admin-ambient-layer__line--one" />
+        <span className="admin-ambient-layer__line admin-ambient-layer__line--two" />
+        <span className="admin-ambient-layer__line admin-ambient-layer__line--three" />
+      </div>
       <div className="mx-auto grid min-h-[80vh] max-w-6xl items-center gap-10 lg:grid-cols-[1.1fr_0.9fr]">
         <section className="space-y-6">
           <PageHeader
