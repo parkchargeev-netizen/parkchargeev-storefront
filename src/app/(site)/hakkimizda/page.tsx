@@ -101,7 +101,7 @@ export default async function AboutPage() {
           {
             title: "Güvenli satın alma",
             body:
-              "PayTR güvenli ödeme, açık fiyatlandırma, garanti ve sipariş görünürlüğü her ürün kararının temelidir."
+              "Tek sayfa güvenli ödeme, açık fiyatlandırma, garanti ve sipariş görünürlüğü her ürün kararının temelidir."
           },
           {
             title: "Teknik uygunluk",

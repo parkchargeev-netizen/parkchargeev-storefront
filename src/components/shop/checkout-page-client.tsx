@@ -57,8 +57,6 @@ type CheckoutApiResponse<T extends object> = T & {
 type PaytrIframeTokenResponse = {
   ok: boolean;
   iframeToken?: string;
-  paymentFlow?: "iframe" | "link";
-  paymentUrl?: string;
   merchantOid?: string;
   message?: string;
 };
@@ -92,16 +90,16 @@ const checkoutSteps = [
     detail: "Kargo ve kurulum notu"
   },
   {
-    title: "PayTR",
-    detail: "Kart doğrulaması PayTR'ye gider"
+    title: "Kart",
+    detail: "Doğrulama güvenli alanda tamamlanır"
   }
 ] as const;
 
 const trustItems = [
   {
     icon: ShieldCheck,
-    title: "PayTR güvencesi",
-    detail: "Kart bilgisi doğrudan PayTR'ye gönderilir."
+    title: "Güvenli ödeme",
+    detail: "Kart bilgisi ParkChargeEV formunda toplanmaz."
   },
   {
     icon: Truck,
@@ -151,22 +149,6 @@ function normalizePhoneForPayment(value: string) {
 
 function isValidCheckoutEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
-}
-
-function getTrustedPaytrPaymentUrl(value?: string) {
-  if (!value) {
-    return null;
-  }
-
-  try {
-    const url = new URL(value);
-
-    return url.origin === "https://www.paytr.com" && url.pathname.startsWith("/link/")
-      ? url.href
-      : null;
-  } catch {
-    return null;
-  }
 }
 
 function getCheckoutValidationError({
@@ -563,10 +545,10 @@ export function CheckoutPageClient({
         itemCount: items.length,
         totalKurus,
         city: submitted.draft.city,
-        flow: "auto"
+        flow: "embedded_iframe"
       });
 
-      const response = await fetch("/api/paytr/token", {
+      const response = await fetch("/api/checkout/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -577,29 +559,16 @@ export function CheckoutPageClient({
 
       const result = await readCheckoutApiResponse<PaytrIframeTokenResponse>(
         response,
-        "PayTR güvenli ödeme ekranı hazırlanamadı. Lütfen tekrar deneyin."
+        "Güvenli ödeme oturumu hazırlanamadı. Lütfen tekrar deneyin."
       );
 
-      const paymentUrl = getTrustedPaytrPaymentUrl(result.paymentUrl);
-
-      if (
-        !response.ok ||
-        !result.ok ||
-        !result.merchantOid ||
-        (!result.iframeToken && !paymentUrl)
-      ) {
-        throw new Error(result.message || "PayTR güvenli ödeme ekranı hazırlanamadı.");
+      if (!response.ok || !result.ok || !result.merchantOid || !result.iframeToken) {
+        throw new Error(result.message || "Güvenli ödeme oturumu hazırlanamadı.");
       }
 
       setMerchantOid(result.merchantOid);
       window.sessionStorage.setItem(ACTIVE_ORDER_STORAGE_KEY, result.merchantOid);
-
-      if (paymentUrl) {
-        window.location.assign(paymentUrl);
-        return;
-      }
-
-      setIframeToken(result.iframeToken ?? null);
+      setIframeToken(result.iframeToken);
       window.requestAnimationFrame(() => {
         document.getElementById("paytr-payment-frame")?.scrollIntoView({
           behavior: "smooth",
@@ -653,14 +622,14 @@ export function CheckoutPageClient({
         <header className="grid gap-6 lg:grid-cols-[1fr_420px] lg:items-end">
           <div>
             <p className="text-xs font-bold uppercase tracking-normal text-primary">
-              PayTR uyumlu güvenli ödeme
+              Tek sayfa güvenli checkout
             </p>
             <h1 className="mt-3 max-w-3xl text-3xl font-bold tracking-normal text-on-surface sm:text-5xl">
-              Siparişi doğrulayın, kartı PayTR ile güvenli onaylayın.
+              Siparişi doğrulayın, kartı güvenli alanda tamamlayın.
             </h1>
             <p className="mt-4 max-w-2xl text-sm leading-7 text-on-surface-variant sm:text-base">
-              İletişim, adres ve sepet tutarı kontrol edilir; kart doğrulaması doğrudan PayTR
-              güvenli ödeme akışına gönderilir.
+              İletişim, adres ve sepet tutarı kontrol edilir; ödeme oturumu aynı sayfada açılır
+              ve kullanıcı dış siteye yönlendirilmez.
             </p>
           </div>
 
@@ -704,10 +673,10 @@ export function CheckoutPageClient({
       {initialStatus ? (
         <section className="mt-6 rounded-lg border border-primary/15 bg-white/86 p-5 shadow-[0_16px_50px_rgba(6,51,38,0.08)] backdrop-blur-xl">
           <p className="text-sm font-bold uppercase tracking-normal text-primary">
-            PayTR dönüş bilgisi
+            Ödeme dönüş bilgisi
           </p>
           <p className="mt-2 text-sm leading-6 text-on-surface-variant">
-            Tarayıcı PayTR ekranından geri döndü. Kesin sonuç, PayTR callback doğrulaması ve
+            Tarayıcı ödeme alanından geri döndü. Kesin sonuç, güvenli callback doğrulaması ve
             aşağıdaki sipariş durumu ile takip edilir.
           </p>
         </section>
@@ -837,12 +806,12 @@ export function CheckoutPageClient({
                 </span>
                 <div>
                   <h3 className="text-lg font-bold text-on-surface">
-                    PayTR güvenli ödeme ekranı
+                    Güvenli kart doğrulama alanı
                   </h3>
                   <p className="mt-1 text-sm leading-6 text-on-surface-variant">
                     Bu form yalnızca teslimat bilgilerini hazırlar. Kart numarası,
-                    son kullanma tarihi ve CVV bilgileri bir sonraki adımda yalnızca
-                    PayTR iframe alanına girilir.
+                    son kullanma tarihi ve CVV bilgileri bir sonraki adımda açılan güvenli
+                    iframe alanına girilir.
                   </p>
                 </div>
               </div>
@@ -858,8 +827,8 @@ export function CheckoutPageClient({
                   className="mt-1 h-4 w-4 rounded border-outline-variant text-primary focus:ring-primary"
                 />
                 <span>
-                  Sipariş bilgilerimin doğru olduğunu ve kart doğrulamasının PayTR güvenli ödeme
-                  altyapısına gönderileceğini onaylıyorum.
+                  Sipariş bilgilerimin doğru olduğunu ve kart doğrulamasının güvenli ödeme
+                  altyapısında tamamlanacağını onaylıyorum.
                 </span>
               </label>
 
@@ -875,10 +844,10 @@ export function CheckoutPageClient({
                 className="checkout-pay-button mt-5 min-h-12 rounded-lg bg-primary px-6 py-3 text-base font-bold text-white shadow-[0_16px_38px_rgba(6,51,38,0.22)] transition hover:-translate-y-0.5 hover:bg-primary/92 disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0"
               >
                 {isSubmitting
-                  ? "PayTR ekranı hazırlanıyor..."
+                  ? "Ödeme oturumu hazırlanıyor..."
                   : iframeToken
-                    ? "PayTR ödeme ekranı açık"
-                    : "PayTR ödeme ekranını aç"}
+                    ? "Güvenli ödeme alanı açık"
+                    : "Öde ve Siparişi Tamamla"}
               </button>
               {!iframeToken && checkoutValidationError ? (
                 <p className="mt-3 text-xs leading-5 text-on-surface-variant">

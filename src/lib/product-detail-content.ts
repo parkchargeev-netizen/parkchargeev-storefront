@@ -112,7 +112,7 @@ export function getDefaultProductDetailContent(product?: ProductModel): ProductD
     highlightsHeading: "Satış ve kurulum avantajları",
     highlights: product?.highlights?.length ? product.highlights : [],
     purchaseBenefits: [
-      "PayTR güvenli ödeme ve net sipariş takibi",
+      "Tek sayfa güvenli ödeme ve net sipariş takibi",
       "Garanti, servis ve kurulum desteği",
       "Keşif talebiyle yanlış ürün riskini azaltma"
     ],
@@ -120,7 +120,7 @@ export function getDefaultProductDetailContent(product?: ProductModel): ProductD
     decisionChecks: [
       "Araç uyumu, güç ihtiyacı ve kurulum kapsamı ürün seçimi sırasında netleştirilir.",
       "Keşif talebiyle pano kapasitesi, faz yapısı ve kablo hattı netleştirilebilir.",
-      "PayTR ödeme akışı kart verisini site sunucusuna taşımaz."
+      "Güvenli ödeme akışı kart verisini site sunucusuna taşımaz."
     ],
     support: {
       title: "Uygunluğu birlikte kontrol edelim",

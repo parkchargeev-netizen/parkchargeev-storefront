@@ -15,6 +15,7 @@ const labelsByHref: Record<string, string> = {
   "/giris": "Giriş Yap",
   "/hesabim": "Hesabım",
   "/sepet": "Sepet",
+  "/checkout": "Ödeme",
   "/odeme": "Ödeme"
 };
 

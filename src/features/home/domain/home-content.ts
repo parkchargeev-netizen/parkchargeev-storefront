@@ -17,7 +17,7 @@ export type HomeIconKey =
   | "zap";
 
 export const heroTrustSignals = [
-  { icon: "shield", label: "PayTR güvenli ödeme" },
+  { icon: "shield", label: "Güvenli ödeme" },
   { icon: "truck", label: "81 ile gönderim" },
   { icon: "wrench", label: "Keşif ve kurulum" }
 ] as const satisfies ReadonlyArray<{ icon: HomeIconKey; label: string }>;

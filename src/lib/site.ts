@@ -50,7 +50,7 @@ export const siteConfig = {
   legalNavigation: [
     { href: "/iletisim", label: "Destek Merkezi" },
     { href: "/giris", label: "Müşteri Girişi" },
-    { href: "/odeme", label: "Ödeme" },
+    { href: "/checkout", label: "Ödeme" },
     { href: "/sepet", label: "Sepet" }
   ]
 } as const;

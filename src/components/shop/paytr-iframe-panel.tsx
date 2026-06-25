@@ -68,14 +68,14 @@ export function PaytrIframePanel({ iframeToken }: PaytrIframePanelProps) {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p className="text-xs font-bold uppercase tracking-normal text-primary">
-            PayTR güvenli ödeme ekranı
+            Güvenli ödeme alanı
           </p>
           <h2 className="mt-2 text-2xl font-bold tracking-normal text-on-surface">
-            Kart bilgileri sadece PayTR alanında girilir.
+            Kart bilgileri sadece güvenli iframe içinde girilir.
           </h2>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-on-surface-variant">
-            Hesap yetkisine göre PayTR güvenli formu bu bölümde açılır veya PayTR ödeme sayfasına
-            yönlendirilirsiniz. ParkChargeEV kart numarası, son kullanma tarihi veya CVV istemez.
+            Ödeme oturumu hazırlandığında form bu bölümde açılır. ParkChargeEV kart numarası,
+            son kullanma tarihi veya CVV istemez.
           </p>
         </div>
         <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary text-white">
@@ -91,7 +91,8 @@ export function PaytrIframePanel({ iframeToken }: PaytrIframePanelProps) {
             id="paytriframe"
             frameBorder="0"
             scrolling="no"
-            title="PayTR ödeme formu"
+            title="Güvenli kart ödeme formu"
+            allow="payment"
             className="min-h-[680px] w-full"
           />
         </div>
@@ -102,8 +103,8 @@ export function PaytrIframePanel({ iframeToken }: PaytrIframePanelProps) {
           </span>
           <p className="mt-4 text-lg font-bold text-on-surface">Ödeme formu beklemede</p>
           <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-on-surface-variant">
-            İletişim ve adres bilgilerini tamamlayıp onay verdiğinizde uygun PayTR güvenli ödeme
-            akışı otomatik olarak başlatılır.
+            İletişim ve adres bilgilerini tamamlayıp onay verdiğinizde güvenli ödeme oturumu bu
+            alanda otomatik olarak başlatılır.
           </p>
         </div>
       )}

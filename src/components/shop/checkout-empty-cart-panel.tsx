@@ -28,7 +28,7 @@ export function CheckoutEmptyCartPanel() {
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-on-surface-variant">
           Önce mağazadan ürün ekleyin. Ardından bu sayfada iletişim ve teslimat bilgilerinizi
-          tamamlayıp PayTR güvenli ödeme ekranına geçebilirsiniz.
+          tamamlayıp güvenli ödeme alanına geçebilirsiniz.
         </p>
         <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
           <Link

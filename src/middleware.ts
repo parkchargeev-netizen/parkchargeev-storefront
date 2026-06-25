@@ -188,9 +188,11 @@ export async function middleware(request: NextRequest) {
   const isAdminApi = pathname.startsWith("/api/admin");
   const isCustomerPage = pathname === "/giris" || pathname === "/hesabim";
   const isCustomerApi = pathname.startsWith("/api/customer");
-  const isCheckoutPage = pathname === "/odeme";
+  const isCheckoutPage = pathname === "/odeme" || pathname === "/checkout";
   const isPaytrCheckoutApi =
-    pathname === "/api/paytr/token" || pathname === "/api/paytr/direct-form";
+    pathname === "/api/paytr/token" ||
+    pathname === "/api/paytr/direct-form" ||
+    pathname === "/api/checkout/create";
   const acceptHeader = request.headers.get("accept") ?? "";
   const isMarkdownRequest = request.method === "GET" && acceptHeader.includes("text/markdown");
 
@@ -286,9 +288,11 @@ export const config = {
     "/api/customer/:path*",
     "/api/paytr/token",
     "/api/paytr/direct-form",
+    "/api/checkout/create",
     "/giris",
     "/hesabim",
     "/odeme",
+    "/checkout",
     "/urun/:path*",
     "/blog/:path*"
   ]

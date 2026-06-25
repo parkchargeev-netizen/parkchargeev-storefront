@@ -16,11 +16,13 @@ Disallow: /admin
 Disallow: /api/admin
 Disallow: /api/customer
 Disallow: /api/paytr
+Disallow: /api/checkout
 Disallow: /api/cart-intent
 Disallow: /api/orders
 Disallow: /api/lead
 Disallow: /sepet
 Disallow: /odeme
+Disallow: /checkout
 Disallow: /giris
 Disallow: /hesabim
 Disallow: /sentry-example-page
@@ -34,8 +36,10 @@ Disallow: /admin
 Disallow: /api/admin
 Disallow: /api/customer
 Disallow: /api/paytr
+Disallow: /api/checkout
 Disallow: /sepet
 Disallow: /odeme
+Disallow: /checkout
 Disallow: /giris
 Disallow: /hesabim
 
@@ -46,11 +50,13 @@ Disallow: /admin
 Disallow: /api/admin
 Disallow: /api/customer
 Disallow: /api/paytr
+Disallow: /api/checkout
 Disallow: /api/cart-intent
 Disallow: /api/orders
 Disallow: /api/lead
 Disallow: /sepet
 Disallow: /odeme
+Disallow: /checkout
 Disallow: /giris
 Disallow: /hesabim
 Disallow: /sentry-example-page

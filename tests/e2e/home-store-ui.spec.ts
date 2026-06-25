@@ -39,7 +39,7 @@ test("@e2e ana sayfa sade karar akisini gosterir", async ({ page }) => {
     });
     expect(firstCardWidth).toBeLessThan(190);
   } else {
-    await expect(page.locator("header").getByText("PayTR güvenli ödeme")).toBeVisible();
+    await expect(page.locator("header").getByText("Güvenli ödeme")).toBeVisible();
     await expect(page.locator("header").getByText("Ürün kargosu: 81 il")).toBeVisible();
     await expect(page.locator("header").getByText("Ücretsiz keşif: Sakarya")).toBeVisible();
     await expect(page.locator("header").getByText("Kurulum: Sakarya ve Kocaeli")).toBeVisible();
@@ -298,7 +298,7 @@ test("@e2e mobil urun secici sade ve kompakt gorunur", async ({ page }) => {
   expect(hasPageOverflow).toBe(false);
 });
 
-test("@e2e odeme sayfasi PayTR icin kart bilgisi toplar", async ({ page }) => {
+test("@e2e checkout sayfasi kart bilgisini ParkChargeEV formunda toplamaz", async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.setItem(
       "parkchargeev-cart-v1",
@@ -312,12 +312,12 @@ test("@e2e odeme sayfasi PayTR icin kart bilgisi toplar", async ({ page }) => {
     );
   });
 
-  await page.goto("/odeme", { waitUntil: "domcontentloaded" });
+  await page.goto("/checkout", { waitUntil: "domcontentloaded" });
 
-  await expect(page.getByRole("main").getByText("PayTR uyumlu güvenli ödeme", { exact: true })).toBeVisible();
-  await expect(page.getByRole("button", { name: /Kartı Doğrula ve Öde/i })).toBeVisible();
-  await expect(page.locator('input[autocomplete^="cc"]')).toHaveCount(5);
-  await expect(page.getByText("Kart bilgileri", { exact: true })).toBeVisible();
+  await expect(page.getByRole("main").getByText("Tek sayfa güvenli checkout", { exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Öde ve Siparişi Tamamla/i })).toBeVisible();
+  await expect(page.locator('input[autocomplete^="cc"]')).toHaveCount(0);
+  await expect(page.getByText("Güvenli kart doğrulama alanı", { exact: true })).toBeVisible();
 });
 
 test("@e2e kurumsal sayfa kompakt teklif formu ve responsive akisi sunar", async ({ page }) => {

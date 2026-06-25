@@ -92,7 +92,7 @@ export function CheckoutOrderSummary({
       <div className="mt-4 grid gap-2 text-xs leading-5 text-on-surface-variant">
         <p className="inline-flex items-start gap-2">
           <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
-          PayTR ile güvenli ödeme altyapısı.
+          Tek sayfa güvenli ödeme altyapısı.
         </p>
         <p className="inline-flex items-start gap-2">
           <LockKeyhole className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />

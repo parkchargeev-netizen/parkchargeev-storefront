@@ -34,10 +34,10 @@ export function CheckoutResultPanel({
           Ödeme sonucu
         </p>
         <h1 className="mt-3 text-3xl font-bold tracking-normal text-on-surface sm:text-5xl">
-          Sipariş durumunuz PayTR callback ile doğrulanıyor.
+          Sipariş durumunuz güvenli callback ile doğrulanıyor.
         </h1>
         <p className="mt-4 max-w-3xl text-base leading-7 text-on-surface-variant">
-          PayTR yönlendirmesi tamamlandı. Kesin sonuç callback doğrulamasıyla işlendiği için
+          Ödeme ekranı dönüşü tamamlandı. Kesin sonuç callback doğrulamasıyla işlendiği için
           aşağıdaki durum kartları esas alınır.
         </p>
 

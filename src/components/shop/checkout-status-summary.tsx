@@ -27,10 +27,10 @@ export function CheckoutStatusSummary({
             Sipariş takibi
           </p>
           <h2 className="mt-2 text-2xl font-bold tracking-normal text-on-surface">
-            PayTR callback sonucu burada görünür.
+            Ödeme doğrulama sonucu burada görünür.
           </h2>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-on-surface-variant">
-            Tarayıcı yönlendirmesi bilgilendiricidir; kesin ödeme sonucu PayTR callback
+            Sayfa yönlendirmesi bilgilendiricidir; kesin ödeme sonucu güvenli callback
             doğrulamasıyla güncellenir.
           </p>
         </div>

@@ -19,7 +19,7 @@ type ProductPurchasePanelProps = {
 };
 
 const defaultBenefits = [
-  "PayTR güvenli ödeme",
+  "Tek sayfa güvenli ödeme",
   "Garanti ve teknik destek",
   "Keşifle doğru kurulum"
 ];
@@ -51,7 +51,7 @@ export function ProductPurchasePanel({
   const purchaseTrustSignals = [
     { label: "Uyum", detail: storeProfile.connectorHint },
     { label: "Kurulum", detail: storeProfile.installationMode },
-    { label: "Ödeme", detail: "PayTR" }
+    { label: "Ödeme", detail: "Güvenli checkout" }
   ];
 
   function handleAddToCart() {

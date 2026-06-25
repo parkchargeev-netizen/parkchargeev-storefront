@@ -21,12 +21,12 @@ Kodda bulunan kritik yuzeyler:
 
 | Alan | Dosya | Durum |
 |---|---|---|
-| PayTR payload ve hash yardimcilari | `src/lib/paytr.ts` | iFrame, Link API ve Direkt API payload uretiyor; callback hash dogruluyor. |
+| PayTR payload ve hash yardimcilari | `src/lib/paytr.ts` | iFrame ve legacy Direkt API payload uretiyor; callback hash dogruluyor. |
 | Checkout siparis olusturma | `src/server/paytr/checkout-order.ts` | Sepeti server tarafinda fiyatlandirmak icin kullaniliyor. |
-| PayTR token ve Link API istemcisi | `src/server/paytr/client.ts` | Pro/iFrame tokenini ister; hesap yalnizca Link/Basic API destekliyorsa tek kullanimlik odeme linki olusturur. |
+| PayTR token istemcisi | `src/server/paytr/client.ts` | iFrame tokenini ister; hosted/link odeme fallback'i musteri akisi icin kapali tutulur. |
 | Direkt API form hazirlama | `src/app/api/paytr/direct-form/route.ts` | Varsayilan kapali; yalnizca PayTR onayi ve `PAYTR_DIRECT_API_ENABLED=1` ile signed alan uretir. |
 | PayTR callback | `src/app/api/paytr/callback/route.ts` | iFrame ve Link API hash, tutar, para birimi, idempotency ve stok dusme kontrolleri yapiyor. |
-| Checkout UI | `src/components/shop/checkout-page-client.tsx` | Kart verisi toplamaz; iFrame'i acar veya PayTR Link sayfasina yonlendirir. |
+| Checkout UI | `src/components/shop/checkout-page-client.tsx` | Kart verisi toplamaz; iFrame'i ayni sayfa icinde acar, hosted sayfaya yonlendirme yapmaz. |
 | Runtime smoke | `scripts/runtime-smoke.mjs` | DB ve PayTR env kontrolleri yapiyor. |
 
 ## 3. Production Ortam Degiskenleri
@@ -79,8 +79,8 @@ PayTR panelinde canli domain icin kontrol edilecek ayarlar:
 | Ayar | Deger |
 |---|---|
 | Bildirim URL | `https://parkchargeev.com/api/paytr/callback` |
-| Basarili donus URL | Uygulama tarafinda `https://parkchargeev.com/odeme?status=success&oid=<merchantOid>` olarak uretilir. |
-| Basarisiz donus URL | Uygulama tarafinda `https://parkchargeev.com/odeme?status=failed&oid=<merchantOid>` olarak uretilir. |
+| Basarili donus URL | Uygulama tarafinda `https://parkchargeev.com/checkout?status=success&oid=<merchantOid>` olarak uretilir. |
+| Basarisiz donus URL | Uygulama tarafinda `https://parkchargeev.com/checkout?status=failed&oid=<merchantOid>` olarak uretilir. |
 | Test modu | Canlida kapali. |
 | Debug | Canlida kapali. |
 | Direkt API yetkisi | Direkt API kullanilacaksa PayTR tarafinda acik olmali. |
@@ -149,7 +149,7 @@ Not: `verify:release` e2e, a11y ve visual testleri de calistirir. Production cre
 | Urun detay | Gorsel, fiyat, stok, guc/kurulum/uyum ve sepete ekle gorunur. |
 | Sepet | Miktar degisir, urun kaldirilir, KDV ve toplam dogru gorunur. |
 | Checkout validasyon | Eksik ad/e-posta/telefon/adres icin Turkce hata gorunur. |
-| PayTR hazirlama | Siparis olusur, signed form PayTR adresine post edilir. |
+| PayTR hazirlama | Siparis olusur, iFrame token alinir ve odeme alani ayni sayfada acilir. |
 | Basarili PayTR donusu | Kullanici bilgilendirilir, kesin durum callback/polling ile gelir. |
 | Basarisiz PayTR donusu | Kullanici bilgilendirilir, sepet ve destek yolu korunur. |
 | PayTR callback duplicate | Ikinci callback `OK` ile idempotent doner, stok iki kez dusmez. |

@@ -4,7 +4,6 @@ import { ZodError } from "zod";
 
 import {
   buildPaytrIframePayload,
-  buildPaytrLinkPayload,
   redactPaytrPayload
 } from "@/lib/paytr";
 import {
@@ -19,10 +18,7 @@ import { durationSince, logError, logInfo, logWarn } from "@/lib/server-logger";
 import { absoluteUrl } from "@/lib/site";
 import { getDb } from "@/server/db/client";
 import { orders, paytrTransactions } from "@/server/db/schema";
-import {
-  requestPaytrIframeToken,
-  requestPaytrPaymentLink
-} from "@/server/paytr/client";
+import { requestPaytrIframeToken } from "@/server/paytr/client";
 import {
   createPaytrCheckoutOrder,
   isPaytrCheckoutPricingError,
@@ -35,6 +31,14 @@ import {
 
 function getPaytrTokenFailureMessage(reason?: string) {
   const normalizedReason = reason?.toLocaleLowerCase("tr-TR") ?? "";
+
+  if (
+    normalizedReason.includes("yalnizca link cozumu") ||
+    normalizedReason.includes("yalnızca link çözümü") ||
+    normalizedReason.includes("basic api")
+  ) {
+    return "Bu PayTR hesabında embedded iFrame ödeme akışı aktif görünmüyor. Tek sayfa checkout için PayTR iFrame/Pro API yetkisini açtırın.";
+  }
 
   if (
     normalizedReason.includes("magaza aktif degil") ||
@@ -59,31 +63,6 @@ function getPaytrTokenFailureMessage(reason?: string) {
   }
 
   return "PayTR ödeme oturumu başlatılamadı. Lütfen bilgilerinizi kontrol edip tekrar deneyin.";
-}
-
-function isLinkOnlyPaytrMerchant(reason?: string) {
-  const normalizedReason = reason?.toLocaleLowerCase("tr-TR") ?? "";
-
-  return (
-    normalizedReason.includes("yalnizca link cozumu") ||
-    normalizedReason.includes("yalnızca link çözümü") ||
-    normalizedReason.includes("basic api")
-  );
-}
-
-function getPaytrLinkCallbackUrl() {
-  const configuredUrl = process.env.PAYTR_CALLBACK_URL?.trim();
-  const callbackUrl = configuredUrl || absoluteUrl("/api/paytr/callback");
-
-  try {
-    if (new URL(callbackUrl).protocol === "https:") {
-      return callbackUrl;
-    }
-  } catch {
-    // Aşağıdaki güvenli production callback adresine düşülür.
-  }
-
-  return "https://parkchargeev.com/api/paytr/callback";
 }
 
 export async function POST(request: Request) {
@@ -161,8 +140,8 @@ export async function POST(request: Request) {
       userName: body.userName,
       userAddress: body.userAddress,
       userPhone: body.userPhone,
-      okUrl: absoluteUrl(`/odeme?status=success&oid=${merchantOid}`),
-      failUrl: absoluteUrl(`/odeme?status=failed&oid=${merchantOid}`),
+      okUrl: absoluteUrl(`/checkout?status=success&oid=${merchantOid}`),
+      failUrl: absoluteUrl(`/checkout?status=failed&oid=${merchantOid}`),
       items,
       merchantOid
     });
@@ -170,65 +149,6 @@ export async function POST(request: Request) {
     const result = await requestPaytrIframeToken(payload);
 
     if (result.status !== "success") {
-      let linkFailure: Record<string, unknown> | null = null;
-
-      if (isLinkOnlyPaytrMerchant(result.reason)) {
-        const linkPayload = buildPaytrLinkPayload({
-          name: items.map((item) => item.title).join(", "),
-          paymentAmountKurus,
-          callbackUrl: getPaytrLinkCallbackUrl(),
-          callbackId: merchantOid,
-          userName: body.userName
-        });
-        const linkResult = await requestPaytrPaymentLink(linkPayload);
-
-        if (linkResult.status === "success") {
-          await db
-            .update(paytrTransactions)
-            .set({
-              status: "token_received",
-              rawRequest: {
-                requestBody: {
-                  ...body,
-                  flow: "link_api"
-                },
-                iframeRejection: result,
-                paytrLinkPayload: redactPaytrPayload(linkPayload),
-                paytrLinkId: linkResult.id,
-                paymentUrl: linkResult.link
-              },
-              updatedAt: new Date()
-            })
-            .where(eq(paytrTransactions.orderId, order.id));
-
-          logInfo("paytr.link.created", {
-            merchantOid,
-            orderId: order.id,
-            itemCount: items.length,
-            totalKurus: paymentAmountKurus,
-            durationMs: durationSince(startedAt)
-          });
-
-          return NextResponse.json({
-            ok: true,
-            paymentFlow: "link",
-            paymentUrl: linkResult.link,
-            merchantOid
-          });
-        }
-
-        linkFailure = {
-          status: linkResult.status,
-          reason: linkResult.reason,
-          raw: linkResult.raw
-        };
-        logWarn("paytr.link.rejected", {
-          merchantOid,
-          reason: linkResult.reason,
-          durationMs: durationSince(startedAt)
-        });
-      }
-
       await db
         .update(orders)
         .set({
@@ -244,8 +164,7 @@ export async function POST(request: Request) {
           rawRequest: {
             requestBody: body,
             paytrPayload: redactPaytrPayload(payload),
-            paytrError: result,
-            ...(linkFailure ? { paytrLinkError: linkFailure } : {})
+            paytrError: result
           },
           updatedAt: new Date()
         })
@@ -262,7 +181,7 @@ export async function POST(request: Request) {
           ok: false,
           code: "paytr_provider_rejected",
           message: getPaytrTokenFailureMessage(result.reason),
-          details: linkFailure ?? result
+          details: result
         },
         { status: 200 }
       );

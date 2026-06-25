@@ -13,7 +13,7 @@ async function fillCheckoutContact(page: Page) {
 async function mockPaytrIframeFlow(page: Page) {
   let tokenRequestBody = "";
 
-  await page.route("**/api/paytr/token", async (route) => {
+  await page.route("**/api/checkout/create", async (route) => {
     tokenRequestBody = route.request().postData() ?? "";
 
     await route.fulfill({
@@ -31,7 +31,7 @@ async function mockPaytrIframeFlow(page: Page) {
     await route.fulfill({
       status: 200,
       contentType: "text/html",
-      body: "<html><body><h1>PayTR güvenli ödeme mock</h1></body></html>"
+      body: "<html><body><h1>Güvenli ödeme mock</h1></body></html>"
     });
   });
 
@@ -41,7 +41,7 @@ async function mockPaytrIframeFlow(page: Page) {
 }
 
 async function mockPaytrLinkFlow(page: Page) {
-  await page.route("**/api/paytr/token", async (route) => {
+  await page.route("**/api/checkout/create", async (route) => {
     await route.fulfill({
       status: 200,
       contentType: "application/json",
@@ -53,17 +53,9 @@ async function mockPaytrLinkFlow(page: Page) {
       })
     });
   });
-
-  await page.route("https://www.paytr.com/link/PCEVE2E", async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: "text/html",
-      body: "<html><body><h1>PayTR Link API secure payment</h1></body></html>"
-    });
-  });
 }
 
-test("@e2e magaza -> urun -> sepet -> odeme akisi PayTR iframe mock ile tamamlanir", async ({
+test("@e2e magaza -> urun -> sepet -> checkout akisi iframe mock ile tamamlanir", async ({
   page
 }) => {
   test.setTimeout(75_000);
@@ -77,13 +69,13 @@ test("@e2e magaza -> urun -> sepet -> odeme akisi PayTR iframe mock ile tamamlan
   await expect(page.getByText(/sepete eklendi/i)).toBeVisible();
 
   await page.goto("/sepet", { waitUntil: "domcontentloaded" });
-  await expect(page.locator('a[href="/odeme"]').first()).toBeVisible();
-  await page.goto("/odeme", { waitUntil: "domcontentloaded" });
+  await expect(page.locator('a[href="/checkout"]').first()).toBeVisible();
+  await page.goto("/checkout", { waitUntil: "domcontentloaded" });
 
   await expect(page.locator('input[autocomplete="name"]')).toBeVisible();
   await fillCheckoutContact(page);
   await page.getByRole("checkbox").check();
-  await page.getByRole("button", { name: /PayTR ödeme ekranını aç/i }).click();
+  await page.getByRole("button", { name: /Öde ve Siparişi Tamamla/i }).click();
 
   await expect.poll(() => paytrMock.getTokenRequestBody()).toContain("productId");
   expect(paytrMock.getTokenRequestBody()).not.toContain("paymentAmountKurus");
@@ -91,13 +83,13 @@ test("@e2e magaza -> urun -> sepet -> odeme akisi PayTR iframe mock ile tamamlan
   expect(paytrMock.getTokenRequestBody()).not.toContain("card_number");
   expect(paytrMock.getTokenRequestBody()).not.toContain("cvv");
   expect(paytrMock.getTokenRequestBody()).not.toContain("cc_owner");
-  await expect(page.locator('iframe[title="PayTR ödeme formu"]')).toHaveAttribute(
+  await expect(page.locator('iframe[title="Güvenli kart ödeme formu"]')).toHaveAttribute(
     "src",
     "https://www.paytr.com/odeme/guvenli/mock_iframe_token"
   );
 });
 
-test("@e2e Basic API hesabinda PayTR Link odeme sayfasina yonlendirilir", async ({
+test("@e2e hosted link cevabi checkout sayfasindan cikmadan hata gosterir", async ({
   page
 }) => {
   await mockPaytrLinkFlow(page);
@@ -113,15 +105,15 @@ test("@e2e Basic API hesabinda PayTR Link odeme sayfasina yonlendirilir", async 
       ])
     );
   });
-  await page.goto("/odeme", { waitUntil: "domcontentloaded" });
+  await page.goto("/checkout", { waitUntil: "domcontentloaded" });
   await fillCheckoutContact(page);
   await page.getByRole("checkbox").check();
-  await page.getByRole("button", { name: /PayTR ödeme ekranını aç/i }).click();
+  await page.getByRole("button", { name: /Öde ve Siparişi Tamamla/i }).click();
 
-  await expect(page).toHaveURL("https://www.paytr.com/link/PCEVE2E");
   await expect(
-    page.getByRole("heading", { name: "PayTR Link API secure payment" })
+    page.getByText("Güvenli ödeme oturumu hazırlanamadı.")
   ).toBeVisible();
+  await expect(page).toHaveURL(/\/checkout$/);
 });
 
 test("@e2e kablo uzunlugu fiyat ve sepet tutarini gunceller", async ({ page }) => {
@@ -156,17 +148,17 @@ test("@e2e kart alanlari yalnizca PayTR iframe icinde acilir", async ({
   await expect(addToCartButton).toBeEnabled();
   await addToCartButton.click();
   await expect(page.getByText(/sepete eklendi/i)).toBeVisible();
-  await page.goto("/odeme", { waitUntil: "domcontentloaded" });
+  await page.goto("/checkout", { waitUntil: "domcontentloaded" });
 
   await fillCheckoutContact(page);
   await page.getByRole("checkbox").check();
 
-  await expect(page.getByRole("button", { name: /PayTR ödeme ekranını aç/i })).toBeEnabled();
+  await expect(page.getByRole("button", { name: /Öde ve Siparişi Tamamla/i })).toBeEnabled();
   await expect(page.locator('input[autocomplete^="cc"]')).toHaveCount(0);
-  await page.getByRole("button", { name: /PayTR ödeme ekranını aç/i }).click();
+  await page.getByRole("button", { name: /Öde ve Siparişi Tamamla/i }).click();
 
   await expect.poll(() => paytrMock.getTokenRequestBody()).toContain("productId");
-  await expect(page.locator('iframe[title="PayTR ödeme formu"]')).toBeVisible();
+  await expect(page.locator('iframe[title="Güvenli kart ödeme formu"]')).toBeVisible();
 });
 
 test("@e2e legacy PayTR Direct API varsayilan olarak kapalidir", async ({
@@ -182,10 +174,10 @@ test("@e2e legacy PayTR Direct API varsayilan olarak kapalidir", async ({
   expect(body.message).toContain("iFrame");
 });
 
-test("@e2e eski checkout istemcisi acik yenileme mesaji alir", async ({
+test("@e2e eski checkout istemcisi create endpointinde acik yenileme mesaji alir", async ({
   request
 }) => {
-  const response = await request.post("/api/paytr/token", {
+  const response = await request.post("/api/checkout/create", {
     data: {}
   });
   const body = (await response.json()) as {
@@ -219,8 +211,8 @@ test("@e2e PayTR Link callback gecersiz hash ile reddedilir", async ({
   expect(await response.text()).toContain("bad hash");
 });
 
-test("@e2e PayTR bos cevapta teknik JSON hatasi yerine Turkce mesaj gosterir", async ({ page }) => {
-  await page.route("**/api/paytr/token", async (route) => {
+test("@e2e bos cevapta teknik JSON hatasi yerine Turkce mesaj gosterir", async ({ page }) => {
+  await page.route("**/api/checkout/create", async (route) => {
     await route.fulfill({
       status: 502,
       body: ""
@@ -240,15 +232,15 @@ test("@e2e PayTR bos cevapta teknik JSON hatasi yerine Turkce mesaj gosterir", a
     );
   });
 
-  await page.goto("/odeme", { waitUntil: "domcontentloaded" });
+  await page.goto("/checkout", { waitUntil: "domcontentloaded" });
 
   await fillCheckoutContact(page);
   await page.getByRole("checkbox").check();
 
-  await page.getByRole("button", { name: /PayTR ödeme ekranını aç/i }).click();
+  await page.getByRole("button", { name: /Öde ve Siparişi Tamamla/i }).click();
 
   await expect(
-    page.getByText("PayTR güvenli ödeme ekranı hazırlanamadı. Lütfen tekrar deneyin.")
+    page.getByText("Güvenli ödeme oturumu hazırlanamadı. Lütfen tekrar deneyin.")
   ).toBeVisible();
   await expect(page.getByText(/Unexpected end of JSON input/i)).toHaveCount(0);
 });
@@ -269,10 +261,10 @@ test("@e2e odeme butonu eksik bilgi varken aktif kalir ve hatayi aciklar", async
     );
   });
 
-  await page.goto("/odeme", { waitUntil: "domcontentloaded" });
+  await page.goto("/checkout", { waitUntil: "domcontentloaded" });
 
   const paymentButton = page.getByRole("button", {
-    name: /PayTR ödeme ekranını aç/i
+    name: /Öde ve Siparişi Tamamla/i
   });
   await expect(paymentButton).toBeEnabled();
   await paymentButton.click();
@@ -298,7 +290,7 @@ test("@e2e tarayici otomatik doldurmasi React state olmasa da token istegine yan
       ])
     );
   });
-  await page.goto("/odeme", { waitUntil: "domcontentloaded" });
+  await page.goto("/checkout", { waitUntil: "domcontentloaded" });
   await page.getByRole("checkbox").check();
 
   await page.evaluate(() => {
@@ -323,7 +315,7 @@ test("@e2e tarayici otomatik doldurmasi React state olmasa da token istegine yan
   await expect.poll(() => paytrMock.getTokenRequestBody()).toContain(
     '"email":"autofill@parkchargeev.com"'
   );
-  await expect(page.locator('iframe[title="PayTR ödeme formu"]')).toBeVisible();
+  await expect(page.locator('iframe[title="Güvenli kart ödeme formu"]')).toBeVisible();
 });
 
 test("@a11y kritik magaza ve odeme ekranlarinda accessibility smoke temiz", async ({ page }) => {

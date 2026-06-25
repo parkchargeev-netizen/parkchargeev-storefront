@@ -116,5 +116,5 @@ test("@e2e Review the cart before checkout", async ({ page }) => {
   await page.goto("/sepet", { waitUntil: "domcontentloaded" });
   await expect(page.getByText("HomeCharge Pro 11kW").first()).toBeVisible();
   await expect(page.getByText("Sipariş Özeti")).toBeVisible();
-  await expect(page.locator('a[href="/odeme"]').first()).toBeVisible();
+  await expect(page.locator('a[href="/checkout"]').first()).toBeVisible();
 });

@@ -4,15 +4,26 @@ Son kontrol tarihi: 25 Haziran 2026
 
 ## Aktif Ödeme Modeli
 
-ParkChargeEV ödeme ekranı hesap yetkisine göre otomatik PayTR akışı kullanır.
+ParkChargeEV müşteri ödeme akışı tek sayfa checkout olarak çalışır.
 
-- Kart numarası, son kullanma tarihi ve CVV ParkChargeEV formunda toplanmaz.
-- ParkChargeEV sunucusu sepeti ve toplam tutarı yeniden doğrular.
-- Pro/iFrame API açıksa sunucu gerçek bir iFrame tokenı alır ve PayTR formunu sayfada açar.
-- Merchant hesabında yalnızca Link/Basic API açıksa sunucu tek kullanımlık ürün linki üretir ve tarayıcıyı `https://www.paytr.com/link/{id}` adresine yönlendirir.
-- Siparişin kesin ödeme sonucu yalnızca PayTR bildirim/callback isteğiyle belirlenir.
+- Kanonik müşteri sayfası `/checkout` adresidir.
+- Eski `/odeme` adresi geriye dönük uyumluluk için çalışır.
+- Checkout sayfası `/api/checkout/create` endpoint'ini çağırır.
+- Sunucu siparişi `pending_payment` olarak oluşturur ve sepeti yeniden fiyatlandırır.
+- Sunucu PayTR iFrame API'den token alır.
+- Tarayıcı sayfa değiştirmeden güvenli iframe alanını açar.
+- Link API veya hosted ödeme sayfasına yönlendirme yapılmaz.
+- Kart numarası, son kullanma tarihi ve CVV ParkChargeEV formunda toplanmaz, saklanmaz ve loglanmaz.
 
-`PayTR Direkt API`, PayTR tarafından ayrıca onay gerektirdiği ve kart formunu mağaza alanına taşıdığı için aktif müşteri akışında kullanılmaz. Eski `/api/paytr/direct-form` rotası varsayılan olarak `410 Gone` döndürür. Yalnızca PayTR onayı, PCI değerlendirmesi ve bilinçli operasyon kararı sonrasında `PAYTR_DIRECT_API_ENABLED=1` ile açılabilir.
+Kart alanlarını ParkChargeEV DOM'unda göstermek PayTR Direkt API onayı, ek güvenlik değerlendirmesi ve PCI kapsamı doğurur. Bu nedenle aktif müşteri akışı Direkt API kullanmaz.
+
+## Endpointler
+
+- `POST /api/checkout/create`: Sipariş oluşturur, PayTR iFrame tokenı üretir.
+- `POST /api/checkout/callback`: `/api/paytr/callback` ile aynı doğrulama mantığına bağlıdır.
+- `POST /api/paytr/token`: Eski endpoint; yeni checkout ile aynı token akışını çalıştırır.
+- `POST /api/paytr/callback`: PayTR panelinde kullanılabilen mevcut bildirim URL'sidir.
+- `POST /api/paytr/direct-form`: Varsayılan olarak `410 Gone` döndürür.
 
 ## iFrame API
 
@@ -44,25 +55,20 @@ Zorunlu alanlar uygulamada sunucu tarafında üretilir:
 
 `merchant_ok_url` ve `merchant_fail_url` yalnızca kullanıcıyı bilgilendiren dönüş sayfalarıdır. Sipariş bu sayfalarda başarılı veya başarısız olarak işaretlenmez.
 
-## Link / Basic API
-
-iFrame token servisi merchant hesabının yalnızca Link/Basic API yetkisine sahip olduğunu bildirirse uygulama şu servisi kullanır:
-
-- `https://www.paytr.com/odeme/api/link/create`
-
-Uygulama ürün tipi linki `max_count=1` ile oluşturur. `callback_id` olarak ParkChargeEV `merchantOid` değeri gönderilir; böylece PayTR'nin kendi `merchant_oid` değeriyle uygulama sipariş kimliği birbirine karışmaz.
-
 ## Callback Kuralları
 
-Bildirim URL:
+PayTR paneli için önerilen bildirim URL:
 
 - `https://parkchargeev.com/api/paytr/callback`
 
-PayTR callback için şu kurallar zorunludur:
+Alternatif uyumluluk URL'si:
+
+- `https://parkchargeev.com/api/checkout/callback`
+
+Callback için şu kurallar zorunludur:
 
 - Endpoint oturum veya admin yetkisi istemez.
-- iFrame callback hash'i `merchant_oid + merchant_salt + status + total_amount` verisiyle doğrulanır.
-- Link API callback hash'i `callback_id + merchant_oid + merchant_salt + status + total_amount` verisiyle doğrulanır.
+- Gelen `hash`, `merchant_oid + merchant_salt + status + total_amount` verisinin merchant key ile HMAC-SHA256 imzası kullanılarak doğrulanır.
 - Başarılı callback'te `payment_amount` sipariş toplamı ile karşılaştırılır.
 - Başarılı callback'te `currency` sipariş para birimiyle karşılaştırılır. `TL` ve `TRY` aynı para birimi olarak değerlendirilir.
 - Aynı `merchant_oid` için tekrar gelen aynı sonuç idempotent şekilde yalnızca `OK` döndürür.
@@ -71,13 +77,12 @@ PayTR callback için şu kurallar zorunludur:
 
 ## Admin Durum Kontrolü
 
-Admin panelindeki PayTR kontrolü, PayTR durum sorgulama servisiyle başarılı ödeme arar.
+Admin panelindeki kontrol, PayTR durum sorgulama servisiyle başarılı ödeme arar.
 
 - Başarılı ödeme bulunursa sipariş ve işlem ödeme doğrulandı durumuna geçirilir.
 - Başarılı ödeme bulunamazsa mevcut sipariş ve işlem durumu değiştirilmez.
 - Durum sorgusu bir callback değildir; sorgu hatası `callback_failed` olarak kaydedilmez.
 - `callback_failed` yalnızca PayTR'den gerçekten gelen ve doğrulanmış başarısız ödeme bildirimi için kullanılır.
-- Link API ödemelerinde temel doğrulama kanalı callback'tir; Pro API durum sorgusu Link API siparişini bulmayabilir.
 
 ## Vercel Ortam Değişkenleri
 
@@ -86,16 +91,13 @@ Sunucu ortamında aşağıdaki değerler bulunmalıdır:
 - `PAYTR_MERCHANT_ID`
 - `PAYTR_MERCHANT_KEY`
 - `PAYTR_MERCHANT_SALT`
-- `PAYTR_CALLBACK_URL`
 - `PAYTR_TEST_MODE`
 - `PAYTR_DEBUG_ON`
 
 Operasyon kuralları:
 
-- `PAYTR_DIRECT_API_ENABLED` tanımlanmamalı veya `0` kalmalıdır.
-- `PAYTR_CALLBACK_URL=https://parkchargeev.com/api/paytr/callback` olmalıdır.
 - Canlı ödemede `PAYTR_TEST_MODE=0`.
-- PayTR test kartlarıyla kontrollü test yapılırken ilgili deployment için `PAYTR_TEST_MODE=1`.
+- Test kartlarıyla kontrollü test yapılırken ilgili deployment için `PAYTR_TEST_MODE=1`.
 - `PAYTR_DEBUG_ON` testte `1`, canlıda `0` önerilir.
 - `PAYTR_TEST_USER_IP` yalnızca lokal geliştirme veya sabit test IP ihtiyacı için kullanılmalıdır.
 - Merchant key ve salt yalnızca server env olarak tutulmalı, `NEXT_PUBLIC_` önekiyle yayınlanmamalıdır.
@@ -105,16 +107,14 @@ Operasyon kuralları:
 
 Ödeme, sepet, giriş, hesap ve admin sayfaları arama sonuçlarında yer almamalıdır.
 
-- Bu sayfalarda `noindex, nofollow` korunur.
+- `/checkout` ve `/odeme` `noindex, nofollow` korunur.
 - Ödeme ve hesap URL'leri sitemap'e eklenmez.
 - Kuruluş, ürün, hizmet ve uzmanlık bilgileri indekslenebilir kurumsal sayfalardaki yapılandırılmış verilerde tutulur.
-- Ödeme sağlayıcısı ve güven bilgileri kullanıcı arayüzünde açıkça belirtilir; kart verisinin PayTR alanında işlendiği doğru biçimde anlatılır.
+- Kart verisinin ParkChargeEV tarafından saklanmadığı alışveriş akışında açıkça belirtilir.
 
 ## Resmi Kaynaklar
 
 - https://dev.paytr.com/iframe-api/iframe-api-1-adim
 - https://dev.paytr.com/iframe-api/iframe-api-2-adim
-- https://dev.paytr.com/link-api/link-api-create
-- https://dev.paytr.com/link-api/linkle-api-callback
 - https://dev.paytr.com/durum-sorgu
 - https://dev.paytr.com/direkt-api

@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { CheckoutPageClient } from "@/components/shop/checkout-page-client";
 
 export const metadata: Metadata = {
-  title: "Ödeme",
+  title: "Checkout",
   description:
     "Sepet, iletişim ve teslimat bilgilerinizi doğrulayın; kart doğrulamasını tek sayfa güvenli ödeme alanında tamamlayın.",
   robots: {

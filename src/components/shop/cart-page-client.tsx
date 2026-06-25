@@ -37,7 +37,7 @@ import { siteConfig } from "@/lib/site";
 const checkoutSteps = ["Sepet", "Teslimat", "Kurulum", "Ödeme"] as const;
 
 const cartTrustSignals = [
-  { icon: ShieldCheck, label: "PayTR güvenli ödeme" },
+  { icon: ShieldCheck, label: "Tek sayfa güvenli ödeme" },
   { icon: Truck, label: "81 il ürün kargosu" },
   { icon: BadgeCheck, label: "Garanti + teknik destek" }
 ] as const;
@@ -358,7 +358,7 @@ export function CartPageClient() {
             </div>
 
             <Link
-              href="/odeme"
+              href="/checkout"
               className="mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-linear-to-r from-primary to-secondary px-6 py-4 text-sm font-bold text-white shadow-[0_18px_50px_rgba(6,51,38,0.22)]"
             >
               Güvenli Ödemeye Geç
@@ -413,7 +413,7 @@ export function CartPageClient() {
           <span>Genel toplam</span>
           <strong>{formatPriceTRY(totalKurus)}</strong>
         </div>
-        <Link href="/odeme">Ödemeye Geç</Link>
+        <Link href="/checkout">Ödemeye Geç</Link>
       </div>
     </div>
   );
