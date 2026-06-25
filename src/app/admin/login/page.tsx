@@ -40,9 +40,6 @@ export default async function AdminLoginPage() {
         <Surface as="section" className="border-white/70 bg-white/90 p-8" motion="slide">
           <div className="mb-6">
             <h2 className="text-2xl font-semibold text-slate-950">Yönetici Girişi</h2>
-            <p className="mt-2 text-sm text-slate-600">
-              İlk kurulumda `.env` veya `.env.local` içindeki bootstrap admin bilgileri ile giriş yapabilirsiniz.
-            </p>
           </div>
           <LoginForm />
         </Surface>

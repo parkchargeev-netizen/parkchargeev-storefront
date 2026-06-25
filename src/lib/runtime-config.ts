@@ -9,12 +9,14 @@ const supabaseServerEnvKeys = [
   "NEXT_PUBLIC_SUPABASE_URL",
   "SUPABASE_SERVICE_ROLE_KEY"
 ] as const;
+const supabaseUrlEnvKeys = ["NEXT_PUBLIC_SUPABASE_URL", "SUPABASE_URL"] as const;
 
 export type RuntimeEnvKey =
   | (typeof databaseEnvKeys)[number]
   | (typeof paytrEnvKeys)[number]
   | (typeof adminAuthEnvKeys)[number]
-  | (typeof supabaseServerEnvKeys)[number];
+  | (typeof supabaseServerEnvKeys)[number]
+  | (typeof supabaseUrlEnvKeys)[number];
 
 type RuntimeConfigArea = "database" | "paytr" | "adminAuth" | "supabase";
 
@@ -111,19 +113,33 @@ export function getCustomerAuthConfig() {
 }
 
 export function getSupabaseServerConfig() {
-  assertConfig(
-    supabaseServerEnvKeys,
-    "supabase",
-    "Supabase sunucu bağlantısı eksik. NEXT_PUBLIC_SUPABASE_URL ve SUPABASE_SERVICE_ROLE_KEY tanımlanmalıdır."
-  );
+  const supabaseUrl =
+    process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() || process.env.SUPABASE_URL?.trim() || "";
+  const missingKeys: RuntimeEnvKey[] = [];
+
+  if (!supabaseUrl) {
+    missingKeys.push("NEXT_PUBLIC_SUPABASE_URL");
+  }
+
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()) {
+    missingKeys.push("SUPABASE_SERVICE_ROLE_KEY");
+  }
+
+  if (missingKeys.length > 0) {
+    throw new RuntimeConfigError({
+      area: "supabase",
+      missingKeys,
+      message:
+        "Supabase server upload config is missing. Define NEXT_PUBLIC_SUPABASE_URL (or SUPABASE_URL) and SUPABASE_SERVICE_ROLE_KEY."
+    });
+  }
 
   return {
-    url: process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+    url: supabaseUrl,
     anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
     serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY as string
   };
 }
-
 export function getRuntimeConfigErrorPayload(error: RuntimeConfigError) {
   return {
     ok: false as const,

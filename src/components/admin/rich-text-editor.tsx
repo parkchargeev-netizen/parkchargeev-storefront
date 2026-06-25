@@ -43,7 +43,9 @@ export function RichTextEditor({
 }: RichTextEditorProps) {
   const editor = useEditor({
     extensions: [
-      StarterKit,
+      StarterKit.configure({
+        link: false
+      }),
       LinkExtension.configure({
         autolink: true,
         openOnClick: false

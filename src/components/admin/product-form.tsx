@@ -2,7 +2,21 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import dynamic from "next/dynamic";
-import { Car, Plus, X } from "lucide-react";
+import {
+  Boxes,
+  Car,
+  CheckCircle2,
+  CircleAlert,
+  ImagePlus,
+  Link as LinkIcon,
+  PackageCheck,
+  Plus,
+  Save,
+  SearchCheck,
+  Sparkles,
+  UploadCloud,
+  X
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { Controller, type Resolver, useFieldArray, useForm } from "react-hook-form";
@@ -52,6 +66,22 @@ type ProductMutationResponse = {
   product?: {
     id: string;
   };
+};
+
+type MediaUploadResponse = {
+  ok: boolean;
+  url?: string;
+  mediaType?: "image" | "video";
+  message?: string;
+  missingEnvironment?: string[];
+  setupAction?: string;
+  storageBucket?: string;
+};
+
+type UploadNotice = {
+  tone: "success" | "error" | "info";
+  message: string;
+  detail?: string;
 };
 
 const baseProductFormResolver = zodResolver(adminProductSchema) as unknown as Resolver<ProductFormValues>;
@@ -223,6 +253,22 @@ function uniqueList(values: string[]) {
   return Array.from(new Set(values.map((value) => value.trim()).filter(Boolean)));
 }
 
+const adminPriceFormatter = new Intl.NumberFormat("tr-TR", {
+  style: "currency",
+  currency: "TRY",
+  maximumFractionDigits: 0
+});
+
+function formatPriceKurus(value: unknown) {
+  const numberValue = Number(value ?? 0);
+
+  if (!Number.isFinite(numberValue) || numberValue <= 0) {
+    return "Fiyat yok";
+  }
+
+  return adminPriceFormatter.format(numberValue / 100);
+}
+
 function specKey(label: string) {
   return label.trim().toLocaleLowerCase("tr-TR");
 }
@@ -262,7 +308,7 @@ export function ProductForm({
   const [isHydrated, setIsHydrated] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [uploadMessage, setUploadMessage] = useState<string | null>(null);
+  const [uploadNotice, setUploadNotice] = useState<UploadNotice | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [vehicleBrandInput, setVehicleBrandInput] = useState("");
 
@@ -458,6 +504,59 @@ export function ProductForm({
   ];
   const readyFeatureCount = featureAuditItems.filter((item) => item.ok).length;
   const featureReadinessPercent = Math.round((readyFeatureCount / featureAuditItems.length) * 100);
+  const primaryMedia = mediaValues.find((item) => item.isPrimary) ?? mediaValues[0];
+  const hasPrimaryMedia = Boolean(primaryMedia?.url);
+  const defaultVariantFromForm = variantValues.find((variant) => variant.isDefault) ?? variantValues[0];
+  const displayPrice = formatPriceKurus(defaultVariantFromForm?.priceKurus ?? watch("priceKurus"));
+  const displayStock = Number(defaultVariantFromForm?.stockQuantity ?? watch("stockQuantity") ?? 0);
+  const stockThreshold = Number(watch("minimumStockThreshold") ?? 0);
+  const stockState =
+    displayStock <= 0
+      ? "Stok yok"
+      : stockThreshold > 0 && displayStock <= stockThreshold
+        ? "Düşük stok"
+        : "Stok hazır";
+  const seoTitleLength = cleanText(seoTitleValue).length;
+  const seoDescriptionLength = cleanText(seoDescriptionValue).length;
+  const plainDescriptionLength = cleanText(descriptionValue).replace(/<[^>]+>/g, "").length;
+  const publicationChecklist = [
+    {
+      label: "Ürün kimliği",
+      detail: cleanText(currentName) || "Ad ve slug bekleniyor",
+      ok: cleanText(currentName).length > 2 && Boolean(currentSlug || currentName),
+      icon: PackageCheck
+    },
+    {
+      label: "Fiyat ve stok",
+      detail: `${displayPrice} / ${stockState}`,
+      ok: Number(watch("priceKurus") ?? 0) > 0 && displayStock > 0,
+      icon: Boxes
+    },
+    {
+      label: "Medya",
+      detail: hasPrimaryMedia ? `${mediaValues.length} medya` : "Ana görsel bekleniyor",
+      ok: hasPrimaryMedia && mediaValues.some((item) => cleanText(item.altText)),
+      icon: ImagePlus
+    },
+    {
+      label: "Teknik veri",
+      detail: `${specValues.length} özellik / ${variantValues.length || 1} varyant`,
+      ok: specValues.length >= 4 && Boolean(powerText || connectorText),
+      icon: Sparkles
+    },
+    {
+      label: "SEO ve AI",
+      detail: `${seoTitleLength}/60 başlık, ${seoDescriptionLength}/160 açıklama, ${plainDescriptionLength} içerik`,
+      ok:
+        seoTitleLength >= 35 &&
+        seoTitleLength <= 70 &&
+        seoDescriptionLength >= 110 &&
+        seoDescriptionLength <= 170 &&
+        cleanText(aiSummaryValue).length >= 40,
+      icon: SearchCheck
+    }
+  ];
+  const publishReadyCount = publicationChecklist.filter((item) => item.ok).length;
   const hasValidationErrors = isSubmitted && Object.keys(errors).length > 0;
   const categoryOptions =
     catalogOptions?.categories.length
@@ -729,7 +828,7 @@ export function ProductForm({
   }
 
   async function uploadMediaFile(file: File, targetIndex?: number) {
-    setUploadMessage(null);
+    setUploadNotice(null);
     setIsUploading(true);
 
     const formData = new FormData();
@@ -743,10 +842,17 @@ export function ProductForm({
       const data = (await response.json().catch(() => ({
         ok: false,
         message: "Sunucu yanıtı okunamadı."
-      }))) as { ok: boolean; url?: string; mediaType?: "image" | "video"; message?: string };
+      }))) as MediaUploadResponse;
 
       if (!response.ok || !data.ok || !data.url) {
-        setUploadMessage(data.message ?? "Görsel yüklenemedi.");
+        setUploadNotice({
+          tone: "error",
+          message: data.message ?? "Görsel yüklenemedi.",
+          detail:
+            data.missingEnvironment?.length
+              ? `Eksik ortam değişkenleri: ${data.missingEnvironment.join(", ")}. ${data.setupAction ?? ""}`
+              : data.setupAction
+        });
         return;
       }
 
@@ -764,11 +870,33 @@ export function ProductForm({
         });
       }
 
-      setUploadMessage("Görsel yüklendi.");
+      setUploadNotice({
+        tone: "success",
+        message: "Görsel yüklendi.",
+        detail: data.storageBucket ? `Bucket: ${data.storageBucket}` : undefined
+      });
     } catch {
-      setUploadMessage("Görsel yüklenirken sunucuya ulaşılamadı.");
+      setUploadNotice({
+        tone: "error",
+        message: "Görsel yüklenirken sunucuya ulaşılamadı."
+      });
     } finally {
       setIsUploading(false);
+    }
+  }
+
+  async function uploadMediaFiles(files: FileList | null, targetIndex?: number) {
+    if (!files?.length) {
+      return;
+    }
+
+    if (typeof targetIndex === "number") {
+      await uploadMediaFile(files[0], targetIndex);
+      return;
+    }
+
+    for (const file of Array.from(files)) {
+      await uploadMediaFile(file);
     }
   }
 
@@ -844,20 +972,25 @@ export function ProductForm({
 
   return (
     <form className="space-y-8" onSubmit={onSubmit} noValidate aria-busy={!isHydrated || isSubmitting}>
-      <div className="sticky top-4 z-20 rounded-lg border border-slate-200 bg-white/95 p-4 shadow-sm backdrop-blur">
-        <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
-          <div>
-            <p className="text-sm font-semibold text-slate-950">Form bolumleri</p>
-            <p className="text-xs text-slate-500">
-              {hasValidationErrors ? "Eksik alanlar var; bolumlerden hızlıca kontrol edin." : "Ürün kaydında hızlı gezinme."}
+      <div className="sticky top-4 z-20 rounded-lg border border-emerald-100 bg-white/95 p-4 shadow-sm backdrop-blur">
+        <div className="grid gap-4 xl:grid-cols-[minmax(220px,0.85fr)_minmax(0,1.8fr)_auto] xl:items-center">
+          <div className="min-w-0">
+            <p className="flex items-center gap-2 text-sm font-bold text-slate-950">
+              <PackageCheck className="h-4 w-4 text-emerald-700" aria-hidden />
+              Ürün çalışma masası
+            </p>
+            <p className="mt-1 text-xs leading-5 text-slate-500">
+              {hasValidationErrors
+                ? "Eksik alanlar var; bölümlerden hızlıca kontrol edin."
+                : `${publishReadyCount}/${publicationChecklist.length} yayın kontrolü hazır · ${displayPrice} · ${stockState}`}
             </p>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex gap-2 overflow-x-auto pb-1 xl:flex-wrap xl:overflow-visible xl:pb-0">
             {productFormSections.map((section) => (
               <a
                 key={section.id}
                 href={`#${section.id}`}
-                className="rounded-full border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
+                className="inline-flex shrink-0 items-center rounded-full border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-emerald-300 hover:bg-emerald-50 hover:text-[#063326]"
               >
                 {section.label}
               </a>
@@ -866,8 +999,9 @@ export function ProductForm({
           <button
             type="submit"
             disabled={!isHydrated || isSubmitting}
-            className="rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white disabled:opacity-70"
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:opacity-70"
           >
+            <Save className="h-4 w-4" aria-hidden />
             {isSubmitting ? "Kaydediliyor..." : "Kaydet"}
           </button>
         </div>
@@ -876,6 +1010,89 @@ export function ProductForm({
         disabled={!isHydrated || isSubmitting}
         className="space-y-8 disabled:cursor-wait disabled:opacity-75"
       >
+      <section className="surface-card border border-emerald-100 bg-white/95 p-6">
+        <div className="grid gap-5 xl:grid-cols-[minmax(0,1.15fr)_minmax(280px,0.85fr)]">
+          <div>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="text-sm font-bold uppercase tracking-normal text-emerald-700">
+                  Yayın hazırlığı
+                </p>
+                <h2 className="mt-2 text-2xl font-semibold text-slate-950">
+                  Ürünü satışa açmadan önce kritik e-ticaret sinyallerini tamamlayın.
+                </h2>
+              </div>
+              <span className="inline-flex w-fit items-center gap-2 rounded-lg bg-emerald-50 px-4 py-2 text-sm font-bold text-[#063326]">
+                <CheckCircle2 className="h-4 w-4" aria-hidden />
+                {publishReadyCount}/{publicationChecklist.length} hazır
+              </span>
+            </div>
+            <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+              {publicationChecklist.map((item) => {
+                const Icon = item.icon;
+
+                return (
+                  <div
+                    key={item.label}
+                    className={`rounded-lg border p-4 ${
+                      item.ok
+                        ? "border-emerald-200 bg-emerald-50/70"
+                        : "border-amber-200 bg-amber-50/70"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <span className={`rounded-lg p-2 ${item.ok ? "bg-white text-emerald-800" : "bg-white text-amber-800"}`}>
+                        <Icon className="h-4 w-4" aria-hidden />
+                      </span>
+                      <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${item.ok ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}`}>
+                        {item.ok ? "Tamam" : "Eksik"}
+                      </span>
+                    </div>
+                    <p className="mt-3 text-sm font-bold text-slate-950">{item.label}</p>
+                    <p className="mt-1 text-xs leading-5 text-slate-600">{item.detail}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <aside className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+            <p className="text-sm font-bold text-slate-950">Mağaza kartı önizlemesi</p>
+            <div className="mt-4 overflow-hidden rounded-lg border border-white bg-white shadow-sm">
+              <div className="grid aspect-[4/3] place-items-center bg-gradient-to-br from-emerald-50 to-slate-100">
+                {primaryMedia?.url ? (
+                  primaryMedia.mediaType === "video" ? (
+                    <video src={primaryMedia.url} className="h-full w-full object-cover" muted />
+                  ) : (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={primaryMedia.url} alt={primaryMedia.altText || currentName || "Ürün görseli"} className="h-full w-full object-cover" />
+                  )
+                ) : (
+                  <div className="grid place-items-center gap-2 text-center text-slate-500">
+                    <ImagePlus className="mx-auto h-8 w-8" aria-hidden />
+                    <span className="text-xs font-semibold">Ana görsel bekleniyor</span>
+                  </div>
+                )}
+              </div>
+              <div className="p-4">
+                <p className="line-clamp-2 text-base font-bold text-slate-950">
+                  {cleanText(currentName) || "Ürün adı"}
+                </p>
+                <p className="mt-2 line-clamp-2 text-xs leading-5 text-slate-600">
+                  {cleanText(shortDescriptionValue) || "Kısa açıklama mağaza kartında burada görünür."}
+                </p>
+                <div className="mt-4 flex items-center justify-between gap-3">
+                  <span className="text-lg font-bold text-[#063326]">{displayPrice}</span>
+                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-700">
+                    {stockState}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
       <section className="surface-card scroll-mt-28 border border-emerald-100 bg-white/95 p-6">
         <div className="grid gap-6 xl:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)] xl:items-start">
           <div>
@@ -1404,17 +1621,19 @@ export function ProductForm({
             <ExampleHint>Örnek URL: https://site.com/homecharge-pro.jpg; alt text: HomeCharge Pro 11kW ön görünüm.</ExampleHint>
           </div>
           <div className="flex flex-wrap gap-3">
-            <label className="inline-flex cursor-pointer rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-800">
+            <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-bold text-emerald-800 transition hover:bg-emerald-100">
+              <UploadCloud className="h-4 w-4" aria-hidden />
               {isUploading ? "Yükleniyor..." : "Dosya yükle"}
               <input
                 type="file"
+                multiple
                 accept="image/*,video/mp4,video/webm,video/ogg"
                 className="sr-only"
                 disabled={isUploading}
                 onChange={(event) => {
-                  const file = event.target.files?.[0];
-                  if (file) {
-                    void uploadMediaFile(file);
+                  const files = event.target.files;
+                  if (files?.length) {
+                    void uploadMediaFiles(files);
                     event.currentTarget.value = "";
                   }
                 }}
@@ -1430,20 +1649,58 @@ export function ProductForm({
                   isPrimary: mediaFields.fields.length === 0
                 })
               }
-              className="rounded-full border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700"
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
             >
+              <LinkIcon className="h-4 w-4" aria-hidden />
               URL ekle
             </button>
           </div>
         </div>
-        {uploadMessage ? (
-          <p className="mb-4 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
-            {uploadMessage}
-          </p>
+        {uploadNotice ? (
+          <div
+            className={`mb-4 rounded-lg border px-4 py-3 text-sm ${
+              uploadNotice.tone === "success"
+                ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+                : uploadNotice.tone === "error"
+                  ? "border-red-200 bg-red-50 text-red-800"
+                  : "border-slate-200 bg-slate-50 text-slate-700"
+            }`}
+          >
+            <div className="flex items-start gap-2">
+              {uploadNotice.tone === "success" ? (
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+              ) : (
+                <CircleAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+              )}
+              <div>
+                <p className="font-bold">{uploadNotice.message}</p>
+                {uploadNotice.detail ? (
+                  <p className="mt-1 text-xs leading-5 opacity-85">{uploadNotice.detail}</p>
+                ) : null}
+              </div>
+            </div>
+          </div>
         ) : null}
         <div className="space-y-4">
-          {mediaFields.fields.map((field, index) => (
-            <div key={field.fieldId} className="grid gap-4 rounded-lg border border-slate-200 bg-slate-50 p-4 lg:grid-cols-[160px_1fr_220px_auto]">
+          {mediaFields.fields.map((field, index) => {
+            const mediaItem = mediaValues[index];
+            const mediaUrl = cleanText(mediaItem?.url);
+            const mediaType = mediaItem?.mediaType ?? field.mediaType;
+
+            return (
+            <div key={field.fieldId} className="grid gap-4 rounded-lg border border-slate-200 bg-slate-50 p-4 lg:grid-cols-[112px_150px_minmax(0,1fr)_220px_auto]">
+              <div className="grid aspect-square place-items-center overflow-hidden rounded-lg border border-slate-200 bg-white text-slate-400">
+                {mediaUrl ? (
+                  mediaType === "video" ? (
+                    <video src={mediaUrl} className="h-full w-full object-cover" muted />
+                  ) : (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={mediaUrl} alt={mediaItem?.altText || "Ürün medyası"} className="h-full w-full object-cover" />
+                  )
+                ) : (
+                  <ImagePlus className="h-6 w-6" aria-hidden />
+                )}
+              </div>
               <select
                 className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm"
                 {...register(`media.${index}.mediaType`)}
@@ -1502,7 +1759,8 @@ export function ProductForm({
                 </button>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
@@ -1853,11 +2111,26 @@ export function ProductForm({
           <ExampleHint>Örnek meta başlık: HomeCharge Pro 11kW EV Şarj Cihazı. AI özeti tek cümle, satış odaklı olmalı.</ExampleHint>
         </div>
         <div className="grid gap-5 md:grid-cols-2">
-          <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Meta başlık" {...register("seoTitle")} />
+          <div>
+            <input className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Meta başlık" {...register("seoTitle")} />
+            <p className={`mt-2 text-xs font-semibold ${seoTitleLength >= 35 && seoTitleLength <= 70 ? "text-emerald-700" : "text-amber-700"}`}>
+              {seoTitleLength}/60 karakter hedefi
+            </p>
+          </div>
           <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Kanonik URL" {...register("canonicalUrl")} />
-          <textarea rows={3} className="rounded-lg border border-slate-300 px-4 py-3 text-sm md:col-span-2" placeholder="Meta açıklama" {...register("seoDescription")} />
+          <div className="md:col-span-2">
+            <textarea rows={3} className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Meta açıklama" {...register("seoDescription")} />
+            <p className={`mt-2 text-xs font-semibold ${seoDescriptionLength >= 110 && seoDescriptionLength <= 170 ? "text-emerald-700" : "text-amber-700"}`}>
+              {seoDescriptionLength}/160 karakter hedefi
+            </p>
+          </div>
           <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm md:col-span-2" placeholder="Open Graph görsel URL" {...register("ogImageUrl")} />
-          <textarea rows={3} className="rounded-lg border border-slate-300 px-4 py-3 text-sm md:col-span-2" placeholder="AI özeti" {...register("aiSummary")} />
+          <div className="md:col-span-2">
+            <textarea rows={3} className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="AI özeti" {...register("aiSummary")} />
+            <p className="mt-2 text-xs font-semibold text-slate-500">
+              {cleanText(aiSummaryValue).length}/180 karakter · tek cümle ürün cevabı önerilir
+            </p>
+          </div>
           <div className="md:col-span-2">
             <label className="mb-2 block text-sm font-medium text-slate-700">Arama kelimeleri</label>
             <input
@@ -1875,6 +2148,20 @@ export function ProductForm({
                 )
               }
             />
+          </div>
+          <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 md:col-span-2">
+            <p className="text-xs font-bold uppercase tracking-normal text-slate-500">
+              Arama sonucu önizlemesi
+            </p>
+            <p className="mt-3 text-lg font-semibold text-[#1a0dab]">
+              {cleanText(seoTitleValue) || cleanText(currentName) || "Meta başlık"}
+            </p>
+            <p className="mt-1 text-sm text-[#006621]">
+              parkchargeev.com/urun/{cleanText(currentSlug) || slugify(currentName || "urun")}
+            </p>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-700">
+              {cleanText(seoDescriptionValue) || "Meta açıklama arama sonucunda burada görünür."}
+            </p>
           </div>
         </div>
       </section>

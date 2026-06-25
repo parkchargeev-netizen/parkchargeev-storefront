@@ -14,6 +14,13 @@ import { requireAdminRole } from "@/server/auth/guards";
 
 export const runtime = "nodejs";
 
+const maxImageUploadBytes = 12 * 1024 * 1024;
+const maxVideoUploadBytes = 80 * 1024 * 1024;
+
+function formatBytes(bytes: number) {
+  return `${Math.round((bytes / 1024 / 1024) * 10) / 10} MB`;
+}
+
 function sanitizeFileName(name: string) {
   const extension = name.split(".").pop()?.toLowerCase() ?? "bin";
   const base = name
@@ -28,6 +35,37 @@ function sanitizeFileName(name: string) {
 
 function isSupportedMedia(file: File) {
   return file.type.startsWith("image/") || file.type.startsWith("video/");
+}
+
+function getMediaValidationMessage(file: File) {
+  if (!isSupportedMedia(file)) {
+    return "Sadece gorsel veya video dosyalari yuklenebilir.";
+  }
+
+  const maxSize = file.type.startsWith("video/") ? maxVideoUploadBytes : maxImageUploadBytes;
+
+  if (file.size > maxSize) {
+    return `Dosya cok buyuk. ${file.type.startsWith("video/") ? "Video" : "Gorsel"} yukleme siniri ${formatBytes(maxSize)}.`;
+  }
+
+  return null;
+}
+
+function getSupabaseSetupPayload(error: unknown) {
+  if (!isRuntimeConfigError(error)) {
+    return null;
+  }
+
+  const payload = getRuntimeConfigErrorPayload(error);
+
+  return {
+    ...payload,
+    message:
+      "Supabase medya yukleme ayari eksik. Vercel Environment Variables icinde NEXT_PUBLIC_SUPABASE_URL (veya SUPABASE_URL) ve SUPABASE_SERVICE_ROLE_KEY tanimli olmalidir.",
+    setupAction:
+      "Production, Preview ve Development ortamlarina Supabase URL ile service_role key ekleyin; sonra yeniden deploy edin.",
+    storageBucket: process.env.SUPABASE_STORAGE_BUCKET?.trim() || "admin-media"
+  };
 }
 
 async function uploadToLocalPublic(file: File, request: Request) {
@@ -60,9 +98,14 @@ export async function POST(request: Request) {
   try {
     const formData = await request.formData();
     const file = formData.get("file");
+    const validationMessage = file instanceof File ? getMediaValidationMessage(file) : null;
 
     if (!(file instanceof File)) {
       return NextResponse.json({ ok: false, message: "Dosya bulunamadı." }, { status: 400 });
+    }
+
+    if (validationMessage) {
+      return NextResponse.json({ ok: false, message: validationMessage }, { status: 400 });
     }
 
     if (!isSupportedMedia(file)) {
@@ -81,8 +124,10 @@ export async function POST(request: Request) {
         return NextResponse.json(await uploadToLocalPublic(file, request));
       }
 
-      if (isRuntimeConfigError(error)) {
-        return NextResponse.json(getRuntimeConfigErrorPayload(error), { status: 503 });
+      const supabaseSetupPayload = getSupabaseSetupPayload(error);
+
+      if (supabaseSetupPayload) {
+        return NextResponse.json(supabaseSetupPayload, { status: 503 });
       }
 
       throw error;
@@ -113,6 +158,7 @@ export async function POST(request: Request) {
 
     const uploadPath = `admin/${new Date().toISOString().slice(0, 10)}/${sanitizeFileName(file.name)}`;
     const upload = await supabase.storage.from(bucket).upload(uploadPath, file, {
+      cacheControl: "31536000",
       contentType: file.type,
       upsert: false
     });
@@ -131,8 +177,10 @@ export async function POST(request: Request) {
       mediaType: inferProductMediaType(publicUrl, file.type)
     });
   } catch (error) {
-    if (isRuntimeConfigError(error)) {
-      return NextResponse.json(getRuntimeConfigErrorPayload(error), { status: 503 });
+    const supabaseSetupPayload = getSupabaseSetupPayload(error);
+
+    if (supabaseSetupPayload) {
+      return NextResponse.json(supabaseSetupPayload, { status: 503 });
     }
 
     return NextResponse.json(
