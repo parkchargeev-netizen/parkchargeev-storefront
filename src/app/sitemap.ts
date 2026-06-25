@@ -6,7 +6,7 @@ import { listPublicProducts } from "@/server/admin/repository";
 import { listPublicBlogArticles } from "@/server/blog/repository";
 import { listPublishedSitePagesForSitemap } from "@/server/site/repository";
 
-const siteContentLastModified = new Date("2026-06-24T00:00:00+03:00");
+const siteContentLastModified = new Date("2026-06-25T00:00:00+03:00");
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [managedPages, products, blogArticles] = await Promise.all([
@@ -26,6 +26,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "/karsilastir", changeFrequency: "monthly", priority: 0.82 },
     { path: "/hizmetler", changeFrequency: "monthly", priority: 0.86 },
     { path: "/kurumsal-cozumler", changeFrequency: "monthly", priority: 0.86 },
+    { path: "/elektrikli-arac-sarj-rehberi", changeFrequency: "weekly", priority: 0.9 },
+    { path: "/elektrikli-arac-sarj-sozlugu", changeFrequency: "monthly", priority: 0.78 },
+    { path: "/sarj-cihazi-kurulumu/sakarya", changeFrequency: "monthly", priority: 0.82 },
+    { path: "/sarj-cihazi-kurulumu/kocaeli", changeFrequency: "monthly", priority: 0.82 },
     { path: "/hakkimizda", changeFrequency: "yearly", priority: 0.72 },
     { path: "/iletisim", changeFrequency: "yearly", priority: 0.78 },
     { path: "/blog", changeFrequency: "weekly", priority: 0.84 }

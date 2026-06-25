@@ -110,6 +110,35 @@ export default async function ServicesPage() {
         ))}
       </div>
 
+      <section className="mt-12 border-y border-outline-variant/35 bg-white py-10">
+        <div className="flex flex-col gap-5 px-4 sm:px-6 md:flex-row md:items-end md:justify-between">
+          <div className="max-w-3xl">
+            <p className="text-sm font-semibold uppercase text-primary">Yerel kurulum</p>
+            <h2 className="mt-3 text-3xl font-bold text-on-surface">
+              Sakarya ve Kocaeli şarj cihazı kurulum hizmetleri
+            </h2>
+            <p className="mt-4 text-base leading-8 text-on-surface-variant">
+              Ev, site ve iş yeri projelerinde araç uyumu, pano kapasitesi, kablo
+              hattı ve koruma ekipmanlarını şehir bazlı saha planıyla netleştirin.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/sarj-cihazi-kurulumu/sakarya"
+              className="premium-btn premium-btn--secondary"
+            >
+              Sakarya kurulumu
+            </Link>
+            <Link
+              href="/sarj-cihazi-kurulumu/kocaeli"
+              className="premium-btn premium-btn--secondary"
+            >
+              Kocaeli kurulumu
+            </Link>
+          </div>
+        </div>
+      </section>
+
       <section className="mt-12 overflow-hidden rounded-lg border border-outline-variant/35 bg-surface-container-low p-8 lg:p-12">
         <h2 className="text-4xl font-bold tracking-normal text-on-surface">
           Net kurulum süreci

@@ -1,5 +1,6 @@
 import type { ProductDetailContentInput } from "@/lib/product-detail-content";
 import type { ProductMediaKind } from "@/lib/product-media";
+import { evChargingArticles } from "@/lib/ev-charging-articles";
 
 export type ProductSpec = {
   label: string;
@@ -530,6 +531,7 @@ export const solutionPages: SolutionModel[] = [
 ];
 
 export const articles: ArticleModel[] = [
+  ...evChargingArticles,
   {
     id: "art_ev_charger_selection",
     slug: "elektrikli-arac-sarj-cihazi-secim-rehberi",

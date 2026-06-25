@@ -40,6 +40,7 @@ export const siteConfig = {
   footerNavigation: [
     { href: "/hakkimizda", label: "Hakkımızda" },
     { href: "/kurumsal-cozumler", label: "Kurumsal Çözümler" },
+    { href: "/elektrikli-arac-sarj-rehberi", label: "EV Şarj Rehberi" },
     { href: "/urun-secici", label: "Ürün Seçici" },
     { href: "/karsilastir", label: "Karşılaştır" },
     { href: "/magaza", label: "Mağaza" },

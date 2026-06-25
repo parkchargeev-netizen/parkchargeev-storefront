@@ -113,7 +113,22 @@ export function SiteFooter({
           </div>
 
           <div>
-            <p className="text-sm font-semibold uppercase text-primary">Hizmet kapsamı</p>
+            <p className="text-sm font-semibold uppercase text-primary">Bilgi ve bölgeler</p>
+            <div className="mt-5 grid gap-3 text-sm text-on-surface-variant">
+              <Link href="/elektrikli-arac-sarj-rehberi" className="transition hover:text-primary">
+                Elektrikli araç şarj rehberi
+              </Link>
+              <Link href="/elektrikli-arac-sarj-sozlugu" className="transition hover:text-primary">
+                EV şarj sözlüğü
+              </Link>
+              <Link href="/sarj-cihazi-kurulumu/sakarya" className="transition hover:text-primary">
+                Sakarya şarj cihazı kurulumu
+              </Link>
+              <Link href="/sarj-cihazi-kurulumu/kocaeli" className="transition hover:text-primary">
+                Kocaeli şarj cihazı kurulumu
+              </Link>
+            </div>
+            <p className="mt-7 text-sm font-semibold uppercase text-primary">Hizmet kapsamı</p>
             <div className="mt-5 flex flex-wrap gap-2">
               {siteConfig.serviceAreas.map((area) => (
                 <span

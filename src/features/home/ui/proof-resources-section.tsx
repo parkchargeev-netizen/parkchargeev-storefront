@@ -64,6 +64,21 @@ export function ProofResourcesSection({
             </Link>
           </div>
 
+          <div className="mt-5 grid gap-2 sm:grid-cols-2">
+            <Link
+              href="/elektrikli-arac-sarj-rehberi"
+              className="border border-outline-variant/40 bg-white px-4 py-3 text-sm font-bold text-primary transition hover:border-primary/40"
+            >
+              EV şarj rehberi
+            </Link>
+            <Link
+              href="/elektrikli-arac-sarj-sozlugu"
+              className="border border-outline-variant/40 bg-white px-4 py-3 text-sm font-bold text-primary transition hover:border-primary/40"
+            >
+              Teknik sözlük
+            </Link>
+          </div>
+
           <div className="mt-5 grid gap-3">
             {articles.map((article) => (
               <Link

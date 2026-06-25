@@ -53,6 +53,26 @@ export async function generateLlmsText() {
       "Site, apartman, iş yeri, ofis, filo ve otopark projeleri."
     ),
     markdownLink(
+      "Elektrikli araç şarj rehberi",
+      absoluteUrl("/elektrikli-arac-sarj-rehberi"),
+      "Şarj cihazı seçimi, güç, süre, maliyet, kurulum, Type 2, CCS2, AC ve DC konu merkezi."
+    ),
+    markdownLink(
+      "Elektrikli araç şarj sözlüğü",
+      absoluteUrl("/elektrikli-arac-sarj-sozlugu"),
+      "AC, DC, wallbox, Type 2, CCS2, kW, kWh, OCPP, RFID ve yük yönetimi tanımları."
+    ),
+    markdownLink(
+      "Sakarya şarj cihazı kurulumu",
+      absoluteUrl("/sarj-cihazi-kurulumu/sakarya"),
+      "Sakarya'da ev, site ve iş yeri için keşif, wallbox kurulumu ve devreye alma."
+    ),
+    markdownLink(
+      "Kocaeli şarj cihazı kurulumu",
+      absoluteUrl("/sarj-cihazi-kurulumu/kocaeli"),
+      "Kocaeli'de konut ve kurumsal sahalar için şarj cihazı keşif ve kurulum planlaması."
+    ),
+    markdownLink(
       "İletişim",
       absoluteUrl("/iletisim"),
       "Teklif, keşif, kurulum ve teknik destek talepleri."
@@ -97,6 +117,11 @@ export async function generateLlmsText() {
       "XML sitemap",
       absoluteUrl("/sitemap.xml"),
       "Kanonik ve indekslenebilir sayfaların güncel listesi."
+    ),
+    markdownLink(
+      "RSS rehber akışı",
+      absoluteUrl("/feed.xml"),
+      "Yeni ve güncellenen elektrikli araç şarj rehberlerinin RSS 2.0 akışı."
     ),
     ...products.map((product) =>
       markdownLink(

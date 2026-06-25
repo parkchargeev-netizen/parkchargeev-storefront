@@ -47,6 +47,10 @@ test.describe("@e2e SEO and AI discovery", () => {
       "/magaza",
       "/hizmetler",
       "/kurumsal-cozumler",
+      "/elektrikli-arac-sarj-rehberi",
+      "/elektrikli-arac-sarj-sozlugu",
+      "/sarj-cihazi-kurulumu/sakarya",
+      "/sarj-cihazi-kurulumu/kocaeli",
       "/iletisim",
       "/blog"
     ]) {
@@ -79,6 +83,83 @@ test.describe("@e2e SEO and AI discovery", () => {
     expect(rootBody).toMatch(/\[EV şarj mağazası\]\(https?:\/\/[^)]+\/magaza\)/);
     expect(rootBody).toContain("## Hizmetler ve Çözümler");
     expect(rootBody).toContain("## Makine Tarafından Okunabilir Kaynaklar");
+    expect(rootBody).toContain("Elektrikli araç şarj rehberi");
+    expect(rootBody).toContain("RSS rehber akışı");
+  });
+
+  test("RSS feed exposes canonical EV charging guides", async ({ request }) => {
+    const response = await request.get("/feed.xml");
+    const body = await response.text();
+
+    expect(response.ok()).toBeTruthy();
+    expect(response.headers()["content-type"]).toContain("application/rss+xml");
+    expect(body).toContain("<rss version=\"2.0\"");
+    expect(body).toContain("Elektrikli Araç Şarj Maliyeti Nasıl Hesaplanır?");
+    expect(body).toContain("/blog/elektrikli-arac-sarj-maliyeti-hesaplama");
+  });
+
+  test("guide hub and glossary publish semantic topic data", async ({ page }) => {
+    await page.goto("/elektrikli-arac-sarj-rehberi", {
+      waitUntil: "domcontentloaded"
+    });
+
+    await expect(
+      page.getByRole("heading", {
+        level: 1,
+        name: /Elektrikli araç şarj cihazı hakkında doğru kararı/
+      })
+    ).toBeVisible();
+    await expect(page.getByText("Şarj maliyeti hesabı", { exact: true })).toBeVisible();
+
+    await page.goto("/elektrikli-arac-sarj-sozlugu", {
+      waitUntil: "domcontentloaded"
+    });
+    await expect(page.getByRole("heading", { level: 2, name: "Type 2" })).toBeVisible();
+
+    const glossaryJsonLd = await page
+      .locator('script[type="application/ld+json"]')
+      .allTextContents();
+    expect(glossaryJsonLd.join("\n")).toContain('"@type":"DefinedTermSet"');
+  });
+
+  test("variant products use ProductGroup structured data", async ({ page }) => {
+    await page.goto("/urun/homecharge-pro-11kw", {
+      waitUntil: "domcontentloaded"
+    });
+
+    const jsonLd = await page
+      .locator('script[type="application/ld+json"]')
+      .allTextContents();
+    const combinedJsonLd = jsonLd.join("\n");
+
+    expect(combinedJsonLd).toContain('"@type":"ProductGroup"');
+    expect(combinedJsonLd).toContain('"hasVariant"');
+    expect(combinedJsonLd).toContain("SKU-HOMECHARGE-PRO-11KW-5M");
+    expect(combinedJsonLd).not.toContain('"aggregateRating"');
+  });
+
+  test("local installation pages publish city-scoped Service data", async ({
+    page
+  }) => {
+    await page.goto("/sarj-cihazi-kurulumu/sakarya", {
+      waitUntil: "domcontentloaded"
+    });
+
+    await expect(
+      page.getByRole("heading", {
+        level: 1,
+        name: "Sakarya Elektrikli Araç Şarj Cihazı Kurulumu"
+      })
+    ).toBeVisible();
+
+    const jsonLd = await page
+      .locator('script[type="application/ld+json"]')
+      .allTextContents();
+    const combinedJsonLd = jsonLd.join("\n");
+
+    expect(combinedJsonLd).toContain('"@type":"Service"');
+    expect(combinedJsonLd).toContain('"@type":"City"');
+    expect(combinedJsonLd).toContain('"name":"Sakarya"');
   });
 
   test("service pages publish Service structured data", async ({ page }) => {

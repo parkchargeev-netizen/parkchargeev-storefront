@@ -26,6 +26,13 @@ export function StoreSearchGuide() {
           ettiği AC güç, evin veya iş yerinin elektrik altyapısı, bağlantı tipi
           ve kurulum mesafesi birlikte değerlendirilmelidir.
         </p>
+        <Link
+          href="/elektrikli-arac-sarj-rehberi"
+          className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-primary"
+        >
+          Tüm EV şarj rehberlerini aç
+          <ArrowUpRight className="h-4 w-4" aria-hidden />
+        </Link>
       </div>
 
       <div className="mt-8 grid gap-6 md:grid-cols-3">

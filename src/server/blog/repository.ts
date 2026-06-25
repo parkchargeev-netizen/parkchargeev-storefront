@@ -80,7 +80,7 @@ async function loadPublicBlogArticles() {
 
 export const listPublicBlogArticles = unstable_cache(
   loadPublicBlogArticles,
-  ["public-blog-articles-v2"],
+  ["public-blog-articles-v3"],
   {
     revalidate: 300,
     tags: ["public-blog"]

@@ -256,13 +256,78 @@ export function getSolutionServiceJsonLd(solution: SolutionModel) {
   };
 }
 
-export function getProductJsonLd(product: ProductModel) {
-  const productUrl = absoluteUrl(`/urun/${product.slug}`);
-
+function getProductOffer({
+  productUrl,
+  id,
+  priceKurus,
+  inStock
+}: {
+  productUrl: string;
+  id: string;
+  priceKurus: number;
+  inStock: boolean;
+}) {
   return {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    "@id": `${productUrl}#product`,
+    "@type": "Offer",
+    "@id": `${productUrl}#offer-${id}`,
+    priceCurrency: "TRY",
+    price: (priceKurus / 100).toFixed(2),
+    itemCondition: "https://schema.org/NewCondition",
+    availability: inStock
+      ? "https://schema.org/InStock"
+      : "https://schema.org/OutOfStock",
+    url: productUrl,
+    seller: {
+      "@id": organizationId
+    },
+    shippingDetails: {
+      "@type": "OfferShippingDetails",
+      shippingDestination: {
+        "@type": "DefinedRegion",
+        addressCountry: "TR"
+      },
+      shippingRate: {
+        "@type": "MonetaryAmount",
+        value: "0",
+        currency: "TRY"
+      },
+      deliveryTime: {
+        "@type": "ShippingDeliveryTime",
+        handlingTime: {
+          "@type": "QuantitativeValue",
+          minValue: 1,
+          maxValue: 2,
+          unitCode: "DAY"
+        },
+        transitTime: {
+          "@type": "QuantitativeValue",
+          minValue: 2,
+          maxValue: 5,
+          unitCode: "DAY"
+        }
+      }
+    },
+    hasMerchantReturnPolicy: {
+      "@type": "MerchantReturnPolicy",
+      applicableCountry: "TR",
+      returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+      merchantReturnDays: 14,
+      returnMethod: "https://schema.org/ReturnByMail",
+      returnFees: "https://schema.org/ReturnFeesCustomerResponsibility"
+    },
+    warranty: {
+      "@type": "WarrantyPromise",
+      durationOfWarranty: {
+        "@type": "QuantitativeValue",
+        value: 2,
+        unitCode: "ANN"
+      }
+    }
+  };
+}
+
+function getProductCommonProperties(product: ProductModel, productUrl: string) {
+  return {
     name: product.name,
     description: product.description,
     image: [getProductImageUrl(product)],
@@ -273,77 +338,154 @@ export function getProductJsonLd(product: ProductModel) {
     manufacturer: {
       "@id": organizationId
     },
-    sku: product.id,
     category: product.category,
     keywords: product.seoIntent.join(", "),
     url: productUrl,
     mainEntityOfPage: {
       "@type": "WebPage",
       "@id": productUrl
-    },
+    }
+  };
+}
+
+export function getProductJsonLd(product: ProductModel) {
+  const productUrl = absoluteUrl(`/urun/${product.slug}`);
+  const commonProperties = getProductCommonProperties(product, productUrl);
+  const variants = product.variants?.filter((variant) => variant.sku) ?? [];
+
+  if (variants.length > 1) {
+    return {
+      "@context": "https://schema.org",
+      "@type": "ProductGroup",
+      "@id": `${productUrl}#product-group`,
+      ...commonProperties,
+      productGroupID: product.id,
+      variesBy: ["https://schema.org/additionalProperty"],
+      additionalProperty: product.specs.map((spec) => ({
+        "@type": "PropertyValue",
+        name: spec.label,
+        value: spec.value
+      })),
+      hasVariant: variants.map((variant) => ({
+        "@type": "Product",
+        "@id": `${productUrl}#variant-${encodeURIComponent(variant.sku)}`,
+        name: `${product.name} - ${variant.title}`,
+        description: `${product.description} Seçenek: ${variant.title}.`,
+        image: [getProductImageUrl(product)],
+        sku: variant.sku,
+        category: product.category,
+        url: productUrl,
+        additionalProperty: [
+          variant.powerLabel
+            ? {
+                "@type": "PropertyValue",
+                name: "Şarj gücü",
+                value: variant.powerLabel
+              }
+            : null,
+          variant.cableLength
+            ? {
+                "@type": "PropertyValue",
+                name: "Kablo uzunluğu",
+                value: variant.cableLength
+              }
+            : null,
+          variant.connectorType
+            ? {
+                "@type": "PropertyValue",
+                name: "Konnektör tipi",
+                value: variant.connectorType
+              }
+            : null
+        ].filter(Boolean),
+        offers: getProductOffer({
+          productUrl,
+          id: variant.sku,
+          priceKurus: variant.priceKurus,
+          inStock: variant.stockQuantity > 0
+        })
+      }))
+    };
+  }
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "@id": `${productUrl}#product`,
+    ...commonProperties,
+    sku: variants[0]?.sku ?? product.id,
     additionalProperty: product.specs.map((spec) => ({
       "@type": "PropertyValue",
       name: spec.label,
       value: spec.value
     })),
-    offers: {
-      "@type": "Offer",
-      "@id": `${productUrl}#offer`,
-      priceCurrency: "TRY",
-      price: (product.priceKurus / 100).toFixed(2),
-      itemCondition: "https://schema.org/NewCondition",
-      availability:
-        product.stockLabel === "Stokta Yok"
-          ? "https://schema.org/OutOfStock"
-          : "https://schema.org/InStock",
-      url: productUrl,
-      seller: {
-        "@id": organizationId
-      },
-      shippingDetails: {
-        "@type": "OfferShippingDetails",
-        shippingDestination: {
-          "@type": "DefinedRegion",
-          addressCountry: "TR"
-        },
-        shippingRate: {
-          "@type": "MonetaryAmount",
-          value: "0",
-          currency: "TRY"
-        },
-        deliveryTime: {
-          "@type": "ShippingDeliveryTime",
-          handlingTime: {
-            "@type": "QuantitativeValue",
-            minValue: 1,
-            maxValue: 2,
-            unitCode: "DAY"
-          },
-          transitTime: {
-            "@type": "QuantitativeValue",
-            minValue: 2,
-            maxValue: 5,
-            unitCode: "DAY"
-          }
-        }
-      },
-      hasMerchantReturnPolicy: {
-        "@type": "MerchantReturnPolicy",
-        applicableCountry: "TR",
-        returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
-        merchantReturnDays: 14,
-        returnMethod: "https://schema.org/ReturnByMail",
-        returnFees: "https://schema.org/ReturnFeesCustomerResponsibility"
-      },
-      warranty: {
-        "@type": "WarrantyPromise",
-        durationOfWarranty: {
-          "@type": "QuantitativeValue",
-          value: 2,
-          unitCode: "ANN"
-        }
+    offers: getProductOffer({
+      productUrl,
+      id: variants[0]?.sku ?? product.id,
+      priceKurus: variants[0]?.priceKurus ?? product.priceKurus,
+      inStock:
+        variants[0] !== undefined
+          ? variants[0].stockQuantity > 0
+          : product.stockLabel !== "Stokta Yok"
+    })
+  };
+}
+
+export function getDefinedTermSetJsonLd(
+  name: string,
+  path: string,
+  terms: Array<{ name: string; description: string }>
+) {
+  const pageUrl = absoluteUrl(path);
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "DefinedTermSet",
+    "@id": `${pageUrl}#terms`,
+    name,
+    url: pageUrl,
+    inLanguage: "tr-TR",
+    hasDefinedTerm: terms.map((term) => ({
+      "@type": "DefinedTerm",
+      name: term.name,
+      description: term.description,
+      inDefinedTermSet: `${pageUrl}#terms`
+    }))
+  };
+}
+
+export function getLocalInstallationServiceJsonLd({
+  city,
+  path,
+  description
+}: {
+  city: string;
+  path: string;
+  description: string;
+}) {
+  const pageUrl = absoluteUrl(path);
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "@id": `${pageUrl}#service`,
+    name: `${city} elektrikli araç şarj cihazı kurulumu`,
+    serviceType: "Elektrikli araç şarj cihazı keşif ve kurulum hizmeti",
+    description,
+    url: pageUrl,
+    provider: {
+      "@id": localBusinessId
+    },
+    areaServed: {
+      "@type": "City",
+      name: city,
+      containedInPlace: {
+        "@type": "Country",
+        name: "Türkiye"
       }
-    }
+    },
+    category: "Elektrikli araç şarj cihazı kurulumu",
+    availableLanguage: ["tr-TR"]
   };
 }
 
