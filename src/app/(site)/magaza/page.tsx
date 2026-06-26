@@ -9,6 +9,7 @@ import Link from "next/link";
 import { JsonLd } from "@/components/seo/json-ld";
 import { ProductCard } from "@/components/shop/product-card";
 import { StoreProductSelectorAccordion } from "@/components/shop/store-product-selector-accordion";
+import { MotionGroup } from "@/components/ui/premium-section";
 import { conversionDataAttributes } from "@/lib/conversion-events";
 import { storeSearchFaqs } from "@/features/store/domain/store-search-content";
 import { StoreSearchGuide } from "@/features/store/ui/store-search-guide";
@@ -263,7 +264,7 @@ export default async function StorePage({ searchParams }: StorePageProps) {
   );
 
   return (
-    <div className="store-page mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <MotionGroup className="store-page mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <JsonLd
         data={[
           collectionPageJsonLd,
@@ -434,6 +435,6 @@ export default async function StorePage({ searchParams }: StorePageProps) {
       </div>
 
       <StoreSearchGuide />
-    </div>
+    </MotionGroup>
   );
 }

@@ -1,14 +1,14 @@
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 
+import { PremiumSection } from "@/components/ui/premium-section";
 import { decisionSteps } from "@/features/home/domain/home-content";
 import { HomeIcon } from "@/features/home/ui/home-icon";
 import { conversionDataAttributes } from "@/lib/conversion-events";
 
 export function DecisionSystemSection() {
   return (
-    <section className="premium-section premium-funnel-section">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <PremiumSection className="premium-funnel-section">
         <div className="premium-funnel-shell">
           <div className="premium-funnel-shell__copy">
             <p className="premium-eyebrow">Tek proje sistemi</p>
@@ -58,7 +58,6 @@ export function DecisionSystemSection() {
             ))}
           </div>
         </div>
-      </div>
-    </section>
+    </PremiumSection>
   );
 }

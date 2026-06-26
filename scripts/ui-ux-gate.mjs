@@ -36,7 +36,8 @@ const requiredDesignSystemFiles = [
   "src/components/ui/status-badge.tsx",
   "src/components/ui/surface.tsx",
   "src/components/ui/typography.tsx",
-  "src/components/layout/scroll-motion.tsx"
+  "src/components/layout/scroll-motion.tsx",
+  "src/lib/motion-system.ts"
 ];
 
 const sourceRoots = ["src/app", "src/components"];
@@ -136,14 +137,18 @@ function checkDesignSystemFiles() {
 
 function checkMotionContract() {
   const scrollMotionPath = path.join(root, "src/components/layout/scroll-motion.tsx");
+  const motionSystemPath = path.join(root, "src/lib/motion-system.ts");
   const globalsPath = path.join(root, "src/app/globals.css");
 
-  if (!fs.existsSync(scrollMotionPath) || !fs.existsSync(globalsPath)) {
+  if (!fs.existsSync(scrollMotionPath) || !fs.existsSync(motionSystemPath) || !fs.existsSync(globalsPath)) {
     fail("motion", "Motion runtime veya global reduced-motion stilleri eksik.");
     return;
   }
 
-  const runtime = fs.readFileSync(scrollMotionPath, "utf8");
+  const runtime = [
+    fs.readFileSync(scrollMotionPath, "utf8"),
+    fs.readFileSync(motionSystemPath, "utf8")
+  ].join("\n");
   const styles = fs.readFileSync(globalsPath, "utf8");
 
   for (const token of ["[data-motion]", "[data-motion-scope]", "[data-motion-loop]"]) {

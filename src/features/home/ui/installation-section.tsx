@@ -1,13 +1,17 @@
 import Link from "next/link";
 
+import { PremiumSection } from "@/components/ui/premium-section";
 import { installationSteps } from "@/features/home/domain/home-content";
 import { HomeIcon } from "@/features/home/ui/home-icon";
 import { conversionDataAttributes } from "@/lib/conversion-events";
 
 export function InstallationSection() {
   return (
-    <section className="premium-section premium-install-section">
-      <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[0.72fr_1.28fr] lg:px-8">
+    <PremiumSection
+      className="premium-install-section"
+      containerClassName="grid gap-8 lg:grid-cols-[0.72fr_1.28fr]"
+      tone="dark"
+    >
         <div>
           <p className="premium-eyebrow text-emerald-300">Mühendislik ve kurulum</p>
           <h2 className="mt-3 text-2xl font-bold leading-tight tracking-normal text-white md:text-4xl">
@@ -44,7 +48,6 @@ export function InstallationSection() {
             </article>
           ))}
         </div>
-      </div>
-    </section>
+    </PremiumSection>
   );
 }

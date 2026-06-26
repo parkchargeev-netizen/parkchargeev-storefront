@@ -1,6 +1,7 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
+import { PremiumSection } from "@/components/ui/premium-section";
 import { ProductCard } from "@/components/shop/product-card";
 import { SectionHeading } from "@/features/home/ui/section-heading";
 import { conversionDataAttributes } from "@/lib/conversion-events";
@@ -12,8 +13,7 @@ type ProductShowcaseProps = {
 
 export function ProductShowcase({ products }: ProductShowcaseProps) {
   return (
-    <section className="premium-section premium-product-spotlight">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <PremiumSection className="premium-product-spotlight">
         <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <SectionHeading
             eyebrow="Ürün portföyü"
@@ -38,7 +38,6 @@ export function ProductShowcase({ products }: ProductShowcaseProps) {
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
-      </div>
-    </section>
+    </PremiumSection>
   );
 }

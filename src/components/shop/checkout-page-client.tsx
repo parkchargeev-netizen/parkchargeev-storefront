@@ -617,7 +617,10 @@ export function CheckoutPageClient({
   }
 
   return (
-    <main className="checkout-page mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
+    <main
+      className="checkout-page mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8"
+      data-motion-scope
+    >
       <div className="checkout-command-center rounded-lg border border-white/80 bg-white/82 p-4 shadow-[0_24px_80px_rgba(6,51,38,0.10)] backdrop-blur-xl sm:p-6 lg:p-8">
         <header className="grid gap-6 lg:grid-cols-[1fr_420px] lg:items-end">
           <div>

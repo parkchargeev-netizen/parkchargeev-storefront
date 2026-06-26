@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Script from "next/script";
 
 import { ConversionEventListener } from "@/components/analytics/conversion-event-listener";
+import { GlobalAmbientLayer } from "@/components/layout/global-ambient-layer";
 import { ScrollMotion } from "@/components/layout/scroll-motion";
 import { absoluteUrl, siteConfig } from "@/lib/site";
 
@@ -100,13 +101,7 @@ export default function RootLayout({
           `}
         </Script>
         <ConversionEventListener />
-        <div className="global-ambient-layer" data-motion-loop="ambient" aria-hidden>
-          <span className="global-ambient-line global-ambient-line--one" />
-          <span className="global-ambient-line global-ambient-line--two" />
-          <span className="global-ambient-line global-ambient-line--three" />
-          <span className="global-ambient-sweep global-ambient-sweep--one" />
-          <span className="global-ambient-sweep global-ambient-sweep--two" />
-        </div>
+        <GlobalAmbientLayer />
         <div className="app-content-layer">{children}</div>
         <ScrollMotion />
       </body>

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { ArrowUpRight } from "lucide-react";
 
 import { ProductCompareMarker } from "@/components/shop/product-compare-marker";
@@ -14,6 +15,28 @@ type ProductCardProps = {
   product: ProductModel;
   layout?: "standard" | "store";
 };
+
+const productCardLinkClassName =
+  "premium-product-card-link group block h-full rounded-lg focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-secondary-container/55";
+
+function ProductCardLink({
+  children,
+  product
+}: {
+  children: ReactNode;
+  product: ProductModel;
+}) {
+  return (
+    <Link
+      href={`/urun/${product.slug}`}
+      aria-label={`${product.name} ürün detayını aç`}
+      className={productCardLinkClassName}
+      data-motion="reveal"
+    >
+      {children}
+    </Link>
+  );
+}
 
 function ProductMedia({
   imageUrl,
@@ -43,25 +66,114 @@ function ProductMedia({
           height={store ? 420 : 480}
           loading="lazy"
           unoptimized
-          sizes={store ? "(min-width: 1024px) 180px, 100vw" : "(min-width: 1280px) 25vw, (min-width: 768px) 50vw, 100vw"}
+          sizes={
+            store
+              ? "(min-width: 1024px) 180px, 100vw"
+              : "(min-width: 1280px) 25vw, (min-width: 768px) 50vw, 100vw"
+          }
           className={mediaClassName}
         />
       ) : (
         <ProductDevicePreview
           productName={product.name}
           powerLabel={product.powerLabel}
-          className={store ? "h-full min-h-44 transition-transform duration-300 group-hover:scale-[1.03]" : "transition-transform duration-300 group-hover:scale-[1.02]"}
+          className={
+            store
+              ? "h-full min-h-44 transition-transform duration-300 group-hover:scale-[1.03]"
+              : "transition-transform duration-300 group-hover:scale-[1.02]"
+          }
         />
       )}
     </>
   );
 }
 
+function ProductFixedBadge({ badge }: { badge?: string }) {
+  if (!badge) {
+    return null;
+  }
+
+  return (
+    <StatusBadge tone="success" className="premium-product-card__fixed-badge">
+      {badge}
+    </StatusBadge>
+  );
+}
+
+function ProductStatusRow({
+  category,
+  decisionBadge,
+  stockLabel
+}: {
+  category: string;
+  decisionBadge?: string;
+  stockLabel: string;
+}) {
+  const isOutOfStock = stockLabel === "Stokta Yok";
+
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <StatusBadge tone="primary">{category}</StatusBadge>
+      <StatusBadge tone={isOutOfStock ? "danger" : "success"}>
+        {stockLabel}
+      </StatusBadge>
+      {decisionBadge ? <StatusBadge>{decisionBadge}</StatusBadge> : null}
+    </div>
+  );
+}
+
+function ProductSpecs({
+  className,
+  specs,
+  valueClassName
+}: {
+  className: string;
+  specs: ReadonlyArray<readonly [string, string]>;
+  valueClassName: string;
+}) {
+  return (
+    <div className={className}>
+      {specs.map(([label, value]) => (
+        <div key={label} className="rounded-lg bg-white/72 px-2.5 py-2">
+          <p className="ds-text-meta font-bold uppercase text-on-surface-variant">
+            {label}
+          </p>
+          <p className={valueClassName} title={value}>
+            {value}
+          </p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ProductInspectLabel({
+  children,
+  compact = false
+}: {
+  children: ReactNode;
+  compact?: boolean;
+}) {
+  return (
+    <span
+      className={
+        compact
+          ? "premium-product-card__inspect inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-primary px-3 py-2 text-xs font-bold text-white transition-colors group-hover:bg-primary-container"
+          : "premium-product-card__inspect inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-sm font-bold text-white transition-colors group-hover:bg-primary-container"
+      }
+    >
+      {children}
+      <ArrowUpRight
+        className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+        aria-hidden
+      />
+    </span>
+  );
+}
+
 export function ProductCard({ product, layout = "standard" }: ProductCardProps) {
   const profile = getProductStoreProfile(product);
-  const isOutOfStock = product.stockLabel === "Stokta Yok";
   const imageUrl = getDisplayProductImageUrl(product.imageUrl) ?? null;
-  const productHref = `/urun/${product.slug}`;
   const compactSpecs = [
     ["Güç", profile.powerTier],
     ["Saha", profile.installationMode],
@@ -77,21 +189,9 @@ export function ProductCard({ product, layout = "standard" }: ProductCardProps) 
     ] as const;
 
     return (
-      <Link
-        href={productHref}
-        aria-label={`${product.name} ürün detayını aç`}
-        className="premium-product-card-link group block h-full rounded-lg focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-secondary-container/55"
-        data-motion="reveal"
-      >
+      <ProductCardLink product={product}>
         <article className="premium-product-card premium-product-card--store surface-card grid h-full gap-4 rounded-lg p-3 transition-transform duration-200 group-hover:-translate-y-1 group-hover:border-primary/30 md:grid-cols-[180px_1fr]">
-          {product.badge ? (
-            <StatusBadge
-              tone="success"
-              className="premium-product-card__fixed-badge"
-            >
-              {product.badge}
-            </StatusBadge>
-          ) : null}
+          <ProductFixedBadge badge={product.badge} />
           <div className="premium-product-card__media relative min-h-44 overflow-hidden rounded-lg bg-surface-container">
             <ProductMedia imageUrl={imageUrl} product={product} store />
             <div className="premium-product-card__compare absolute right-3 top-3 z-10">
@@ -101,13 +201,11 @@ export function ProductCard({ product, layout = "standard" }: ProductCardProps) 
 
           <div className="grid min-w-0 gap-4 lg:grid-cols-[1fr_190px]">
             <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2">
-                <StatusBadge tone="primary">{product.category}</StatusBadge>
-                <StatusBadge tone={isOutOfStock ? "danger" : "success"}>
-                  {product.stockLabel}
-                </StatusBadge>
-                <StatusBadge>{profile.decisionBadge}</StatusBadge>
-              </div>
+              <ProductStatusRow
+                category={product.category}
+                decisionBadge={profile.decisionBadge}
+                stockLabel={product.stockLabel}
+              />
 
               <h3 className="ds-card-title mt-3 transition-colors group-hover:text-primary">
                 {product.name}
@@ -116,21 +214,11 @@ export function ProductCard({ product, layout = "standard" }: ProductCardProps) 
                 {profile.primaryFit}
               </p>
 
-              <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
-                {storeSpecs.map(([label, value]) => (
-                  <div key={label} className="rounded-lg bg-white/72 px-3 py-2">
-                    <p className="ds-text-meta font-bold uppercase text-on-surface-variant">
-                      {label}
-                    </p>
-                    <p
-                      className="mt-1 line-clamp-2 text-xs font-bold leading-5 text-on-surface"
-                      title={value}
-                    >
-                      {value}
-                    </p>
-                  </div>
-                ))}
-              </div>
+              <ProductSpecs
+                className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-4"
+                specs={storeSpecs}
+                valueClassName="mt-1 line-clamp-2 text-xs font-bold leading-5 text-on-surface"
+              />
 
               <div className="mt-4 flex flex-wrap gap-2">
                 <StatusBadge tone="success">Uyum net</StatusBadge>
@@ -150,33 +238,18 @@ export function ProductCard({ product, layout = "standard" }: ProductCardProps) 
                   {profile.installationHint}
                 </p>
               </div>
-              <span className="premium-product-card__inspect inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-sm font-bold text-white transition-colors group-hover:bg-primary-container">
-                Ürünü incele
-                <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden />
-              </span>
+              <ProductInspectLabel>Ürünü incele</ProductInspectLabel>
             </div>
           </div>
         </article>
-      </Link>
+      </ProductCardLink>
     );
   }
 
   return (
-    <Link
-      href={productHref}
-      aria-label={`${product.name} ürün detayını aç`}
-      className="premium-product-card-link group block h-full rounded-lg focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-secondary-container/55"
-      data-motion="reveal"
-    >
+    <ProductCardLink product={product}>
       <article className="premium-product-card surface-card flex h-full flex-col rounded-lg p-3 transition-transform duration-200 group-hover:-translate-y-1 group-hover:border-primary/30">
-        {product.badge ? (
-          <StatusBadge
-            tone="success"
-            className="premium-product-card__fixed-badge"
-          >
-            {product.badge}
-          </StatusBadge>
-        ) : null}
+        <ProductFixedBadge badge={product.badge} />
         <div className="premium-product-card__media relative mb-4 overflow-hidden rounded-lg bg-surface-container">
           <ProductMedia imageUrl={imageUrl} product={product} />
           <div className="premium-product-card__compare absolute right-3 top-3 z-10">
@@ -184,12 +257,10 @@ export function ProductCard({ product, layout = "standard" }: ProductCardProps) 
           </div>
         </div>
 
-        <div className="flex items-center justify-between gap-3">
-          <StatusBadge tone="primary">{product.category}</StatusBadge>
-          <StatusBadge tone={isOutOfStock ? "danger" : "success"}>
-            {product.stockLabel}
-          </StatusBadge>
-        </div>
+        <ProductStatusRow
+          category={product.category}
+          stockLabel={product.stockLabel}
+        />
 
         <h3 className="ds-card-title mt-3 transition-colors group-hover:text-primary">
           {product.name}
@@ -198,18 +269,11 @@ export function ProductCard({ product, layout = "standard" }: ProductCardProps) 
           {profile.primaryFit}
         </p>
 
-        <div className="premium-product-card__specs mt-4 grid grid-cols-3 gap-2">
-          {compactSpecs.map(([label, value]) => (
-            <div key={label} className="rounded-lg bg-white/72 px-2.5 py-2">
-              <p className="ds-text-meta font-bold uppercase text-on-surface-variant">
-                {label}
-              </p>
-              <p className="mt-1 truncate text-xs font-bold leading-5 text-on-surface" title={value}>
-                {value}
-              </p>
-            </div>
-          ))}
-        </div>
+        <ProductSpecs
+          className="premium-product-card__specs mt-4 grid grid-cols-3 gap-2"
+          specs={compactSpecs}
+          valueClassName="mt-1 truncate text-xs font-bold leading-5 text-on-surface"
+        />
 
         <div className="premium-product-card__price-row mt-4 flex items-end justify-between gap-3">
           <div className="premium-product-card__price">
@@ -220,12 +284,9 @@ export function ProductCard({ product, layout = "standard" }: ProductCardProps) 
               {product.powerLabel}
             </p>
           </div>
-          <span className="premium-product-card__inspect inline-flex min-h-11 items-center gap-2 rounded-lg bg-primary px-3 py-2 text-xs font-bold text-white">
-            İncele
-            <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden />
-          </span>
+          <ProductInspectLabel compact>İncele</ProductInspectLabel>
         </div>
       </article>
-    </Link>
+    </ProductCardLink>
   );
 }

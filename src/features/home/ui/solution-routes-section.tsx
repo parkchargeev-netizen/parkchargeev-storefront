@@ -1,6 +1,7 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
+import { PremiumSection } from "@/components/ui/premium-section";
 import { solutionRoutes } from "@/features/home/domain/home-content";
 import { HomeIcon } from "@/features/home/ui/home-icon";
 import { SectionHeading } from "@/features/home/ui/section-heading";
@@ -11,8 +12,7 @@ export function SolutionRoutesSection() {
   const secondaryRoutes = solutionRoutes.slice(3);
 
   return (
-    <section className="premium-section premium-home-routes">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <PremiumSection className="premium-home-routes">
         <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <SectionHeading
             eyebrow="Çözüm alanları"
@@ -89,7 +89,6 @@ export function SolutionRoutesSection() {
             </Link>
           ))}
         </div>
-      </div>
-    </section>
+    </PremiumSection>
   );
 }

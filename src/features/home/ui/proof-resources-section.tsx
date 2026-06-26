@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { PremiumSection } from "@/components/ui/premium-section";
 import { proofSignals } from "@/features/home/domain/home-content";
 import { HomeIcon } from "@/features/home/ui/home-icon";
 import { SectionHeading } from "@/features/home/ui/section-heading";
@@ -15,8 +16,11 @@ export function ProofResourcesSection({
   testimonials
 }: ProofResourcesSectionProps) {
   return (
-    <section className="premium-section premium-light-section">
-      <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[1fr_0.9fr] lg:px-8">
+    <PremiumSection
+      className="premium-light-section"
+      containerClassName="grid gap-8 lg:grid-cols-[1fr_0.9fr]"
+      tone="light"
+    >
         <div>
           <SectionHeading
             eyebrow="Operasyon güveni"
@@ -99,7 +103,6 @@ export function ProofResourcesSection({
             ))}
           </div>
         </div>
-      </div>
-    </section>
+    </PremiumSection>
   );
 }

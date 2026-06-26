@@ -1,13 +1,22 @@
 import { ShoppingBag } from "lucide-react";
 import Link from "next/link";
 
+import { Skeleton, SkeletonCard } from "@/components/ui/skeleton";
+
 export function CheckoutLoadingPanel() {
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
-      <div className="rounded-lg border border-white/80 bg-white/88 p-6 shadow-[0_18px_60px_rgba(6,51,38,0.08)] backdrop-blur-xl">
-        <p className="text-base font-semibold text-on-surface-variant">
-          Ödeme adımı hazırlanıyor...
-        </p>
+    <div
+      className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8"
+      aria-busy="true"
+      aria-live="polite"
+    >
+      <div className="premium-loading-shell">
+        <Skeleton className="h-4 w-52" />
+        <Skeleton className="mt-5 h-9 w-full max-w-xl" />
+        <div className="mt-8 grid gap-4 lg:grid-cols-[1fr_0.58fr]">
+          <SkeletonCard lines={4} />
+          <SkeletonCard lines={5} />
+        </div>
       </div>
     </div>
   );

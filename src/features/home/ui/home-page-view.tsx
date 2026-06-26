@@ -1,3 +1,4 @@
+import { MotionGroup } from "@/components/ui/premium-section";
 import type { HomePageData } from "@/features/home/application/get-home-page-data";
 import { DecisionSystemSection } from "@/features/home/ui/decision-system-section";
 import { HomeFinalCta } from "@/features/home/ui/home-final-cta";
@@ -14,7 +15,7 @@ export function HomePageView({
   whatsappHref
 }: HomePageData) {
   return (
-    <main className="premium-home-page" data-motion-scope>
+    <MotionGroup as="main" className="premium-home-page">
       <HomeHero whatsappHref={whatsappHref} />
       <SolutionRoutesSection />
       <DecisionSystemSection />
@@ -25,6 +26,6 @@ export function HomePageView({
         testimonials={testimonials}
       />
       <HomeFinalCta whatsappHref={whatsappHref} />
-    </main>
+    </MotionGroup>
   );
 }

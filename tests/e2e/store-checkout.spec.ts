@@ -62,7 +62,9 @@ test("@e2e magaza -> urun -> sepet -> checkout akisi iframe mock ile tamamlanir"
   const paytrMock = await mockPaytrIframeFlow(page);
 
   await page.goto("/urun/homecharge-pro-11kw", { waitUntil: "domcontentloaded" });
-  await expect(page.locator("h1")).toBeVisible();
+  await expect(
+    page.getByRole("heading", { level: 1, name: "HomeCharge Pro 11kW" })
+  ).toBeVisible();
   const addToCartButton = page.getByRole("button", { name: /Sepete Ekle/i }).first();
   await expect(addToCartButton).toBeEnabled();
   await addToCartButton.click();

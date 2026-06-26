@@ -2,23 +2,25 @@
 
 import { useEffect } from "react";
 
-const MOTION_SELECTOR = "[data-motion]";
-const MOTION_SCOPE_SELECTOR = "[data-motion-scope]";
-const LOOP_SELECTOR = "[data-motion-loop]";
+import {
+  getMotionDelay as getConfiguredMotionDelay,
+  motionRuntime,
+  motionSelectors
+} from "@/lib/motion-system";
 
 function getMotionDelay(element: HTMLElement, fallbackIndex: number) {
   const configuredOrder = Number.parseInt(element.dataset.motionOrder ?? "", 10);
   const order = Number.isFinite(configuredOrder) ? configuredOrder : fallbackIndex;
 
-  return `${Math.min(order % 6, 5) * 42}ms`;
+  return getConfiguredMotionDelay(order);
 }
 
 function prepareMotionScopes(root: ParentNode) {
-  if (root instanceof HTMLElement && root.matches(MOTION_SCOPE_SELECTOR)) {
+  if (root instanceof HTMLElement && root.matches(motionSelectors.scope)) {
     prepareMotionScope(root);
   }
 
-  root.querySelectorAll<HTMLElement>(MOTION_SCOPE_SELECTOR).forEach((scope) => {
+  root.querySelectorAll<HTMLElement>(motionSelectors.scope).forEach((scope) => {
     prepareMotionScope(scope);
   });
 }
@@ -68,11 +70,11 @@ export function ScrollMotion() {
 
       document.documentElement.style.setProperty(
         "--ambient-x",
-        `${Math.round(normalizedX * 18)}px`
+        `${Math.round(normalizedX * motionRuntime.pointerRangeX)}px`
       );
       document.documentElement.style.setProperty(
         "--ambient-y",
-        `${Math.round(normalizedY * 14)}px`
+        `${Math.round(normalizedY * motionRuntime.pointerRangeY)}px`
       );
     };
 
@@ -109,7 +111,7 @@ export function ScrollMotion() {
       );
       document.documentElement.style.setProperty(
         "--scroll-shift",
-        `${Math.round(clampedProgress * -18)}px`
+        `${Math.round(clampedProgress * motionRuntime.scrollShiftPx)}px`
       );
     };
 
@@ -132,7 +134,7 @@ export function ScrollMotion() {
           target.dataset.motionState = "visible";
           window.setTimeout(() => {
             target.dataset.motionState = "complete";
-          }, 460);
+          }, motionRuntime.completeDelayMs);
           revealObserver.unobserve(target);
         });
       },
@@ -194,19 +196,19 @@ export function ScrollMotion() {
     const prepare = (root: ParentNode) => {
       prepareMotionScopes(root);
 
-      if (root instanceof HTMLElement && root.matches(MOTION_SELECTOR)) {
+      if (root instanceof HTMLElement && root.matches(motionSelectors.motion)) {
         prepareMotionElement(root, 0);
       }
 
-      root.querySelectorAll<HTMLElement>(MOTION_SELECTOR).forEach((element, index) => {
+      root.querySelectorAll<HTMLElement>(motionSelectors.motion).forEach((element, index) => {
         prepareMotionElement(element, index);
       });
 
-      if (root instanceof HTMLElement && root.matches(LOOP_SELECTOR)) {
+      if (root instanceof HTMLElement && root.matches(motionSelectors.loop)) {
         prepareLoopElement(root);
       }
 
-      root.querySelectorAll<HTMLElement>(LOOP_SELECTOR).forEach((element) => {
+      root.querySelectorAll<HTMLElement>(motionSelectors.loop).forEach((element) => {
         prepareLoopElement(element);
       });
     };
