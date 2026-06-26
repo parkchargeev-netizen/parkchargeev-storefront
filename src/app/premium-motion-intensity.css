@@ -1,0 +1,725 @@
+/* High-density motion and performance layer. Imported after globals.css on purpose. */
+:root {
+  --motion-intensity-fast: 220ms;
+  --motion-intensity-medium: 520ms;
+  --motion-intensity-curve: cubic-bezier(0.16, 1, 0.3, 1);
+  --motion-light-cyan: rgba(125, 247, 220, 0.96);
+  --motion-light-green: rgba(24, 176, 129, 0.72);
+  --motion-dark-ink: #06110f;
+}
+
+.global-ambient-layer,
+.site-ambient-circuit,
+.premium-section__atmosphere {
+  transform: translateZ(0);
+  will-change: transform, opacity;
+}
+
+.global-ambient-layer {
+  opacity: 1;
+  contain: strict;
+  background:
+    linear-gradient(117deg, transparent 0 10%, rgba(125, 247, 220, 0.22) 10.08% 10.28%, transparent 10.7% 26%, rgba(24, 176, 129, 0.16) 26.1% 26.42%, transparent 26.82% 54%, rgba(255, 255, 255, 0.48) 54.08% 54.2%, transparent 54.55% 82%, rgba(125, 247, 220, 0.16) 82.08% 82.34%, transparent 82.7%),
+    linear-gradient(33deg, transparent 0 18%, rgba(5, 51, 40, 0.1) 18.08% 18.34%, transparent 18.75% 46%, rgba(125, 247, 220, 0.2) 46.08% 46.4%, transparent 46.82%),
+    radial-gradient(ellipse at 12% 14%, rgba(125, 247, 220, 0.24), transparent 32rem),
+    radial-gradient(ellipse at 86% 26%, rgba(24, 176, 129, 0.18), transparent 34rem),
+    linear-gradient(180deg, rgba(244, 255, 251, 0.98), rgba(224, 245, 238, 0.78) 44%, rgba(239, 247, 255, 0.94));
+}
+
+.global-ambient-layer::before {
+  opacity: 0.82;
+  background-image:
+    linear-gradient(rgba(5, 51, 40, 0.075) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(24, 176, 129, 0.065) 1px, transparent 1px),
+    linear-gradient(116deg, transparent 0 34%, rgba(125, 247, 220, 0.28) 34.12% 34.38%, transparent 34.78% 68%, rgba(255, 255, 255, 0.46) 68.08% 68.22%, transparent 68.58%);
+  background-size: 52px 52px, 52px 52px, 100% 100%;
+  animation-duration: 18s;
+}
+
+.global-ambient-layer::after {
+  opacity: 0.9;
+  background:
+    repeating-linear-gradient(124deg, transparent 0 11%, rgba(125, 247, 220, 0.19) 11.1% 11.28%, transparent 11.6% 22%),
+    repeating-linear-gradient(56deg, transparent 0 16%, rgba(255, 255, 255, 0.44) 16.08% 16.18%, transparent 16.46% 34%),
+    linear-gradient(90deg, rgba(24, 176, 129, 0.12), transparent 28%, rgba(125, 247, 220, 0.16) 68%, transparent);
+  animation-duration: 7.5s;
+}
+
+.global-ambient-band {
+  opacity: 0.36;
+  filter: blur(6px);
+  animation-duration: 9s;
+}
+
+.global-ambient-band--two {
+  opacity: 0.3;
+}
+
+.global-ambient-band--three {
+  opacity: 0.26;
+}
+
+.global-ambient-rail,
+.global-ambient-pulse,
+.global-ambient-node,
+.site-ambient-circuit__trace {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+
+.global-ambient-rail {
+  height: 3px;
+  opacity: 0;
+  background: linear-gradient(90deg, transparent, rgba(5, 51, 40, 0.22), var(--motion-light-cyan), rgba(255, 255, 255, 0.95), transparent);
+  box-shadow:
+    0 0 18px rgba(125, 247, 220, 0.62),
+    0 0 58px rgba(24, 176, 129, 0.34);
+  animation-duration: 6.8s;
+}
+
+.global-ambient-rail--four {
+  top: 14%;
+  left: -52vw;
+  width: 38vw;
+  transform: rotate(11deg);
+  animation: global-ambient-rail-run-positive 8.4s 1.6s linear infinite;
+}
+
+.global-ambient-rail--five {
+  top: 72%;
+  left: -48vw;
+  width: 50vw;
+  transform: rotate(11deg);
+  animation: global-ambient-rail-run-positive 10.2s 4.4s linear infinite;
+}
+
+.global-ambient-line {
+  height: 3px;
+  width: 54vw;
+  box-shadow:
+    0 0 16px rgba(125, 247, 220, 0.58),
+    0 0 48px rgba(24, 176, 129, 0.32);
+}
+
+.global-ambient-sweep {
+  opacity: 0.46;
+  filter: blur(14px);
+}
+
+.global-ambient-pulse {
+  left: -22vw;
+  width: 144vw;
+  height: 1px;
+  opacity: 0.38;
+  background: linear-gradient(90deg, transparent, rgba(125, 247, 220, 0.78), rgba(255, 255, 255, 0.86), rgba(24, 176, 129, 0.42), transparent);
+  box-shadow: 0 0 28px rgba(125, 247, 220, 0.42);
+  transform: rotate(-6deg);
+  animation: global-ambient-pulse-run 5.6s ease-in-out infinite;
+}
+
+.global-ambient-pulse--one {
+  top: 22%;
+}
+
+.global-ambient-pulse--two {
+  top: 49%;
+  animation-delay: -2s;
+  transform: rotate(5deg);
+}
+
+.global-ambient-pulse--three {
+  top: 81%;
+  animation-delay: -3.8s;
+}
+
+.global-ambient-node,
+.site-ambient-circuit__node {
+  border-radius: 0.18rem;
+}
+
+.global-ambient-node {
+  width: 0.68rem;
+  height: 0.68rem;
+  border: 1px solid rgba(125, 247, 220, 0.76);
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow:
+    0 0 18px rgba(125, 247, 220, 0.54),
+    0 0 38px rgba(24, 176, 129, 0.28);
+  animation: ambient-node-flash 2.9s ease-in-out infinite;
+}
+
+.global-ambient-node--one {
+  top: 17%;
+  left: 16%;
+}
+
+.global-ambient-node--two {
+  top: 39%;
+  right: 13%;
+  animation-delay: -0.9s;
+}
+
+.global-ambient-node--three {
+  bottom: 24%;
+  left: 31%;
+  animation-delay: -1.7s;
+}
+
+.global-ambient-node--four {
+  bottom: 12%;
+  right: 22%;
+  animation-delay: -2.3s;
+}
+
+.site-page-transition {
+  background:
+    linear-gradient(126deg, transparent 0 11%, rgba(125, 247, 220, 0.105) 11.08% 11.32%, transparent 11.7% 47%, rgba(255, 255, 255, 0.36) 47.08% 47.2%, transparent 47.55% 77%, rgba(24, 176, 129, 0.08) 77.08% 77.34%, transparent 77.76%),
+    radial-gradient(ellipse at 15% 20%, rgba(125, 247, 220, 0.12), transparent 32rem),
+    radial-gradient(ellipse at 86% 38%, rgba(24, 176, 129, 0.11), transparent 34rem),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.48), rgba(239, 251, 246, 0.52));
+}
+
+.site-page-transition::before {
+  opacity: 0.62;
+  background-size: 48px 48px;
+}
+
+.site-page-transition::after {
+  opacity: 0.72;
+  background:
+    linear-gradient(34deg, transparent 0 13%, rgba(255, 255, 255, 0.44) 13.08% 13.22%, transparent 13.62% 45%, rgba(125, 247, 220, 0.22) 45.08% 45.34%, transparent 45.72% 78%, rgba(24, 176, 129, 0.14) 78.08% 78.3%, transparent 78.66%),
+    linear-gradient(112deg, transparent 0 18%, rgba(125, 247, 220, 0.22) 18.1% 18.42%, transparent 18.8% 60%, rgba(6, 51, 38, 0.12) 60.08% 60.32%, transparent 60.72%),
+    radial-gradient(ellipse at 70% 12%, rgba(125, 247, 220, 0.18), transparent 34rem),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(239, 251, 246, 0.14));
+  animation-duration: 7s, 13s;
+}
+
+[data-motion] {
+  transition:
+    opacity 240ms ease,
+    transform 360ms var(--motion-intensity-curve),
+    filter 360ms ease;
+}
+
+[data-motion="reveal"][data-motion-state="pending"] {
+  filter: blur(8px);
+  transform: translate3d(0, 1.35rem, 0) scale(0.985);
+}
+
+[data-motion="slide"][data-motion-state="pending"] {
+  filter: blur(8px);
+  transform: translate3d(-1.45rem, 0, 0);
+}
+
+[data-motion="scale"][data-motion-state="pending"] {
+  filter: blur(6px);
+  transform: scale(0.955);
+}
+
+[data-motion][data-motion-state="visible"],
+[data-motion][data-motion-state="complete"] {
+  filter: none;
+}
+
+.site-ambient-circuit {
+  opacity: 0.86;
+  background-image:
+    linear-gradient(28deg, transparent 0 18%, rgba(255, 255, 255, 0.42) 18.08% 18.2%, transparent 18.55%),
+    linear-gradient(142deg, transparent 0 34%, rgba(125, 247, 220, 0.34) 34.08% 34.38%, transparent 34.78%),
+    repeating-linear-gradient(90deg, transparent 0 54px, rgba(24, 176, 129, 0.14) 55px 56px),
+    repeating-linear-gradient(0deg, transparent 0 48px, rgba(5, 51, 40, 0.09) 49px 50px),
+    linear-gradient(120deg, transparent 0 42%, rgba(125, 247, 220, 0.26) 42.08% 42.5%, transparent 42.92%),
+    radial-gradient(ellipse at 18% 16%, rgba(125, 247, 220, 0.28), transparent 30rem),
+    radial-gradient(ellipse at 82% 28%, rgba(24, 176, 129, 0.2), transparent 32rem);
+}
+
+.site-ambient-circuit__ribbon {
+  opacity: 0.28;
+  filter: blur(9px);
+  animation-duration: 8.2s;
+}
+
+.site-ambient-circuit__beam {
+  height: 3px;
+  box-shadow:
+    0 0 20px rgba(125, 247, 220, 0.64),
+    0 0 54px rgba(24, 176, 129, 0.34);
+  animation-duration: 7.2s;
+}
+
+.site-ambient-circuit__beam--four {
+  top: 18%;
+  width: 34vw;
+  transform: rotate(10deg);
+  animation: site-energy-beam-positive 8.8s 2.4s linear infinite;
+}
+
+.site-ambient-circuit__beam--five {
+  top: 76%;
+  width: 52vw;
+  transform: rotate(10deg);
+  animation: site-energy-beam-positive 11s 6.1s linear infinite;
+}
+
+.site-ambient-circuit__node {
+  width: 0.7rem;
+  height: 0.7rem;
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.site-ambient-circuit__node--four {
+  top: 36%;
+  left: 68%;
+  animation-delay: -0.7s;
+}
+
+.site-ambient-circuit__node--five {
+  bottom: 12%;
+  right: 8%;
+  animation-delay: -2.5s;
+}
+
+.site-ambient-circuit__trace {
+  left: -18vw;
+  width: 134vw;
+  height: 1px;
+  opacity: 0.4;
+  background: linear-gradient(90deg, transparent, rgba(125, 247, 220, 0.78), rgba(255, 255, 255, 0.86), transparent);
+  box-shadow: 0 0 24px rgba(125, 247, 220, 0.36);
+  animation: circuit-trace-breathe 4.8s ease-in-out infinite alternate;
+}
+
+.site-ambient-circuit__trace--one {
+  top: 30%;
+  transform: rotate(-7deg);
+}
+
+.site-ambient-circuit__trace--two {
+  top: 64%;
+  transform: rotate(6deg);
+  animation-delay: -2.2s;
+}
+
+.premium-home-page {
+  background:
+    linear-gradient(118deg, transparent 0 12%, rgba(125, 247, 220, 0.18) 12.08% 12.34%, transparent 12.72% 37%, rgba(24, 176, 129, 0.12) 37.08% 37.38%, transparent 37.78% 70%, rgba(255, 255, 255, 0.36) 70.08% 70.22%, transparent 70.58%),
+    radial-gradient(ellipse at 14% 28rem, rgba(6, 51, 38, 0.22), transparent 32rem),
+    radial-gradient(ellipse at 88% 48rem, rgba(125, 247, 220, 0.25), transparent 34rem),
+    linear-gradient(180deg, #050712 0, #070b17 18rem, rgba(233, 247, 255, 0.96) 18rem, rgba(241, 252, 248, 0.95) 100%);
+}
+
+.premium-section-composed {
+  contain: layout paint style;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 760px;
+}
+
+.premium-section-composed[data-premium-depth]::before {
+  opacity: 0.92;
+  background:
+    linear-gradient(116deg, transparent 0 16%, rgba(125, 247, 220, 0.28) 16.08% 16.42%, transparent 16.82% 52%, rgba(255, 255, 255, 0.5) 52.08% 52.22%, transparent 52.6% 78%, rgba(24, 176, 129, 0.16) 78.08% 78.36%, transparent 78.72%),
+    radial-gradient(ellipse at 18% 28%, rgba(125, 247, 220, 0.28), transparent 26rem),
+    radial-gradient(ellipse at 78% 60%, rgba(24, 176, 129, 0.2), transparent 28rem);
+}
+
+.premium-section__rail {
+  height: 3px;
+  width: 52%;
+  background: linear-gradient(90deg, transparent, rgba(24, 176, 129, 0.82), var(--motion-light-cyan), rgba(255, 255, 255, 0.9), transparent);
+  box-shadow:
+    0 0 22px rgba(125, 247, 220, 0.58),
+    0 0 54px rgba(24, 176, 129, 0.3);
+  animation-duration: 4.8s;
+}
+
+.premium-section__rail--three {
+  top: 46%;
+  width: 34%;
+  animation-delay: -1.8s;
+  transform: rotate(8deg);
+}
+
+.premium-section__spark {
+  height: 2px;
+  width: 11rem;
+  opacity: 0.56;
+  animation-duration: 3.4s;
+}
+
+.premium-section__spark--three {
+  top: 52%;
+  right: 18%;
+  animation-delay: -1.4s;
+  transform: rotate(-12deg);
+}
+
+.premium-section__flare {
+  position: absolute;
+  display: block;
+  width: clamp(10rem, 24vw, 24rem);
+  height: clamp(10rem, 24vw, 24rem);
+  pointer-events: none;
+  opacity: 0.18;
+  background: radial-gradient(circle, rgba(125, 247, 220, 0.5), transparent 64%);
+  filter: blur(18px);
+  will-change: opacity, transform;
+  animation: premium-flare-drift 6.8s ease-in-out infinite alternate;
+}
+
+.premium-section__flare--one {
+  top: -14%;
+  right: 6%;
+}
+
+.premium-section__flare--two {
+  bottom: -16%;
+  left: 7%;
+  animation-delay: -3.4s;
+}
+
+.site-experience-shell :where(.premium-product-card, .store-selector-window-card, .premium-route-card, .premium-funnel-lane, .premium-install-card, .premium-signal-card, .premium-quote-card, .premium-resource-link, .ds-surface) {
+  transition:
+    transform var(--motion-intensity-medium) var(--motion-intensity-curve),
+    border-color var(--motion-intensity-fast) ease,
+    box-shadow var(--motion-intensity-fast) ease,
+    filter var(--motion-intensity-fast) ease;
+}
+
+.site-experience-shell :where(.premium-product-card, .store-selector-window-card, .premium-route-card, .premium-funnel-lane, .premium-install-card, .premium-signal-card, .premium-quote-card, .premium-resource-link)::after {
+  opacity: 0.22;
+  transform: translate3d(-44%, 0, 0) rotate(4deg);
+  animation: card-energy-rest 4.4s ease-in-out infinite;
+}
+
+.site-experience-shell :where(.premium-product-card:hover, .store-selector-window-card--link:hover, .premium-route-card:hover, .premium-funnel-lane:hover, .premium-install-card:hover, .premium-signal-card:hover, .premium-quote-card:hover, .premium-resource-link:hover, .ds-surface:hover) {
+  filter: saturate(1.08);
+  transform: translate3d(0, -0.32rem, 0);
+}
+
+.site-experience-shell :where(.premium-product-card:hover, .store-selector-window-card--link:hover, .premium-route-card:hover, .premium-funnel-lane:hover, .premium-install-card:hover, .premium-signal-card:hover, .premium-quote-card:hover, .premium-resource-link:hover)::after {
+  opacity: 1;
+  animation: none;
+}
+
+.premium-product-card__media::before {
+  opacity: 0.9;
+  animation-duration: 2.8s;
+}
+
+.premium-product-card__energy {
+  height: 0.45rem;
+  animation-duration: 1.8s, 2.7s;
+}
+
+.site-experience-shell :where(.premium-btn, .btn-primary, .btn-secondary, .btn-quiet, .ds-action) {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.site-experience-shell :where(.premium-btn, .btn-primary, .btn-secondary, .btn-quiet, .ds-action)::before {
+  position: absolute;
+  inset: -140% -70%;
+  z-index: 0;
+  content: "";
+  pointer-events: none;
+  opacity: 0.42;
+  background: linear-gradient(105deg, transparent 36%, rgba(255, 255, 255, 0.72), rgba(125, 247, 220, 0.4), transparent 64%);
+  transform: translate3d(-54%, 0, 0) rotate(6deg);
+  transition:
+    opacity 180ms ease,
+    transform 520ms var(--motion-intensity-curve);
+}
+
+.site-experience-shell :where(.premium-btn:hover, .btn-primary:hover, .btn-secondary:hover, .btn-quiet:hover, .ds-action:hover)::before {
+  opacity: 0.9;
+  transform: translate3d(48%, 0, 0) rotate(6deg);
+}
+
+.site-experience-shell :where(.premium-btn, .btn-primary, .btn-secondary, .btn-quiet, .ds-action) > * {
+  position: relative;
+  z-index: 1;
+}
+
+.premium-install-section {
+  color: #f8fffc;
+  background:
+    linear-gradient(124deg, rgba(2, 15, 14, 0.98), rgba(7, 72, 58, 0.88) 38%, rgba(4, 20, 24, 0.98)),
+    radial-gradient(ellipse at 16% 16%, rgba(125, 247, 220, 0.28), transparent 24rem),
+    radial-gradient(ellipse at 84% 56%, rgba(30, 190, 145, 0.22), transparent 30rem),
+    #041312;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.premium-install-section::before {
+  opacity: 0.54;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.14) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(125, 247, 220, 0.18) 1px, transparent 1px),
+    linear-gradient(116deg, transparent 0 28%, rgba(125, 247, 220, 0.24) 28.12% 28.4%, transparent 28.78% 62%, rgba(255, 255, 255, 0.3) 62.08% 62.2%, transparent 62.58%);
+  background-size: 42px 42px, 42px 42px, 100% 100%;
+  animation-duration: 12s;
+}
+
+.premium-install-section::after {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  content: "";
+  pointer-events: none;
+  opacity: 0.72;
+  background:
+    linear-gradient(104deg, transparent 0 18%, rgba(125, 247, 220, 0.24) 18.08% 18.34%, transparent 18.74% 48%, rgba(255, 255, 255, 0.32) 48.08% 48.2%, transparent 48.6%),
+    radial-gradient(ellipse at 76% 28%, rgba(125, 247, 220, 0.2), transparent 26rem);
+  animation: install-light-flow 5.8s ease-in-out infinite alternate;
+}
+
+.premium-install-section > * {
+  position: relative;
+  z-index: 2;
+}
+
+.premium-install-section .premium-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.8rem;
+  border: 1px solid rgba(125, 247, 220, 0.34);
+  border-radius: 999px;
+  padding: 0.28rem 0.62rem;
+  background: rgba(125, 247, 220, 0.1);
+  color: #b9fff0;
+  text-shadow: 0 1px 12px rgba(125, 247, 220, 0.28);
+}
+
+.premium-install-section :where(h2, h3) {
+  color: #ffffff;
+  text-shadow:
+    0 2px 18px rgba(0, 0, 0, 0.42),
+    0 0 34px rgba(125, 247, 220, 0.18);
+}
+
+.premium-install-section :where(p, span, small) {
+  color: rgba(245, 255, 252, 0.9);
+}
+
+.premium-install-card {
+  border-color: rgba(185, 255, 240, 0.28);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.16), rgba(125, 247, 220, 0.08)),
+    rgba(3, 20, 18, 0.58);
+  box-shadow:
+    0 22px 58px rgba(0, 0, 0, 0.22),
+    0 0 34px rgba(125, 247, 220, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.premium-install-card :where(svg) {
+  filter: drop-shadow(0 0 12px rgba(125, 247, 220, 0.4));
+}
+
+.premium-install-section .premium-btn--primary {
+  background: linear-gradient(135deg, #effffb, #8ff6db 48%, #2bd29e);
+  color: #041312;
+  box-shadow:
+    0 16px 34px rgba(43, 210, 158, 0.28),
+    0 0 30px rgba(125, 247, 220, 0.2);
+}
+
+.site-experience-shell .site-page-transition > main > :where(section, article):not(:first-child),
+.site-experience-shell .site-page-transition > main > div > :where(section, article):not(:first-child) {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 820px;
+}
+
+@keyframes global-ambient-rail-run-positive {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(11deg);
+  }
+
+  9%,
+  74% {
+    opacity: 0.92;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(184vw, 0, 0) rotate(11deg);
+  }
+}
+
+@keyframes global-ambient-pulse-run {
+  0%,
+  100% {
+    opacity: 0.18;
+    transform: translate3d(-4%, 0, 0) rotate(-6deg);
+  }
+
+  50% {
+    opacity: 0.64;
+    transform: translate3d(4%, 0, 0) rotate(-3deg);
+  }
+}
+
+@keyframes ambient-node-flash {
+  0%,
+  100% {
+    opacity: 0.34;
+    transform: scale(0.84);
+  }
+
+  48% {
+    opacity: 1;
+    transform: scale(1.22);
+  }
+}
+
+@keyframes site-energy-beam-positive {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(10deg);
+  }
+
+  11%,
+  70% {
+    opacity: 0.82;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(186vw, 0, 0) rotate(10deg);
+  }
+}
+
+@keyframes circuit-trace-breathe {
+  from {
+    opacity: 0.18;
+    transform: translate3d(-2%, 0, 0) rotate(-7deg);
+  }
+
+  to {
+    opacity: 0.52;
+    transform: translate3d(2%, 0, 0) rotate(-4deg);
+  }
+}
+
+@keyframes premium-flare-drift {
+  from {
+    opacity: 0.12;
+    transform: translate3d(-0.6rem, 0.4rem, 0) scale(0.96);
+  }
+
+  to {
+    opacity: 0.26;
+    transform: translate3d(0.8rem, -0.5rem, 0) scale(1.04);
+  }
+}
+
+@keyframes card-energy-rest {
+  0%,
+  100% {
+    opacity: 0.14;
+    transform: translate3d(-44%, 0, 0) rotate(4deg);
+  }
+
+  50% {
+    opacity: 0.34;
+    transform: translate3d(-18%, 0, 0) rotate(4deg);
+  }
+}
+
+@keyframes install-light-flow {
+  from {
+    opacity: 0.46;
+    transform: translate3d(-1.2%, -0.8%, 0);
+  }
+
+  to {
+    opacity: 0.86;
+    transform: translate3d(1.4%, 0.9%, 0);
+  }
+}
+
+@media (max-width: 767px) {
+  .global-ambient-layer {
+    opacity: 0.96;
+  }
+
+  .global-ambient-band {
+    opacity: 0.26;
+  }
+
+  .global-ambient-rail,
+  .site-ambient-circuit__beam {
+    width: 78vw;
+  }
+
+  .global-ambient-rail--four,
+  .site-ambient-circuit__beam--five,
+  .global-ambient-pulse--three,
+  .global-ambient-node--four,
+  .site-ambient-circuit__node--five,
+  .site-ambient-circuit__trace--two {
+    display: none;
+  }
+
+  .global-ambient-pulse {
+    opacity: 0.28;
+  }
+
+  .site-ambient-circuit {
+    opacity: 0.5;
+  }
+
+  .premium-section__flare {
+    opacity: 0.12;
+  }
+
+  .premium-install-section::after {
+    opacity: 0.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .global-ambient-layer,
+  .global-ambient-layer::before,
+  .global-ambient-layer::after,
+  .global-ambient-band,
+  .global-ambient-rail,
+  .global-ambient-line,
+  .global-ambient-sweep,
+  .global-ambient-pulse,
+  .global-ambient-node,
+  .site-ambient-circuit,
+  .site-ambient-circuit__ribbon,
+  .site-ambient-circuit__beam,
+  .site-ambient-circuit__node,
+  .site-ambient-circuit__trace,
+  .premium-section__rail,
+  .premium-section__spark,
+  .premium-section__flare,
+  .premium-product-card__media::before,
+  .premium-product-card__energy,
+  .premium-install-section::before,
+  .premium-install-section::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  [data-motion] {
+    filter: none !important;
+    transform: none !important;
+  }
+
+  .global-ambient-rail,
+  .global-ambient-pulse,
+  .global-ambient-node,
+  .site-ambient-circuit__beam,
+  .site-ambient-circuit__node,
+  .site-ambient-circuit__trace,
+  .premium-section__rail {
+    display: none;
+  }
+}

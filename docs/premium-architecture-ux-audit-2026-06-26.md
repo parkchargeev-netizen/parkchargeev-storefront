@@ -56,3 +56,13 @@ Date: 2026-06-26
 - Added section-level `content-visibility` and card containment rules to improve rendering cost for offscreen content while preserving reduced-motion fallbacks.
 - Prevented transform/backdrop-filter containing-block regressions from breaking mobile fixed checkout and product purchase actions.
 - Remaining technical debt: global CSS still needs modular extraction, and the largest admin/checkout/server files should be split in dedicated low-risk passes with focused tests.
+
+## High-Density Motion and Speed Pass
+
+- Added `src/app/premium-motion-intensity.css` as a separate override layer so stronger motion, gradients, rails, traces, and glow accents remain isolated from base design tokens.
+- Increased global, shell-level, and section-level ambient density with additional rails, pulses, trace lines, compact nodes, section flares, and card energy sweeps.
+- Kept the new motion GPU-friendly by using opacity and transform animations, reduced-motion fallbacks, mobile pruning rules, and `content-visibility` for offscreen page sections.
+- Reduced perceived reveal latency by shortening motion completion and stagger timing while increasing pointer and scroll shift ranges for more visible parallax.
+- Removed unnecessary client execution from the static charging visual so the hero keeps richer visuals without adding React client bundle cost.
+- Fixed the reduced-motion loop preparation edge case so ambient loop elements can recover correctly when the user changes motion preferences.
+- Reworked the home installation section color system with brighter high-contrast text, deeper engineering background tones, stronger cards, and readable CTA treatment.

@@ -27,8 +27,12 @@ function PremiumSectionAtmosphere() {
     <span className="premium-section__atmosphere" aria-hidden>
       <span className="premium-section__rail premium-section__rail--one" />
       <span className="premium-section__rail premium-section__rail--two" />
+      <span className="premium-section__rail premium-section__rail--three" />
       <span className="premium-section__spark premium-section__spark--one" />
       <span className="premium-section__spark premium-section__spark--two" />
+      <span className="premium-section__spark premium-section__spark--three" />
+      <span className="premium-section__flare premium-section__flare--one" />
+      <span className="premium-section__flare premium-section__flare--two" />
     </span>
   );
 }

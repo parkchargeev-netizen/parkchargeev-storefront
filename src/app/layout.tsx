@@ -8,6 +8,7 @@ import { ScrollMotion } from "@/components/layout/scroll-motion";
 import { absoluteUrl, siteConfig } from "@/lib/site";
 
 import "@/app/globals.css";
+import "@/app/premium-motion-intensity.css";
 
 const defaultTitle = `Elektrikli Araç Şarj Cihazı ve Kurulum | ${siteConfig.name}`;
 const defaultOgImage = absoluteUrl("/api/og/product/homecharge-pro-11kw");

@@ -1,10 +1,12 @@
-"use client";
-
 const energyParticles = [
   { left: "18%", top: "24%", delay: "0s" },
   { left: "42%", top: "62%", delay: "0.7s" },
   { left: "66%", top: "35%", delay: "1.4s" },
-  { left: "84%", top: "54%", delay: "2.1s" }
+  { left: "84%", top: "54%", delay: "2.1s" },
+  { left: "28%", top: "72%", delay: "2.8s" },
+  { left: "58%", top: "18%", delay: "3.5s" },
+  { left: "76%", top: "78%", delay: "4.2s" },
+  { left: "12%", top: "48%", delay: "4.9s" }
 ] as const;
 
 export function ChargingVisual() {

@@ -196,17 +196,16 @@ export function ScrollMotion() {
     };
 
     const prepareLoopElement = (element: HTMLElement) => {
-      if (loopElements.has(element)) {
-        return;
-      }
-
-      loopElements.add(element);
-
       if (mediaQuery.matches) {
         element.dataset.motionActive = "false";
         return;
       }
 
+      if (loopElements.has(element)) {
+        return;
+      }
+
+      loopElements.add(element);
       loopObserver.observe(element);
     };
 
