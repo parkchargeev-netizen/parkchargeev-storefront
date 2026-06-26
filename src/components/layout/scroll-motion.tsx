@@ -27,6 +27,7 @@ function getScrollMotionRuntimeScript() {
       var frameType = "animation";
       var scrollFrame = 0;
       var pointerFrame = 0;
+      var pointerListenerAttached = false;
       var pointerX = window.innerWidth / 2;
       var pointerY = window.innerHeight / 2;
 
@@ -105,6 +106,18 @@ function getScrollMotionRuntimeScript() {
 
         if (pointerFrame) return;
         pointerFrame = window.requestAnimationFrame(syncPointerLight);
+      }
+
+      function bindPointerListener() {
+        if (coarsePointerQuery.matches || pointerListenerAttached) return;
+        pointerListenerAttached = true;
+        window.addEventListener("pointermove", schedulePointerLight, { passive: true });
+      }
+
+      function unbindPointerListener() {
+        if (!pointerListenerAttached) return;
+        pointerListenerAttached = false;
+        window.removeEventListener("pointermove", schedulePointerLight);
       }
 
       function syncScrollProgress() {
@@ -247,6 +260,11 @@ function getScrollMotionRuntimeScript() {
       function handleMotionPreference() {
         schedulePrepare();
         scheduleScrollProgress();
+        if (coarsePointerQuery.matches) {
+          unbindPointerListener();
+        } else {
+          bindPointerListener();
+        }
         schedulePointerLight();
       }
 
@@ -273,7 +291,7 @@ function getScrollMotionRuntimeScript() {
       window.addEventListener("scroll", scheduleScrollProgress, { passive: true });
       window.addEventListener("resize", scheduleScrollProgress);
       window.addEventListener("resize", schedulePointerLight);
-      window.addEventListener("pointermove", schedulePointerLight, { passive: true });
+      bindPointerListener();
       mediaQuery.addEventListener("change", handleMotionPreference);
       coarsePointerQuery.addEventListener("change", handleMotionPreference);
 
@@ -293,7 +311,7 @@ function getScrollMotionRuntimeScript() {
         window.removeEventListener("scroll", scheduleScrollProgress);
         window.removeEventListener("resize", scheduleScrollProgress);
         window.removeEventListener("resize", schedulePointerLight);
-        window.removeEventListener("pointermove", schedulePointerLight);
+        unbindPointerListener();
         mediaQuery.removeEventListener("change", handleMotionPreference);
         coarsePointerQuery.removeEventListener("change", handleMotionPreference);
         delete document.body.dataset.scrollMotionRuntime;

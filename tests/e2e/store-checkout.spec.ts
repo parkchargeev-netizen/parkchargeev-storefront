@@ -181,15 +181,26 @@ test("@e2e checkout CSP PayTR 3D Secure iframe kaynaklarini kapsar", async ({
 }) => {
   const response = await request.get("/checkout");
   const csp = response.headers()["content-security-policy"] ?? "";
+  const xFrameOptions = response.headers()["x-frame-options"] ?? "";
 
   expect(csp).toContain("frame-src");
   expect(csp).toContain("child-src");
-  expect(csp).toContain("frame-ancestors 'none'");
+  expect(csp).toContain("frame-ancestors 'self' https://www.paytr.com https://*.paytr.com");
+  expect(csp).not.toContain("frame-ancestors 'none'");
+  expect(csp).toContain("frame-src 'self' https:");
+  expect(csp).toContain("child-src 'self' https:");
   expect(csp).toContain("https://www.paytr.com");
-  expect(csp).toContain("https://*.paytr.com");
-  expect(csp).toContain("https://inbound.apigateway.vakifbank.com.tr");
-  expect(csp).toContain("https://*.apigateway.vakifbank.com.tr");
   expect(csp).toContain("form-action");
+  expect(xFrameOptions).toBe("");
+});
+
+test("@e2e genel site PayTR harici frame edilmeye kapali kalir", async ({
+  request
+}) => {
+  const response = await request.get("/");
+  const csp = response.headers()["content-security-policy"] ?? "";
+
+  expect(csp).toContain("frame-ancestors 'none'");
 });
 
 test("@e2e eski checkout istemcisi create endpointinde acik yenileme mesaji alir", async ({

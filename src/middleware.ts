@@ -4,6 +4,28 @@ import { NextResponse } from "next/server";
 import { canAccessAdminPath, type AdminRole } from "@/server/auth/authorization";
 
 const encoder = new TextEncoder();
+const checkoutConnectSources =
+  "connect-src 'self' https://www.paytr.com https://o4511393003077632.ingest.de.sentry.io https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.g.doubleclick.net https://*.google.com https://google.com https://*.google.com.tr https://google.com.tr https://pagead2.googlesyndication.com https://www.googleadservices.com https://ad.doubleclick.net https://*.clarity.ms https://cloudflareinsights.com" +
+  (process.env.NODE_ENV === "production" ? "" : " ws: http: https:");
+const checkoutContentSecurityPolicy = [
+  "default-src 'self'",
+  "base-uri 'self'",
+  "form-action 'self' https://www.paytr.com https://inbound.apigateway.vakifbank.com.tr https://*.apigateway.vakifbank.com.tr",
+  "frame-ancestors 'self' https://www.paytr.com https://*.paytr.com",
+  "frame-src 'self' https:",
+  "child-src 'self' https:",
+  checkoutConnectSources,
+  "img-src 'self' data: blob: https:",
+  "font-src 'self' data: https://fonts.gstatic.com",
+  "style-src 'self' 'unsafe-inline'",
+  "script-src 'self' 'unsafe-inline' https://*.googletagmanager.com https://www.googleadservices.com https://www.google.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://www.clarity.ms https://scripts.clarity.ms https://*.clarity.ms https://www.paytr.com https://static.cloudflareinsights.com",
+  "script-src-elem 'self' 'unsafe-inline' https://*.googletagmanager.com https://www.googleadservices.com https://www.google.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://www.clarity.ms https://scripts.clarity.ms https://*.clarity.ms https://www.paytr.com https://static.cloudflareinsights.com",
+  "worker-src 'self' blob:",
+  "manifest-src 'self'",
+  "media-src 'self' data: blob: https:",
+  "object-src 'none'",
+  ...(process.env.NODE_ENV === "production" ? ["upgrade-insecure-requests"] : [])
+].join("; ");
 
 function decodeBase64Url(value: string) {
   const normalized = value.replace(/-/g, "+").replace(/_/g, "/");
@@ -85,11 +107,19 @@ function applyAdminSecurityHeaders(response: NextResponse) {
   return response;
 }
 
-function applyCustomerSecurityHeaders(response: NextResponse) {
+function applyCustomerSecurityHeaders(
+  response: NextResponse,
+  options: { allowPaytrFrameAncestor?: boolean } = {}
+) {
   response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate");
   response.headers.set("Pragma", "no-cache");
   response.headers.set("X-Robots-Tag", "noindex, nofollow");
-  response.headers.set("X-Frame-Options", "DENY");
+  if (options.allowPaytrFrameAncestor) {
+    response.headers.delete("X-Frame-Options");
+    response.headers.set("Content-Security-Policy", checkoutContentSecurityPolicy);
+  } else {
+    response.headers.set("X-Frame-Options", "DENY");
+  }
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set("Referrer-Policy", "same-origin");
   response.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
@@ -233,7 +263,9 @@ export async function middleware(request: NextRequest) {
   }
 
   if (isCustomerPage || isCustomerApi || isCheckoutPage || isPaytrCheckoutApi) {
-    return applyCustomerSecurityHeaders(NextResponse.next());
+    return applyCustomerSecurityHeaders(NextResponse.next(), {
+      allowPaytrFrameAncestor: isCheckoutPage
+    });
   }
 
   if (!isAdminPage && !isAdminApi) {

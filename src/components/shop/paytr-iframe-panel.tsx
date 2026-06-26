@@ -25,7 +25,8 @@ export function PaytrIframePanel({ iframeToken }: PaytrIframePanelProps) {
       if (paytrWindow.iFrameResize && iframeRef.current) {
         paytrWindow.iFrameResize(
           {
-            checkOrigin: ["https://www.paytr.com"],
+            checkOrigin: false,
+            heightCalculationMethod: "lowestElement",
             scrolling: true
           },
           iframeRef.current
@@ -92,7 +93,9 @@ export function PaytrIframePanel({ iframeToken }: PaytrIframePanelProps) {
             frameBorder="0"
             scrolling="no"
             title="Güvenli kart ödeme formu"
-            allow="payment"
+            allow="payment *; fullscreen *; publickey-credentials-get *"
+            allowFullScreen
+            referrerPolicy="strict-origin-when-cross-origin"
             className="min-h-[680px] w-full"
           />
         </div>
