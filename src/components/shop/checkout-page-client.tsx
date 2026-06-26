@@ -61,6 +61,13 @@ type PaytrIframeTokenResponse = {
   message?: string;
 };
 
+type PaytrReturnMessage = {
+  source: "parkchargeev-paytr-return";
+  type: "paytr_return";
+  status: "success" | "failed";
+  merchantOid: string;
+};
+
 const CHECKOUT_STORAGE_KEY = "parkchargeev-checkout-draft-v2";
 const LEGACY_CHECKOUT_STORAGE_KEY = "parkchargeev-checkout-draft-v1";
 const ACTIVE_ORDER_STORAGE_KEY = "parkchargeev-active-order-v1";
@@ -145,6 +152,22 @@ function normalizePhoneForPayment(value: string) {
     : compact.replace(/\D/g, "");
 
   return plusSafe.slice(0, 20);
+}
+
+function isPaytrReturnMessage(value: unknown): value is PaytrReturnMessage {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const candidate = value as Partial<PaytrReturnMessage>;
+
+  return (
+    candidate.source === "parkchargeev-paytr-return" &&
+    candidate.type === "paytr_return" &&
+    (candidate.status === "success" || candidate.status === "failed") &&
+    typeof candidate.merchantOid === "string" &&
+    candidate.merchantOid.length > 0
+  );
 }
 
 function isValidCheckoutEmail(value: string) {
@@ -251,6 +274,7 @@ export function CheckoutPageClient({
   const [agreementAccepted, setAgreementAccepted] = useState(false);
   const [iframeToken, setIframeToken] = useState<string | null>(null);
   const [merchantOid, setMerchantOid] = useState<string | null>(initialMerchantOid ?? null);
+  const [returnStatus, setReturnStatus] = useState<string | null>(initialStatus ?? null);
   const [orderStatus, setOrderStatus] = useState<OrderStatusResponse | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCheckingStatus, setIsCheckingStatus] = useState(false);
@@ -289,11 +313,11 @@ export function CheckoutPageClient({
   }, [draft]);
 
   useEffect(() => {
-    if (returnEventTrackedRef.current || !initialStatus) {
+    if (returnEventTrackedRef.current || !returnStatus) {
       return;
     }
 
-    const normalizedStatus = initialStatus.toLowerCase();
+    const normalizedStatus = returnStatus.toLowerCase();
 
     if (normalizedStatus !== "success" && normalizedStatus !== "failed") {
       return;
@@ -307,7 +331,32 @@ export function CheckoutPageClient({
         source: "return_url"
       }
     );
-  }, [initialMerchantOid, initialStatus, merchantOid]);
+  }, [initialMerchantOid, merchantOid, returnStatus]);
+
+  useEffect(() => {
+    function handlePaytrReturnMessage(event: MessageEvent<unknown>) {
+      if (event.origin !== window.location.origin || !isPaytrReturnMessage(event.data)) {
+        return;
+      }
+
+      setMerchantOid(event.data.merchantOid);
+      setReturnStatus(event.data.status);
+      setIframeToken(null);
+      setOrderStatus(null);
+      setError(
+        event.data.status === "failed"
+          ? "Banka doğrulaması tamamlanamadı. Kart bilgilerinizi kontrol edip tekrar deneyebilirsiniz."
+          : null
+      );
+      window.sessionStorage.setItem(ACTIVE_ORDER_STORAGE_KEY, event.data.merchantOid);
+    }
+
+    window.addEventListener("message", handlePaytrReturnMessage);
+
+    return () => {
+      window.removeEventListener("message", handlePaytrReturnMessage);
+    };
+  }, []);
 
   useEffect(() => {
     if (
@@ -602,9 +651,9 @@ export function CheckoutPageClient({
 
   if (items.length === 0 && merchantOid) {
     return (
-      <CheckoutResultPanel
-        merchantOid={merchantOid}
-        initialStatus={initialStatus}
+        <CheckoutResultPanel
+          merchantOid={merchantOid}
+        initialStatus={returnStatus ?? undefined}
         orderStatus={orderStatus}
         isCheckingStatus={isCheckingStatus}
         error={error}
@@ -673,7 +722,7 @@ export function CheckoutPageClient({
         </ol>
       </div>
 
-      {initialStatus ? (
+      {returnStatus ? (
         <section className="mt-6 rounded-lg border border-primary/15 bg-white/86 p-5 shadow-[0_16px_50px_rgba(6,51,38,0.08)] backdrop-blur-xl">
           <p className="text-sm font-bold uppercase tracking-normal text-primary">
             Ödeme dönüş bilgisi

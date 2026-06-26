@@ -79,8 +79,8 @@ const contentSecurityPolicy = [
   "base-uri 'self'",
   `form-action 'self' ${paytrFormActionSources.join(" ")}`,
   "frame-ancestors 'none'",
-  `frame-src 'self' ${paytrFrameSources.join(" ")} https://www.google.com https://maps.google.com https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com ${googleMeasurementFrameSources.join(" ")}`,
-  `child-src 'self' ${paytrFrameSources.join(" ")} https://www.google.com https://maps.google.com https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com ${googleMeasurementFrameSources.join(" ")}`,
+  `frame-src 'self' https: ${paytrFrameSources.join(" ")} https://www.google.com https://maps.google.com https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com ${googleMeasurementFrameSources.join(" ")}`,
+  `child-src 'self' https: ${paytrFrameSources.join(" ")} https://www.google.com https://maps.google.com https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com ${googleMeasurementFrameSources.join(" ")}`,
   `connect-src 'self' https://www.paytr.com ${sentryIngestOrigin} ${googleMeasurementConnectSources.join(" ")} ${microsoftClarityConnectSources.join(" ")} ${cloudflareInsightsConnectSources.join(" ")}${isProduction ? "" : " ws: http: https:"}`,
   `img-src 'self' data: blob: https: ${googleMeasurementImageSources.join(" ")} ${microsoftClarityImageSources.join(" ")}`,
   "font-src 'self' data: https://fonts.gstatic.com",
@@ -225,6 +225,15 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/odeme",
+        headers: [
+          {
+            key: "Content-Security-Policy",
+            value: checkoutContentSecurityPolicy
+          }
+        ]
+      },
+      {
+        source: "/api/paytr/return",
         headers: [
           {
             key: "Content-Security-Policy",

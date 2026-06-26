@@ -681,6 +681,63 @@
   }
 }
 
+@media (pointer: coarse), (max-width: 1024px) {
+  .global-ambient-layer,
+  .site-ambient-circuit,
+  .premium-section__atmosphere {
+    will-change: auto;
+  }
+
+  .global-ambient-layer::before {
+    opacity: 0.54;
+    animation-duration: 42s;
+  }
+
+  .global-ambient-layer::after {
+    opacity: 0.58;
+    animation-duration: 26s;
+  }
+
+  .global-ambient-band {
+    opacity: 0.2;
+    animation-duration: 28s;
+  }
+
+  .global-ambient-rail,
+  .global-ambient-pulse,
+  .global-ambient-node,
+  .site-ambient-circuit__beam,
+  .site-ambient-circuit__node,
+  .site-ambient-circuit__trace {
+    animation: none !important;
+  }
+
+  .global-ambient-rail,
+  .site-ambient-circuit__beam,
+  .site-ambient-circuit__trace {
+    opacity: 0.28;
+  }
+
+  .global-ambient-pulse,
+  .global-ambient-node,
+  .site-ambient-circuit__node {
+    display: none;
+  }
+
+  .site-experience-shell :where(.premium-product-card, .store-selector-window-card--link, .premium-route-card, .premium-funnel-lane, .premium-install-card, .premium-signal-card, .premium-quote-card, .premium-resource-link)::after {
+    animation: none !important;
+    opacity: 0.2;
+    transform: translate3d(-34%, 0, 0) rotate(4deg);
+  }
+
+  .premium-product-card__media::before,
+  .premium-product-card__energy,
+  .premium-install-section::before,
+  .premium-install-section::after {
+    animation-duration: 18s !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .global-ambient-layer,
   .global-ambient-layer::before,

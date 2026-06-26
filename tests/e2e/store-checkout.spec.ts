@@ -203,6 +203,23 @@ test("@e2e genel site PayTR harici frame edilmeye kapali kalir", async ({
   expect(csp).toContain("frame-ancestors 'none'");
 });
 
+test("@e2e PayTR donus endpointi hafif ve iframe uyumludur", async ({
+  request
+}) => {
+  const response = await request.get("/api/paytr/return?status=success&oid=PCEVRETURNTEST");
+  const csp = response.headers()["content-security-policy"] ?? "";
+  const xFrameOptions = response.headers()["x-frame-options"] ?? "";
+  const body = await response.text();
+
+  expect(response.status()).toBe(200);
+  expect(csp).toContain("frame-ancestors 'self' https://www.paytr.com https://*.paytr.com");
+  expect(csp).not.toContain("frame-ancestors 'none'");
+  expect(xFrameOptions).toBe("");
+  expect(body).toContain("parkchargeev-paytr-return");
+  expect(body).toContain("postMessage");
+  expect(body).not.toContain("/_next/");
+});
+
 test("@e2e eski checkout istemcisi create endpointinde acik yenileme mesaji alir", async ({
   request
 }) => {

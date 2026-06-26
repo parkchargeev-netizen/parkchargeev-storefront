@@ -140,8 +140,8 @@ export async function POST(request: Request) {
       userName: body.userName,
       userAddress: body.userAddress,
       userPhone: body.userPhone,
-      okUrl: absoluteUrl(`/checkout?status=success&oid=${merchantOid}`),
-      failUrl: absoluteUrl(`/checkout?status=failed&oid=${merchantOid}`),
+      okUrl: absoluteUrl(`/api/paytr/return?status=success&oid=${merchantOid}`),
+      failUrl: absoluteUrl(`/api/paytr/return?status=failed&oid=${merchantOid}`),
       items,
       merchantOid
     });

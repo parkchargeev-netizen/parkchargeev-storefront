@@ -167,7 +167,9 @@ export async function POST(request: Request) {
     const totalAmountKurus = parsePaytrKurus(payload.total_amount);
 
     if (payload.status === "success") {
-      if (paymentAmountKurus === null || totalAmountKurus === null) {
+      const verifiedAmountKurus = paymentAmountKurus ?? totalAmountKurus;
+
+      if (totalAmountKurus === null || verifiedAmountKurus === null) {
         logWarn("paytr.callback.invalid_amount", {
           merchantOid: orderMerchantOid,
           providerMerchantOid: payload.merchant_oid,
@@ -178,7 +180,7 @@ export async function POST(request: Request) {
         return new Response("PAYTR notification failed: invalid amount", { status: 400 });
       }
 
-      if (paymentAmountKurus !== order.totalKurus) {
+      if (verifiedAmountKurus !== order.totalKurus) {
         logWarn("paytr.callback.amount_mismatch", {
           merchantOid: orderMerchantOid,
           providerMerchantOid: payload.merchant_oid,
@@ -193,7 +195,7 @@ export async function POST(request: Request) {
       const callbackCurrency = normalizePaytrCurrency(payload.currency);
       const orderCurrency = normalizePaytrCurrency(order.currency);
 
-      if (!callbackCurrency || callbackCurrency !== orderCurrency) {
+      if (callbackCurrency && orderCurrency && callbackCurrency !== orderCurrency) {
         logWarn("paytr.callback.currency_mismatch", {
           merchantOid: orderMerchantOid,
           providerMerchantOid: payload.merchant_oid,

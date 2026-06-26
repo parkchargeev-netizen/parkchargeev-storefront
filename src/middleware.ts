@@ -122,7 +122,12 @@ function applyCustomerSecurityHeaders(
   }
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set("Referrer-Policy", "same-origin");
-  response.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  response.headers.set(
+    "Permissions-Policy",
+    options.allowPaytrFrameAncestor
+      ? 'camera=(), microphone=(), geolocation=(), payment=(self "https://www.paytr.com")'
+      : "camera=(), microphone=(), geolocation=()"
+  );
   response.headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
 
   return response;
@@ -217,6 +222,7 @@ export async function middleware(request: NextRequest) {
   const isCustomerPage = pathname === "/giris" || pathname === "/hesabim";
   const isCustomerApi = pathname.startsWith("/api/customer");
   const isCheckoutPage = pathname === "/odeme" || pathname === "/checkout";
+  const isPaytrReturnPage = pathname === "/api/paytr/return";
   const isPaytrCheckoutApi =
     pathname === "/api/paytr/token" ||
     pathname === "/api/paytr/direct-form" ||
@@ -262,9 +268,9 @@ export async function middleware(request: NextRequest) {
     );
   }
 
-  if (isCustomerPage || isCustomerApi || isCheckoutPage || isPaytrCheckoutApi) {
+  if (isCustomerPage || isCustomerApi || isCheckoutPage || isPaytrReturnPage || isPaytrCheckoutApi) {
     return applyCustomerSecurityHeaders(NextResponse.next(), {
-      allowPaytrFrameAncestor: isCheckoutPage
+      allowPaytrFrameAncestor: isCheckoutPage || isPaytrReturnPage
     });
   }
 
@@ -318,6 +324,7 @@ export const config = {
     "/api/customer/:path*",
     "/api/paytr/token",
     "/api/paytr/direct-form",
+    "/api/paytr/return",
     "/api/checkout/create",
     "/giris",
     "/hesabim",
