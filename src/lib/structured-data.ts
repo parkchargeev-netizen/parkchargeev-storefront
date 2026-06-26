@@ -10,6 +10,8 @@ import type {
 const organizationId = absoluteUrl("/#organization");
 const localBusinessId = absoluteUrl("/#localbusiness");
 const websiteId = absoluteUrl("/#website");
+const merchantReturnPolicyId = absoluteUrl("/#merchant-return-policy");
+const shippingServiceId = absoluteUrl("/#shipping-service");
 const defaultImageUrl = absoluteUrl("/api/og/product/homecharge-pro-11kw");
 const logoUrl = absoluteUrl("/images/parkchargeev-logo.svg");
 const officeLatitude = 40.74146948542449;
@@ -67,6 +69,8 @@ export function getOrganizationJsonLd() {
     },
     hasMerchantReturnPolicy: {
       "@type": "MerchantReturnPolicy",
+      "@id": merchantReturnPolicyId,
+      name: "ParkChargeEV standart iade politikasi",
       applicableCountry: "TR",
       returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
       merchantReturnDays: 14,
@@ -75,6 +79,8 @@ export function getOrganizationJsonLd() {
     },
     hasShippingService: {
       "@type": "ShippingService",
+      "@id": shippingServiceId,
+      name: "ParkChargeEV Turkiye teslimat hizmeti",
       shippingDestination: {
         "@type": "DefinedRegion",
         addressCountry: "TR"
@@ -267,9 +273,11 @@ function getProductOffer({
   priceKurus: number;
   inStock: boolean;
 }) {
+  const offerId = encodeURIComponent(id);
+
   return {
     "@type": "Offer",
-    "@id": `${productUrl}#offer-${id}`,
+    "@id": `${productUrl}#offer-${offerId}`,
     priceCurrency: "TRY",
     price: (priceKurus / 100).toFixed(2),
     itemCondition: "https://schema.org/NewCondition",
@@ -277,11 +285,20 @@ function getProductOffer({
       ? "https://schema.org/InStock"
       : "https://schema.org/OutOfStock",
     url: productUrl,
+    areaServed: {
+      "@type": "Country",
+      name: "TÃ¼rkiye"
+    },
+    acceptedPaymentMethod: "https://schema.org/CreditCard",
+    availableAtOrFrom: {
+      "@id": localBusinessId
+    },
     seller: {
       "@id": organizationId
     },
     shippingDetails: {
       "@type": "OfferShippingDetails",
+      "@id": `${productUrl}#shipping-${offerId}`,
       shippingDestination: {
         "@type": "DefinedRegion",
         addressCountry: "TR"
@@ -309,6 +326,7 @@ function getProductOffer({
     },
     hasMerchantReturnPolicy: {
       "@type": "MerchantReturnPolicy",
+      "@id": merchantReturnPolicyId,
       applicableCountry: "TR",
       returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
       merchantReturnDays: 14,
