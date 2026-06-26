@@ -11,6 +11,7 @@
 .global-ambient-layer,
 .site-ambient-circuit,
 .premium-section__atmosphere {
+  filter: none;
   transform: translateZ(0);
   will-change: transform, opacity;
 }
@@ -37,6 +38,7 @@
 }
 
 .global-ambient-layer::after {
+  filter: none;
   opacity: 0.9;
   background:
     repeating-linear-gradient(124deg, transparent 0 11%, rgba(125, 247, 220, 0.19) 11.1% 11.28%, transparent 11.6% 22%),
@@ -46,8 +48,8 @@
 }
 
 .global-ambient-band {
+  filter: none;
   opacity: 0.36;
-  filter: blur(6px);
   animation-duration: 9s;
 }
 
@@ -104,8 +106,9 @@
 }
 
 .global-ambient-sweep {
+  filter: none;
   opacity: 0.46;
-  filter: blur(14px);
+  mix-blend-mode: soft-light;
 }
 
 .global-ambient-pulse {
@@ -199,28 +202,19 @@
 [data-motion] {
   transition:
     opacity 240ms ease,
-    transform 360ms var(--motion-intensity-curve),
-    filter 360ms ease;
+    transform 360ms var(--motion-intensity-curve);
 }
 
 [data-motion="reveal"][data-motion-state="pending"] {
-  filter: blur(8px);
   transform: translate3d(0, 1.35rem, 0) scale(0.985);
 }
 
 [data-motion="slide"][data-motion-state="pending"] {
-  filter: blur(8px);
   transform: translate3d(-1.45rem, 0, 0);
 }
 
 [data-motion="scale"][data-motion-state="pending"] {
-  filter: blur(6px);
   transform: scale(0.955);
-}
-
-[data-motion][data-motion-state="visible"],
-[data-motion][data-motion-state="complete"] {
-  filter: none;
 }
 
 .site-ambient-circuit {
@@ -236,12 +230,13 @@
 }
 
 .site-ambient-circuit__ribbon {
+  filter: none;
   opacity: 0.28;
-  filter: blur(9px);
   animation-duration: 8.2s;
 }
 
 .site-ambient-circuit__beam {
+  filter: none;
   height: 3px;
   box-shadow:
     0 0 20px rgba(125, 247, 220, 0.64),
@@ -342,6 +337,7 @@
 }
 
 .premium-section__spark {
+  filter: none;
   height: 2px;
   width: 11rem;
   opacity: 0.56;
@@ -361,9 +357,9 @@
   width: clamp(10rem, 24vw, 24rem);
   height: clamp(10rem, 24vw, 24rem);
   pointer-events: none;
+  filter: none;
   opacity: 0.18;
   background: radial-gradient(circle, rgba(125, 247, 220, 0.5), transparent 64%);
-  filter: blur(18px);
   will-change: opacity, transform;
   animation: premium-flare-drift 6.8s ease-in-out infinite alternate;
 }
@@ -383,8 +379,7 @@
   transition:
     transform var(--motion-intensity-medium) var(--motion-intensity-curve),
     border-color var(--motion-intensity-fast) ease,
-    box-shadow var(--motion-intensity-fast) ease,
-    filter var(--motion-intensity-fast) ease;
+    box-shadow var(--motion-intensity-fast) ease;
 }
 
 .site-experience-shell :where(.premium-product-card, .store-selector-window-card, .premium-route-card, .premium-funnel-lane, .premium-install-card, .premium-signal-card, .premium-quote-card, .premium-resource-link)::after {
@@ -394,7 +389,7 @@
 }
 
 .site-experience-shell :where(.premium-product-card:hover, .store-selector-window-card--link:hover, .premium-route-card:hover, .premium-funnel-lane:hover, .premium-install-card:hover, .premium-signal-card:hover, .premium-quote-card:hover, .premium-resource-link:hover, .ds-surface:hover) {
-  filter: saturate(1.08);
+  filter: none;
   transform: translate3d(0, -0.32rem, 0);
 }
 
@@ -658,9 +653,13 @@
 
   .global-ambient-rail--four,
   .site-ambient-circuit__beam--five,
+  .site-ambient-circuit__beam--four,
   .global-ambient-pulse--three,
+  .global-ambient-pulse--two,
   .global-ambient-node--four,
+  .global-ambient-node--three,
   .site-ambient-circuit__node--five,
+  .site-ambient-circuit__node--four,
   .site-ambient-circuit__trace--two {
     display: none;
   }

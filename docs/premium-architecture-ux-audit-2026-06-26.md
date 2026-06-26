@@ -66,3 +66,22 @@ Date: 2026-06-26
 - Removed unnecessary client execution from the static charging visual so the hero keeps richer visuals without adding React client bundle cost.
 - Fixed the reduced-motion loop preparation edge case so ambient loop elements can recover correctly when the user changes motion preferences.
 - Reworked the home installation section color system with brighter high-contrast text, deeper engineering background tones, stronger cards, and readable CTA treatment.
+
+## Performance Preservation Pass
+
+- Preserved the premium motion system while removing high-cost blur/filter work from reveal, hover, ambient band, section flare, and circuit ribbon paths.
+- Moved motion preparation to `requestIdleCallback` with a short timeout and kept initial viewport elements visible immediately to protect LCP and avoid first-paint flicker.
+- Deduplicated root CSS variable writes for pointer lighting and scroll progress so scroll/pointer events do not trigger unnecessary style invalidation.
+- Added controlled image priority to `ProductCard` and enabled it only for the first visible store product image, avoiding broad eager image loading.
+- Deferred Microsoft Clarity to `lazyOnload` so analytics collection no longer competes with the first interaction path.
+- Added immutable cache headers for public image, upload, and cursor assets.
+- Converted ambient layer markup to data-driven part lists, reducing duplicated JSX while keeping the visual output unchanged.
+
+## Performance Isolation Pass
+
+- Replaced the global cart context dependency with a small `useSyncExternalStore` cart store, so cart state updates now notify only cart-aware client islands instead of a layout-wide provider tree.
+- Removed the React conversion click listener and replaced it with a guarded inline DOM listener, preserving the same `data-conversion-event` API without a hydrated global component.
+- Split the mobile navigation panel into a dynamic chunk, keeping the closed mobile header lean while loading panel actions, cart link, and navigation labels only when the menu opens.
+- Expanded package import optimization for `@tanstack/react-table`, `react-hook-form`, and `date-fns`, reducing the risk of large admin/form utilities leaking into route chunks.
+- Added explicit immutable caching for `/_next/static` assets in addition to public media folders, improving Lighthouse cache-policy coverage.
+- Verified that the public site layout chunk dropped after the provider and mobile menu isolation while store/product route chunks stayed smaller and all checkout/mobile contracts remained intact.

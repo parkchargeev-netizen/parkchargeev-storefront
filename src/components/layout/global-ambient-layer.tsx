@@ -1,26 +1,32 @@
+const globalAmbientParts = [
+  "global-ambient-band global-ambient-band--one",
+  "global-ambient-band global-ambient-band--two",
+  "global-ambient-band global-ambient-band--three",
+  "global-ambient-rail global-ambient-rail--one",
+  "global-ambient-rail global-ambient-rail--two",
+  "global-ambient-rail global-ambient-rail--three",
+  "global-ambient-rail global-ambient-rail--four",
+  "global-ambient-rail global-ambient-rail--five",
+  "global-ambient-line global-ambient-line--one",
+  "global-ambient-line global-ambient-line--two",
+  "global-ambient-line global-ambient-line--three",
+  "global-ambient-sweep global-ambient-sweep--one",
+  "global-ambient-sweep global-ambient-sweep--two",
+  "global-ambient-pulse global-ambient-pulse--one",
+  "global-ambient-pulse global-ambient-pulse--two",
+  "global-ambient-pulse global-ambient-pulse--three",
+  "global-ambient-node global-ambient-node--one",
+  "global-ambient-node global-ambient-node--two",
+  "global-ambient-node global-ambient-node--three",
+  "global-ambient-node global-ambient-node--four"
+] as const;
+
 export function GlobalAmbientLayer() {
   return (
     <div className="global-ambient-layer" data-motion-loop="ambient" aria-hidden>
-      <span className="global-ambient-band global-ambient-band--one" />
-      <span className="global-ambient-band global-ambient-band--two" />
-      <span className="global-ambient-band global-ambient-band--three" />
-      <span className="global-ambient-rail global-ambient-rail--one" />
-      <span className="global-ambient-rail global-ambient-rail--two" />
-      <span className="global-ambient-rail global-ambient-rail--three" />
-      <span className="global-ambient-rail global-ambient-rail--four" />
-      <span className="global-ambient-rail global-ambient-rail--five" />
-      <span className="global-ambient-line global-ambient-line--one" />
-      <span className="global-ambient-line global-ambient-line--two" />
-      <span className="global-ambient-line global-ambient-line--three" />
-      <span className="global-ambient-sweep global-ambient-sweep--one" />
-      <span className="global-ambient-sweep global-ambient-sweep--two" />
-      <span className="global-ambient-pulse global-ambient-pulse--one" />
-      <span className="global-ambient-pulse global-ambient-pulse--two" />
-      <span className="global-ambient-pulse global-ambient-pulse--three" />
-      <span className="global-ambient-node global-ambient-node--one" />
-      <span className="global-ambient-node global-ambient-node--two" />
-      <span className="global-ambient-node global-ambient-node--three" />
-      <span className="global-ambient-node global-ambient-node--four" />
+      {globalAmbientParts.map((className) => (
+        <span key={className} className={className} />
+      ))}
     </div>
   );
 }

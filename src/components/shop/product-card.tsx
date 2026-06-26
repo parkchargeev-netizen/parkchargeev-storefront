@@ -12,6 +12,7 @@ import { getDisplayProductImageUrl } from "@/lib/product-media";
 import { getProductStoreProfile } from "@/lib/shop-merchandising";
 
 type ProductCardProps = {
+  imagePriority?: boolean;
   product: ProductModel;
   layout?: "standard" | "store";
 };
@@ -39,10 +40,12 @@ function ProductCardLink({
 }
 
 function ProductMedia({
+  imagePriority = false,
   imageUrl,
   product,
   store
 }: {
+  imagePriority?: boolean;
   imageUrl: string | null;
   product: ProductModel;
   store?: boolean;
@@ -64,7 +67,8 @@ function ProductMedia({
           alt={product.name}
           width={store ? 520 : 640}
           height={store ? 420 : 480}
-          loading="lazy"
+          loading={imagePriority ? undefined : "lazy"}
+          priority={imagePriority}
           unoptimized
           sizes={
             store
@@ -171,7 +175,11 @@ function ProductInspectLabel({
   );
 }
 
-export function ProductCard({ product, layout = "standard" }: ProductCardProps) {
+export function ProductCard({
+  imagePriority = false,
+  product,
+  layout = "standard"
+}: ProductCardProps) {
   const profile = getProductStoreProfile(product);
   const imageUrl = getDisplayProductImageUrl(product.imageUrl) ?? null;
   const compactSpecs = [
@@ -193,7 +201,12 @@ export function ProductCard({ product, layout = "standard" }: ProductCardProps) 
         <article className="premium-product-card premium-product-card--store surface-card grid h-full gap-4 rounded-lg p-3 transition-transform duration-200 group-hover:-translate-y-1 group-hover:border-primary/30 md:grid-cols-[180px_1fr]">
           <ProductFixedBadge badge={product.badge} />
           <div className="premium-product-card__media relative min-h-44 overflow-hidden rounded-lg bg-surface-container">
-            <ProductMedia imageUrl={imageUrl} product={product} store />
+            <ProductMedia
+              imagePriority={imagePriority}
+              imageUrl={imageUrl}
+              product={product}
+              store
+            />
             <div className="premium-product-card__compare absolute right-3 top-3 z-10">
               <ProductCompareMarker productId={product.id} />
             </div>
@@ -251,7 +264,11 @@ export function ProductCard({ product, layout = "standard" }: ProductCardProps) 
       <article className="premium-product-card surface-card flex h-full flex-col rounded-lg p-3 transition-transform duration-200 group-hover:-translate-y-1 group-hover:border-primary/30">
         <ProductFixedBadge badge={product.badge} />
         <div className="premium-product-card__media relative mb-4 overflow-hidden rounded-lg bg-surface-container">
-          <ProductMedia imageUrl={imageUrl} product={product} />
+          <ProductMedia
+            imagePriority={imagePriority}
+            imageUrl={imageUrl}
+            product={product}
+          />
           <div className="premium-product-card__compare absolute right-3 top-3 z-10">
             <ProductCompareMarker productId={product.id} />
           </div>

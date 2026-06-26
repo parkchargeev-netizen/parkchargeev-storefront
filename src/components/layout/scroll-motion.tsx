@@ -8,11 +8,27 @@ import {
   motionSelectors
 } from "@/lib/motion-system";
 
+type IdleCallbackWindow = Window & {
+  cancelIdleCallback?: (handle: number) => void;
+  requestIdleCallback?: (
+    callback: IdleRequestCallback,
+    options?: IdleRequestOptions
+  ) => number;
+};
+
 function getMotionDelay(element: HTMLElement, fallbackIndex: number) {
   const configuredOrder = Number.parseInt(element.dataset.motionOrder ?? "", 10);
   const order = Number.isFinite(configuredOrder) ? configuredOrder : fallbackIndex;
 
   return getConfiguredMotionDelay(order);
+}
+
+function setRootStyleValue(name: string, value: string) {
+  if (document.documentElement.style.getPropertyValue(name) === value) {
+    return;
+  }
+
+  document.documentElement.style.setProperty(name, value);
 }
 
 function prepareMotionScopes(root: ParentNode) {
@@ -58,10 +74,12 @@ export function ScrollMotion() {
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     const coarsePointerQuery = window.matchMedia("(pointer: coarse)");
+    const idleWindow = window as IdleCallbackWindow;
     const observedElements = new WeakSet<HTMLElement>();
     const loopElements = new WeakSet<HTMLElement>();
     const pendingRoots = new Set<ParentNode>();
     let frame = 0;
+    let frameType: "animation" | "idle" = "animation";
     let scrollFrame = 0;
     let pointerFrame = 0;
     let pointerX = window.innerWidth / 2;
@@ -73,22 +91,16 @@ export function ScrollMotion() {
       pointerFrame = 0;
 
       if (mediaQuery.matches || coarsePointerQuery.matches) {
-        document.documentElement.style.setProperty("--ambient-x", "0px");
-        document.documentElement.style.setProperty("--ambient-y", "0px");
+        setRootStyleValue("--ambient-x", "0px");
+        setRootStyleValue("--ambient-y", "0px");
         return;
       }
 
       const normalizedX = (pointerX / Math.max(window.innerWidth, 1) - 0.5) * 2;
       const normalizedY = (pointerY / Math.max(window.innerHeight, 1) - 0.5) * 2;
 
-      document.documentElement.style.setProperty(
-        "--ambient-x",
-        `${Math.round(normalizedX * motionRuntime.pointerRangeX)}px`
-      );
-      document.documentElement.style.setProperty(
-        "--ambient-y",
-        `${Math.round(normalizedY * motionRuntime.pointerRangeY)}px`
-      );
+      setRootStyleValue("--ambient-x", `${Math.round(normalizedX * motionRuntime.pointerRangeX)}px`);
+      setRootStyleValue("--ambient-y", `${Math.round(normalizedY * motionRuntime.pointerRangeY)}px`);
     };
 
     const schedulePointerLight = (event?: Event) => {
@@ -112,8 +124,8 @@ export function ScrollMotion() {
       scrollFrame = 0;
 
       if (mediaQuery.matches) {
-        document.documentElement.style.setProperty("--scroll-progress", "0");
-        document.documentElement.style.setProperty("--scroll-shift", "0px");
+        setRootStyleValue("--scroll-progress", "0");
+        setRootStyleValue("--scroll-shift", "0px");
         return;
       }
 
@@ -122,11 +134,8 @@ export function ScrollMotion() {
       const progress = scrollable > 0 ? window.scrollY / scrollable : 0;
       const clampedProgress = Math.min(1, Math.max(0, progress));
 
-      document.documentElement.style.setProperty(
-        "--scroll-progress",
-        clampedProgress.toFixed(4)
-      );
-      document.documentElement.style.setProperty(
+      setRootStyleValue("--scroll-progress", clampedProgress.toFixed(4));
+      setRootStyleValue(
         "--scroll-shift",
         `${Math.round(clampedProgress * motionRuntime.scrollShiftPx)}px`
       );
@@ -191,6 +200,16 @@ export function ScrollMotion() {
       }
 
       observedElements.add(element);
+
+      const rect = element.getBoundingClientRect();
+      const isInitialViewportElement =
+        rect.top < window.innerHeight * 0.92 && rect.bottom > 0;
+
+      if (isInitialViewportElement) {
+        element.dataset.motionState = "complete";
+        return;
+      }
+
       element.dataset.motionState = "pending";
       revealObserver.observe(element);
     };
@@ -242,14 +261,25 @@ export function ScrollMotion() {
         return;
       }
 
-      frame = window.requestAnimationFrame(() => {
+      const runPrepare = () => {
         frame = 0;
         const roots = Array.from(pendingRoots);
         pendingRoots.clear();
         roots.forEach((pendingRoot) => {
           prepare(pendingRoot);
         });
-      });
+      };
+
+      if (typeof idleWindow.requestIdleCallback === "function") {
+        frameType = "idle";
+        frame = idleWindow.requestIdleCallback(runPrepare, {
+          timeout: motionRuntime.idlePrepareTimeoutMs
+        });
+        return;
+      }
+
+      frameType = "animation";
+      frame = window.requestAnimationFrame(runPrepare);
     };
 
     schedulePrepare();
@@ -285,7 +315,13 @@ export function ScrollMotion() {
     coarsePointerQuery.addEventListener("change", handleMotionPreference);
 
     return () => {
-      window.cancelAnimationFrame(frame);
+      if (frame) {
+        if (frameType === "idle" && typeof idleWindow.cancelIdleCallback === "function") {
+          idleWindow.cancelIdleCallback(frame);
+        } else {
+          window.cancelAnimationFrame(frame);
+        }
+      }
       window.cancelAnimationFrame(scrollFrame);
       window.cancelAnimationFrame(pointerFrame);
       mutationObserver.disconnect();

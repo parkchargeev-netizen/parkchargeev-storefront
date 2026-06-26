@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 
 import { SiteShell } from "@/components/layout/site-shell";
-import { CartProvider } from "@/components/providers/cart-provider";
 import { JsonLd } from "@/components/seo/json-ld";
 import {
   getLocalBusinessJsonLd,
@@ -22,9 +21,9 @@ export default async function PublicSiteLayout({ children }: { children: ReactNo
     ]);
 
   return (
-    <CartProvider>
+    <>
       <JsonLd data={[organizationJsonLd, localBusinessJsonLd, websiteJsonLd]} />
       <SiteShell navigation={navigation}>{children}</SiteShell>
-    </CartProvider>
+    </>
   );
 }

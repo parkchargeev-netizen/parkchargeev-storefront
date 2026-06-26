@@ -22,17 +22,23 @@ const toneClasses = {
 
 const defaultContainerClassName = "mx-auto max-w-7xl px-4 sm:px-6 lg:px-8";
 
+const premiumSectionAtmosphereParts = [
+  "premium-section__rail premium-section__rail--one",
+  "premium-section__rail premium-section__rail--two",
+  "premium-section__rail premium-section__rail--three",
+  "premium-section__spark premium-section__spark--one",
+  "premium-section__spark premium-section__spark--two",
+  "premium-section__spark premium-section__spark--three",
+  "premium-section__flare premium-section__flare--one",
+  "premium-section__flare premium-section__flare--two"
+] as const;
+
 function PremiumSectionAtmosphere() {
   return (
     <span className="premium-section__atmosphere" aria-hidden>
-      <span className="premium-section__rail premium-section__rail--one" />
-      <span className="premium-section__rail premium-section__rail--two" />
-      <span className="premium-section__rail premium-section__rail--three" />
-      <span className="premium-section__spark premium-section__spark--one" />
-      <span className="premium-section__spark premium-section__spark--two" />
-      <span className="premium-section__spark premium-section__spark--three" />
-      <span className="premium-section__flare premium-section__flare--one" />
-      <span className="premium-section__flare premium-section__flare--two" />
+      {premiumSectionAtmosphereParts.map((className) => (
+        <span key={className} className={className} />
+      ))}
     </span>
   );
 }

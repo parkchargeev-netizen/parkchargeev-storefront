@@ -2,9 +2,9 @@ import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import Script from "next/script";
 
-import { ConversionEventListener } from "@/components/analytics/conversion-event-listener";
 import { GlobalAmbientLayer } from "@/components/layout/global-ambient-layer";
 import { ScrollMotion } from "@/components/layout/scroll-motion";
+import { getConversionEventListenerScript } from "@/lib/conversion-listener-script";
 import { absoluteUrl, siteConfig } from "@/lib/site";
 
 import "@/app/globals.css";
@@ -92,7 +92,7 @@ export default function RootLayout({
             gtag('config', '${googleTagId}');
           `}
         </Script>
-        <Script id="microsoft-clarity" strategy="afterInteractive">
+        <Script id="microsoft-clarity" strategy="lazyOnload">
           {`
             (function(c,l,a,r,i,t,y){
               c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
@@ -101,7 +101,9 @@ export default function RootLayout({
             })(window, document, "clarity", "script", "${clarityProjectId}");
           `}
         </Script>
-        <ConversionEventListener />
+        <Script id="parkchargeev-conversion-listener" strategy="afterInteractive">
+          {getConversionEventListenerScript()}
+        </Script>
         <GlobalAmbientLayer />
         <div className="app-content-layer">{children}</div>
         <ScrollMotion />

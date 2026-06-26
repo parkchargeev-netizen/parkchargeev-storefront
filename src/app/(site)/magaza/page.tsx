@@ -159,6 +159,8 @@ export default async function StorePage({ searchParams }: StorePageProps) {
     selectedSort !== "recommended" ? selectedSort : ""
   ].filter(Boolean).length;
   const featuredProducts = products.slice(0, 6);
+  const prioritizeFeaturedImage = activeFilterCount === 0 && featuredProducts.length > 0;
+  const prioritizeCatalogImage = !prioritizeFeaturedImage;
   const itemListJsonLd = {
     "@context": "https://schema.org",
     "@type": "ItemList",
@@ -313,9 +315,12 @@ export default async function StorePage({ searchParams }: StorePageProps) {
           </div>
 
           <div className="store-product-rail mt-5" aria-label="Öne çıkan ürünler">
-            {featuredProducts.map((product) => (
+            {featuredProducts.map((product, index) => (
               <div key={`featured-${product.id}`} className="store-product-slide">
-                <ProductCard product={product} />
+                <ProductCard
+                  imagePriority={prioritizeFeaturedImage && index === 0}
+                  product={product}
+                />
               </div>
             ))}
           </div>
@@ -422,9 +427,10 @@ export default async function StorePage({ searchParams }: StorePageProps) {
             </div>
           ) : (
             <div className={selectedView === "list" ? "store-product-grid grid gap-4" : "store-product-grid store-product-grid--commerce grid gap-5 md:grid-cols-2 xl:grid-cols-3"}>
-              {sortedProducts.map((product) => (
+              {sortedProducts.map((product, index) => (
                 <ProductCard
                   key={product.id}
+                  imagePriority={prioritizeCatalogImage && index === 0}
                   product={product}
                   layout={selectedView === "list" ? "store" : "standard"}
                 />

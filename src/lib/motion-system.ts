@@ -6,6 +6,7 @@ export const motionSelectors = {
 
 export const motionRuntime = {
   completeDelayMs: 320,
+  idlePrepareTimeoutMs: 180,
   maxStaggerItems: 8,
   pointerRangeX: 28,
   pointerRangeY: 22,
