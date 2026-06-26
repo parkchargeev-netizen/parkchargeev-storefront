@@ -1,0 +1,47 @@
+# ParkChargeEV Premium Architecture and UX Audit
+
+Date: 2026-06-26
+
+## Detected Architecture Issues
+
+- Several files exceed the preferred maintainability budget and should be split in later low-risk passes: `src/app/globals.css`, `src/components/admin/product-form.tsx`, `src/server/admin/repository.ts`, `src/server/admin/fallback-store.ts`, `src/components/admin/dashboard/admin-dashboard-view.tsx`, `src/components/shop/checkout-page-client.tsx`, and `src/server/db/schema.ts`.
+- Site-wide visual behavior was partly encoded directly in global CSS, which increases coupling between unrelated components when selectors are too broad.
+- Premium motion primitives existed, but the visible ambience was too subtle at wide desktop and zoomed-out scales.
+- Some visual affordances were hover-only, which made the interface feel flat in static scans and screenshots.
+- Generic surface selectors risked overriding component-owned pseudo-elements; these selectors were narrowed to premium component families.
+- The primary navigation active state was coupled to a hardcoded store link instead of the current route.
+- Automatic reveal preparation could target structural containers, creating a risk of temporarily blank first viewport captures.
+
+## Detected Design Inconsistencies
+
+- Background gradients and lighting layers were not strong enough to survive large viewport or zoomed-out presentation.
+- Cards had consistent structure but needed richer depth, animated media scans, and more visible energy accents.
+- Section transitions needed stronger visual continuity so the site feels like one premium product system instead of separate blocks.
+- Button and card micro-interactions were present but not consistently expressive across the product, store, and content sections.
+- Active navigation state could misrepresent the current page, weakening orientation and trust.
+
+## Technical Debt Items
+
+- Continue extracting `globals.css` into smaller domain stylesheets where Next.js global CSS rules permit it.
+- Split admin product editing into smaller form sections and field adapters.
+- Split admin repository modules by aggregate boundary: products, orders, content, users, audit, and catalog.
+- Reduce large client components by moving pure formatting, state transitions, and API orchestration into testable hooks/services.
+- Add visual regression coverage for the home, store, product detail, checkout, and admin login screens.
+
+## Implemented Improvements
+
+- Added stronger global ambience primitives for visible lighting bands, animated rails, and energy sweeps.
+- Added richer site-level circuit ribbons and pulsing nodes while preserving pointer-event safety.
+- Added reusable section-level atmosphere to `PremiumSection`, keeping section motion declarative and reusable.
+- Narrowed broad pseudo-element selectors to avoid clobbering unrelated component internals.
+- Added performance guards with transform/opacity-only motion, `will-change`, containment, and reduced-motion fallbacks.
+- Split route-aware primary navigation into a small client component and restored correct `aria-current` behavior.
+- Updated the motion runtime so structural page containers remain visible while their child sections still receive reveal animation.
+- Kept the existing release gates intact and verified architecture and UI/UX checks after the refactor.
+
+## Follow-up Refactor Plan
+
+1. Extract legacy global CSS into domain files: base, layout, commerce, admin, motion, and marketing.
+2. Split large admin/server files by feature boundary and add unit coverage around the extracted services.
+3. Add Playwright visual screenshots for desktop and mobile hero, store grid, product detail, checkout, and admin.
+4. Gradually replace ad hoc utility class clusters with typed UI primitives where the pattern repeats across pages.

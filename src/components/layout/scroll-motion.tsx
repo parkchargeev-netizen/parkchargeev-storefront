@@ -25,6 +25,16 @@ function prepareMotionScopes(root: ParentNode) {
   });
 }
 
+function isStructuralMotionContainer(element: HTMLElement) {
+  return (
+    element.matches(motionSelectors.scope) ||
+    element.matches("main") ||
+    element.classList.contains("premium-home-page") ||
+    element.classList.contains("store-page") ||
+    element.id === "main-content"
+  );
+}
+
 function prepareMotionScope(scope: HTMLElement) {
   const candidates = scope.querySelectorAll<HTMLElement>(
     ":scope > *, :scope > main > *, :scope > div > main > *"
@@ -32,6 +42,7 @@ function prepareMotionScope(scope: HTMLElement) {
 
   candidates.forEach((element) => {
     if (
+      isStructuralMotionContainer(element) ||
       element.dataset.motion ||
       element.dataset.motionSkip !== undefined ||
       element.closest("[data-motion-skip]")

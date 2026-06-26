@@ -21,6 +21,17 @@ const toneClasses = {
 
 const defaultContainerClassName = "mx-auto max-w-7xl px-4 sm:px-6 lg:px-8";
 
+function PremiumSectionAtmosphere() {
+  return (
+    <span className="premium-section__atmosphere" aria-hidden>
+      <span className="premium-section__rail premium-section__rail--one" />
+      <span className="premium-section__rail premium-section__rail--two" />
+      <span className="premium-section__spark premium-section__spark--one" />
+      <span className="premium-section__spark premium-section__spark--two" />
+    </span>
+  );
+}
+
 export function PremiumSection<T extends ElementType = "section">({
   as,
   children,
@@ -45,6 +56,7 @@ export function PremiumSection<T extends ElementType = "section">({
       data-motion={motion === "none" ? undefined : motion}
       data-premium-depth
     >
+      <PremiumSectionAtmosphere />
       {content}
     </Component>
   );
