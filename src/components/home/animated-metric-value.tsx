@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 
 function parseMetric(value: string) {
   if (value.includes("/")) {
@@ -32,21 +32,23 @@ function parseMetric(value: string) {
 export function AnimatedMetricValue({ value }: { value: string }) {
   const parsed = useMemo(() => parseMetric(value), [value]);
   const elementRef = useRef<HTMLSpanElement>(null);
-  const [displayValue, setDisplayValue] = useState(parsed ? "0" : value);
 
   useEffect(() => {
-    if (!parsed || !elementRef.current) {
+    const element = elementRef.current;
+
+    if (!parsed || !element) {
       return;
     }
 
     const metric = parsed;
+    const metricElement = element;
+    metricElement.textContent = "0";
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setDisplayValue(value);
+      metricElement.textContent = value;
       return;
     }
 
-    const element = elementRef.current;
     let frame = 0;
     let started = false;
     const formatter = new Intl.NumberFormat("tr-TR", {
@@ -69,12 +71,12 @@ export function AnimatedMetricValue({ value }: { value: string }) {
           const eased = 1 - Math.pow(1 - progress, 3);
           const next = metric.value * eased;
 
-          setDisplayValue(`${metric.prefix}${formatter.format(next)}${metric.suffix}`);
+          metricElement.textContent = `${metric.prefix}${formatter.format(next)}${metric.suffix}`;
 
           if (progress < 1) {
             frame = requestAnimationFrame(tick);
           } else {
-            setDisplayValue(value);
+            metricElement.textContent = value;
           }
         }
 
@@ -92,5 +94,5 @@ export function AnimatedMetricValue({ value }: { value: string }) {
     };
   }, [parsed, value]);
 
-  return <span ref={elementRef}>{displayValue}</span>;
+  return <span ref={elementRef}>{parsed ? "0" : value}</span>;
 }

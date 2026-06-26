@@ -1,8 +1,7 @@
 "use client";
 
 import { Check } from "lucide-react";
-import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
 import {
   COMPARE_SELECTION_EVENT,
@@ -13,28 +12,59 @@ type ProductCompareMarkerProps = {
   productId: string;
 };
 
+const emptySelection: string[] = [];
+const compareSelectionListeners = new Set<() => void>();
+let compareSelectionSnapshot = emptySelection;
+let compareSelectionStoreReady = false;
+
+function notifyCompareSelectionListeners() {
+  compareSelectionListeners.forEach((listener) => {
+    listener();
+  });
+}
+
+function syncCompareSelectionSnapshot() {
+  compareSelectionSnapshot = readStoredCompareProductIds();
+  notifyCompareSelectionListeners();
+}
+
+function ensureCompareSelectionStore() {
+  if (typeof window === "undefined" || compareSelectionStoreReady) {
+    return;
+  }
+
+  compareSelectionStoreReady = true;
+  compareSelectionSnapshot = readStoredCompareProductIds();
+  window.addEventListener("storage", syncCompareSelectionSnapshot);
+  window.addEventListener("focus", syncCompareSelectionSnapshot);
+  window.addEventListener("pageshow", syncCompareSelectionSnapshot);
+  window.addEventListener(COMPARE_SELECTION_EVENT, syncCompareSelectionSnapshot);
+}
+
+function subscribeCompareSelection(listener: () => void) {
+  compareSelectionListeners.add(listener);
+  ensureCompareSelectionStore();
+
+  return () => {
+    compareSelectionListeners.delete(listener);
+  };
+}
+
+function getCompareSelectionSnapshot() {
+  return compareSelectionSnapshot;
+}
+
+function getServerCompareSelectionSnapshot() {
+  return emptySelection;
+}
+
 export function ProductCompareMarker({ productId }: ProductCompareMarkerProps) {
-  const pathname = usePathname();
-  const [isSelected, setIsSelected] = useState(false);
-
-  useEffect(() => {
-    function syncSelection() {
-      setIsSelected(readStoredCompareProductIds().includes(productId));
-    }
-
-    syncSelection();
-    window.addEventListener("storage", syncSelection);
-    window.addEventListener("focus", syncSelection);
-    window.addEventListener("pageshow", syncSelection);
-    window.addEventListener(COMPARE_SELECTION_EVENT, syncSelection);
-
-    return () => {
-      window.removeEventListener("storage", syncSelection);
-      window.removeEventListener("focus", syncSelection);
-      window.removeEventListener("pageshow", syncSelection);
-      window.removeEventListener(COMPARE_SELECTION_EVENT, syncSelection);
-    };
-  }, [pathname, productId]);
+  const selectedProductIds = useSyncExternalStore(
+    subscribeCompareSelection,
+    getCompareSelectionSnapshot,
+    getServerCompareSelectionSnapshot
+  );
+  const isSelected = selectedProductIds.includes(productId);
 
   if (!isSelected) {
     return null;
