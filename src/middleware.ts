@@ -77,7 +77,6 @@ function applyAdminSecurityHeaders(response: NextResponse) {
   response.headers.set("Pragma", "no-cache");
   response.headers.set("X-Robots-Tag", "noindex, nofollow");
   response.headers.set("X-Frame-Options", "DENY");
-  response.headers.set("Content-Security-Policy", "frame-ancestors 'none'");
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set("Referrer-Policy", "same-origin");
   response.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
@@ -91,7 +90,6 @@ function applyCustomerSecurityHeaders(response: NextResponse) {
   response.headers.set("Pragma", "no-cache");
   response.headers.set("X-Robots-Tag", "noindex, nofollow");
   response.headers.set("X-Frame-Options", "DENY");
-  response.headers.set("Content-Security-Policy", "frame-ancestors 'none'");
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set("Referrer-Policy", "same-origin");
   response.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");

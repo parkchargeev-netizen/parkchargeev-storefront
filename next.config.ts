@@ -49,6 +49,17 @@ const microsoftClarityScriptSources = [
 const microsoftClarityConnectSources = ["https://*.clarity.ms"];
 const microsoftClarityImageSources = ["https://*.clarity.ms"];
 const paytrScriptSources = ["https://www.paytr.com"];
+const paytrFrameSources = [
+  "https://www.paytr.com",
+  "https://*.paytr.com",
+  "https://inbound.apigateway.vakifbank.com.tr",
+  "https://*.apigateway.vakifbank.com.tr"
+];
+const paytrFormActionSources = [
+  "https://www.paytr.com",
+  "https://inbound.apigateway.vakifbank.com.tr",
+  "https://*.apigateway.vakifbank.com.tr"
+];
 const cloudflareInsightsScriptSources = ["https://static.cloudflareinsights.com"];
 const cloudflareInsightsConnectSources = ["https://cloudflareinsights.com"];
 
@@ -65,9 +76,10 @@ const scriptSources = [
 const contentSecurityPolicy = [
   "default-src 'self'",
   "base-uri 'self'",
-  "form-action 'self' https://www.paytr.com",
-  "frame-ancestors 'self'",
-  `frame-src 'self' https://www.paytr.com https://www.google.com https://maps.google.com https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com ${googleMeasurementFrameSources.join(" ")}`,
+  `form-action 'self' ${paytrFormActionSources.join(" ")}`,
+  "frame-ancestors 'none'",
+  `frame-src 'self' ${paytrFrameSources.join(" ")} https://www.google.com https://maps.google.com https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com ${googleMeasurementFrameSources.join(" ")}`,
+  `child-src 'self' ${paytrFrameSources.join(" ")} https://www.google.com https://maps.google.com https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com ${googleMeasurementFrameSources.join(" ")}`,
   `connect-src 'self' https://www.paytr.com ${sentryIngestOrigin} ${googleMeasurementConnectSources.join(" ")} ${microsoftClarityConnectSources.join(" ")} ${cloudflareInsightsConnectSources.join(" ")}${isProduction ? "" : " ws: http: https:"}`,
   `img-src 'self' data: blob: https: ${googleMeasurementImageSources.join(" ")} ${microsoftClarityImageSources.join(" ")}`,
   "font-src 'self' data: https://fonts.gstatic.com",
@@ -123,7 +135,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: "X-Frame-Options",
-            value: "SAMEORIGIN"
+            value: "DENY"
           },
           {
             key: "Cross-Origin-Opener-Policy",

@@ -174,6 +174,22 @@ test("@e2e legacy PayTR Direct API varsayilan olarak kapalidir", async ({
   expect(body.message).toContain("iFrame");
 });
 
+test("@e2e checkout CSP PayTR 3D Secure iframe kaynaklarini kapsar", async ({
+  request
+}) => {
+  const response = await request.get("/checkout");
+  const csp = response.headers()["content-security-policy"] ?? "";
+
+  expect(csp).toContain("frame-src");
+  expect(csp).toContain("child-src");
+  expect(csp).toContain("frame-ancestors 'none'");
+  expect(csp).toContain("https://www.paytr.com");
+  expect(csp).toContain("https://*.paytr.com");
+  expect(csp).toContain("https://inbound.apigateway.vakifbank.com.tr");
+  expect(csp).toContain("https://*.apigateway.vakifbank.com.tr");
+  expect(csp).toContain("form-action");
+});
+
 test("@e2e eski checkout istemcisi create endpointinde acik yenileme mesaji alir", async ({
   request
 }) => {
