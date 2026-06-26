@@ -57,8 +57,10 @@ function prepareMotionScope(scope: HTMLElement) {
 export function ScrollMotion() {
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const coarsePointerQuery = window.matchMedia("(pointer: coarse)");
     const observedElements = new WeakSet<HTMLElement>();
     const loopElements = new WeakSet<HTMLElement>();
+    const pendingRoots = new Set<ParentNode>();
     let frame = 0;
     let scrollFrame = 0;
     let pointerFrame = 0;
@@ -70,7 +72,7 @@ export function ScrollMotion() {
     const syncPointerLight = () => {
       pointerFrame = 0;
 
-      if (mediaQuery.matches) {
+      if (mediaQuery.matches || coarsePointerQuery.matches) {
         document.documentElement.style.setProperty("--ambient-x", "0px");
         document.documentElement.style.setProperty("--ambient-y", "0px");
         return;
@@ -90,6 +92,10 @@ export function ScrollMotion() {
     };
 
     const schedulePointerLight = (event?: Event) => {
+      if (coarsePointerQuery.matches) {
+        return;
+      }
+
       if (event instanceof PointerEvent && event.pointerType !== "touch") {
         pointerX = event.clientX;
         pointerY = event.clientY;
@@ -224,14 +230,26 @@ export function ScrollMotion() {
       });
     };
 
-    const schedulePrepare = () => {
+    const schedulePrepare = (root: ParentNode = document) => {
+      if (root === document) {
+        pendingRoots.clear();
+      }
+
+      if (!pendingRoots.has(document)) {
+        pendingRoots.add(root);
+      }
+
       if (frame) {
         return;
       }
 
       frame = window.requestAnimationFrame(() => {
         frame = 0;
-        prepare(document);
+        const roots = Array.from(pendingRoots);
+        pendingRoots.clear();
+        roots.forEach((pendingRoot) => {
+          prepare(pendingRoot);
+        });
       });
     };
 
@@ -239,8 +257,14 @@ export function ScrollMotion() {
     scheduleScrollProgress();
     schedulePointerLight();
 
-    const mutationObserver = new MutationObserver(() => {
-      schedulePrepare();
+    const mutationObserver = new MutationObserver((records) => {
+      records.forEach((record) => {
+        record.addedNodes.forEach((node) => {
+          if (node instanceof HTMLElement) {
+            schedulePrepare(node);
+          }
+        });
+      });
     });
 
     mutationObserver.observe(document.body, {
@@ -251,6 +275,7 @@ export function ScrollMotion() {
     const handleMotionPreference = () => {
       schedulePrepare();
       scheduleScrollProgress();
+      schedulePointerLight();
     };
 
     window.addEventListener("scroll", scheduleScrollProgress, { passive: true });
@@ -258,6 +283,7 @@ export function ScrollMotion() {
     window.addEventListener("resize", schedulePointerLight);
     window.addEventListener("pointermove", schedulePointerLight, { passive: true });
     mediaQuery.addEventListener("change", handleMotionPreference);
+    coarsePointerQuery.addEventListener("change", handleMotionPreference);
 
     return () => {
       window.cancelAnimationFrame(frame);
@@ -271,6 +297,7 @@ export function ScrollMotion() {
       window.removeEventListener("resize", schedulePointerLight);
       window.removeEventListener("pointermove", schedulePointerLight);
       mediaQuery.removeEventListener("change", handleMotionPreference);
+      coarsePointerQuery.removeEventListener("change", handleMotionPreference);
       delete document.body.dataset.scrollMotionRuntime;
     };
   }, []);

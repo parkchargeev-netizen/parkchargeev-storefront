@@ -45,3 +45,14 @@ Date: 2026-06-26
 2. Split large admin/server files by feature boundary and add unit coverage around the extracted services.
 3. Add Playwright visual screenshots for desktop and mobile hero, store grid, product detail, checkout, and admin.
 4. Gradually replace ad hoc utility class clusters with typed UI primitives where the pattern repeats across pages.
+
+## Staff-Level Follow-up Pass
+
+- Reduced motion runtime coupling by preparing only newly added DOM subtrees after mutations instead of rescanning the full document on every dynamic update.
+- Added coarse-pointer awareness to pointer lighting so touch devices avoid unnecessary animation scheduling.
+- Promoted section ambience to an explicit `PremiumSection` contract with `ambient` support and `data-motion-loop` integration.
+- Replaced broad `overflow-wrap:anywhere` text behavior with safer readable wrapping and protected price, badge, and CTA labels from mobile character-level wrapping.
+- Added stronger focus-ring, tap-target, form-field, hero contrast, and text-balancing rules to improve WCAG-oriented readability without changing content.
+- Added section-level `content-visibility` and card containment rules to improve rendering cost for offscreen content while preserving reduced-motion fallbacks.
+- Prevented transform/backdrop-filter containing-block regressions from breaking mobile fixed checkout and product purchase actions.
+- Remaining technical debt: global CSS still needs modular extraction, and the largest admin/checkout/server files should be split in dedicated low-risk passes with focused tests.

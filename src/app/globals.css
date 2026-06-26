@@ -27,6 +27,13 @@
   color-scheme: light;
   --cursor-ev-connector: auto;
   --cursor-ev-action: pointer;
+  --ds-focus-ring: #19b891;
+  --ds-focus-shadow: 0 0 0 4px rgba(126, 236, 201, 0.28);
+  --ds-readable-shadow: 0 1px 2px rgba(4, 20, 15, 0.22);
+  --ds-motion-fast: 160ms;
+  --ds-motion-medium: 260ms;
+  --ds-motion-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+  --ds-tap-target: 44px;
 }
 
 * {
@@ -67,7 +74,8 @@ body {
 }
 
 :where(h1, h2, h3, h4, h5, h6, p, a, button, label, td, th) {
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 
 .site-page-transition {
@@ -667,12 +675,10 @@ body {
 @keyframes site-page-enter {
   from {
     opacity: 0.001;
-    transform: translateY(0.65rem);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -2934,9 +2940,9 @@ body {
 .premium-product-card__fixed-badge {
   position: absolute;
   z-index: 20;
-  top: 1.25rem;
-  left: 1.25rem;
-  max-width: calc(100% - 2.5rem);
+  top: 0.75rem;
+  left: 0.75rem;
+  max-width: calc(100% - 1.5rem);
   box-shadow: 0 8px 24px rgba(5, 7, 18, 0.18);
 }
 
@@ -12823,5 +12829,126 @@ body {
   .site-ambient-circuit__node,
   .premium-section__rail {
     display: none;
+  }
+}
+
+/* Staff audit pass: accessibility, readability, and performance contracts. */
+:where(a, button, summary, [role="button"], input, textarea, select) {
+  -webkit-tap-highlight-color: rgba(15, 143, 111, 0.18);
+  touch-action: manipulation;
+}
+
+:where(a, button, summary, [role="button"], input, textarea, select):focus-visible {
+  outline: 3px solid var(--ds-focus-ring);
+  outline-offset: 3px;
+  box-shadow: var(--ds-focus-shadow);
+}
+
+:where(button, input, select, textarea, .ds-action, .premium-btn, .btn-primary, .btn-secondary, .btn-quiet) {
+  min-height: var(--ds-tap-target);
+}
+
+:where(input, textarea, select) {
+  border-color: color-mix(in srgb, var(--color-outline-variant) 76%, var(--color-primary));
+  background-color: rgba(255, 255, 255, 0.94);
+}
+
+:where(input, textarea, select):focus-visible {
+  border-color: var(--color-secondary);
+}
+
+.premium-hero__copy :where(h1, p, a, span, small, strong),
+.premium-section--dark :where(h1, h2, h3, p, a, span, small, strong) {
+  text-shadow: var(--ds-readable-shadow);
+}
+
+.premium-hero__copy > p:not(.premium-hero__eyebrow) {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.premium-product-card__price > p:first-child,
+.premium-product-card__inspect,
+.store-view-toggle,
+.store-filter-submit,
+.ds-status-badge {
+  overflow-wrap: normal;
+  white-space: nowrap;
+  word-break: keep-all;
+}
+
+.premium-product-card__inspect {
+  isolation: isolate;
+}
+
+.premium-product-card h3,
+.store-results__header h2,
+.checkout-command-center h1,
+.checkout-command-center h2 {
+  text-wrap: balance;
+}
+
+.ds-text-body,
+.ds-text-supporting,
+.store-results__summary,
+.lead-form-card p,
+.checkout-command-center p {
+  text-wrap: pretty;
+}
+
+.premium-section-composed {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 760px;
+}
+
+.premium-section-composed[data-motion-active="false"] .premium-section__rail,
+.premium-section-composed[data-motion-active="false"] .premium-section__spark {
+  animation-play-state: paused;
+}
+
+.site-experience-shell :where(.ds-surface, .premium-product-card) {
+  contain: layout paint;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .site-experience-shell :where(.ds-action, .premium-btn, .btn-primary, .btn-secondary, .btn-quiet):active {
+    transform: translateY(0) scale(0.985);
+  }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .site-experience-shell :where(.ds-surface, .premium-product-card):hover {
+    will-change: transform;
+  }
+}
+
+@media (max-width: 520px) {
+  :root {
+    --ds-tap-target: 46px;
+  }
+
+  .premium-product-card__price-row {
+    gap: 0.35rem;
+  }
+
+  .premium-product-card__inspect {
+    min-width: 4.4rem;
+    padding-inline: 0.55rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .product-detail-buybox {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .premium-section-composed {
+    content-visibility: visible;
+  }
+
+  .site-experience-shell :where(.ds-surface, .premium-product-card) {
+    will-change: auto;
   }
 }

@@ -4,6 +4,7 @@ import clsx from "clsx";
 import type { MotionKind } from "@/lib/motion-system";
 
 type PremiumSectionProps<T extends ElementType = "section"> = {
+  ambient?: boolean;
   as?: T;
   children: ReactNode;
   className?: string;
@@ -33,6 +34,7 @@ function PremiumSectionAtmosphere() {
 }
 
 export function PremiumSection<T extends ElementType = "section">({
+  ambient = true,
   as,
   children,
   className,
@@ -54,6 +56,7 @@ export function PremiumSection<T extends ElementType = "section">({
     <Component
       className={clsx("premium-section premium-section-composed", toneClasses[tone], className)}
       data-motion={motion === "none" ? undefined : motion}
+      data-motion-loop={ambient ? "ambient" : undefined}
       data-premium-depth
     >
       <PremiumSectionAtmosphere />
