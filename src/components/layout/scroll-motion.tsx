@@ -31,6 +31,24 @@ function getScrollMotionRuntimeScript() {
       var pointerX = window.innerWidth / 2;
       var pointerY = window.innerHeight / 2;
 
+      function getMotionPerformanceMode() {
+        var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        var saveData = Boolean(connection && connection.saveData);
+        var lowCoreCount = Boolean(navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4);
+
+        if (mediaQuery.matches || coarsePointerQuery.matches || saveData || lowCoreCount) {
+          return "lite";
+        }
+
+        return "rich";
+      }
+
+      function syncPerformanceMode() {
+        var mode = getMotionPerformanceMode();
+        if (document.documentElement.dataset.motionPerformance === mode) return;
+        document.documentElement.dataset.motionPerformance = mode;
+      }
+
       function getMotionDelay(element, fallbackIndex) {
         var configuredOrder = Number.parseInt(element.dataset.motionOrder || "", 10);
         var order = Number.isFinite(configuredOrder) ? configuredOrder : fallbackIndex;
@@ -83,7 +101,7 @@ function getScrollMotionRuntimeScript() {
       function syncPointerLight() {
         pointerFrame = 0;
 
-        if (mediaQuery.matches || coarsePointerQuery.matches) {
+        if (getMotionPerformanceMode() === "lite") {
           setRootStyleValue("--ambient-x", "0px");
           setRootStyleValue("--ambient-y", "0px");
           return;
@@ -97,7 +115,7 @@ function getScrollMotionRuntimeScript() {
       }
 
       function schedulePointerLight(event) {
-        if (coarsePointerQuery.matches) return;
+        if (getMotionPerformanceMode() === "lite") return;
 
         if (window.PointerEvent && event instanceof PointerEvent && event.pointerType !== "touch") {
           pointerX = event.clientX;
@@ -109,7 +127,7 @@ function getScrollMotionRuntimeScript() {
       }
 
       function bindPointerListener() {
-        if (coarsePointerQuery.matches || pointerListenerAttached) return;
+        if (getMotionPerformanceMode() === "lite" || pointerListenerAttached) return;
         pointerListenerAttached = true;
         window.addEventListener("pointermove", schedulePointerLight, { passive: true });
       }
@@ -132,9 +150,12 @@ function getScrollMotionRuntimeScript() {
         var scrollable = document.documentElement.scrollHeight - window.innerHeight;
         var progress = scrollable > 0 ? window.scrollY / scrollable : 0;
         var clampedProgress = Math.min(1, Math.max(0, progress));
+        var steps = motionRuntime.scrollProgressSteps || 160;
+        var steppedProgress = Math.round(clampedProgress * steps) / steps;
+        var shiftedPixels = Math.round((steppedProgress * motionRuntime.scrollShiftPx) / 2) * 2;
 
-        setRootStyleValue("--scroll-progress", clampedProgress.toFixed(4));
-        setRootStyleValue("--scroll-shift", String(Math.round(clampedProgress * motionRuntime.scrollShiftPx)) + "px");
+        setRootStyleValue("--scroll-progress", steppedProgress.toFixed(3));
+        setRootStyleValue("--scroll-shift", String(shiftedPixels) + "px");
       }
 
       function scheduleScrollProgress() {
@@ -258,9 +279,10 @@ function getScrollMotionRuntimeScript() {
       }
 
       function handleMotionPreference() {
+        syncPerformanceMode();
         schedulePrepare();
         scheduleScrollProgress();
-        if (coarsePointerQuery.matches) {
+        if (getMotionPerformanceMode() === "lite") {
           unbindPointerListener();
         } else {
           bindPointerListener();
@@ -269,6 +291,7 @@ function getScrollMotionRuntimeScript() {
       }
 
       document.body.dataset.scrollMotionRuntime = "ready";
+      syncPerformanceMode();
       schedulePrepare();
       scheduleScrollProgress();
       schedulePointerLight();

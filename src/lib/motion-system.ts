@@ -5,13 +5,14 @@ export const motionSelectors = {
 } as const;
 
 export const motionRuntime = {
-  completeDelayMs: 320,
-  idlePrepareTimeoutMs: 180,
-  maxStaggerItems: 8,
-  pointerRangeX: 28,
-  pointerRangeY: 22,
-  scrollShiftPx: -34,
-  staggerMs: 28
+  completeDelayMs: 240,
+  idlePrepareTimeoutMs: 260,
+  maxStaggerItems: 6,
+  pointerRangeX: 12,
+  pointerRangeY: 10,
+  scrollProgressSteps: 160,
+  scrollShiftPx: -16,
+  staggerMs: 18
 } as const;
 
 export type MotionKind = "fade" | "reveal" | "scale" | "slide";
