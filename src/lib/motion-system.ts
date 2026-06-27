@@ -7,11 +7,14 @@ export const motionSelectors = {
 export const motionRuntime = {
   completeDelayMs: 240,
   idlePrepareTimeoutMs: 260,
+  maxAutoMotionChildren: 48,
   maxStaggerItems: 6,
+  maxPreparedMotionTargets: 240,
+  mutationPrepareLimit: 20,
   pointerRangeX: 12,
   pointerRangeY: 10,
-  scrollProgressSteps: 112,
-  scrollShiftPx: -16,
+  scrollProgressSteps: 96,
+  scrollShiftPx: -14,
   staggerMs: 18
 } as const;
 

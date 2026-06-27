@@ -30,6 +30,7 @@ function getScrollMotionRuntimeScript() {
       var pointerListenerAttached = false;
       var pointerX = window.innerWidth / 2;
       var pointerY = window.innerHeight / 2;
+      var currentMotionMode = "rich";
 
       function getMotionPerformanceMode() {
         var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
@@ -46,8 +47,13 @@ function getScrollMotionRuntimeScript() {
 
       function syncPerformanceMode() {
         var mode = getMotionPerformanceMode();
+        currentMotionMode = mode;
         if (document.documentElement.dataset.motionPerformance === mode) return;
         document.documentElement.dataset.motionPerformance = mode;
+      }
+
+      function syncVisibilityState() {
+        document.documentElement.dataset.motionPaused = document.hidden ? "true" : "false";
       }
 
       function getMotionDelay(element, fallbackIndex) {
@@ -85,7 +91,9 @@ function getScrollMotionRuntimeScript() {
       function prepareMotionScope(scope) {
         var candidates = scope.querySelectorAll(":scope > *, :scope > main > *, :scope > div > main > *");
 
-        candidates.forEach(function(element) {
+        candidates.forEach(function(element, index) {
+          if (index >= motionRuntime.maxAutoMotionChildren) return;
+
           if (
             isStructuralMotionContainer(element) ||
             element.dataset.motion ||
@@ -102,7 +110,7 @@ function getScrollMotionRuntimeScript() {
       function syncPointerLight() {
         pointerFrame = 0;
 
-        if (getMotionPerformanceMode() === "lite") {
+        if (currentMotionMode === "lite") {
           setRootStyleValue("--ambient-x", "0px");
           setRootStyleValue("--ambient-y", "0px");
           return;
@@ -116,7 +124,7 @@ function getScrollMotionRuntimeScript() {
       }
 
       function schedulePointerLight(event) {
-        if (getMotionPerformanceMode() === "lite") return;
+        if (currentMotionMode === "lite" || document.hidden) return;
 
         if (window.PointerEvent && event instanceof PointerEvent && event.pointerType !== "touch") {
           pointerX = event.clientX;
@@ -128,7 +136,7 @@ function getScrollMotionRuntimeScript() {
       }
 
       function bindPointerListener() {
-        if (getMotionPerformanceMode() === "lite" || pointerListenerAttached) return;
+        if (currentMotionMode === "lite" || pointerListenerAttached) return;
         pointerListenerAttached = true;
         window.addEventListener("pointermove", schedulePointerLight, { passive: true });
       }
@@ -160,6 +168,7 @@ function getScrollMotionRuntimeScript() {
       }
 
       function scheduleScrollProgress() {
+        if (document.hidden) return;
         if (scrollFrame) return;
         scrollFrame = window.requestAnimationFrame(syncScrollProgress);
       }
@@ -202,14 +211,6 @@ function getScrollMotionRuntimeScript() {
         if (observedElements.has(element)) return;
         observedElements.add(element);
 
-        var rect = element.getBoundingClientRect();
-        var isInitialViewportElement = rect.top < window.innerHeight * 0.92 && rect.bottom > 0;
-
-        if (isInitialViewportElement) {
-          element.dataset.motionState = "complete";
-          return;
-        }
-
         element.dataset.motionState = "pending";
         revealObserver.observe(element);
       }
@@ -227,13 +228,17 @@ function getScrollMotionRuntimeScript() {
 
       function prepare(root) {
         prepareMotionScopes(root);
+        var preparedCount = 0;
 
         if (root instanceof HTMLElement && root.matches(motionSelectors.motion)) {
           prepareMotionElement(root, 0);
+          preparedCount += 1;
         }
 
         root.querySelectorAll(motionSelectors.motion).forEach(function(element, index) {
+          if (preparedCount >= motionRuntime.maxPreparedMotionTargets) return;
           prepareMotionElement(element, index);
+          preparedCount += 1;
         });
 
         if (root instanceof HTMLElement && root.matches(motionSelectors.loop)) {
@@ -281,9 +286,10 @@ function getScrollMotionRuntimeScript() {
 
       function handleMotionPreference() {
         syncPerformanceMode();
+        syncVisibilityState();
         schedulePrepare();
         scheduleScrollProgress();
-        if (getMotionPerformanceMode() === "lite") {
+        if (currentMotionMode === "lite") {
           unbindPointerListener();
         } else {
           bindPointerListener();
@@ -293,15 +299,19 @@ function getScrollMotionRuntimeScript() {
 
       document.body.dataset.scrollMotionRuntime = "ready";
       syncPerformanceMode();
+      syncVisibilityState();
       schedulePrepare();
       scheduleScrollProgress();
       schedulePointerLight();
 
       var mutationObserver = new MutationObserver(function(records) {
+        var scheduledCount = 0;
         records.forEach(function(record) {
           record.addedNodes.forEach(function(node) {
+            if (scheduledCount >= motionRuntime.mutationPrepareLimit) return;
             if (node instanceof HTMLElement) {
               schedulePrepare(node);
+              scheduledCount += 1;
             }
           });
         });
@@ -315,6 +325,7 @@ function getScrollMotionRuntimeScript() {
       window.addEventListener("scroll", scheduleScrollProgress, { passive: true });
       window.addEventListener("resize", scheduleScrollProgress);
       window.addEventListener("resize", schedulePointerLight);
+      document.addEventListener("visibilitychange", syncVisibilityState);
       bindPointerListener();
       mediaQuery.addEventListener("change", handleMotionPreference);
       coarsePointerQuery.addEventListener("change", handleMotionPreference);
@@ -335,6 +346,7 @@ function getScrollMotionRuntimeScript() {
         window.removeEventListener("scroll", scheduleScrollProgress);
         window.removeEventListener("resize", scheduleScrollProgress);
         window.removeEventListener("resize", schedulePointerLight);
+        document.removeEventListener("visibilitychange", syncVisibilityState);
         unbindPointerListener();
         mediaQuery.removeEventListener("change", handleMotionPreference);
         coarsePointerQuery.removeEventListener("change", handleMotionPreference);
