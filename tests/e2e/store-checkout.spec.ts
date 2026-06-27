@@ -1,6 +1,165 @@
+import { createHmac } from "node:crypto";
+
+import { loadEnvConfig } from "@next/env";
 import { expect, type Page, test } from "@playwright/test";
+import postgres from "postgres";
 
 import { expectNoCriticalA11yViolations } from "./support/a11y";
+
+loadEnvConfig(process.cwd());
+
+type CallbackTestEnv = {
+  databaseUrl: string;
+  merchantKey: string;
+  merchantSalt: string;
+};
+
+let callbackTestSql: ReturnType<typeof postgres> | undefined;
+
+function getCallbackTestEnv(): CallbackTestEnv | null {
+  const databaseUrl = process.env.DATABASE_URL?.trim();
+  const merchantKey = process.env.PAYTR_MERCHANT_KEY?.trim();
+  const merchantSalt = process.env.PAYTR_MERCHANT_SALT?.trim();
+
+  if (!databaseUrl || !merchantKey || !merchantSalt) {
+    return null;
+  }
+
+  const isLocalDb = /^postgres(?:ql)?:\/\/.*(?:localhost|127\.0\.0\.1)/i.test(databaseUrl);
+  const explicitlyEnabled = process.env.PAYTR_CALLBACK_DB_TEST?.trim() === "1";
+
+  if (!isLocalDb && !explicitlyEnabled) {
+    return null;
+  }
+
+  return { databaseUrl, merchantKey, merchantSalt };
+}
+
+function getCallbackTestSql(env: CallbackTestEnv) {
+  callbackTestSql ??= postgres(env.databaseUrl, {
+    connect_timeout: 10,
+    idle_timeout: 20,
+    max: 1,
+    prepare: false
+  });
+
+  return callbackTestSql;
+}
+
+function createPaytrCallbackHash({
+  merchantKey,
+  merchantOid,
+  merchantSalt,
+  status,
+  totalAmount
+}: {
+  merchantKey: string;
+  merchantOid: string;
+  merchantSalt: string;
+  status: "success" | "failed";
+  totalAmount: string;
+}) {
+  return createHmac("sha256", merchantKey)
+    .update(merchantOid + merchantSalt + status + totalAmount)
+    .digest("base64");
+}
+
+async function createPaytrCallbackFixture({
+  env,
+  merchantOid,
+  orderStatus = "pending_payment",
+  paymentStatus = "pending",
+  totalKurus = 1498800,
+  transactionStatus = "token_received"
+}: {
+  env: CallbackTestEnv;
+  merchantOid: string;
+  orderStatus?: "pending_payment" | "payment_failed";
+  paymentStatus?: "pending" | "failed";
+  totalKurus?: number;
+  transactionStatus?: "token_received" | "callback_failed";
+}) {
+  const sql = getCallbackTestSql(env);
+  const orderNumber = `PCEV-TST-${merchantOid.slice(-12)}`;
+  const [order] = await sql<{ id: string }[]>`
+    insert into orders (
+      order_number,
+      merchant_oid,
+      status,
+      currency,
+      subtotal_kurus,
+      shipping_kurus,
+      tax_kurus,
+      total_kurus,
+      payment_status,
+      customer_name,
+      customer_email,
+      customer_phone
+    )
+    values (
+      ${orderNumber},
+      ${merchantOid},
+      ${orderStatus},
+      'TRY',
+      ${totalKurus},
+      0,
+      0,
+      ${totalKurus},
+      ${paymentStatus},
+      'PayTR Callback Test',
+      'paytr-callback@parkchargeev.test',
+      '05555555555'
+    )
+    returning id
+  `;
+
+  await sql`
+    insert into paytr_transactions (
+      order_id,
+      merchant_oid,
+      payment_amount_kurus,
+      total_amount_kurus,
+      status
+    )
+    values (
+      ${order.id},
+      ${merchantOid},
+      ${totalKurus},
+      ${totalKurus},
+      ${transactionStatus}
+    )
+  `;
+
+  return {
+    orderId: order.id,
+    sql,
+    totalKurus
+  };
+}
+
+async function cleanupPaytrCallbackFixture({
+  merchantOid,
+  orderId,
+  sql
+}: {
+  merchantOid: string;
+  orderId?: string;
+  sql: ReturnType<typeof postgres>;
+}) {
+  if (orderId) {
+    await sql`delete from order_status_history where order_id = ${orderId}`;
+  }
+
+  await sql`delete from paytr_transactions where merchant_oid = ${merchantOid}`;
+
+  if (orderId) {
+    await sql`delete from orders where id = ${orderId}`;
+  }
+}
+
+test.afterAll(async () => {
+  await callbackTestSql?.end({ timeout: 5 });
+});
 
 async function fillCheckoutContact(page: Page) {
   await page.locator('input[autocomplete="name"]').fill("ParkChargeEV Test");
@@ -256,6 +415,205 @@ test("@e2e PayTR Link callback gecersiz hash ile reddedilir", async ({
 
   expect(response.status()).toBe(400);
   expect(await response.text()).toContain("bad hash");
+});
+
+test("@e2e PayTR success callback siparisi onaylar ve tekrarinda OK kalir", async ({
+  request
+}) => {
+  test.skip(test.info().project.name !== "chromium", "DB callback smoke tek projede kosar.");
+  const env = getCallbackTestEnv();
+  test.skip(
+    !env,
+    "DATABASE_URL ve PayTR env yoksa ya da uzak DB icin PAYTR_CALLBACK_DB_TEST=1 degilse DB smoke atlanir."
+  );
+
+  const merchantOid = `PCEVSUCCESS${Date.now()}${Math.random().toString(16).slice(2, 8)}`;
+  let orderId: string | undefined;
+  const activeEnv = env as CallbackTestEnv;
+  const { sql, totalKurus, orderId: createdOrderId } = await createPaytrCallbackFixture({
+    env: activeEnv,
+    merchantOid
+  });
+  orderId = createdOrderId;
+
+  try {
+    const totalAmount = String(totalKurus);
+    const hash = createPaytrCallbackHash({
+      merchantKey: activeEnv.merchantKey,
+      merchantOid,
+      merchantSalt: activeEnv.merchantSalt,
+      status: "success",
+      totalAmount
+    });
+
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      const response = await request.post("/api/paytr/callback", {
+        form: {
+          merchant_oid: merchantOid,
+          status: "success",
+          total_amount: totalAmount,
+          payment_amount: totalAmount,
+          currency: "TL",
+          hash
+        }
+      });
+
+      expect(response.status()).toBe(200);
+      expect(await response.text()).toBe("OK");
+    }
+
+    const [order] = await sql<{ status: string; payment_status: string }[]>`
+      select status, payment_status from orders where merchant_oid = ${merchantOid}
+    `;
+    const [transaction] = await sql<{ status: string }[]>`
+      select status from paytr_transactions where merchant_oid = ${merchantOid}
+    `;
+
+    expect(order.status).toBe("confirmed");
+    expect(order.payment_status).toBe("paid");
+    expect(transaction.status).toBe("callback_success");
+  } finally {
+    await cleanupPaytrCallbackFixture({ merchantOid, orderId, sql });
+  }
+});
+
+test("@e2e PayTR failed callback siparisi basarisiz yapar ve nedeni kaydeder", async ({
+  request
+}) => {
+  test.skip(test.info().project.name !== "chromium", "DB callback smoke tek projede kosar.");
+  const env = getCallbackTestEnv();
+  test.skip(
+    !env,
+    "DATABASE_URL ve PayTR env yoksa ya da uzak DB icin PAYTR_CALLBACK_DB_TEST=1 degilse DB smoke atlanir."
+  );
+
+  const merchantOid = `PCEVFAILED${Date.now()}${Math.random().toString(16).slice(2, 8)}`;
+  let orderId: string | undefined;
+  const activeEnv = env as CallbackTestEnv;
+  const { sql, totalKurus, orderId: createdOrderId } = await createPaytrCallbackFixture({
+    env: activeEnv,
+    merchantOid
+  });
+  orderId = createdOrderId;
+
+  try {
+    const totalAmount = String(totalKurus);
+    const hash = createPaytrCallbackHash({
+      merchantKey: activeEnv.merchantKey,
+      merchantOid,
+      merchantSalt: activeEnv.merchantSalt,
+      status: "failed",
+      totalAmount
+    });
+
+    const response = await request.post("/api/paytr/callback", {
+      form: {
+        merchant_oid: merchantOid,
+        status: "failed",
+        total_amount: totalAmount,
+        payment_amount: totalAmount,
+        currency: "TL",
+        failed_reason_code: "3DSECUREFAIL",
+        failed_reason_msg: "3D secure dogrulamasi basarisiz oldu.",
+        hash
+      }
+    });
+
+    expect(response.status()).toBe(200);
+    expect(await response.text()).toBe("OK");
+
+    const [order] = await sql<{
+      payment_status: string;
+      status: string;
+      status_note: string | null;
+    }[]>`
+      select status, payment_status, status_note from orders where merchant_oid = ${merchantOid}
+    `;
+    const [transaction] = await sql<{
+      failed_reason_code: string | null;
+      failed_reason_msg: string | null;
+      status: string;
+    }[]>`
+      select status, failed_reason_code, failed_reason_msg
+      from paytr_transactions
+      where merchant_oid = ${merchantOid}
+    `;
+
+    expect(order.status).toBe("payment_failed");
+    expect(order.payment_status).toBe("failed");
+    expect(order.status_note).toContain("3DSECUREFAIL");
+    expect(transaction.status).toBe("callback_failed");
+    expect(transaction.failed_reason_code).toBe("3DSECUREFAIL");
+    expect(transaction.failed_reason_msg).toBe("3D secure dogrulamasi basarisiz oldu.");
+  } finally {
+    await cleanupPaytrCallbackFixture({ merchantOid, orderId, sql });
+  }
+});
+
+test("@e2e PayTR failed callback fail-return fallback sonrasi nedeni gunceller", async ({
+  request
+}) => {
+  test.skip(test.info().project.name !== "chromium", "DB callback smoke tek projede kosar.");
+  const env = getCallbackTestEnv();
+  test.skip(
+    !env,
+    "DATABASE_URL ve PayTR env yoksa ya da uzak DB icin PAYTR_CALLBACK_DB_TEST=1 degilse DB smoke atlanir."
+  );
+
+  const merchantOid = `PCEVFALLBACK${Date.now()}${Math.random().toString(16).slice(2, 8)}`;
+  let orderId: string | undefined;
+  const activeEnv = env as CallbackTestEnv;
+  const { sql, totalKurus, orderId: createdOrderId } = await createPaytrCallbackFixture({
+    env: activeEnv,
+    merchantOid,
+    orderStatus: "payment_failed",
+    paymentStatus: "failed",
+    transactionStatus: "callback_failed"
+  });
+  orderId = createdOrderId;
+
+  try {
+    const totalAmount = String(totalKurus);
+    const hash = createPaytrCallbackHash({
+      merchantKey: activeEnv.merchantKey,
+      merchantOid,
+      merchantSalt: activeEnv.merchantSalt,
+      status: "failed",
+      totalAmount
+    });
+
+    const response = await request.post("/api/paytr/callback", {
+      form: {
+        merchant_oid: merchantOid,
+        status: "failed",
+        total_amount: totalAmount,
+        payment_amount: totalAmount,
+        currency: "TL",
+        failed_reason_code: "BANK3DREJECT",
+        failed_reason_msg: "Banka 3D secure yanitini reddetti.",
+        hash
+      }
+    });
+
+    expect(response.status()).toBe(200);
+    expect(await response.text()).toBe("OK");
+
+    const [transaction] = await sql<{
+      failed_reason_code: string | null;
+      failed_reason_msg: string | null;
+      status: string;
+    }[]>`
+      select status, failed_reason_code, failed_reason_msg
+      from paytr_transactions
+      where merchant_oid = ${merchantOid}
+    `;
+
+    expect(transaction.status).toBe("callback_failed");
+    expect(transaction.failed_reason_code).toBe("BANK3DREJECT");
+    expect(transaction.failed_reason_msg).toBe("Banka 3D secure yanitini reddetti.");
+  } finally {
+    await cleanupPaytrCallbackFixture({ merchantOid, orderId, sql });
+  }
 });
 
 test("@e2e bos cevapta teknik JSON hatasi yerine Turkce mesaj gosterir", async ({ page }) => {

@@ -64,18 +64,12 @@ function getPaytrFailureStatusNote(payload: PaytrCallbackPayload) {
 
 function isProcessedDuplicate({
   orderPaymentStatus,
-  payloadStatus,
   transactionStatus
 }: {
   orderPaymentStatus: string;
-  payloadStatus: "success" | "failed";
   transactionStatus?: string | null;
 }) {
   if (transactionStatus === "callback_success") {
-    return true;
-  }
-
-  if (transactionStatus === "callback_failed" && payloadStatus === "failed") {
     return true;
   }
 
@@ -197,7 +191,6 @@ export async function POST(request: Request) {
     if (
       isProcessedDuplicate({
         orderPaymentStatus: order.paymentStatus,
-        payloadStatus: payload.status,
         transactionStatus: transaction?.status
       })
     ) {

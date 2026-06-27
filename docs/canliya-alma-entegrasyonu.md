@@ -87,7 +87,7 @@ PayTR panelinde canli domain icin kontrol edilecek ayarlar:
 
 Onemli kural:
 
-`merchant_ok_url` ve `merchant_fail_url` siparisi onaylamaz. Kullaniciya bilgi verir. Siparisin kesin durumu yalnizca `/api/paytr/callback` ile degismelidir.
+`merchant_ok_url` siparisi onaylamaz; basarili odemenin kesinlesmesi yalnizca `/api/paytr/callback` ile olur. `merchant_fail_url` ise kullanici bankadan basarisiz donerse pending kaydin admin panelde beklemede kalmamasi icin guvenli fallback olarak `payment_failed/failed` yazabilir. Sonradan gelen dogrulanmis PayTR `failed` callback'i bu kaydi hata kodu ve mesajiyla zenginlestirir.
 
 ## 5. Domain, DNS ve Vercel Kontrolu
 

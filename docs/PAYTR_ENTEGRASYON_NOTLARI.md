@@ -53,7 +53,7 @@ Zorunlu alanlar uygulamada sunucu tarafında üretilir:
 
 `payment_amount` kuruş cinsinden tam sayıdır. Örneğin `34,56 TL`, PayTR'ye `3456` olarak gönderilir.
 
-`merchant_ok_url` ve `merchant_fail_url` yalnızca kullanıcıyı bilgilendiren dönüş sayfalarıdır. Sipariş bu sayfalarda başarılı veya başarısız olarak işaretlenmez.
+`merchant_ok_url` ve `merchant_fail_url` kullaniciya donus ekrani verir; kesin odeme sonucu yine PayTR callback ile dogrulanir. Ancak `merchant_fail_url` tarafinda pending siparisin admin panelde beklemede kalmamasi icin guvenli bir fallback vardir: siparis henuz `paid` degilse `payment_failed/failed` olarak isaretlenir ve sonradan gelen dogrulanmis PayTR `failed` callback'i hata kodu/mesajini gunceller.
 
 ## Callback Kuralları
 
@@ -71,9 +71,11 @@ Callback için şu kurallar zorunludur:
 - Gelen `hash`, `merchant_oid + merchant_salt + status + total_amount` verisinin merchant key ile HMAC-SHA256 imzası kullanılarak doğrulanır.
 - Başarılı callback'te `payment_amount` sipariş toplamı ile karşılaştırılır.
 - Başarılı callback'te `currency` sipariş para birimiyle karşılaştırılır. `TL` ve `TRY` aynı para birimi olarak değerlendirilir.
-- Aynı `merchant_oid` için tekrar gelen aynı sonuç idempotent şekilde yalnızca `OK` döndürür.
+- Aynı `merchant_oid` için tekrar gelen başarılı sonuç idempotent şekilde yalnızca `OK` döndürür.
+- Başarısız callback daha önce fail-return fallback'i işlediyse bile `failed_reason_code` ve `failed_reason_msg` alanlarını güncelleyebilir.
 - Başarılı bir ödeme, sonradan gelen başarısız callback ile geriye çekilmez.
-- Yanıt gövdesi yalnızca düz metin `OK` olur.
+- Doğrulanmış callback işlemlerinde yanıt gövdesi yalnızca düz metin `OK` olur.
+- Geçersiz hash, geçersiz durum veya bulunamayan sipariş `OK` dönmez; bu durumlar sahte callback veya konfigürasyon hatasını görünür tutar.
 
 ## Admin Durum Kontrolü
 
@@ -82,7 +84,7 @@ Admin panelindeki kontrol, PayTR durum sorgulama servisiyle başarılı ödeme a
 - Başarılı ödeme bulunursa sipariş ve işlem ödeme doğrulandı durumuna geçirilir.
 - Başarılı ödeme bulunamazsa mevcut sipariş ve işlem durumu değiştirilmez.
 - Durum sorgusu bir callback değildir; sorgu hatası `callback_failed` olarak kaydedilmez.
-- `callback_failed` yalnızca PayTR'den gerçekten gelen ve doğrulanmış başarısız ödeme bildirimi için kullanılır.
+- `callback_failed`, PayTR'den gelen doğrulanmış başarısız ödeme bildirimi veya PayTR fail dönüşü sonrası pending kalmayı önleyen fallback için kullanılır. Fallback sonrası gerçek callback gelirse PayTR hata sebebi kayda işlenir.
 
 ## Vercel Ortam Değişkenleri
 
@@ -97,7 +99,7 @@ Sunucu ortamında aşağıdaki değerler bulunmalıdır:
 Operasyon kuralları:
 
 - Canlı ödemede `PAYTR_TEST_MODE=0`.
-- Test kartlarıyla kontrollü test yapılırken ilgili deployment için `PAYTR_TEST_MODE=1`.
+- Test kartlarıyla kontrollü test yapılırken Preview/Staging deployment için `PAYTR_TEST_MODE=1`; production gerçek ödeme modunda kalmalıdır.
 - `PAYTR_DEBUG_ON` testte `1`, canlıda `0` önerilir.
 - `PAYTR_TEST_USER_IP` yalnızca lokal geliştirme veya sabit test IP ihtiyacı için kullanılmalıdır.
 - Merchant key ve salt yalnızca server env olarak tutulmalı, `NEXT_PUBLIC_` önekiyle yayınlanmamalıdır.
