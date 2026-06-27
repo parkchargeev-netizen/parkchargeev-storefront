@@ -39,6 +39,25 @@ function normalizePaytrCurrency(value?: string | null) {
   return currency === "TL" ? "TRY" : currency;
 }
 
+function getPaytrFailureStatusNote(payload: PaytrCallbackPayload) {
+  const reasonCode = payload.failed_reason_code?.trim();
+  const reasonMessage = payload.failed_reason_msg?.trim();
+
+  if (reasonCode && reasonMessage) {
+    return `PayTR odeme hatasi (${reasonCode}): ${reasonMessage}`;
+  }
+
+  if (reasonMessage) {
+    return `PayTR odeme hatasi: ${reasonMessage}`;
+  }
+
+  if (reasonCode) {
+    return `PayTR odeme hatasi kodu: ${reasonCode}`;
+  }
+
+  return "PayTR odeme hatasi bildirdi. Kart 3D Secure dogrulamasi veya banka onayi tamamlanamadi.";
+}
+
 function isProcessedDuplicate({
   orderPaymentStatus,
   payloadStatus,
@@ -146,6 +165,8 @@ export async function POST(request: Request) {
           : ("pending_confirmation" as const)
         : ("failed" as const);
     const nextPaymentStatus = payload.status === "success" ? "paid" : "failed";
+    const paytrFailureStatusNote =
+      payload.status === "failed" ? getPaytrFailureStatusNote(payload) : null;
 
     if (
       isProcessedDuplicate({
@@ -270,7 +291,9 @@ export async function POST(request: Request) {
         .set({
           status: nextOrderStatus,
           paymentStatus: nextPaymentStatus,
-          ...(stockWarningNote ? { statusNote: stockWarningNote } : {}),
+          ...(stockWarningNote || paytrFailureStatusNote
+            ? { statusNote: stockWarningNote ?? paytrFailureStatusNote }
+            : {}),
           paytrLastSyncedAt: new Date(),
           updatedAt: new Date()
         })
@@ -284,7 +307,7 @@ export async function POST(request: Request) {
           note:
             payload.status === "success"
               ? stockWarningNote ?? "PayTR callback ile ödeme onayı alındı."
-              : payload.failed_reason_msg || "PayTR callback ödeme hatasi bildirdi."
+              : paytrFailureStatusNote ?? "PayTR callback ödeme hatasi bildirdi."
         });
       }
     });

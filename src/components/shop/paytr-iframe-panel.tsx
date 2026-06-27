@@ -94,7 +94,6 @@ export function PaytrIframePanel({ iframeToken }: PaytrIframePanelProps) {
             scrolling="no"
             title="Güvenli kart ödeme formu"
             allow="payment *; fullscreen *; publickey-credentials-get *"
-            allowFullScreen
             referrerPolicy="strict-origin-when-cross-origin"
             className="min-h-[680px] w-full"
           />

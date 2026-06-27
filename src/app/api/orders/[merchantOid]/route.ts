@@ -25,7 +25,8 @@ export async function GET(
     const [order] = await db
       .select({
         status: orders.status,
-        paymentStatus: orders.paymentStatus
+        paymentStatus: orders.paymentStatus,
+        statusNote: orders.statusNote
       })
       .from(orders)
       .where(eq(orders.merchantOid, merchantOid))
@@ -53,6 +54,7 @@ export async function GET(
       ok: true,
       orderStatus: order.status,
       paymentStatus: order.paymentStatus,
+      statusNote: order.statusNote,
       transactionStatus: transaction?.status ?? null
     });
   } catch (error) {

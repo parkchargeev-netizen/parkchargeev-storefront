@@ -190,7 +190,7 @@ test("@e2e checkout CSP PayTR 3D Secure iframe kaynaklarini kapsar", async ({
   expect(csp).toContain("frame-src 'self' https:");
   expect(csp).toContain("child-src 'self' https:");
   expect(csp).toContain("https://www.paytr.com");
-  expect(csp).toContain("form-action");
+  expect(csp).toContain("form-action 'self' https:");
   expect(xFrameOptions).toBe("");
 });
 
@@ -217,6 +217,7 @@ test("@e2e PayTR donus endpointi hafif ve iframe uyumludur", async ({
   expect(xFrameOptions).toBe("");
   expect(body).toContain("parkchargeev-paytr-return");
   expect(body).toContain("postMessage");
+  expect(body).toContain("window.top.location.replace");
   expect(body).not.toContain("/_next/");
 });
 

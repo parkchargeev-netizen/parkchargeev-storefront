@@ -12,6 +12,7 @@ type CheckoutResultPanelProps = {
   orderStatus?: {
     orderStatus: string;
     paymentStatus: string;
+    statusNote?: string | null;
   } | null;
   isCheckingStatus: boolean;
   error?: string | null;
@@ -75,6 +76,11 @@ export function CheckoutResultPanel({
 
         {isCheckingStatus ? (
           <p className="mt-5 text-sm font-bold text-primary">Durum güncelleniyor...</p>
+        ) : null}
+        {orderStatus?.statusNote ? (
+          <p className="mt-5 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold leading-6 text-amber-800">
+            {orderStatus.statusNote}
+          </p>
         ) : null}
         {error ? (
           <p className="mt-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">

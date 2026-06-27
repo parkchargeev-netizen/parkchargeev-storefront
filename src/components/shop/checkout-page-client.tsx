@@ -36,6 +36,7 @@ type OrderStatusResponse = {
   ok: boolean;
   orderStatus: string;
   paymentStatus: string;
+  statusNote: string | null;
   transactionStatus: string | null;
 };
 
@@ -345,7 +346,7 @@ export function CheckoutPageClient({
       setOrderStatus(null);
       setError(
         event.data.status === "failed"
-          ? "Banka doğrulaması tamamlanamadı. Kart bilgilerinizi kontrol edip tekrar deneyebilirsiniz."
+          ? "3D Secure doğrulaması tamamlanamadı. Kartınızın internet alışverişi ve 3D Secure ayarlarını kontrol edip tekrar deneyebilirsiniz."
           : null
       );
       window.sessionStorage.setItem(ACTIVE_ORDER_STORAGE_KEY, event.data.merchantOid);
@@ -476,6 +477,7 @@ export function CheckoutPageClient({
             targetMerchantOid,
             result.orderStatus,
             result.paymentStatus,
+            result.statusNote ?? "",
             result.transactionStatus ?? ""
           ].join(":");
 
@@ -485,6 +487,7 @@ export function CheckoutPageClient({
               merchantOid: targetMerchantOid,
               orderStatus: result.orderStatus,
               paymentStatus: result.paymentStatus,
+              statusNote: result.statusNote,
               transactionStatus: result.transactionStatus
             });
           }

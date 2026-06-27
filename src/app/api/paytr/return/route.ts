@@ -83,11 +83,18 @@ function buildReturnHtml({
         } catch (error) {}
         window.setTimeout(function () {
           try {
+            if (window.top && window.top !== window.self) {
+              window.top.location.replace(checkoutUrl);
+              return;
+            }
+
             if (window.top === window.self) {
               window.location.replace(checkoutUrl);
             }
-          } catch (error) {}
-        }, 400);
+          } catch (error) {
+            window.location.replace(checkoutUrl);
+          }
+        }, 900);
       })();
     </script>
   </head>

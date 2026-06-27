@@ -10,7 +10,7 @@ const checkoutConnectSources =
 const checkoutContentSecurityPolicy = [
   "default-src 'self'",
   "base-uri 'self'",
-  "form-action 'self' https://www.paytr.com https://inbound.apigateway.vakifbank.com.tr https://*.apigateway.vakifbank.com.tr",
+  "form-action 'self' https:",
   "frame-ancestors 'self' https://www.paytr.com https://*.paytr.com",
   "frame-src 'self' https:",
   "child-src 'self' https:",

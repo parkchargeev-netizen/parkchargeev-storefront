@@ -10,6 +10,7 @@ type CheckoutStatusSummaryProps = {
   orderStatus: {
     orderStatus: string;
     paymentStatus: string;
+    statusNote?: string | null;
   } | null;
   isCheckingStatus: boolean;
 };
@@ -69,6 +70,12 @@ export function CheckoutStatusSummary({
           </p>
         </div>
       </div>
+
+      {orderStatus?.statusNote ? (
+        <p className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold leading-6 text-amber-800">
+          {orderStatus.statusNote}
+        </p>
+      ) : null}
     </section>
   );
 }
