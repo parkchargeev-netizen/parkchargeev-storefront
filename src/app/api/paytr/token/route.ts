@@ -143,6 +143,8 @@ export async function POST(request: Request) {
       okUrl: absoluteUrl(`/api/paytr/return?status=success&oid=${merchantOid}`),
       failUrl: absoluteUrl(`/api/paytr/return?status=failed&oid=${merchantOid}`),
       items,
+      noInstallment: 1,
+      maxInstallment: 0,
       merchantOid
     });
 

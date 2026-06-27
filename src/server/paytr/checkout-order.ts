@@ -111,6 +111,27 @@ function formatPaytrUnitPrice(unitPriceKurus: number) {
   return (unitPriceKurus / 100).toFixed(2);
 }
 
+function buildPaytrBasketItems(
+  pricedItems: PricedCheckoutItem[],
+  taxKurus: number
+): PaytrCheckoutItem[] {
+  const basketItems: PaytrCheckoutItem[] = pricedItems.map((item) => ({
+    title: item.title,
+    unitPrice: formatPaytrUnitPrice(item.unitPriceKurus),
+    quantity: item.quantity
+  }));
+
+  if (taxKurus > 0) {
+    basketItems.push({
+      title: `KDV (%${Math.round(CART_TAX_RATE * 100)})`,
+      unitPrice: formatPaytrUnitPrice(taxKurus),
+      quantity: 1
+    });
+  }
+
+  return basketItems;
+}
+
 function limitText(value: string, maxLength: number) {
   return value.length > maxLength ? value.slice(0, maxLength) : value;
 }
@@ -188,11 +209,7 @@ async function priceCheckoutItems(items: PaytrCheckoutRequest["items"]) {
   );
   const taxKurus = Math.round(subtotalKurus * CART_TAX_RATE);
   const paymentAmountKurus = subtotalKurus + taxKurus;
-  const paytrItems: PaytrCheckoutItem[] = pricedItems.map((item) => ({
-    title: item.title,
-    unitPrice: formatPaytrUnitPrice(item.unitPriceKurus),
-    quantity: item.quantity
-  }));
+  const paytrItems = buildPaytrBasketItems(pricedItems, taxKurus);
 
   return {
     pricedItems,
