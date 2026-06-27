@@ -55,6 +55,7 @@ export const orderStatusEnum = pgEnum("order_status", [
   "pending_confirmation",
   "paid",
   "confirmed",
+  "payment_failed",
   "shipped",
   "delivered",
   "failed",
@@ -720,6 +721,8 @@ export const paytrTransactions = pgTable(
     paymentAmountKurus: integer("payment_amount_kurus").notNull(),
     totalAmountKurus: integer("total_amount_kurus"),
     status: paytrStatusEnum("status").default("created").notNull(),
+    failedReasonCode: varchar("failed_reason_code", { length: 40 }),
+    failedReasonMsg: text("failed_reason_msg"),
     rawRequest: jsonb("raw_request"),
     rawCallback: jsonb("raw_callback"),
     createdAt: timestamp("created_at", { withTimezone: true })

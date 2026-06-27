@@ -15,6 +15,7 @@ const orderStatusLabels: Record<string, string> = {
   pending_payment: "Ödeme Bekliyor",
   pending_confirmation: "Ödeme Alındı",
   confirmed: "Onaylandı",
+  payment_failed: "Ödeme Başarısız",
   shipped: "Kargoya Verildi",
   delivered: "Teslim Edildi",
   cancelled: "İptal",

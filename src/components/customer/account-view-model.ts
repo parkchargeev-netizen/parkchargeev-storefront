@@ -10,6 +10,7 @@ export const orderStatusLabel: Record<string, string> = {
   pending_confirmation: "Onay bekliyor",
   paid: "Ödendi",
   confirmed: "Onaylandı",
+  payment_failed: "Ödeme başarısız",
   shipped: "Kargoda",
   delivered: "Teslim edildi",
   failed: "Başarısız",
@@ -60,7 +61,10 @@ export function getOrderProgress(status: string) {
 
 export function getOpenOrders(orders: AccountSnapshot["recentOrders"]) {
   return orders.filter(
-    (order) => !["delivered", "fulfilled", "cancelled", "refunded", "failed"].includes(order.status)
+    (order) =>
+      !["delivered", "fulfilled", "cancelled", "refunded", "failed", "payment_failed"].includes(
+        order.status
+      )
   );
 }
 

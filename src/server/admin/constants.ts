@@ -126,6 +126,7 @@ export const orderStatusOptions: Array<{
   { value: "pending_payment", label: "Beklemede" },
   { value: "pending_confirmation", label: "Ödeme Alındı" },
   { value: "confirmed", label: "Onaylandı" },
+  { value: "payment_failed", label: "Ödeme Başarısız" },
   { value: "shipped", label: "Kargoya Verildi" },
   { value: "delivered", label: "Teslim Edildi" },
   { value: "cancelled", label: "İptal" },

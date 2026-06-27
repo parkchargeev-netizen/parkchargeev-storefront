@@ -130,6 +130,7 @@ function isTerminalOrderStatus(orderStatus: OrderStatusResponse | null) {
     orderStatus?.paymentStatus === "paid" ||
     orderStatus?.paymentStatus === "failed" ||
     orderStatus?.orderStatus === "failed" ||
+    orderStatus?.orderStatus === "payment_failed" ||
     orderStatus?.orderStatus === "cancelled" ||
     orderStatus?.orderStatus === "refunded"
   );

@@ -171,7 +171,7 @@ async function recordFailedReturn(merchantOid: string, startedAt: number) {
       await tx
         .update(orders)
         .set({
-          status: "failed",
+          status: "payment_failed",
           paymentStatus: "failed",
           statusNote,
           paytrLastSyncedAt: now,
@@ -179,11 +179,11 @@ async function recordFailedReturn(merchantOid: string, startedAt: number) {
         })
         .where(eq(orders.id, order.id));
 
-      if (order.status !== "failed" || order.paymentStatus !== "failed") {
+      if (order.status !== "payment_failed" || order.paymentStatus !== "failed") {
         await tx.insert(orderStatusHistory).values({
           orderId: order.id,
           fromStatus: order.status,
-          toStatus: "failed",
+          toStatus: "payment_failed",
           note: statusNote
         });
       }

@@ -5,6 +5,7 @@ export const orderStatusLabels: Record<string, string> = {
   pending_confirmation: "Ödeme alındı, onay bekliyor",
   paid: "Ödendi",
   confirmed: "Onaylandı",
+  payment_failed: "Ödeme başarısız",
   shipped: "Kargoya verildi",
   delivered: "Teslim edildi",
   failed: "Başarısız",

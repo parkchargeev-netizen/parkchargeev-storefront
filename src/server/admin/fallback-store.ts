@@ -1372,7 +1372,11 @@ export async function updateFallbackAdminOrder(
     order.trackingUrl = input.trackingUrl || null;
     order.updatedAt = timestamp;
 
-    if (input.status === "cancelled" || input.status === "failed") {
+    if (
+      input.status === "cancelled" ||
+      input.status === "failed" ||
+      input.status === "payment_failed"
+    ) {
       order.paymentStatus = "failed";
     } else if (revenueStatuses.includes(input.status)) {
       order.paymentStatus = "paid";
@@ -1391,7 +1395,9 @@ export async function updateFallbackAdminOrder(
     if (order.transaction) {
       order.transaction.updatedAt = timestamp;
       order.transaction.status =
-        input.status === "cancelled" || input.status === "failed"
+        input.status === "cancelled" ||
+        input.status === "failed" ||
+        input.status === "payment_failed"
           ? "callback_failed"
           : "callback_success";
     }

@@ -14,6 +14,10 @@ import {
   paytrTransactions,
   productVariants
 } from "@/server/db/schema";
+import {
+  logPaytrCallbackDebug,
+  logPaytrRuntimeEnvPresence
+} from "@/server/paytr/diagnostics";
 
 function parsePaytrKurus(value?: string) {
   if (!value) {
@@ -80,12 +84,31 @@ function isProcessedDuplicate({
 
 export async function POST(request: Request) {
   const startedAt = Date.now();
-  const formData = await request.formData();
+  logPaytrRuntimeEnvPresence("paytr.callback");
+  let formData: FormData;
+
+  try {
+    formData = await request.formData();
+  } catch {
+    logWarn("paytr.callback.invalid_body", {
+      durationMs: durationSince(startedAt)
+    });
+    return new Response("PAYTR notification failed: invalid body", { status: 400 });
+  }
+
   const rawStatus = String(formData.get("status") ?? "");
+  const callbackMerchantOid = String(formData.get("merchant_oid") ?? "");
+
+  logPaytrCallbackDebug({
+    merchantOid: callbackMerchantOid,
+    status: rawStatus,
+    hasFailedReasonCode: Boolean(String(formData.get("failed_reason_code") ?? "").trim()),
+    hasFailedReasonMessage: Boolean(String(formData.get("failed_reason_msg") ?? "").trim())
+  });
 
   if (rawStatus !== "success" && rawStatus !== "failed") {
     logWarn("paytr.callback.invalid_status", {
-      merchantOid: String(formData.get("merchant_oid") ?? ""),
+      merchantOid: callbackMerchantOid,
       status: rawStatus,
       durationMs: durationSince(startedAt)
     });
@@ -115,6 +138,14 @@ export async function POST(request: Request) {
     const isHashValid = isLinkCallback
       ? verifyPaytrLinkCallbackHash(payload)
       : verifyPaytrCallbackHash(payload);
+
+    logPaytrCallbackDebug({
+      merchantOid: orderMerchantOid,
+      status: payload.status,
+      hashValid: isHashValid,
+      hasFailedReasonCode: Boolean(payload.failed_reason_code?.trim()),
+      hasFailedReasonMessage: Boolean(payload.failed_reason_msg?.trim())
+    });
 
     if (!isHashValid) {
       logWarn("paytr.callback.bad_hash", {
@@ -158,12 +189,7 @@ export async function POST(request: Request) {
       .limit(1);
     const nextTransactionStatus =
       payload.status === "success" ? ("callback_success" as const) : ("callback_failed" as const);
-    const nextOrderStatus =
-      payload.status === "success"
-        ? order.paymentStatus === "paid"
-          ? order.status
-          : ("pending_confirmation" as const)
-        : ("failed" as const);
+    const nextOrderStatus = payload.status === "success" ? "confirmed" : "payment_failed";
     const nextPaymentStatus = payload.status === "success" ? "paid" : "failed";
     const paytrFailureStatusNote =
       payload.status === "failed" ? getPaytrFailureStatusNote(payload) : null;
@@ -268,6 +294,8 @@ export async function POST(request: Request) {
       const transactionValues = {
         totalAmountKurus: totalAmountKurus ?? paymentAmountKurus ?? 0,
         status: nextTransactionStatus,
+        failedReasonCode: payload.failed_reason_code?.trim() || null,
+        failedReasonMsg: payload.failed_reason_msg?.trim() || null,
         rawCallback: payload,
         updatedAt: new Date()
       };
@@ -310,6 +338,15 @@ export async function POST(request: Request) {
               : paytrFailureStatusNote ?? "PayTR callback ödeme hatasi bildirdi."
         });
       }
+    });
+
+    logPaytrCallbackDebug({
+      merchantOid: orderMerchantOid,
+      status: payload.status,
+      hashValid: true,
+      dbUpdateSucceeded: true,
+      hasFailedReasonCode: Boolean(payload.failed_reason_code?.trim()),
+      hasFailedReasonMessage: Boolean(payload.failed_reason_msg?.trim())
     });
 
     logInfo("paytr.callback.processed", {

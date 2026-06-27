@@ -43,7 +43,7 @@ function getOrderTone(status: string) {
     return "warning";
   }
 
-  if (["cancelled", "failed", "refunded"].includes(status)) {
+  if (["cancelled", "failed", "payment_failed", "refunded"].includes(status)) {
     return "danger";
   }
 
@@ -75,6 +75,7 @@ function formatOrderStatus(status: string) {
     delivered: "Teslim Edildi",
     cancelled: "İptal",
     refunded: "İade",
+    payment_failed: "Ödeme Başarısız",
     failed: "Başarısız",
     paid: "Ödendi",
     fulfilled: "Tamamlandı",

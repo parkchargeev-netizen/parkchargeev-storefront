@@ -166,6 +166,15 @@ export default async function AdminPaytrPage({ searchParams }: AdminPaytrPagePro
                     <dd className="mt-1 text-sm text-slate-700">{formatPaymentStatus(transaction.paymentStatus)}</dd>
                   </div>
                 </dl>
+                {transaction.failedReasonCode || transaction.failedReasonMsg ? (
+                  <div className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+                    <p className="font-semibold">PayTR hata nedeni</p>
+                    <p className="mt-1">
+                      {transaction.failedReasonCode ? `${transaction.failedReasonCode}: ` : ""}
+                      {transaction.failedReasonMsg ?? "PayTR basarisiz odeme bildirdi."}
+                    </p>
+                  </div>
+                ) : null}
                 <details className="mt-4">
                   <summary className="cursor-pointer text-sm font-semibold text-slate-700">Callback ve istek verisi</summary>
                   <pre className="mt-3 max-h-72 overflow-auto rounded-lg bg-slate-950 p-4 text-xs text-slate-100">

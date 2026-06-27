@@ -226,7 +226,9 @@ export async function updateAdminOrder(
     .set({
       status: input.status,
       paymentStatus:
-        input.status === "cancelled" || input.status === "failed"
+        input.status === "cancelled" ||
+        input.status === "failed" ||
+        input.status === "payment_failed"
           ? "failed"
           : before.paymentStatus,
       statusNote: input.note || null,
@@ -317,6 +319,8 @@ export async function listAdminPaytrTransactions(input: ListQueryInput) {
       paymentAmountKurus: paytrTransactions.paymentAmountKurus,
       totalAmountKurus: paytrTransactions.totalAmountKurus,
       status: paytrTransactions.status,
+      failedReasonCode: paytrTransactions.failedReasonCode,
+      failedReasonMsg: paytrTransactions.failedReasonMsg,
       rawRequest: paytrTransactions.rawRequest,
       rawCallback: paytrTransactions.rawCallback,
       createdAt: paytrTransactions.createdAt,

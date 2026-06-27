@@ -24,6 +24,7 @@ import {
   isPaytrCheckoutPricingError,
   paytrCheckoutRequestSchema
 } from "@/server/paytr/checkout-order";
+import { logPaytrRuntimeEnvPresence } from "@/server/paytr/diagnostics";
 import {
   consumePaytrTokenAttempt,
   getPaytrTokenRateLimitKey
@@ -106,6 +107,7 @@ export async function POST(request: Request) {
     }
 
     const body = paytrCheckoutRequestSchema.parse(requestBody);
+    logPaytrRuntimeEnvPresence("paytr.token");
     const rateLimit = consumePaytrTokenAttempt(
       getPaytrTokenRateLimitKey(request, body.email)
     );
@@ -146,6 +148,16 @@ export async function POST(request: Request) {
       noInstallment: 1,
       maxInstallment: 0,
       merchantOid
+    });
+
+    logInfo("paytr.token.payload_prepared", {
+      merchantOid,
+      hasMerchantId: Boolean(payload.merchant_id),
+      testMode: payload.test_mode,
+      noInstallment: payload.no_installment,
+      maxInstallment: payload.max_installment,
+      itemCount: items.length,
+      totalKurus: paymentAmountKurus
     });
 
     const result = await requestPaytrIframeToken(payload);
