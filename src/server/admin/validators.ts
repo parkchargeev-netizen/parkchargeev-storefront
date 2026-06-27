@@ -258,6 +258,35 @@ export const adminNavigationItemSchema = z.object({
   rel: z.string().trim().max(120).optional().or(z.literal(""))
 });
 
+const optionalAdminUrlSchema = z.string().trim().url().optional().or(z.literal(""));
+
+export const adminSiteSettingsSchema = z.object({
+  id: z.string().uuid().optional(),
+  brandName: z.string().trim().min(2).max(120),
+  description: z.string().trim().min(20).max(800),
+  logoUrl: publicOrRemoteUrlSchema.optional().or(z.literal("")),
+  logoAlt: z.string().trim().max(180).optional().or(z.literal("")),
+  phone: z.string().trim().min(5).max(40),
+  email: z.string().trim().email(),
+  whatsappPhone: z.string().trim().min(5).max(40),
+  supportHours: z.string().trim().min(3).max(80),
+  streetAddress: z.string().trim().min(5).max(255),
+  addressLocality: z.string().trim().min(2).max(120),
+  addressRegion: z.string().trim().min(2).max(120),
+  postalCode: z.string().trim().max(20).optional().or(z.literal("")),
+  addressCountry: z.string().trim().min(2).max(8).default("TR"),
+  mapEmbedUrl: optionalAdminUrlSchema,
+  serviceAreas: z.array(z.string().trim().min(2).max(80)).min(1),
+  socials: z
+    .object({
+      instagram: optionalAdminUrlSchema,
+      facebook: optionalAdminUrlSchema,
+      linkedin: optionalAdminUrlSchema,
+      youtube: optionalAdminUrlSchema
+    })
+    .default({})
+});
+
 export const adminSitePageSchema = z.object({
   id: z.string().uuid().optional(),
   slug: z

@@ -196,6 +196,21 @@ body {
   height: 2.42rem;
 }
 
+.brand-logo__custom {
+  display: inline-flex;
+  min-height: 3.05rem;
+  max-width: clamp(8rem, 16vw, 13rem);
+  align-items: center;
+}
+
+.brand-logo__custom-image {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  max-height: 3.05rem;
+  object-fit: contain;
+}
+
 .brand-logo__wordmark {
   display: grid;
   gap: 0.02rem;

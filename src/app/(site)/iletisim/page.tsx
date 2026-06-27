@@ -5,12 +5,14 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { resolveContactReason } from "@/lib/contact-reasons";
 import { globalFaqs } from "@/lib/mock-data";
 import { serviceCoverageSummary } from "@/lib/service-coverage";
-import { absoluteUrl, siteConfig } from "@/lib/site";
+import { absoluteUrl } from "@/lib/site";
+import type { PublicSiteSettings } from "@/lib/site-settings";
 import {
   getFaqJsonLd,
   getLocalBusinessJsonLd
 } from "@/lib/structured-data";
 import { getPublishedSitePageBySlug } from "@/server/site/repository";
+import { getPublicSiteSettings } from "@/server/site/settings";
 
 const fallbackMetadata: Metadata = {
   title: "İletişim",
@@ -24,8 +26,8 @@ const fallbackMetadata: Metadata = {
 const parkChargeEvMapEmbedSrc =
   "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d24183.475012350627!2d30.300722122192383!3d40.74146948542449!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14ccadf3b93b47db%3A0xaa82c42f614e5ca1!2sSakarya%20Teknokent%20A.%C5%9E.!5e0!3m2!1str!2str!4v1779100960628!5m2!1str!2str";
 
-function officeAddress() {
-  return `${siteConfig.address.streetAddress}, ${siteConfig.address.addressLocality} / ${siteConfig.address.addressRegion}`;
+function officeAddress(settings: PublicSiteSettings) {
+  return `${settings.address.streetAddress}, ${settings.address.addressLocality} / ${settings.address.addressRegion}`;
 }
 
 type ContactPageProps = {
@@ -39,15 +41,16 @@ function getDefaultReason(params?: { reason?: string; konu?: string }) {
   return resolveContactReason(params?.reason ?? params?.konu);
 }
 
-function ContactJsonLd() {
-  const localBusinessJsonLd = getLocalBusinessJsonLd();
+function ContactJsonLd({ settings }: { settings: PublicSiteSettings }) {
+  const localBusinessJsonLd = getLocalBusinessJsonLd(settings);
   const faqJsonLd = getFaqJsonLd(globalFaqs);
 
   return <JsonLd data={[localBusinessJsonLd, faqJsonLd]} />;
 }
 
-function OfficeMapCard() {
-  const address = officeAddress();
+function OfficeMapCard({ settings }: { settings: PublicSiteSettings }) {
+  const address = officeAddress(settings);
+  const mapSrc = settings.mapEmbedUrl || parkChargeEvMapEmbedSrc;
 
   return (
     <div className="contact-map-card surface-card overflow-hidden p-0">
@@ -60,7 +63,7 @@ function OfficeMapCard() {
       </div>
       <iframe
         title="ParkChargeEV Sakarya Teknokent adres haritası"
-        src={parkChargeEvMapEmbedSrc}
+        src={mapSrc}
         width="600"
         height="450"
         loading="lazy"
@@ -73,7 +76,7 @@ function OfficeMapCard() {
   );
 }
 
-function ContactInfoCards() {
+function ContactInfoCards({ settings }: { settings: PublicSiteSettings }) {
   return (
     <div className="contact-info-grid grid gap-3">
       <div className="contact-info-card surface-card p-4">
@@ -81,7 +84,7 @@ function ContactInfoCards() {
           Telefon
         </p>
         <p className="mt-2 text-xl font-bold text-on-surface">
-          {siteConfig.phone}
+          {settings.phone}
         </p>
       </div>
       <div className="contact-info-card surface-card p-4">
@@ -89,22 +92,28 @@ function ContactInfoCards() {
           E-posta
         </p>
         <p className="mt-2 text-xl font-bold text-on-surface">
-          {siteConfig.email}
+          {settings.email}
         </p>
       </div>
     </div>
   );
 }
 
-function ContactOnePage({ defaultReason }: { defaultReason?: string }) {
+function ContactOnePage({
+  defaultReason,
+  settings
+}: {
+  defaultReason?: string;
+  settings: PublicSiteSettings;
+}) {
   return (
     <div className="contact-page contact-page--onepage mx-auto max-w-[92rem] px-4 py-4 sm:px-6 lg:px-8">
-      <ContactJsonLd />
+      <ContactJsonLd settings={settings} />
 
       <section className="contact-onepage-shell">
         <div className="contact-onepage-intro">
 
-          <ContactInfoCards />
+          <ContactInfoCards settings={settings} />
         </div>
 
         <LeadForm
@@ -115,7 +124,7 @@ function ContactOnePage({ defaultReason }: { defaultReason?: string }) {
         />
 
         <aside className="contact-onepage-side">
-          <OfficeMapCard />
+          <OfficeMapCard settings={settings} />
         </aside>
       </section>
     </div>
@@ -151,6 +160,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function ContactPage({ searchParams }: ContactPageProps) {
   const params = searchParams ? await searchParams : undefined;
   const defaultReason = getDefaultReason(params);
+  const settings = await getPublicSiteSettings();
 
-  return <ContactOnePage defaultReason={defaultReason} />;
+  return <ContactOnePage defaultReason={defaultReason} settings={settings} />;
 }

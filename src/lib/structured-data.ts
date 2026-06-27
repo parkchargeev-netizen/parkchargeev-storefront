@@ -1,4 +1,8 @@
 import { absoluteUrl, siteConfig } from "@/lib/site";
+import {
+  type PublicSiteSettings,
+  normalizePublicSiteSettings
+} from "@/lib/site-settings";
 import type {
   ArticleModel,
   FaqItem,
@@ -19,8 +23,8 @@ const officeLongitude = 30.300722122192383;
 const officeMapUrl =
   "https://www.google.com/maps/search/?api=1&query=40.74146948542449,30.300722122192383";
 
-function getSameAsLinks() {
-  return Object.values(siteConfig.socials).filter(Boolean);
+function getSameAsLinks(settings?: PublicSiteSettings) {
+  return Object.values(settings?.socials ?? siteConfig.socials).filter(Boolean);
 }
 
 export function stringifyJsonLd(payload: unknown) {
@@ -39,31 +43,34 @@ export function getProductImageUrl(product: ProductModel) {
   return absoluteUrl(`/api/og/product/${product.slug}`);
 }
 
-export function getOrganizationJsonLd() {
+export function getOrganizationJsonLd(settingsInput?: PublicSiteSettings) {
+  const settings = normalizePublicSiteSettings(settingsInput);
+  const publicLogoUrl = settings.logoUrl ? toAbsoluteMediaUrl(settings.logoUrl) : logoUrl;
+
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
     "@id": organizationId,
-    name: siteConfig.name,
+    name: settings.brandName,
     alternateName: "Park Charge EV",
     url: siteConfig.url,
-    description: siteConfig.description,
-    email: siteConfig.email,
-    telephone: siteConfig.phone,
+    description: settings.description,
+    email: settings.email,
+    telephone: settings.phone,
     image: defaultImageUrl,
-    logo: logoUrl,
+    logo: publicLogoUrl,
     address: {
       "@type": "PostalAddress",
-      streetAddress: siteConfig.address.streetAddress,
-      addressLocality: siteConfig.address.addressLocality,
-      addressRegion: siteConfig.address.addressRegion,
-      addressCountry: siteConfig.address.addressCountry
+      streetAddress: settings.address.streetAddress,
+      addressLocality: settings.address.addressLocality,
+      addressRegion: settings.address.addressRegion,
+      addressCountry: settings.address.addressCountry
     },
     contactPoint: {
       "@type": "ContactPoint",
       contactType: "customer support",
-      telephone: siteConfig.phone,
-      email: siteConfig.email,
+      telephone: settings.phone,
+      email: settings.email,
       areaServed: "TR",
       availableLanguage: ["tr-TR"]
     },
@@ -86,7 +93,7 @@ export function getOrganizationJsonLd() {
         addressCountry: "TR"
       }
     },
-    areaServed: siteConfig.serviceAreas,
+    areaServed: settings.serviceAreas,
     knowsAbout: [
       "Elektrikli araç şarj cihazları",
       "EV şarj istasyonu kurulumu",
@@ -95,24 +102,27 @@ export function getOrganizationJsonLd() {
       "Site ve apartman şarj altyapısı",
       "Filo ve iş yeri şarj çözümleri"
     ],
-    sameAs: getSameAsLinks()
+    sameAs: getSameAsLinks(settings)
   };
 }
 
-export function getLocalBusinessJsonLd() {
+export function getLocalBusinessJsonLd(settingsInput?: PublicSiteSettings) {
+  const settings = normalizePublicSiteSettings(settingsInput);
+  const publicLogoUrl = settings.logoUrl ? toAbsoluteMediaUrl(settings.logoUrl) : logoUrl;
+
   return {
     "@context": "https://schema.org",
     "@type": ["ProfessionalService", "Electrician"],
     "@id": localBusinessId,
-    name: siteConfig.name,
+    name: settings.brandName,
     alternateName: "Park Charge EV",
     url: siteConfig.url,
     description:
       "Elektrikli araç şarj cihazı satışı, keşif, kurulum ve teknik destek hizmeti.",
     image: defaultImageUrl,
-    logo: logoUrl,
-    email: siteConfig.email,
-    telephone: siteConfig.phone,
+    logo: publicLogoUrl,
+    email: settings.email,
+    telephone: settings.phone,
     priceRange: "$$",
     currenciesAccepted: "TRY",
     paymentAccepted: "Credit Card",
@@ -121,10 +131,10 @@ export function getLocalBusinessJsonLd() {
     },
     address: {
       "@type": "PostalAddress",
-      streetAddress: siteConfig.address.streetAddress,
-      addressLocality: siteConfig.address.addressLocality,
-      addressRegion: siteConfig.address.addressRegion,
-      addressCountry: siteConfig.address.addressCountry
+      streetAddress: settings.address.streetAddress,
+      addressLocality: settings.address.addressLocality,
+      addressRegion: settings.address.addressRegion,
+      addressCountry: settings.address.addressCountry
     },
     geo: {
       "@type": "GeoCoordinates",
@@ -132,18 +142,20 @@ export function getLocalBusinessJsonLd() {
       longitude: officeLongitude
     },
     hasMap: officeMapUrl,
-    openingHours: siteConfig.supportHours,
-    areaServed: siteConfig.serviceAreas,
-    sameAs: getSameAsLinks()
+    openingHours: settings.supportHours,
+    areaServed: settings.serviceAreas,
+    sameAs: getSameAsLinks(settings)
   };
 }
 
-export function getWebsiteJsonLd() {
+export function getWebsiteJsonLd(settingsInput?: PublicSiteSettings) {
+  const settings = normalizePublicSiteSettings(settingsInput);
+
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "@id": websiteId,
-    name: siteConfig.name,
+    name: settings.brandName,
     url: siteConfig.url,
     inLanguage: "tr-TR",
     publisher: {

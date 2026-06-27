@@ -4,13 +4,15 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteAmbientLayer } from "@/components/layout/site-ambient-layer";
 import { SiteHeader } from "@/components/layout/site-header";
 import type { PublicSiteNavigation } from "@/features/navigation/domain/public-navigation";
+import type { PublicSiteSettings } from "@/lib/site-settings";
 
 type SiteShellProps = {
   children: ReactNode;
   navigation?: PublicSiteNavigation;
+  settings?: PublicSiteSettings;
 };
 
-export function SiteShell({ children, navigation }: SiteShellProps) {
+export function SiteShell({ children, navigation, settings }: SiteShellProps) {
   return (
     <div className="site-experience-shell">
       <div className="site-scroll-progress" aria-hidden />
@@ -21,7 +23,7 @@ export function SiteShell({ children, navigation }: SiteShellProps) {
       >
         İçeriğe geç
       </a>
-      <SiteHeader navigation={navigation?.primary} />
+      <SiteHeader navigation={navigation?.primary} settings={settings} />
       <div
         id="main-content"
         tabIndex={-1}
@@ -31,6 +33,7 @@ export function SiteShell({ children, navigation }: SiteShellProps) {
         {children}
       </div>
       <SiteFooter
+        settings={settings}
         navigation={
           navigation
             ? {

@@ -9,15 +9,19 @@ import { recordAuditLog } from "@/server/admin/audit";
 import type {
   adminListQuerySchema,
   adminNavigationItemSchema,
+  adminSiteSettingsSchema,
   adminSitePageSchema
 } from "@/server/admin/validators";
 import type { AdminSessionPayload } from "@/server/auth/session";
 import { getDb } from "@/server/db/client";
-import { navigationItems, sitePages } from "@/server/db/schema";
+import { navigationItems, sitePages, siteSettings } from "@/server/db/schema";
+import { normalizePublicSiteSettings } from "@/lib/site-settings";
+import { SITE_SETTINGS_KEY, rowToPublicSiteSettings } from "@/server/site/settings";
 
 type ListQueryInput = z.infer<typeof adminListQuerySchema>;
 type NavigationItemInput = z.infer<typeof adminNavigationItemSchema>;
 type SitePageInput = z.infer<typeof adminSitePageSchema>;
+type SiteSettingsInput = z.infer<typeof adminSiteSettingsSchema>;
 
 const navigationAreas = ["primary", "footer", "legal"] as const;
 const sitePageStatuses = ["draft", "published", "archived"] as const;
@@ -58,13 +62,38 @@ function isSitePageStatus(value?: string): value is (typeof sitePageStatuses)[nu
 function revalidateSiteManagementCaches(slug?: string) {
   revalidateTag("site-pages");
   revalidateTag("site-navigation");
+  revalidateTag("site-settings");
   revalidatePath("/admin");
   revalidatePath("/admin/site");
+  revalidatePath("/", "layout");
+  revalidatePath("/iletisim");
   revalidatePath("/sitemap.xml");
 
   if (slug) {
     revalidatePath(`/${slug}`);
   }
+}
+
+function getSiteSettingsValues(input: SiteSettingsInput) {
+  return {
+    brandName: input.brandName,
+    description: input.description,
+    logoUrl: input.logoUrl || null,
+    logoAlt: input.logoAlt || input.brandName,
+    phone: input.phone,
+    email: input.email,
+    whatsappPhone: input.whatsappPhone,
+    supportHours: input.supportHours,
+    streetAddress: input.streetAddress,
+    addressLocality: input.addressLocality,
+    addressRegion: input.addressRegion,
+    postalCode: input.postalCode || "",
+    addressCountry: input.addressCountry || "TR",
+    mapEmbedUrl: input.mapEmbedUrl || null,
+    serviceAreas: input.serviceAreas,
+    socials: input.socials,
+    updatedAt: new Date()
+  };
 }
 
 async function loadAdminNavigationItems(input: ListQueryInput) {
@@ -192,6 +221,122 @@ export async function upsertAdminNavigationItem(
 
   revalidateSiteManagementCaches();
   return created;
+}
+
+export async function deleteAdminNavigationItem(
+  id: string,
+  actor: AdminSessionPayload | null,
+  requestMeta?: { ipAddress?: string | null; userAgent?: string | null }
+) {
+  if (!hasDatabaseConfig()) {
+    return null;
+  }
+
+  const db = getDb();
+  const [before] = await db.select().from(navigationItems).where(eq(navigationItems.id, id)).limit(1);
+
+  if (!before) {
+    revalidateSiteManagementCaches();
+    return null;
+  }
+
+  await db.delete(navigationItems).where(eq(navigationItems.id, id));
+
+  try {
+    await recordAuditLog({
+      db,
+      actor,
+      entityType: "navigation_item",
+      entityId: id,
+      action: "delete",
+      summary: `${before.label} navigasyon kaydı silindi.`,
+      beforePayload: before,
+      ipAddress: requestMeta?.ipAddress,
+      userAgent: requestMeta?.userAgent
+    });
+  } catch (error) {
+    logWarn("admin.navigation_item.delete_audit_failed", {
+      navigationItemId: id,
+      message: error instanceof Error ? error.message : "unknown"
+    });
+  }
+
+  revalidateSiteManagementCaches();
+  return before;
+}
+
+export async function getAdminSiteSettings() {
+  if (!hasDatabaseConfig()) {
+    return normalizePublicSiteSettings(null);
+  }
+
+  try {
+    const db = getDb();
+    const [row] = await db
+      .select()
+      .from(siteSettings)
+      .where(eq(siteSettings.singletonKey, SITE_SETTINGS_KEY))
+      .limit(1);
+
+    return rowToPublicSiteSettings(row);
+  } catch (error) {
+    logWarn("admin.site_settings.load_failed", {
+      message: error instanceof Error ? error.message : "unknown"
+    });
+    return normalizePublicSiteSettings(null);
+  }
+}
+
+export async function upsertAdminSiteSettings(
+  input: SiteSettingsInput,
+  actor: AdminSessionPayload | null,
+  requestMeta?: { ipAddress?: string | null; userAgent?: string | null }
+) {
+  if (!hasDatabaseConfig()) {
+    return null;
+  }
+
+  const db = getDb();
+  const values = getSiteSettingsValues(input);
+  const [before] = await db
+    .select()
+    .from(siteSettings)
+    .where(eq(siteSettings.singletonKey, SITE_SETTINGS_KEY))
+    .limit(1);
+
+  if (before) {
+    await db
+      .update(siteSettings)
+      .set(values)
+      .where(eq(siteSettings.singletonKey, SITE_SETTINGS_KEY));
+  } else {
+    await db.insert(siteSettings).values({
+      singletonKey: SITE_SETTINGS_KEY,
+      ...values
+    });
+  }
+
+  const [after] = await db
+    .select()
+    .from(siteSettings)
+    .where(eq(siteSettings.singletonKey, SITE_SETTINGS_KEY))
+    .limit(1);
+
+  await recordAuditLog({
+    db,
+    actor,
+    entityType: "site_settings",
+    entityId: SITE_SETTINGS_KEY,
+    action: before ? "update" : "create",
+    summary: "Site genel ayarları güncellendi.",
+    beforePayload: before ?? null,
+    afterPayload: after ?? values,
+    ipAddress: requestMeta?.ipAddress,
+    userAgent: requestMeta?.userAgent
+  });
+
+  revalidateSiteManagementCaches();
+  return rowToPublicSiteSettings(after);
 }
 
 async function loadAdminSitePages(input: ListQueryInput) {

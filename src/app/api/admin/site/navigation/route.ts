@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 
 import {
+  deleteAdminNavigationItem,
   listAdminNavigationItems,
   upsertAdminNavigationItem
 } from "@/server/admin/site-management";
@@ -9,6 +11,10 @@ import {
   adminNavigationItemSchema
 } from "@/server/admin/validators";
 import { getRequestMeta, requireAdminRole } from "@/server/auth/guards";
+
+const deleteNavigationItemSchema = z.object({
+  id: z.string().uuid()
+});
 
 function parseListQuery(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -52,4 +58,41 @@ export async function POST(request: Request) {
 
 export async function PATCH(request: Request) {
   return handleUpsert(request);
+}
+
+export async function DELETE(request: Request) {
+  const authenticatedAdmin = await requireAdminRole(["superadmin", "editor"]);
+
+  if (!authenticatedAdmin) {
+    return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });
+  }
+
+  const { searchParams } = new URL(request.url);
+  const parsed = deleteNavigationItemSchema.safeParse({
+    id: searchParams.get("id")
+  });
+
+  if (!parsed.success) {
+    return NextResponse.json(
+      { ok: false, message: "Geçerli bir navigasyon kimliği gerekli." },
+      { status: 400 }
+    );
+  }
+
+  const requestMeta = await getRequestMeta();
+  const item = await deleteAdminNavigationItem(
+    parsed.data.id,
+    authenticatedAdmin.session,
+    requestMeta
+  );
+
+  if (!item) {
+    return NextResponse.json({
+      ok: true,
+      alreadyDeleted: true,
+      message: "Navigasyon kaydı zaten silinmiş veya bulunamadı."
+    });
+  }
+
+  return NextResponse.json({ ok: true, item });
 }

@@ -5,14 +5,17 @@ import Link from "next/link";
 import { SiteHeaderActions } from "@/components/layout/site-header-actions";
 import type { PublicNavigationItem } from "@/features/navigation/domain/public-navigation";
 import { formatPublicNavigationLabel } from "@/lib/public-navigation-labels";
+import type { PublicSiteSettings } from "@/lib/site-settings";
 
 type SiteMobileMenuPanelProps = {
   navigation: ReadonlyArray<PublicNavigationItem>;
+  settings?: PublicSiteSettings;
   onNavigate: () => void;
 };
 
 export function SiteMobileMenuPanel({
   navigation,
+  settings,
   onNavigate
 }: SiteMobileMenuPanelProps) {
   return (
@@ -36,7 +39,10 @@ export function SiteMobileMenuPanel({
             </Link>
           ))}
         </nav>
-        <SiteHeaderActions className="grid grid-cols-2 gap-2 sm:grid-cols-5 [&>*]:w-full" />
+        <SiteHeaderActions
+          settings={settings}
+          className="grid grid-cols-2 gap-2 sm:grid-cols-5 [&>*]:w-full"
+        />
       </div>
     </div>
   );

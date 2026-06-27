@@ -4,13 +4,16 @@ import Link from "next/link";
 import { SiteCartLink } from "@/components/layout/site-cart-link";
 import { conversionDataAttributes } from "@/lib/conversion-events";
 import { siteConfig } from "@/lib/site";
+import type { PublicSiteSettings } from "@/lib/site-settings";
 
 type SiteHeaderActionsProps = {
   className?: string;
+  settings?: PublicSiteSettings;
 };
 
-export function SiteHeaderActions({ className = "" }: SiteHeaderActionsProps) {
-  const whatsappHref = `https://wa.me/${siteConfig.whatsappPhone}?text=${encodeURIComponent(
+export function SiteHeaderActions({ className = "", settings }: SiteHeaderActionsProps) {
+  const whatsappPhone = settings?.whatsappPhone ?? siteConfig.whatsappPhone;
+  const whatsappHref = `https://wa.me/${whatsappPhone}?text=${encodeURIComponent(
     "Merhaba, ParkChargeEV şarj çözümü için bilgi almak istiyorum."
   )}`;
   const surveyHref = `/iletisim?reason=${encodeURIComponent("Ücretsiz keşif talebi")}`;

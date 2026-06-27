@@ -175,6 +175,51 @@ export const navigationItems = pgTable(
   })
 );
 
+export const siteSettings = pgTable(
+  "site_settings",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    singletonKey: varchar("singleton_key", { length: 40 })
+      .default("main")
+      .notNull(),
+    brandName: varchar("brand_name", { length: 120 })
+      .default("ParkChargeEV")
+      .notNull(),
+    description: text("description").notNull(),
+    logoUrl: varchar("logo_url", { length: 500 }),
+    logoAlt: varchar("logo_alt", { length: 180 }),
+    phone: varchar("phone", { length: 40 }).notNull(),
+    email: varchar("email", { length: 180 }).notNull(),
+    whatsappPhone: varchar("whatsapp_phone", { length: 40 }).notNull(),
+    supportHours: varchar("support_hours", { length: 80 }).notNull(),
+    streetAddress: varchar("street_address", { length: 255 }).notNull(),
+    addressLocality: varchar("address_locality", { length: 120 }).notNull(),
+    addressRegion: varchar("address_region", { length: 120 }).notNull(),
+    postalCode: varchar("postal_code", { length: 20 }).default("").notNull(),
+    addressCountry: varchar("address_country", { length: 8 }).default("TR").notNull(),
+    mapEmbedUrl: varchar("map_embed_url", { length: 1200 }),
+    serviceAreas: jsonb("service_areas").$type<string[]>().default([]).notNull(),
+    socials: jsonb("socials")
+      .$type<{
+        instagram?: string;
+        facebook?: string;
+        linkedin?: string;
+        youtube?: string;
+      }>()
+      .default({})
+      .notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+  },
+  (table) => ({
+    singletonIndex: uniqueIndex("site_settings_singleton_idx").on(table.singletonKey)
+  })
+);
+
 export const cartRecoveryIntents = pgTable(
   "cart_recovery_intents",
   {

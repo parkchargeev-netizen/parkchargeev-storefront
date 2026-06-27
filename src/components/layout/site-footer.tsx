@@ -6,17 +6,35 @@ import type { PublicSiteNavigation } from "@/features/navigation/domain/public-n
 import { formatPublicNavigationLabel } from "@/lib/public-navigation-labels";
 import { serviceCoverageSummary } from "@/lib/service-coverage";
 import { siteConfig } from "@/lib/site";
+import type { PublicSiteSettings } from "@/lib/site-settings";
 
 type SiteFooterProps = {
   navigation?: Pick<PublicSiteNavigation, "footer" | "legal">;
+  settings?: PublicSiteSettings;
 };
 
 export function SiteFooter({
   navigation = {
     footer: siteConfig.footerNavigation,
     legal: siteConfig.legalNavigation
-  }
+  },
+  settings
 }: SiteFooterProps) {
+  const publicSettings = settings ?? {
+    brandName: siteConfig.name,
+    description: siteConfig.description,
+    logoUrl: "",
+    logoAlt: siteConfig.name,
+    phone: siteConfig.phone,
+    email: siteConfig.email,
+    whatsappPhone: siteConfig.whatsappPhone,
+    supportHours: siteConfig.supportHours,
+    address: siteConfig.address,
+    mapEmbedUrl: "",
+    serviceAreas: [...siteConfig.serviceAreas],
+    socials: { ...siteConfig.socials }
+  };
+
   return (
     <footer className="border-t border-outline-variant/40 bg-white" data-motion-scope>
       <div className="bg-[#063326] text-white">
@@ -44,25 +62,24 @@ export function SiteFooter({
       <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
         <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr]">
           <div>
-            <BrandLogo />
+            <BrandLogo settings={publicSettings} />
             <p className="mt-4 max-w-xl text-sm leading-7 text-on-surface-variant">
-              Ev, site, işletme ve ticari lokasyonlar için elektrikli araç şarj
-              cihazı, keşif, kurulum ve teknik destek çözümleri.
+              {publicSettings.description}
             </p>
             <div className="mt-6 space-y-3 text-sm text-on-surface-variant">
               <a
-                href={`tel:${siteConfig.phone}`}
+                href={`tel:${publicSettings.phone}`}
                 className="flex items-center gap-2 transition hover:text-primary"
               >
                 <Phone className="h-4 w-4" aria-hidden />
-                {siteConfig.phone}
+                {publicSettings.phone}
               </a>
               <a
-                href={`mailto:${siteConfig.email}`}
+                href={`mailto:${publicSettings.email}`}
                 className="flex items-center gap-2 transition hover:text-primary"
               >
                 <Headphones className="h-4 w-4" aria-hidden />
-                {siteConfig.email}
+                {publicSettings.email}
               </a>
               <p>
                 {serviceCoverageSummary.shipping} · {serviceCoverageSummary.freeSurvey} ·{" "}
@@ -71,8 +88,9 @@ export function SiteFooter({
               <p className="flex items-start gap-2">
                 <MapPin className="mt-1 h-4 w-4 shrink-0" aria-hidden />
                 <span>
-                  {siteConfig.address.streetAddress}, {siteConfig.address.addressLocality} /{" "}
-                  {siteConfig.address.addressRegion}
+                  {publicSettings.address.streetAddress},{" "}
+                  {publicSettings.address.addressLocality} /{" "}
+                  {publicSettings.address.addressRegion}
                 </span>
               </p>
             </div>
@@ -130,7 +148,7 @@ export function SiteFooter({
             </div>
             <p className="mt-7 text-sm font-semibold uppercase text-primary">Hizmet kapsamı</p>
             <div className="mt-5 flex flex-wrap gap-2">
-              {siteConfig.serviceAreas.map((area) => (
+              {publicSettings.serviceAreas.map((area) => (
                 <span
                   key={area}
                   className="rounded-full bg-surface-container-low px-3 py-2 text-xs font-semibold text-on-surface"
@@ -144,7 +162,7 @@ export function SiteFooter({
 
         <div className="mt-10 flex flex-col gap-3 border-t border-outline-variant/35 pt-6 text-sm text-on-surface-variant sm:flex-row sm:items-center sm:justify-between">
           <span>
-            © 2026 {siteConfig.name}. Güvenli şarj ürünleri, keşif ve kurulum çözümleri.
+            © 2026 {publicSettings.brandName}. Güvenli şarj ürünleri, keşif ve kurulum çözümleri.
           </span>
           <span>
             Bu site{" "}

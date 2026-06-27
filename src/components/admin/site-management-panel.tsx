@@ -1,6 +1,8 @@
 import { AdminPrefetchLink } from "@/components/admin/admin-prefetch-link";
+import { NavigationItemDeleteButton } from "@/components/admin/navigation-item-delete-button";
 import { SitePageDeleteButton } from "@/components/admin/site-page-delete-button";
 import { SiteManagementFormSlot } from "@/components/admin/site-management-form-slot";
+import { SiteSettingsForm } from "@/components/admin/site-settings-form";
 import { AdminFilterBar } from "@/components/admin/table/admin-filter-bar";
 import { AdminPageHeader } from "@/components/admin/table/admin-page-header";
 import { AdminStatusBadge } from "@/components/admin/table/admin-status-badge";
@@ -11,6 +13,7 @@ import {
 } from "@/lib/site-strategy";
 import {
   getAdminNavigationItemById,
+  getAdminSiteSettings,
   getAdminSitePageById,
   listAdminNavigationItems,
   listAdminSitePages
@@ -80,11 +83,12 @@ export async function SiteManagementPanel({
   query = {},
   basePath = "/admin"
 }: SiteManagementPanelProps) {
-  const [navigation, pages, selectedNavigationItem, selectedPage] = await Promise.all([
+  const [navigation, pages, selectedNavigationItem, selectedPage, settings] = await Promise.all([
     listAdminNavigationItems({ q: query.q, status: query.status, limit: 50 }),
     listAdminSitePages({ q: query.q, status: query.status, limit: 50 }),
     query.editNav ? getAdminNavigationItemById(query.editNav) : Promise.resolve(null),
-    query.editPage ? getAdminSitePageById(query.editPage) : Promise.resolve(null)
+    query.editPage ? getAdminSitePageById(query.editPage) : Promise.resolve(null),
+    getAdminSiteSettings()
   ]);
   const activeNavigationCount = navigation.items.filter((item) => item.isActive).length;
   const publishedPageCount = pages.items.filter((page) => page.status === "published").length;
@@ -92,6 +96,12 @@ export async function SiteManagementPanel({
   const showNewNavigationForm = query.newNav === "1";
   const showNewPageForm = query.newPage === "1";
   const globalControlLinks = [
+    {
+      href: "#site-settings",
+      title: "Logo, adres ve iletişim",
+      body: "Site logosu, marka adı, telefon, e-posta, WhatsApp, merkez adresi, harita ve hizmet bölgelerini düzenleyin.",
+      action: "Genel ayarlar"
+    },
     {
       href: createHref(basePath, "newNav"),
       title: "Menü ve footer",
@@ -205,6 +215,30 @@ export async function SiteManagementPanel({
           </ul>
         </aside>
       </div>
+
+      <section
+        id="site-settings"
+        className="surface-card scroll-mt-6 border border-emerald-100 bg-white/95 p-5 lg:p-6"
+      >
+        <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-normal text-emerald-700">
+              Logo, adres ve iletişim
+            </p>
+            <h2 className="mt-2 text-2xl font-semibold text-slate-950">
+              Site genelindeki marka bilgilerini yönetin.
+            </h2>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
+              Header, footer, mobil menü ve iletişim sayfası bu kayıttan beslenir.
+              Logo URL boş kalırsa mevcut ParkChargeEV logosu kullanılır.
+            </p>
+          </div>
+          <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800">
+            {settings.address.addressRegion} / {settings.address.addressLocality}
+          </span>
+        </div>
+        <SiteSettingsForm settings={settings} />
+      </section>
 
       <section className="surface-card border border-emerald-100 bg-white/95 p-5 lg:p-6">
         <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
@@ -402,12 +436,19 @@ export async function SiteManagementPanel({
                 {selectedNavigationItem.label}
               </h2>
             </div>
-            <AdminPrefetchLink
-              href={`${basePath}#site-management`}
-              className="rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-xs font-semibold text-emerald-800"
-            >
-              Kapat
-            </AdminPrefetchLink>
+            <div className="flex flex-wrap items-center gap-2">
+              <AdminPrefetchLink
+                href={`${basePath}#site-management`}
+                className="rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-xs font-semibold text-emerald-800"
+              >
+                Kapat
+              </AdminPrefetchLink>
+              <NavigationItemDeleteButton
+                id={selectedNavigationItem.id}
+                label={selectedNavigationItem.label}
+                returnHref={`${basePath}#site-management`}
+              />
+            </div>
           </div>
           <SiteManagementFormSlot
             kind="navigation"
@@ -492,6 +533,11 @@ export async function SiteManagementPanel({
                   >
                     Düzenle
                   </AdminPrefetchLink>
+                  <NavigationItemDeleteButton
+                    id={item.id}
+                    label={item.label}
+                    returnHref={`${basePath}#site-management`}
+                  />
                 </div>
               </div>
             </div>

@@ -8,22 +8,23 @@ import {
   getWebsiteJsonLd
 } from "@/lib/structured-data";
 import { getPublicSiteNavigation } from "@/server/site/repository";
+import { getPublicSiteSettings } from "@/server/site/settings";
 
 export const revalidate = 300;
 
 export default async function PublicSiteLayout({ children }: { children: ReactNode }) {
-  const [navigation, organizationJsonLd, localBusinessJsonLd, websiteJsonLd] =
-    await Promise.all([
-      getPublicSiteNavigation(),
-      getOrganizationJsonLd(),
-      getLocalBusinessJsonLd(),
-      getWebsiteJsonLd()
-    ]);
+  const [navigation, settings] = await Promise.all([
+    getPublicSiteNavigation(),
+    getPublicSiteSettings()
+  ]);
+  const organizationJsonLd = getOrganizationJsonLd(settings);
+  const localBusinessJsonLd = getLocalBusinessJsonLd(settings);
+  const websiteJsonLd = getWebsiteJsonLd(settings);
 
   return (
     <>
       <JsonLd data={[organizationJsonLd, localBusinessJsonLd, websiteJsonLd]} />
-      <SiteShell navigation={navigation}>{children}</SiteShell>
+      <SiteShell navigation={navigation} settings={settings}>{children}</SiteShell>
     </>
   );
 }

@@ -5,9 +5,11 @@ import dynamic from "next/dynamic";
 import { useState } from "react";
 
 import type { PublicNavigationItem } from "@/features/navigation/domain/public-navigation";
+import type { PublicSiteSettings } from "@/lib/site-settings";
 
 type SiteMobileMenuProps = {
   navigation: ReadonlyArray<PublicNavigationItem>;
+  settings?: PublicSiteSettings;
 };
 
 const SiteMobileMenuPanel = dynamic(
@@ -21,7 +23,7 @@ const SiteMobileMenuPanel = dynamic(
   }
 );
 
-export function SiteMobileMenu({ navigation }: SiteMobileMenuProps) {
+export function SiteMobileMenu({ navigation, settings }: SiteMobileMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const Icon = isOpen ? X : Menu;
   const buttonLabel = isOpen ? "Menüyü kapat" : "Menüyü aç";
@@ -48,6 +50,7 @@ export function SiteMobileMenu({ navigation }: SiteMobileMenuProps) {
       {isOpen ? (
         <SiteMobileMenuPanel
           navigation={navigation}
+          settings={settings}
           onNavigate={() => setIsOpen(false)}
         />
       ) : null}

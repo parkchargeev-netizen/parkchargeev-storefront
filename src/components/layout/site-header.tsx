@@ -8,15 +8,18 @@ import { SitePrimaryNavigation } from "@/components/layout/site-primary-navigati
 import type { PublicNavigationItem } from "@/features/navigation/domain/public-navigation";
 import { serviceCoverageSummary } from "@/lib/service-coverage";
 import { siteConfig } from "@/lib/site";
+import type { PublicSiteSettings } from "@/lib/site-settings";
 
 type SiteHeaderProps = {
   navigation?: ReadonlyArray<PublicNavigationItem>;
+  settings?: PublicSiteSettings;
 };
 
-export function SiteHeader({ navigation = siteConfig.primaryNavigation }: SiteHeaderProps) {
+export function SiteHeader({ navigation = siteConfig.primaryNavigation, settings }: SiteHeaderProps) {
   const visibleNavigation = navigation
     .filter((item) => item.href !== "/karsilastir")
     .slice(0, 7);
+  const brandName = settings?.brandName ?? siteConfig.name;
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/50 bg-white/78 shadow-[0_10px_38px_rgba(6,51,38,0.07)] backdrop-blur-2xl">
@@ -45,15 +48,15 @@ export function SiteHeader({ navigation = siteConfig.primaryNavigation }: SiteHe
         <Link
           href="/"
           className="group inline-flex shrink-0 items-center"
-          aria-label={`${siteConfig.name} ana sayfa`}
+          aria-label={`${brandName} ana sayfa`}
         >
-          <BrandLogo />
+          <BrandLogo settings={settings} />
         </Link>
 
         <SitePrimaryNavigation items={visibleNavigation} />
 
-        <SiteHeaderActions className="hidden items-center gap-2 lg:flex" />
-        <SiteMobileMenu navigation={navigation} />
+        <SiteHeaderActions settings={settings} className="hidden items-center gap-2 lg:flex" />
+        <SiteMobileMenu navigation={navigation} settings={settings} />
       </div>
     </header>
   );
