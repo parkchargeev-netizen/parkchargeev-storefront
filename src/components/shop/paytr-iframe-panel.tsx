@@ -7,6 +7,8 @@ type PaytrIframePanelProps = {
   iframeToken: string | null;
 };
 
+const PAYTR_IFRAME_RESIZER_SRC = "https://www.paytr.com/js/iframeResizer.min.js?v2";
+
 export function PaytrIframePanel({ iframeToken }: PaytrIframePanelProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
@@ -38,19 +40,23 @@ export function PaytrIframePanel({ iframeToken }: PaytrIframePanelProps) {
     );
 
     if (existingScript) {
-      if (paytrWindow.iFrameResize) {
-        initializeResizer();
+      if (existingScript.src !== PAYTR_IFRAME_RESIZER_SRC) {
+        existingScript.remove();
       } else {
-        existingScript.addEventListener("load", initializeResizer, { once: true });
-      }
+        if (paytrWindow.iFrameResize) {
+          initializeResizer();
+        } else {
+          existingScript.addEventListener("load", initializeResizer, { once: true });
+        }
 
-      return () => {
-        existingScript.removeEventListener("load", initializeResizer);
-      };
+        return () => {
+          existingScript.removeEventListener("load", initializeResizer);
+        };
+      }
     }
 
     const script = document.createElement("script");
-    script.src = "https://www.paytr.com/js/iframeResizer.min.js";
+    script.src = PAYTR_IFRAME_RESIZER_SRC;
     script.async = true;
     script.dataset.paytrIframeResizer = "true";
     script.addEventListener("load", initializeResizer, { once: true });

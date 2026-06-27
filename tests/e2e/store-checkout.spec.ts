@@ -244,6 +244,11 @@ test("@e2e magaza -> urun -> sepet -> checkout akisi iframe mock ile tamamlanir"
   expect(paytrMock.getTokenRequestBody()).not.toContain("card_number");
   expect(paytrMock.getTokenRequestBody()).not.toContain("cvv");
   expect(paytrMock.getTokenRequestBody()).not.toContain("cc_owner");
+  expect(paytrMock.getTokenRequestBody()).not.toContain("non_3d");
+  expect(paytrMock.getTokenRequestBody()).not.toContain("non3d");
+  expect(paytrMock.getTokenRequestBody()).not.toContain("payment_type");
+  expect(paytrMock.getTokenRequestBody()).not.toContain("installment_count");
+  expect(paytrMock.getTokenRequestBody()).not.toContain("card_type");
   await expect(page.locator('iframe[title="Güvenli kart ödeme formu"]')).toHaveAttribute(
     "src",
     "https://www.paytr.com/odeme/guvenli/mock_iframe_token"
@@ -319,7 +324,19 @@ test("@e2e kart alanlari yalnizca PayTR iframe icinde acilir", async ({
   await page.getByRole("button", { name: /Öde ve Siparişi Tamamla/i }).click();
 
   await expect.poll(() => paytrMock.getTokenRequestBody()).toContain("productId");
-  await expect(page.locator('iframe[title="Güvenli kart ödeme formu"]')).toBeVisible();
+  const paytrIframe = page.locator("iframe#paytriframe");
+  await expect(paytrIframe).toBeVisible();
+  await expect(paytrIframe).toHaveAttribute(
+    "src",
+    "https://www.paytr.com/odeme/guvenli/mock_iframe_token"
+  );
+  await expect(paytrIframe).not.toHaveAttribute("sandbox", /.+/);
+  await expect(
+    page.locator('script[src="https://www.paytr.com/js/iframeResizer.min.js?v2"]')
+  ).toHaveCount(1);
+  await expect(
+    page.locator('script[src="https://www.paytr.com/js/iframeResizer.min.js"]')
+  ).toHaveCount(0);
 });
 
 test("@e2e legacy PayTR Direct API varsayilan olarak kapalidir", async ({

@@ -38,6 +38,7 @@ export const paytrCheckoutRequestSchema = z.object({
     .min(1)
     .max(50)
 });
+const PAYTR_MIN_PAYMENT_AMOUNT_KURUS = 100;
 
 export type PaytrCheckoutRequest = z.infer<typeof paytrCheckoutRequestSchema>;
 export type PaytrCheckoutFlow = "iframe" | "direct_api";
@@ -209,6 +210,13 @@ async function priceCheckoutItems(items: PaytrCheckoutRequest["items"]) {
   );
   const taxKurus = Math.round(subtotalKurus * CART_TAX_RATE);
   const paymentAmountKurus = subtotalKurus + taxKurus;
+
+  if (paymentAmountKurus < PAYTR_MIN_PAYMENT_AMOUNT_KURUS) {
+    throw new PaytrCheckoutPricingError(
+      "PayTR odeme tutari en az 1 TL olmalidir. Lutfen sepetinizi kontrol edin."
+    );
+  }
+
   const paytrItems = buildPaytrBasketItems(pricedItems, taxKurus);
 
   return {

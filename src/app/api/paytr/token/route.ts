@@ -156,6 +156,9 @@ export async function POST(request: Request) {
       testMode: payload.test_mode,
       noInstallment: payload.no_installment,
       maxInstallment: payload.max_installment,
+      currency: payload.currency,
+      iframeV2: payload.iframe_v2,
+      paymentAmountAtLeastMinimum: paymentAmountKurus >= 100,
       itemCount: items.length,
       totalKurus: paymentAmountKurus
     });

@@ -7,6 +7,9 @@ const encoder = new TextEncoder();
 const checkoutConnectSources =
   "connect-src 'self' https://www.paytr.com https://o4511393003077632.ingest.de.sentry.io https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.g.doubleclick.net https://*.google.com https://google.com https://*.google.com.tr https://google.com.tr https://pagead2.googlesyndication.com https://www.googleadservices.com https://ad.doubleclick.net https://*.clarity.ms https://cloudflareinsights.com" +
   (process.env.NODE_ENV === "production" ? "" : " ws: http: https:");
+const checkoutScriptSources =
+  "'self' 'unsafe-inline' https://*.googletagmanager.com https://www.googleadservices.com https://www.google.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://www.clarity.ms https://scripts.clarity.ms https://*.clarity.ms https://www.paytr.com https://static.cloudflareinsights.com" +
+  (process.env.NODE_ENV === "production" ? "" : " 'unsafe-eval'");
 const checkoutContentSecurityPolicy = [
   "default-src 'self'",
   "base-uri 'self'",
@@ -18,8 +21,8 @@ const checkoutContentSecurityPolicy = [
   "img-src 'self' data: blob: https:",
   "font-src 'self' data: https://fonts.gstatic.com",
   "style-src 'self' 'unsafe-inline'",
-  "script-src 'self' 'unsafe-inline' https://*.googletagmanager.com https://www.googleadservices.com https://www.google.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://www.clarity.ms https://scripts.clarity.ms https://*.clarity.ms https://www.paytr.com https://static.cloudflareinsights.com",
-  "script-src-elem 'self' 'unsafe-inline' https://*.googletagmanager.com https://www.googleadservices.com https://www.google.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://www.clarity.ms https://scripts.clarity.ms https://*.clarity.ms https://www.paytr.com https://static.cloudflareinsights.com",
+  `script-src ${checkoutScriptSources}`,
+  `script-src-elem ${checkoutScriptSources}`,
   "worker-src 'self' blob:",
   "manifest-src 'self'",
   "media-src 'self' data: blob: https:",

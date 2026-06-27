@@ -84,6 +84,8 @@ PayTR panelinde canli domain icin kontrol edilecek ayarlar:
 | Test modu | Canlida kapali. |
 | Debug | Canlida kapali. |
 | Direkt API yetkisi | Direkt API kullanilacaksa PayTR tarafinda acik olmali. |
+| iFrame v2 script | `https://www.paytr.com/js/iframeResizer.min.js?v2` kullanilir. |
+| iFrame sandbox | Sandbox kullanilmaz; aksi halde 3D Secure form, popup veya banka donus navigasyonu engellenebilir. |
 
 Onemli kural:
 

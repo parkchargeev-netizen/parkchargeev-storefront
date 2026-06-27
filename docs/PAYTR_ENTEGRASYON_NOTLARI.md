@@ -14,6 +14,9 @@ ParkChargeEV müşteri ödeme akışı tek sayfa checkout olarak çalışır.
 - Tarayıcı sayfa değiştirmeden güvenli iframe alanını açar.
 - Link API veya hosted ödeme sayfasına yönlendirme yapılmaz.
 - Kart numarası, son kullanma tarihi ve CVV ParkChargeEV formunda toplanmaz, saklanmaz ve loglanmaz.
+- Direct API kart alanları (`card_number`, `cc_owner`, `cvv`, `non_3d`, `payment_type`) müşteri checkout akışına dahil edilmez.
+- `iframe_v2=1` kullanıldığı için müşteri sayfasında PayTR resizer script'i `https://www.paytr.com/js/iframeResizer.min.js?v2` olarak yüklenir.
+- PayTR iframe üzerinde `sandbox` attribute'u kullanılmaz; 3D Secure sayfasının form, script, popup ve kullanıcı başlatımlı üst sayfa navigasyonu engellenmez.
 
 Kart alanlarını ParkChargeEV DOM'unda göstermek PayTR Direkt API onayı, ek güvenlik değerlendirmesi ve PCI kapsamı doğurur. Bu nedenle aktif müşteri akışı Direkt API kullanmaz.
 
@@ -49,9 +52,12 @@ Zorunlu alanlar uygulamada sunucu tarafında üretilir:
 - `test_mode`
 - `no_installment`
 - `max_installment`
+- `iframe_v2`
 - `paytr_token`
 
 `payment_amount` kuruş cinsinden tam sayıdır. Örneğin `34,56 TL`, PayTR'ye `3456` olarak gönderilir.
+`payment_amount` en az `100` kuruş olmalıdır. Daha düşük tutar PayTR'ye gönderilmeden reddedilir.
+Test ve sade doğrulama senaryosunda `no_installment=1`, `max_installment=0`, `currency=TL` ve `iframe_v2=1` kullanılır.
 
 `merchant_ok_url` ve `merchant_fail_url` kullaniciya donus ekrani verir; kesin odeme sonucu yine PayTR callback ile dogrulanir. Ancak `merchant_fail_url` tarafinda pending siparisin admin panelde beklemede kalmamasi icin guvenli bir fallback vardir: siparis henuz `paid` degilse `payment_failed/failed` olarak isaretlenir ve sonradan gelen dogrulanmis PayTR `failed` callback'i hata kodu/mesajini gunceller.
 
