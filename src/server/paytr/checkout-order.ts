@@ -83,10 +83,16 @@ function createOrderNumber() {
 
 export function getPaytrUserIp(request: Request) {
   const forwardedFor = request.headers.get("x-forwarded-for");
+  const forwardedCandidate = forwardedFor
+    ?.split(",")
+    .map((value) => value.trim())
+    .find(Boolean);
   const candidateIp =
-    forwardedFor?.split(",")[0]?.trim() ||
-    request.headers.get("x-real-ip")?.trim() ||
     request.headers.get("cf-connecting-ip")?.trim() ||
+    request.headers.get("true-client-ip")?.trim() ||
+    request.headers.get("x-real-ip")?.trim() ||
+    request.headers.get("x-client-ip")?.trim() ||
+    forwardedCandidate ||
     process.env.PAYTR_TEST_USER_IP?.trim() ||
     "127.0.0.1";
 
