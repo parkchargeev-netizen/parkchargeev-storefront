@@ -24,8 +24,10 @@ const defaultContainerClassName = "mx-auto max-w-7xl px-4 sm:px-6 lg:px-8";
 
 const premiumSectionAtmosphereParts = [
   "premium-section__rail premium-section__rail--one",
+  "premium-section__rail premium-section__rail--two",
   "premium-section__spark premium-section__spark--one",
   "premium-section__spark premium-section__spark--two",
+  "premium-section__spark premium-section__spark--three",
   "premium-section__flare premium-section__flare--one"
 ] as const;
 

@@ -1,7 +1,9 @@
 const siteAmbientParts = [
   "site-ambient-circuit__ribbon site-ambient-circuit__ribbon--one",
   "site-ambient-circuit__beam site-ambient-circuit__beam--one",
+  "site-ambient-circuit__beam site-ambient-circuit__beam--two",
   "site-ambient-circuit__node site-ambient-circuit__node--one",
+  "site-ambient-circuit__node site-ambient-circuit__node--two",
   "site-ambient-circuit__trace site-ambient-circuit__trace--one"
 ] as const;
 

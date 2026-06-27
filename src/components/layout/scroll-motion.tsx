@@ -35,8 +35,9 @@ function getScrollMotionRuntimeScript() {
         var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
         var saveData = Boolean(connection && connection.saveData);
         var lowCoreCount = Boolean(navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4);
+        var lowMemory = Boolean(navigator.deviceMemory && navigator.deviceMemory <= 4);
 
-        if (mediaQuery.matches || coarsePointerQuery.matches || saveData || lowCoreCount) {
+        if (mediaQuery.matches || coarsePointerQuery.matches || saveData || lowCoreCount || lowMemory) {
           return "lite";
         }
 
@@ -251,7 +252,7 @@ function getScrollMotionRuntimeScript() {
           pendingRoots.clear();
         }
 
-        if (!pendingRoots.has(document)) {
+        if (!pendingRoots.has(nextRoot)) {
           pendingRoots.add(nextRoot);
         }
 

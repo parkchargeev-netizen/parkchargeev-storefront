@@ -10,7 +10,7 @@ export const motionRuntime = {
   maxStaggerItems: 6,
   pointerRangeX: 12,
   pointerRangeY: 10,
-  scrollProgressSteps: 160,
+  scrollProgressSteps: 112,
   scrollShiftPx: -16,
   staggerMs: 18
 } as const;
