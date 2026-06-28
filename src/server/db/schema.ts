@@ -36,10 +36,11 @@ export const customerRoleEnum = pgEnum("customer_role", [
 
 export const adminRoleEnum = pgEnum("admin_role", [
   "superadmin",
-  "sales",
-  "operations",
-  "technician",
-  "editor"
+  "admin",
+  "product_manager",
+  "order_manager",
+  "support_agent",
+  "readonly"
 ]);
 
 export const adminUserStatusEnum = pgEnum("admin_user_status", [
@@ -198,6 +199,31 @@ export const siteSettings = pgTable(
     postalCode: varchar("postal_code", { length: 20 }).default("").notNull(),
     addressCountry: varchar("address_country", { length: 8 }).default("TR").notNull(),
     mapEmbedUrl: varchar("map_embed_url", { length: 1200 }),
+    maintenanceMode: boolean("maintenance_mode").default(false).notNull(),
+    maintenanceMessage: text("maintenance_message"),
+    shippingSettings: jsonb("shipping_settings")
+      .$type<{
+        freeShippingThresholdKurus?: number;
+        defaultShippingKurus?: number;
+        carrierName?: string;
+      }>()
+      .default({})
+      .notNull(),
+    taxSettings: jsonb("tax_settings")
+      .$type<{
+        vatRate?: number;
+        pricesIncludeVat?: boolean;
+      }>()
+      .default({})
+      .notNull(),
+    paymentSettings: jsonb("payment_settings")
+      .$type<{
+        provider?: string;
+        testMode?: boolean;
+        installmentEnabled?: boolean;
+      }>()
+      .default({})
+      .notNull(),
     serviceAreas: jsonb("service_areas").$type<string[]>().default([]).notNull(),
     socials: jsonb("socials")
       .$type<{
@@ -259,6 +285,8 @@ export const brands = pgTable(
     slug: varchar("slug", { length: 140 }).notNull(),
     websiteUrl: varchar("website_url", { length: 255 }),
     description: text("description"),
+    isActive: boolean("is_active").default(true).notNull(),
+    deletedAt: timestamp("deleted_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull()
@@ -276,6 +304,8 @@ export const categories = pgTable(
     slug: varchar("slug", { length: 140 }).notNull(),
     description: text("description"),
     parentId: uuid("parent_id").references((): AnyPgColumn => categories.id),
+    isActive: boolean("is_active").default(true).notNull(),
+    deletedAt: timestamp("deleted_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull()
@@ -381,6 +411,31 @@ export const productMedia = pgTable(
   },
   (table) => ({
     productIndex: index("product_media_product_idx").on(table.productId)
+  })
+);
+
+export const inventoryMovements = pgTable(
+  "inventory_movements",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    productId: uuid("product_id").references(() => products.id),
+    variantId: uuid("variant_id").references(() => productVariants.id),
+    sku: varchar("sku", { length: 120 }),
+    quantityBefore: integer("quantity_before").default(0).notNull(),
+    quantityAfter: integer("quantity_after").default(0).notNull(),
+    quantityDelta: integer("quantity_delta").default(0).notNull(),
+    reason: varchar("reason", { length: 80 }).notNull(),
+    note: text("note"),
+    orderId: uuid("order_id"),
+    adminUserId: uuid("admin_user_id").references(() => adminUsers.id),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+  },
+  (table) => ({
+    productIndex: index("inventory_movements_product_idx").on(table.productId),
+    variantIndex: index("inventory_movements_variant_idx").on(table.variantId),
+    createdAtIndex: index("inventory_movements_created_at_idx").on(table.createdAt)
   })
 );
 
@@ -571,7 +626,7 @@ export const adminUsers = pgTable(
     id: uuid("id").defaultRandom().primaryKey(),
     email: varchar("email", { length: 180 }).notNull(),
     fullName: varchar("full_name", { length: 160 }).notNull(),
-    role: adminRoleEnum("role").default("operations").notNull(),
+    role: adminRoleEnum("role").default("admin").notNull(),
     status: adminUserStatusEnum("status").default("active").notNull(),
     passwordHash: varchar("password_hash", { length: 255 }).notNull(),
     phone: varchar("phone", { length: 32 }),
@@ -632,6 +687,148 @@ export const auditLogs = pgTable(
   (table) => ({
     entityIndex: index("audit_logs_entity_idx").on(table.entityType, table.entityId),
     actorIndex: index("audit_logs_actor_idx").on(table.actorAdminId)
+  })
+);
+
+export const adminNotifications = pgTable(
+  "admin_notifications",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    title: varchar("title", { length: 180 }).notNull(),
+    body: text("body").notNull(),
+    tone: varchar("tone", { length: 40 }).default("info").notNull(),
+    href: varchar("href", { length: 500 }),
+    entityType: varchar("entity_type", { length: 80 }),
+    entityId: varchar("entity_id", { length: 120 }),
+    isRead: boolean("is_read").default(false).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    readAt: timestamp("read_at", { withTimezone: true })
+  },
+  (table) => ({
+    readIndex: index("admin_notifications_read_idx").on(table.isRead, table.createdAt),
+    entityIndex: index("admin_notifications_entity_idx").on(table.entityType, table.entityId)
+  })
+);
+
+export const banners = pgTable(
+  "banners",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    placement: varchar("placement", { length: 80 }).default("home").notNull(),
+    title: varchar("title", { length: 180 }).notNull(),
+    subtitle: text("subtitle"),
+    imageUrl: varchar("image_url", { length: 500 }),
+    ctaLabel: varchar("cta_label", { length: 80 }),
+    ctaHref: varchar("cta_href", { length: 500 }),
+    status: varchar("status", { length: 40 }).default("draft").notNull(),
+    sortOrder: integer("sort_order").default(0).notNull(),
+    startsAt: timestamp("starts_at", { withTimezone: true }),
+    endsAt: timestamp("ends_at", { withTimezone: true }),
+    deletedAt: timestamp("deleted_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+  },
+  (table) => ({
+    placementIndex: index("banners_placement_idx").on(table.placement, table.status, table.sortOrder)
+  })
+);
+
+export const campaigns = pgTable(
+  "campaigns",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    name: varchar("name", { length: 180 }).notNull(),
+    slug: varchar("slug", { length: 220 }).notNull(),
+    description: text("description"),
+    status: varchar("status", { length: 40 }).default("draft").notNull(),
+    discountType: varchar("discount_type", { length: 40 }).default("percent").notNull(),
+    discountValue: integer("discount_value").default(0).notNull(),
+    startsAt: timestamp("starts_at", { withTimezone: true }),
+    endsAt: timestamp("ends_at", { withTimezone: true }),
+    deletedAt: timestamp("deleted_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+  },
+  (table) => ({
+    slugIndex: uniqueIndex("campaigns_slug_idx").on(table.slug),
+    statusIndex: index("campaigns_status_idx").on(table.status)
+  })
+);
+
+export const campaignProducts = pgTable(
+  "campaign_products",
+  {
+    campaignId: uuid("campaign_id")
+      .notNull()
+      .references(() => campaigns.id),
+    productId: uuid("product_id")
+      .notNull()
+      .references(() => products.id),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+  },
+  (table) => ({
+    pk: primaryKey({
+      name: "campaign_products_pk",
+      columns: [table.campaignId, table.productId]
+    }),
+    productIndex: index("campaign_products_product_idx").on(table.productId)
+  })
+);
+
+export const campaignCategories = pgTable(
+  "campaign_categories",
+  {
+    campaignId: uuid("campaign_id")
+      .notNull()
+      .references(() => campaigns.id),
+    categoryId: uuid("category_id")
+      .notNull()
+      .references(() => categories.id),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+  },
+  (table) => ({
+    pk: primaryKey({
+      name: "campaign_categories_pk",
+      columns: [table.campaignId, table.categoryId]
+    }),
+    categoryIndex: index("campaign_categories_category_idx").on(table.categoryId)
+  })
+);
+
+export const merchandisingSlots = pgTable(
+  "merchandising_slots",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    slotKey: varchar("slot_key", { length: 80 }).notNull(),
+    title: varchar("title", { length: 180 }),
+    productId: uuid("product_id").references(() => products.id),
+    sortOrder: integer("sort_order").default(0).notNull(),
+    isActive: boolean("is_active").default(true).notNull(),
+    startsAt: timestamp("starts_at", { withTimezone: true }),
+    endsAt: timestamp("ends_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+  },
+  (table) => ({
+    slotIndex: index("merchandising_slots_slot_idx").on(table.slotKey, table.sortOrder)
   })
 );
 

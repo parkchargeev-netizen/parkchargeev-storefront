@@ -90,6 +90,11 @@ function getSiteSettingsValues(input: SiteSettingsInput) {
     postalCode: input.postalCode || "",
     addressCountry: input.addressCountry || "TR",
     mapEmbedUrl: input.mapEmbedUrl || null,
+    maintenanceMode: input.maintenanceMode,
+    maintenanceMessage: input.maintenanceMessage || null,
+    shippingSettings: input.shippingSettings,
+    taxSettings: input.taxSettings,
+    paymentSettings: input.paymentSettings,
     serviceAreas: input.serviceAreas,
     socials: input.socials,
     updatedAt: new Date()

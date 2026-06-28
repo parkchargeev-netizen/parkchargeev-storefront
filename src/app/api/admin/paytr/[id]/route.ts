@@ -19,7 +19,7 @@ type PaytrRouteProps = {
 };
 
 export async function PATCH(request: Request, { params }: PaytrRouteProps) {
-  const authenticatedAdmin = await requireAdminRole(["superadmin", "sales"]);
+  const authenticatedAdmin = await requireAdminRole(["superadmin", "admin", "order_manager"]);
 
   if (!authenticatedAdmin) {
     return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });

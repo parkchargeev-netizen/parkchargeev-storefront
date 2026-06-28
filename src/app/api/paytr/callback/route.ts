@@ -8,6 +8,7 @@ import {
 import { durationSince, logError, logInfo, logWarn } from "@/lib/server-logger";
 import { getDb } from "@/server/db/client";
 import {
+  inventoryMovements,
   orderItems,
   orderStatusHistory,
   orders,
@@ -264,6 +265,17 @@ export async function POST(request: Request) {
             continue;
           }
 
+          const [variantBefore] = await tx
+            .select({
+              id: productVariants.id,
+              productId: productVariants.productId,
+              sku: productVariants.sku,
+              stockQuantity: productVariants.stockQuantity
+            })
+            .from(productVariants)
+            .where(eq(productVariants.id, item.variantId))
+            .limit(1);
+
           const [updatedVariant] = await tx
             .update(productVariants)
             .set({
@@ -275,11 +287,32 @@ export async function POST(request: Request) {
                 gte(productVariants.stockQuantity, item.quantity)
               )
             )
-            .returning({ id: productVariants.id });
+            .returning({
+              id: productVariants.id,
+              productId: productVariants.productId,
+              sku: productVariants.sku,
+              stockQuantity: productVariants.stockQuantity
+            });
 
           if (!updatedVariant) {
             stockWarningNote =
               "Ödeme alındı; stok azaltımı yapılamadı. Manuel stok ve teslimat kontrolü gerekli.";
+            continue;
+          }
+
+          if (variantBefore) {
+            await tx.insert(inventoryMovements).values({
+              productId: updatedVariant.productId,
+              variantId: updatedVariant.id,
+              sku: updatedVariant.sku,
+              quantityBefore: variantBefore.stockQuantity,
+              quantityAfter: updatedVariant.stockQuantity,
+              quantityDelta: -item.quantity,
+              reason: "order_paid",
+              note: `PayTR callback ile ${orderMerchantOid} siparisi stok dusumu.`,
+              orderId: order.id,
+              adminUserId: null
+            });
           }
         }
       }

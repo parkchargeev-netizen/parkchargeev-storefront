@@ -6,7 +6,7 @@ import { adminListQuerySchema } from "@/server/admin/validators";
 import { requireAdminRole } from "@/server/auth/guards";
 
 export async function GET(request: Request) {
-  const authenticatedAdmin = await requireAdminRole(["superadmin", "sales"]);
+  const authenticatedAdmin = await requireAdminRole(["superadmin", "admin", "order_manager", "support_agent", "readonly"]);
 
   if (!authenticatedAdmin) {
     return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });

@@ -25,11 +25,12 @@ type QuoteStatusFormProps = {
 
 function formatRole(role: string) {
   const labels: Record<string, string> = {
-    superadmin: "Süper Admin",
-    sales: "Satış",
-    operations: "Operasyon",
-    technician: "Saha Teknisyeni",
-    editor: "İçerik Editörü"
+    superadmin: "Super Admin",
+    admin: "Admin",
+    product_manager: "Ürün Yöneticisi",
+    order_manager: "Sipariş Yöneticisi",
+    support_agent: "Destek Yetkilisi",
+    readonly: "Sadece Görüntüleme"
   };
 
   return labels[role] ?? role;

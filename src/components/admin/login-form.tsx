@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 
@@ -12,7 +12,6 @@ type LoginValues = z.infer<typeof adminLoginSchema>;
 
 export function LoginForm() {
   const router = useRouter();
-  const [isHydrated, setIsHydrated] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const {
     register,
@@ -26,40 +25,31 @@ export function LoginForm() {
     }
   });
 
-  useEffect(() => {
-    setIsHydrated(true);
-  }, []);
-
   const onSubmit = handleSubmit(async (values) => {
-    if (!isHydrated) {
-      return;
-    }
-
     setErrorMessage(null);
 
     try {
       const response = await fetch("/api/admin/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(values)
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(values)
       });
-
       const data = (await response.json().catch(() => ({
         ok: false,
-        message: "Sunucu yanıtı okunamadı."
+        message: "Sunucu yaniti okunamadi."
       }))) as { ok: boolean; message?: string };
 
-    if (!response.ok || !data.ok) {
-      setErrorMessage(data.message ?? "Giriş başarısız.");
-      return;
-    }
+      if (!response.ok || !data.ok) {
+        setErrorMessage(data.message ?? "Giris basarisiz.");
+        return;
+      }
 
-    router.push("/admin");
-    router.refresh();
+      router.push("/admin");
+      router.refresh();
     } catch {
-      setErrorMessage("Sunucuya ulaşılamadı. Lütfen tekrar deneyin.");
+      setErrorMessage("Sunucuya ulasilamadi. Lutfen tekrar deneyin.");
     }
   });
 
@@ -73,7 +63,7 @@ export function LoginForm() {
           id="email"
           type="email"
           autoComplete="username"
-          disabled={!isHydrated || isSubmitting}
+          disabled={isSubmitting}
           className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-emerald-600"
           {...register("email")}
         />
@@ -84,13 +74,13 @@ export function LoginForm() {
 
       <div>
         <label className="mb-2 block text-sm font-medium text-slate-700" htmlFor="password">
-          Şifre
+          Sifre
         </label>
         <input
           id="password"
           type="password"
           autoComplete="current-password"
-          disabled={!isHydrated || isSubmitting}
+          disabled={isSubmitting}
           className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-emerald-600"
           {...register("password")}
         />
@@ -108,9 +98,9 @@ export function LoginForm() {
       <button
         type="submit"
         className="w-full rounded-lg bg-slate-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
-        disabled={!isHydrated || isSubmitting}
+        disabled={isSubmitting}
       >
-        {!isHydrated ? "Hazırlanıyor..." : isSubmitting ? "Giriş yapılıyor..." : "Admin Girişi"}
+        {isSubmitting ? "Giris yapiliyor..." : "Admin Girisi"}
       </button>
     </form>
   );

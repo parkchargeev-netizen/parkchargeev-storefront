@@ -28,8 +28,7 @@ import { DashboardCharts } from "@/components/admin/dashboard-charts";
 import { formatPriceTRY } from "@/lib/format";
 import {
   adminOpsChecklist,
-  adminRevenuePlays,
-  marketPanelInsights
+  adminRevenuePlays
 } from "@/lib/panel-experience";
 import { serviceCoverageSummary } from "@/lib/service-coverage";
 import type { AdminDashboardSnapshot } from "@/server/admin/dashboard";
@@ -140,42 +139,42 @@ const moduleCards: Array<{
     label: "Ürün merkezi",
     detail: "Fiyat, stok, varyant, SEO, görsel ve teknik özellikleri yönet.",
     icon: <Package className="h-5 w-5" />,
-    roles: ["superadmin", "sales"]
+    roles: ["superadmin", "admin", "product_manager"]
   },
   {
     href: "/admin/siparisler",
     label: "Sipariş operasyonu",
     detail: "Ödeme, kargo, fatura, not ve teslimat adımlarını takip et.",
     icon: <ShoppingCart className="h-5 w-5" />,
-    roles: ["superadmin", "sales"]
+    roles: ["superadmin", "admin", "order_manager"]
   },
   {
     href: "/admin/teklifler",
     label: "Teklif CRM",
     detail: "Bireysel, site, işletme ve filo taleplerini aksiyona çevir.",
     icon: <FileText className="h-5 w-5" />,
-    roles: ["superadmin", "sales"]
+    roles: ["superadmin", "admin", "order_manager"]
   },
   {
     href: "/admin/saha",
     label: "Saha planlama",
     detail: "Keşif, kurulum, servis ve lokasyon kapsamlarını netleştir.",
     icon: <Wrench className="h-5 w-5" />,
-    roles: ["superadmin", "operations", "technician"]
+    roles: ["superadmin", "admin", "order_manager", "support_agent"]
   },
   {
     href: "/admin/blog",
     label: "İçerik ve SEO",
     detail: "Blog, rehber, arama niyeti ve satış destekli içerikleri yayınla.",
     icon: <BookOpen className="h-5 w-5" />,
-    roles: ["superadmin", "editor"]
+    roles: ["superadmin", "admin"]
   },
   {
     href: "/admin/paytr",
     label: "Ödeme merkezi",
     detail: "PayTR kayıtları, callback ve ödeme kontrolünü incele.",
     icon: <CreditCard className="h-5 w-5" />,
-    roles: ["superadmin", "sales"]
+    roles: ["superadmin", "admin", "order_manager"]
   }
 ];
 
@@ -216,7 +215,7 @@ const commerceAdminStandards: Array<{
     detail: "Başlık, fiyat, stok, varyant, medya, SEO, AI ve teknik özellikler eksiksiz tutulur.",
     proof: "Shopify + Woo ürün standardı",
     icon: <Package className="h-5 w-5" />,
-    roles: ["superadmin", "sales"]
+    roles: ["superadmin", "admin", "product_manager"]
   },
   {
     href: "/admin/siparisler",
@@ -224,7 +223,7 @@ const commerceAdminStandards: Array<{
     detail: "Ödeme, onay, kargo, iade, not ve durum akışı tek operasyon ekranından izlenir.",
     proof: "Fulfillment akışı",
     icon: <ShoppingCart className="h-5 w-5" />,
-    roles: ["superadmin", "sales", "operations"]
+    roles: ["superadmin", "admin", "order_manager"]
   },
   {
     href: "/admin/teklifler",
@@ -232,7 +231,7 @@ const commerceAdminStandards: Array<{
     detail: "Ev, site, KOBİ ve ticari lokasyon talepleri persona bazlı takip edilir.",
     proof: "CRM + segment",
     icon: <Users className="h-5 w-5" />,
-    roles: ["superadmin", "sales"]
+    roles: ["superadmin", "admin", "order_manager"]
   },
   {
     href: "/admin/saha",
@@ -240,7 +239,7 @@ const commerceAdminStandards: Array<{
     detail: "Türkiye geneli keşif, kurulum ve servis aksiyonları saha uygunluğuna göre ayrışır.",
     proof: "Saha iş emri",
     icon: <Wrench className="h-5 w-5" />,
-    roles: ["superadmin", "operations", "technician"]
+    roles: ["superadmin", "admin", "order_manager", "support_agent"]
   },
   {
     href: "/admin/blog",
@@ -248,7 +247,7 @@ const commerceAdminStandards: Array<{
     detail: "Blog, rehber, kampanya metni ve satış destekli açıklamalar zengin editörle üretilir.",
     proof: "SEO + CRO içerik",
     icon: <BookOpen className="h-5 w-5" />,
-    roles: ["superadmin", "editor", "sales"]
+    roles: ["superadmin", "admin", "product_manager"]
   },
   {
     href: "/admin/paytr",
@@ -256,7 +255,7 @@ const commerceAdminStandards: Array<{
     detail: "PayTR kayıtları, ödeme callback sinyalleri ve sipariş kapanışı kontrol edilir.",
     proof: "Ödeme denetimi",
     icon: <CreditCard className="h-5 w-5" />,
-    roles: ["superadmin", "sales"]
+    roles: ["superadmin", "admin", "order_manager"]
   },
   {
     href: "/admin/katalog",
@@ -264,7 +263,7 @@ const commerceAdminStandards: Array<{
     detail: "Katalog düzeni, kanal görünürlüğü ve yinelenen ürün kontrolleri hızlanır.",
     proof: "Bulk yönetim",
     icon: <Database className="h-5 w-5" />,
-    roles: ["superadmin", "sales", "editor"]
+    roles: ["superadmin", "admin", "product_manager"]
   },
   {
     href: "/admin/audit",
@@ -418,7 +417,7 @@ export function AdminDashboardView({
       action: "Siparişleri aç",
       icon: <ShoppingCart className="h-5 w-5" />,
       tone: snapshot.kpis.pendingOrders > 0 ? "warning" : "success",
-      roles: ["superadmin", "sales"] as AdminRole[]
+      roles: ["superadmin", "admin", "product_manager"] as AdminRole[]
     },
     {
       href: "/admin/teklifler",
@@ -428,7 +427,7 @@ export function AdminDashboardView({
       action: "Teklif masasına git",
       icon: <FileText className="h-5 w-5" />,
       tone: snapshot.kpis.pendingQuotes > 0 ? "info" : "success",
-      roles: ["superadmin", "sales"] as AdminRole[]
+      roles: ["superadmin", "admin", "order_manager"] as AdminRole[]
     },
     {
       href: "/admin/saha",
@@ -438,7 +437,7 @@ export function AdminDashboardView({
       action: "Saha taleplerini aç",
       icon: <Wrench className="h-5 w-5" />,
       tone: snapshot.kpis.openServiceRequests > 0 ? "warning" : "success",
-      roles: ["superadmin", "operations", "technician"] as AdminRole[]
+      roles: ["superadmin", "admin", "order_manager", "support_agent"] as AdminRole[]
     },
     {
       href: role === "superadmin" ? "/admin/adminler" : "/admin/erisim",
@@ -448,7 +447,7 @@ export function AdminDashboardView({
       action: role === "superadmin" ? "Oturumlari denetle" : "Erişim haritasi",
       icon: <ShieldCheck className="h-5 w-5" />,
       tone: snapshot.security.activeSessions > 1 ? "info" : "neutral",
-      roles: ["superadmin", "sales", "operations", "technician", "editor"] as AdminRole[]
+      roles: ["superadmin", "admin", "product_manager", "order_manager", "support_agent", "readonly"] as AdminRole[]
     }
   ];
   const visibleQueueCards = queueCards.filter((card) => canSee(card.roles));
@@ -944,22 +943,31 @@ export function AdminDashboardView({
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-sm font-bold uppercase tracking-normal text-emerald-200">
-                Risk radari
+                Risk radarı
               </p>
               <h2 className="mt-2 text-2xl font-bold tracking-normal">
-                Kritik kontrolleri her gun kapatin.
+                Genel skor {snapshot.risk.score}/100 · {snapshot.risk.level}
               </h2>
             </div>
             <AlertTriangle className="h-6 w-6 text-amber-200" />
           </div>
           <div className="mt-5 grid gap-3">
-            {marketPanelInsights.map((insight) => (
-              <div key={insight.label} className="rounded-lg border border-white/10 bg-white/[0.12] p-4">
-                <p className="text-sm font-bold">{insight.label}</p>
-                <p className="mt-2 text-xs leading-5 text-white/80">{insight.detail}</p>
-                <p className="mt-3 text-xs font-bold uppercase tracking-normal text-emerald-200">
-                  {insight.source}
-                </p>
+            {snapshot.risk.items.map((risk) => (
+              <div key={risk.key} className="rounded-lg border border-white/10 bg-white/[0.12] p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <p className="text-sm font-bold">{risk.label}</p>
+                  <span className="rounded-full bg-white px-2.5 py-1 text-xs font-bold text-[#063326]">
+                    {risk.score}
+                  </span>
+                </div>
+                <p className="mt-2 text-xs leading-5 text-white/80">{risk.description}</p>
+                <p className="mt-2 text-xs leading-5 text-white/80">{risk.action}</p>
+                <AdminPrefetchLink
+                  href={risk.href}
+                  className="mt-3 inline-flex rounded-full border border-white/20 px-3 py-1.5 text-xs font-bold text-emerald-100 transition hover:bg-white/10"
+                >
+                  Aksiyona git
+                </AdminPrefetchLink>
               </div>
             ))}
           </div>

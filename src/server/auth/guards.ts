@@ -9,7 +9,12 @@ import {
   getBootstrapAdmin,
   touchAdminSession
 } from "@/server/admin/auth-service";
-import { canAccessAdminPath, hasRequiredRole, type AdminRole } from "@/server/auth/authorization";
+import {
+  canAccessAdminPath,
+  hasRequiredRole,
+  type AdminRole,
+  type AnyAdminRole
+} from "@/server/auth/authorization";
 import { getAdminSessionFromCookies } from "@/server/auth/session";
 
 const sessionTouchThrottleMs = 5 * 60 * 1000;
@@ -111,7 +116,7 @@ export const getAuthenticatedAdmin = cache(async function getAuthenticatedAdmin(
   };
 });
 
-export async function requireAdminRole(allowedRoles?: AdminRole[]) {
+export async function requireAdminRole(allowedRoles?: AnyAdminRole[]) {
   const authenticatedAdmin = await getAuthenticatedAdmin();
 
   if (!authenticatedAdmin) {

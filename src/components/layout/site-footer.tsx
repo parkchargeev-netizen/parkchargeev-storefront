@@ -6,7 +6,7 @@ import type { PublicSiteNavigation } from "@/features/navigation/domain/public-n
 import { formatPublicNavigationLabel } from "@/lib/public-navigation-labels";
 import { serviceCoverageSummary } from "@/lib/service-coverage";
 import { siteConfig } from "@/lib/site";
-import type { PublicSiteSettings } from "@/lib/site-settings";
+import { getFallbackSiteSettings, type PublicSiteSettings } from "@/lib/site-settings";
 
 type SiteFooterProps = {
   navigation?: Pick<PublicSiteNavigation, "footer" | "legal">;
@@ -20,20 +20,7 @@ export function SiteFooter({
   },
   settings
 }: SiteFooterProps) {
-  const publicSettings = settings ?? {
-    brandName: siteConfig.name,
-    description: siteConfig.description,
-    logoUrl: "",
-    logoAlt: siteConfig.name,
-    phone: siteConfig.phone,
-    email: siteConfig.email,
-    whatsappPhone: siteConfig.whatsappPhone,
-    supportHours: siteConfig.supportHours,
-    address: siteConfig.address,
-    mapEmbedUrl: "",
-    serviceAreas: [...siteConfig.serviceAreas],
-    socials: { ...siteConfig.socials }
-  };
+  const publicSettings = settings ?? getFallbackSiteSettings();
 
   return (
     <footer className="border-t border-outline-variant/40 bg-white" data-motion-scope>

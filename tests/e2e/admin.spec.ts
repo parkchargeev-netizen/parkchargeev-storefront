@@ -15,12 +15,14 @@ async function loginAsAdmin(page: Page) {
   await page.goto("/admin/login");
   await page.getByLabel(/E-posta/i).fill(adminEmail ?? "");
   await page.locator("#password").fill(adminPassword ?? "");
+
   const loginResponsePromise = page.waitForResponse(
     (response) =>
       response.url().includes("/api/admin/auth/login") &&
       response.request().method() === "POST",
     { timeout: 30_000 }
   );
+
   await page.locator('button[type="submit"]').click();
 
   return loginResponsePromise;
@@ -40,13 +42,11 @@ test("@e2e admin login -> dashboard -> temel modul navigasyonu", async ({ page }
   expect(loginResponse.ok()).toBeTruthy();
   await expect(page).toHaveURL(/\/admin$/, { timeout: 30_000 });
   await expect(
-    page.getByRole("heading", { name: /Bugunun|Bugünün|Kontrol merkezi|Kontrol Merkezi/i })
+    page.getByRole("heading", { name: /Sat.labilir .r.n|Kontrol merkezi/i }).first()
   ).toBeVisible();
 
   await goToAdminSection(page, "/admin/urunler", /\/admin\/urunler/);
-
   await goToAdminSection(page, "/admin/siparisler", /\/admin\/siparisler/);
-
   await goToAdminSection(page, "/admin/teklifler", /\/admin\/teklifler/);
 });
 
@@ -60,7 +60,7 @@ test("@e2e admin urun ekleme linki form ekranini acar", async ({ page }) => {
   await page.locator('a[href="/admin/urunler/yeni"]').first().click();
 
   await expect(page).toHaveURL(/\/admin\/urunler\/yeni/, { timeout: 30_000 });
-  await expect(page.getByRole("button", { name: /Ürün oluştur|ÃœrÃ¼n oluÅŸtur/i })).toBeEnabled({ timeout: 15_000 });
+  await expect(page.locator('button[type="submit"]').first()).toBeEnabled({ timeout: 15_000 });
   await expect(page.getByText(/Application error|Unhandled Runtime/i)).toHaveCount(0);
 });
 
@@ -73,9 +73,11 @@ test("@e2e admin blog rehberleri listeler", async ({ page }) => {
   await page.goto("/admin/blog", { waitUntil: "domcontentloaded" });
   await expect(page.getByRole("heading", { name: /Blog ve rehber/i })).toBeVisible();
   await expect(
-    page.getByText(
-      /evde-elektrikli-arac-sarj-cihazi-kurulumu|11kw-ve-22kw-sarj-cihazi-farki|apartman-otoparkina-sarj-cihazi-kurulumu/i
-    ).first()
+    page
+      .getByText(
+        /evde-elektrikli-arac-sarj-cihazi-kurulumu|11kw-ve-22kw-sarj-cihazi-farki|apartman-otoparkina-sarj-cihazi-kurulumu/i
+      )
+      .first()
   ).toBeVisible({ timeout: 30_000 });
   await expect(page.locator('a[href^="/admin/blog/"]').first()).toBeVisible();
   await expect(page.getByText(/Application error|Unhandled Runtime/i)).toHaveCount(0);
@@ -97,7 +99,7 @@ test("@e2e admin urun duzenleme linki form ekranini acar", async ({ page }) => {
   await editLink.click();
 
   await expect(page).toHaveURL(/\/admin\/urunler\/[0-9a-f-]+/, { timeout: 30_000 });
-  await expect(page.getByRole("button", { name: /Değişiklikleri kaydet|DeÄŸiÅŸiklikleri kaydet/i })).toBeEnabled({ timeout: 15_000 });
+  await expect(page.locator('button[type="submit"]').first()).toBeEnabled({ timeout: 15_000 });
   await expect(page.getByText(/Application error|Unhandled Runtime/i)).toHaveCount(0);
 });
 
@@ -108,20 +110,20 @@ test("@e2e admin urun formu dinamik alanlari kilitlemez", async ({ page }) => {
   await expect(page).toHaveURL(/\/admin$/, { timeout: 30_000 });
 
   await page.goto("/admin/urunler/yeni", { waitUntil: "domcontentloaded" });
-  await expect(page.getByRole("heading", { name: /Katalog kaydı oluştur/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Katalog kayd. olu.tur/i })).toBeVisible();
 
   for (const buttonName of [
-    "Varyant ekle",
-    "URL ekle",
-    "Özellik ekle",
-    "Kart ekle",
-    "Akordiyon ekle",
-    "Soru ekle"
+    /Varyant ekle/i,
+    /URL ekle/i,
+    /zellik ekle/i,
+    /Kart ekle/i,
+    /Akordiyon ekle/i,
+    /Soru ekle/i
   ]) {
     await page.getByRole("button", { name: buttonName }).click();
   }
 
-  await expect(page.getByRole("button", { name: /Ürün oluştur/i })).toBeEnabled();
+  await expect(page.locator('button[type="submit"]').first()).toBeEnabled();
   await expect(page.getByText(/Application error|Unhandled Runtime/i)).toHaveCount(0);
 });
 

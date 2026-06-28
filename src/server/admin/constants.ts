@@ -19,52 +19,67 @@ export const adminNavigation: Array<{
   {
     href: "/admin",
     label: "Gösterge Paneli",
-    roles: ["superadmin", "sales", "operations", "technician", "editor"]
+    roles: ["superadmin", "admin", "product_manager", "order_manager", "support_agent", "readonly"]
   },
   {
     href: "/admin/erisim",
     label: "Erişim",
-    roles: ["superadmin", "sales", "operations", "technician", "editor"]
+    roles: ["superadmin", "admin", "product_manager", "order_manager", "support_agent", "readonly"]
   },
   {
     href: "/admin/site",
     label: "Site",
-    roles: ["superadmin", "editor"]
+    roles: ["superadmin", "admin"]
   },
   {
     href: "/admin/urunler",
     label: "Ürünler",
-    roles: ["superadmin", "sales"]
+    roles: ["superadmin", "admin", "product_manager", "readonly"]
   },
   {
     href: "/admin/siparisler",
     label: "Siparişler",
-    roles: ["superadmin", "sales"]
+    roles: ["superadmin", "admin", "order_manager", "support_agent", "readonly"]
   },
   {
     href: "/admin/teklifler",
     label: "Teklifler",
-    roles: ["superadmin", "sales"]
+    roles: ["superadmin", "admin", "order_manager", "support_agent", "readonly"]
   },
   {
     href: "/admin/saha",
     label: "Saha",
-    roles: ["superadmin", "operations", "technician"]
+    roles: ["superadmin", "admin", "order_manager", "support_agent", "readonly"]
   },
   {
     href: "/admin/blog",
     label: "İçerik",
-    roles: ["superadmin", "editor"]
+    roles: ["superadmin", "admin", "readonly"]
   },
   {
     href: "/admin/katalog",
     label: "Katalog",
-    roles: ["superadmin", "sales"]
+    roles: ["superadmin", "admin", "product_manager", "readonly"]
+  },
+  {
+    href: "/admin/envanter",
+    label: "Envanter",
+    roles: ["superadmin", "admin", "product_manager", "order_manager", "readonly"]
+  },
+  {
+    href: "/admin/kampanyalar",
+    label: "Kampanyalar",
+    roles: ["superadmin", "admin", "product_manager", "readonly"]
+  },
+  {
+    href: "/admin/bildirimler",
+    label: "Bildirimler",
+    roles: ["superadmin", "admin", "product_manager", "order_manager", "support_agent", "readonly"]
   },
   {
     href: "/admin/paytr",
     label: "PayTR",
-    roles: ["superadmin", "sales"]
+    roles: ["superadmin", "admin", "order_manager", "readonly"]
   },
   {
     href: "/admin/audit",
@@ -79,11 +94,12 @@ export const adminNavigation: Array<{
 ];
 
 export const adminRoleLabels: Record<AdminRole, string> = {
-  superadmin: "Süper Admin",
-  sales: "Satış",
-  operations: "Operasyon",
-  technician: "Saha Teknisyeni",
-  editor: "İçerik Editörü"
+  superadmin: "Super Admin",
+  admin: "Admin",
+  product_manager: "Ürün Yöneticisi",
+  order_manager: "Sipariş Yöneticisi",
+  support_agent: "Destek Yetkilisi",
+  readonly: "Sadece Görüntüleme"
 };
 
 export const productCategoryOptions = [

@@ -13,6 +13,7 @@ type CatalogFormProps = {
     websiteUrl?: string | null;
     description?: string | null;
     parentId?: string | null;
+    isActive?: boolean | null;
   };
   categories?: Array<{
     id: string;
@@ -27,6 +28,7 @@ export function CatalogForm({ type, item, categories = [] }: CatalogFormProps) {
   const [websiteUrl, setWebsiteUrl] = useState(item?.websiteUrl ?? "");
   const [description, setDescription] = useState(item?.description ?? "");
   const [parentId, setParentId] = useState(item?.parentId ?? "");
+  const [isActive, setIsActive] = useState(item?.isActive ?? true);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -40,8 +42,15 @@ export function CatalogForm({ type, item, categories = [] }: CatalogFormProps) {
     const method = item?.id ? "PATCH" : "POST";
     const payload =
       type === "brand"
-        ? { id: item?.id, name, slug: slug || name, websiteUrl, description }
-        : { id: item?.id, name, slug: slug || name, parentId: parentId || null, description };
+        ? { id: item?.id, name, slug: slug || name, websiteUrl, description, isActive }
+        : {
+            id: item?.id,
+            name,
+            slug: slug || name,
+            parentId: parentId || null,
+            description,
+            isActive
+          };
 
     const response = await fetch(endpoint, {
       method,
@@ -62,6 +71,7 @@ export function CatalogForm({ type, item, categories = [] }: CatalogFormProps) {
         setWebsiteUrl("");
         setDescription("");
         setParentId("");
+        setIsActive(true);
       }
       router.refresh();
     }
@@ -113,6 +123,15 @@ export function CatalogForm({ type, item, categories = [] }: CatalogFormProps) {
         value={description}
         onChange={(event) => setDescription(event.target.value)}
       />
+      <label className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white px-4 py-3">
+        <input
+          type="checkbox"
+          checked={isActive}
+          onChange={(event) => setIsActive(event.target.checked)}
+          className="h-4 w-4 rounded border-slate-300 text-emerald-700"
+        />
+        <span className="text-sm font-medium text-slate-700">Aktif kayit</span>
+      </label>
       {feedback ? <p className="text-sm text-slate-600">{feedback}</p> : null}
       <button
         type="submit"

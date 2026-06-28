@@ -8,7 +8,7 @@ import { adminSiteSettingsSchema } from "@/server/admin/validators";
 import { getRequestMeta, requireAdminRole } from "@/server/auth/guards";
 
 export async function GET() {
-  const authenticatedAdmin = await requireAdminRole(["superadmin", "editor"]);
+  const authenticatedAdmin = await requireAdminRole(["superadmin", "admin", "readonly"]);
 
   if (!authenticatedAdmin) {
     return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });
@@ -19,7 +19,7 @@ export async function GET() {
 }
 
 export async function PATCH(request: Request) {
-  const authenticatedAdmin = await requireAdminRole(["superadmin", "editor"]);
+  const authenticatedAdmin = await requireAdminRole(["superadmin", "admin"]);
 
   if (!authenticatedAdmin) {
     return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });

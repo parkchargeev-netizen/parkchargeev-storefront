@@ -15,14 +15,14 @@ export const fallbackAssignableAdminSeeds: FallbackAdminSeed[] = [
     id: "00000000-0000-4000-8000-000000000002",
     email: "satis@parkchargeev.local",
     fullName: "Selin Kaya",
-    role: "sales",
+    role: "admin",
     status: "active"
   },
   {
     id: "00000000-0000-4000-8000-000000000003",
     email: "operasyon@parkchargeev.local",
     fullName: "Emre Acar",
-    role: "operations",
+    role: "order_manager",
     status: "active"
   }
 ];

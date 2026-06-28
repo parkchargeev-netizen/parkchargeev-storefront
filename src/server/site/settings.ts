@@ -37,6 +37,11 @@ function rowToPublicSiteSettings(
       addressCountry: row.addressCountry
     },
     mapEmbedUrl: row.mapEmbedUrl ?? "",
+    maintenanceMode: row.maintenanceMode,
+    maintenanceMessage: row.maintenanceMessage ?? "",
+    shippingSettings: row.shippingSettings,
+    taxSettings: row.taxSettings,
+    paymentSettings: row.paymentSettings,
     serviceAreas: row.serviceAreas,
     socials: row.socials,
     updatedAt: row.updatedAt

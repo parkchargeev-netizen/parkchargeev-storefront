@@ -183,8 +183,25 @@ export const adminListQuerySchema = z.object({
   cursor: z.string().trim().optional(),
   from: z.string().trim().optional(),
   to: z.string().trim().optional(),
+  sort: z.string().trim().optional(),
+  category: z.string().trim().optional(),
+  brand: z.string().trim().optional(),
+  stock: z.string().trim().optional(),
+  paymentStatus: z.string().trim().optional(),
+  customer: z.string().trim().optional(),
   format: z.string().trim().optional(),
   limit: z.coerce.number().int().min(1).max(50).default(12)
+});
+
+export const adminProductBulkActionSchema = z.object({
+  ids: z.array(z.string().uuid()).min(1).max(100),
+  action: z.enum(["archive", "activate", "draft"])
+});
+
+export const adminInventoryAdjustmentSchema = z.object({
+  variantId: z.string().uuid(),
+  quantityAfter: z.coerce.number().int().min(0),
+  note: z.string().trim().max(1000).optional().or(z.literal(""))
 });
 
 export const adminUserSchema = z.object({
@@ -223,7 +240,8 @@ export const adminBrandSchema = z.object({
   name: z.string().trim().min(2).max(120),
   slug: z.string().trim().min(2).max(140),
   websiteUrl: z.string().trim().url().optional().or(z.literal("")),
-  description: z.string().trim().max(2000).optional().or(z.literal(""))
+  description: z.string().trim().max(2000).optional().or(z.literal("")),
+  isActive: z.boolean().optional().default(true)
 });
 
 export const adminCategorySchema = z.object({
@@ -231,7 +249,8 @@ export const adminCategorySchema = z.object({
   name: z.string().trim().min(2).max(120),
   slug: z.string().trim().min(2).max(140),
   description: z.string().trim().max(2000).optional().or(z.literal("")),
-  parentId: z.string().uuid().nullable().optional()
+  parentId: z.string().uuid().nullable().optional(),
+  isActive: z.boolean().optional().default(true)
 });
 
 export const adminPaytrOperationSchema = z.object({
@@ -276,6 +295,31 @@ export const adminSiteSettingsSchema = z.object({
   postalCode: z.string().trim().max(20).optional().or(z.literal("")),
   addressCountry: z.string().trim().min(2).max(8).default("TR"),
   mapEmbedUrl: optionalAdminUrlSchema,
+  maintenanceMode: z.boolean().optional().default(false),
+  maintenanceMessage: z.string().trim().max(1000).optional().or(z.literal("")),
+  shippingSettings: z
+    .object({
+      freeShippingThresholdKurus: z.coerce.number().int().min(0).optional(),
+      defaultShippingKurus: z.coerce.number().int().min(0).optional(),
+      carrierName: z.string().trim().max(120).optional().or(z.literal(""))
+    })
+    .optional()
+    .default({}),
+  taxSettings: z
+    .object({
+      vatRate: z.coerce.number().min(0).max(1).optional(),
+      pricesIncludeVat: z.boolean().optional()
+    })
+    .optional()
+    .default({}),
+  paymentSettings: z
+    .object({
+      provider: z.string().trim().max(40).optional().or(z.literal("")),
+      testMode: z.boolean().optional(),
+      installmentEnabled: z.boolean().optional()
+    })
+    .optional()
+    .default({}),
   serviceAreas: z.array(z.string().trim().min(2).max(80)).min(1),
   socials: z
     .object({
@@ -285,6 +329,50 @@ export const adminSiteSettingsSchema = z.object({
       youtube: optionalAdminUrlSchema
     })
     .default({})
+});
+
+export const adminBannerSchema = z.object({
+  id: z.string().uuid().optional(),
+  placement: z.string().trim().min(2).max(80).default("home"),
+  title: z.string().trim().min(3).max(180),
+  subtitle: z.string().trim().max(1200).optional().or(z.literal("")),
+  imageUrl: publicOrRemoteUrlSchema.optional().or(z.literal("")),
+  ctaLabel: z.string().trim().max(80).optional().or(z.literal("")),
+  ctaHref: publicOrRemoteUrlSchema.optional().or(z.literal("")),
+  status: z.enum(["draft", "active", "archived"]).default("draft"),
+  sortOrder: z.coerce.number().int().min(0).default(0),
+  startsAt: z.string().nullable().optional(),
+  endsAt: z.string().nullable().optional()
+});
+
+export const adminCampaignSchema = z.object({
+  id: z.string().uuid().optional(),
+  name: z.string().trim().min(3).max(180),
+  slug: z.string().trim().max(220).optional().or(z.literal("")),
+  description: z.string().trim().max(2000).optional().or(z.literal("")),
+  status: z.enum(["draft", "active", "archived"]).default("draft"),
+  discountType: z.enum(["percent", "amount"]).default("percent"),
+  discountValue: z.coerce.number().int().min(0),
+  startsAt: z.string().nullable().optional(),
+  endsAt: z.string().nullable().optional(),
+  productIds: z.array(z.string().uuid()).default([]),
+  categoryIds: z.array(z.string().uuid()).default([])
+});
+
+export const adminMerchandisingSlotSchema = z.object({
+  id: z.string().uuid().optional(),
+  slotKey: z.string().trim().min(2).max(80).default("home_featured"),
+  title: z.string().trim().max(180).optional().or(z.literal("")),
+  productId: z.string().uuid().nullable().optional().or(z.literal("")),
+  sortOrder: z.coerce.number().int().min(0).default(0),
+  isActive: z.boolean().default(true),
+  startsAt: z.string().nullable().optional(),
+  endsAt: z.string().nullable().optional()
+});
+
+export const adminNotificationPatchSchema = z.object({
+  ids: z.array(z.string().uuid()).min(1).max(100),
+  isRead: z.boolean()
 });
 
 export const adminSitePageSchema = z.object({

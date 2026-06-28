@@ -1602,6 +1602,21 @@ export async function getFallbackAdminDashboardSnapshot() {
     security: {
       activeSessions: 1,
       recentAuditLogs: []
+    },
+    risk: {
+      score: 24,
+      level: "düşük",
+      items: [
+        {
+          key: "fallback_low_stock",
+          label: "Düşük stok riski",
+          score: 24,
+          level: "düşük",
+          description: "Yerel fallback veride kritik stok örneği izleniyor.",
+          action: "Canlı veritabanı bağlandığında gerçek stok hareketleri gösterilir.",
+          href: "/admin/urunler?stock=low"
+        }
+      ]
     }
   };
 }

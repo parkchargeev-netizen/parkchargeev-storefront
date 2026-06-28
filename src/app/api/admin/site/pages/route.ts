@@ -25,7 +25,7 @@ function parseListQuery(request: Request) {
 }
 
 async function handleUpsert(request: Request, status = 200) {
-  const authenticatedAdmin = await requireAdminRole(["superadmin", "editor"]);
+  const authenticatedAdmin = await requireAdminRole(["superadmin", "admin", "readonly"]);
 
   if (!authenticatedAdmin) {
     return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });
@@ -39,7 +39,7 @@ async function handleUpsert(request: Request, status = 200) {
 }
 
 export async function GET(request: Request) {
-  const authenticatedAdmin = await requireAdminRole(["superadmin", "editor"]);
+  const authenticatedAdmin = await requireAdminRole(["superadmin", "admin"]);
 
   if (!authenticatedAdmin) {
     return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });
@@ -58,7 +58,7 @@ export async function PATCH(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  const authenticatedAdmin = await requireAdminRole(["superadmin", "editor"]);
+  const authenticatedAdmin = await requireAdminRole(["superadmin", "admin"]);
 
   if (!authenticatedAdmin) {
     return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });

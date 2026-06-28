@@ -3,6 +3,7 @@ import { unstable_cache } from "next/cache";
 
 import { hasDatabaseConfig } from "@/lib/runtime-config";
 import { getFallbackAdminDashboardSnapshot } from "@/server/admin/fallback-store";
+import { getAdminRiskSnapshot } from "@/server/admin/operations";
 import { getDb } from "@/server/db/client";
 import {
   adminSessions,
@@ -65,6 +66,7 @@ export type AdminDashboardSnapshot = {
       createdAt: Date;
     }>;
   };
+  risk: Awaited<ReturnType<typeof getAdminRiskSnapshot>>;
 };
 
 const revenueStatuses = ["paid", "confirmed", "shipped", "delivered", "fulfilled"] as const;
@@ -129,6 +131,11 @@ function emptyDashboardSnapshot(): AdminDashboardSnapshot {
     security: {
       activeSessions: 0,
       recentAuditLogs: []
+    },
+    risk: {
+      score: 0,
+      level: "düşük",
+      items: []
     }
   };
 }
@@ -342,6 +349,8 @@ async function loadAdminDashboardSnapshot(): Promise<AdminDashboardSnapshot> {
     const recentServiceRequests = asArray<RecentServiceRequestRow>(kpis?.recent_service_requests);
     const recentAuditLogs = asArray<AuditLogRow>(kpis?.recent_audit_logs);
 
+    const risk = await getAdminRiskSnapshot();
+
     return {
       kpis: {
         todayRevenue,
@@ -387,7 +396,8 @@ async function loadAdminDashboardSnapshot(): Promise<AdminDashboardSnapshot> {
           ...log,
           createdAt: toDate(log.createdAt)
         }))
-      }
+      },
+      risk
     };
   } catch (error) {
     console.warn("Admin dashboard snapshot could not be loaded.", error);

@@ -25,6 +25,22 @@ export type PublicSiteSettings = {
     addressCountry: string;
   };
   mapEmbedUrl: string;
+  maintenanceMode: boolean;
+  maintenanceMessage: string;
+  shippingSettings: {
+    freeShippingThresholdKurus?: number;
+    defaultShippingKurus?: number;
+    carrierName?: string;
+  };
+  taxSettings: {
+    vatRate?: number;
+    pricesIncludeVat?: boolean;
+  };
+  paymentSettings: {
+    provider?: string;
+    testMode?: boolean;
+    installmentEnabled?: boolean;
+  };
   serviceAreas: string[];
   socials: SiteSettingsSocials;
   updatedAt?: Date;
@@ -48,6 +64,11 @@ export function getFallbackSiteSettings(): PublicSiteSettings {
       addressCountry: siteConfig.address.addressCountry
     },
     mapEmbedUrl: "",
+    maintenanceMode: false,
+    maintenanceMessage: "",
+    shippingSettings: {},
+    taxSettings: {},
+    paymentSettings: {},
     serviceAreas: [...siteConfig.serviceAreas],
     socials: { ...siteConfig.socials }
   };
@@ -69,6 +90,18 @@ export function normalizePublicSiteSettings(
     address: {
       ...fallback.address,
       ...(value.address ?? {})
+    },
+    shippingSettings: {
+      ...fallback.shippingSettings,
+      ...(value.shippingSettings ?? {})
+    },
+    taxSettings: {
+      ...fallback.taxSettings,
+      ...(value.taxSettings ?? {})
+    },
+    paymentSettings: {
+      ...fallback.paymentSettings,
+      ...(value.paymentSettings ?? {})
     },
     serviceAreas:
       Array.isArray(value.serviceAreas) && value.serviceAreas.length > 0

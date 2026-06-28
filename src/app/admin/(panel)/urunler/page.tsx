@@ -3,7 +3,7 @@ import Link from "next/link";
 import { AdminFilterBar } from "@/components/admin/table/admin-filter-bar";
 import { AdminPageHeader } from "@/components/admin/table/admin-page-header";
 import { ProductsTable } from "@/components/admin/table/products-table";
-import { listAdminProducts } from "@/server/admin/repository";
+import { listAdminCatalog, listAdminProducts } from "@/server/admin/repository";
 
 type ProductListPageProps = {
   searchParams?: Promise<{
@@ -12,6 +12,10 @@ type ProductListPageProps = {
     cursor?: string;
     from?: string;
     to?: string;
+    category?: string;
+    brand?: string;
+    stock?: string;
+    sort?: string;
   }>;
 };
 
@@ -33,14 +37,21 @@ function buildHref(basePath: string, query: Record<string, string | undefined>, 
 
 export default async function AdminProductsPage({ searchParams }: ProductListPageProps) {
   const query = (await searchParams) ?? {};
-  const result = await listAdminProducts({
-    q: query.q,
-    status: query.status,
-    cursor: query.cursor,
-    from: query.from,
-    to: query.to,
-    limit: 12
-  });
+  const [result, catalog] = await Promise.all([
+    listAdminProducts({
+      q: query.q,
+      status: query.status,
+      cursor: query.cursor,
+      from: query.from,
+      to: query.to,
+      category: query.category,
+      brand: query.brand,
+      stock: query.stock,
+      sort: query.sort,
+      limit: 12
+    }),
+    listAdminCatalog()
+  ]);
 
   return (
     <div className="space-y-6">
@@ -78,7 +89,7 @@ export default async function AdminProductsPage({ searchParams }: ProductListPag
       />
 
       <AdminFilterBar>
-        <form className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_220px_170px_170px_auto]">
+        <form className="grid gap-4 lg:grid-cols-4 xl:grid-cols-[minmax(0,1.4fr)_160px_160px_160px_160px_160px_auto]">
           <input
             name="q"
             defaultValue={query.q ?? ""}
@@ -94,6 +105,50 @@ export default async function AdminProductsPage({ searchParams }: ProductListPag
             <option value="draft">Taslak</option>
             <option value="active">Aktif</option>
             <option value="archived">Pasif</option>
+          </select>
+          <select
+            name="category"
+            defaultValue={query.category ?? ""}
+            className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm"
+          >
+            <option value="">Tum kategoriler</option>
+            {catalog.categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+          <select
+            name="brand"
+            defaultValue={query.brand ?? ""}
+            className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm"
+          >
+            <option value="">Tum markalar</option>
+            {catalog.brands.map((brand) => (
+              <option key={brand.id} value={brand.id}>
+                {brand.name}
+              </option>
+            ))}
+          </select>
+          <select
+            name="stock"
+            defaultValue={query.stock ?? ""}
+            className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm"
+          >
+            <option value="">Tum stoklar</option>
+            <option value="available">Stokta</option>
+            <option value="low">Kritik stok</option>
+            <option value="out">Stok yok</option>
+          </select>
+          <select
+            name="sort"
+            defaultValue={query.sort ?? ""}
+            className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm"
+          >
+            <option value="">Varsayilan</option>
+            <option value="name_asc">Ada gore</option>
+            <option value="price_desc">Fiyat yuksek</option>
+            <option value="stock_asc">Stok azalan risk</option>
           </select>
           <input
             name="from"

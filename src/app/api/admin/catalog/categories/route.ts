@@ -5,7 +5,7 @@ import { adminCategorySchema } from "@/server/admin/validators";
 import { getRequestMeta, requireAdminRole } from "@/server/auth/guards";
 
 async function handleUpsert(request: Request, status = 200) {
-  const authenticatedAdmin = await requireAdminRole(["superadmin", "sales"]);
+  const authenticatedAdmin = await requireAdminRole(["superadmin", "admin", "product_manager"]);
 
   if (!authenticatedAdmin) {
     return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });

@@ -53,6 +53,9 @@ const navigationIconMap = {
   "/admin/saha": Activity,
   "/admin/blog": BookOpen,
   "/admin/katalog": ListTree,
+  "/admin/envanter": Boxes,
+  "/admin/kampanyalar": Sparkles,
+  "/admin/bildirimler": Activity,
   "/admin/paytr": CreditCard,
   "/admin/audit": ShieldCheck,
   "/admin/adminler": UserCog
@@ -68,6 +71,9 @@ const navigationDetailMap: Record<string, string> = {
   "/admin/saha": "Keşif, servis ve kurulum planlama",
   "/admin/blog": "Blog, rehber ve içerik operasyonu",
   "/admin/katalog": "Kategori ve marka sözlükleri",
+  "/admin/envanter": "Stok hareketleri ve kritik stok uyarıları",
+  "/admin/kampanyalar": "Banner, kampanya ve vitrin yönetimi",
+  "/admin/bildirimler": "Okunmamış operasyon bildirimleri",
   "/admin/paytr": "Ödeme hareketleri ve callback kayıtları",
   "/admin/audit": "İşlem kayıtları ve güvenlik izleme",
   "/admin/adminler": "Admin kullanıcı ve oturum yönetimi"
@@ -81,7 +87,7 @@ const moduleGroups = [
   },
   {
     label: "Ticaret",
-    items: ["/admin/urunler", "/admin/katalog", "/admin/paytr"],
+    items: ["/admin/urunler", "/admin/katalog", "/admin/envanter", "/admin/kampanyalar", "/admin/paytr"],
     icon: Boxes
   },
   {
@@ -91,7 +97,7 @@ const moduleGroups = [
   },
   {
     label: "Güvenlik",
-    items: ["/admin/erisim", "/admin/audit", "/admin/adminler"],
+    items: ["/admin/erisim", "/admin/bildirimler", "/admin/audit", "/admin/adminler"],
     icon: ShieldCheck
   }
 ] as const;
@@ -102,7 +108,7 @@ const commandActionItems: Array<AdminCommandItem & { roles: AdminRole[]; require
     label: "Yeni ürün ekle",
     detail: "Fiyat, stok, varyant, SEO ve görselleri tek akışta gir",
     group: "Hızlı işlem",
-    roles: ["superadmin", "sales"],
+    roles: ["superadmin", "admin", "product_manager"],
     requiresDatabase: true
   },
   {
@@ -110,7 +116,7 @@ const commandActionItems: Array<AdminCommandItem & { roles: AdminRole[]; require
     label: "Yeni rehber yazısı",
     detail: "SEO, AIEO ve müşteri sorularına cevap veren içerik oluştur",
     group: "Hızlı işlem",
-    roles: ["superadmin", "editor"],
+    roles: ["superadmin", "admin"],
     requiresDatabase: true
   },
   {
@@ -118,7 +124,7 @@ const commandActionItems: Array<AdminCommandItem & { roles: AdminRole[]; require
     label: "Teklif masasını aç",
     detail: "Ev, site, KOBİ ve ticari lokasyon taleplerini önceliklendir",
     group: "Satış",
-    roles: ["superadmin", "sales"],
+    roles: ["superadmin", "admin", "order_manager"],
     requiresDatabase: true
   },
   {
@@ -126,7 +132,7 @@ const commandActionItems: Array<AdminCommandItem & { roles: AdminRole[]; require
     label: "Saha planını kontrol et",
     detail: "Türkiye genelinden gelen keşif ve kurulum taleplerini yönet",
     group: "Operasyon",
-    roles: ["superadmin", "operations", "technician"],
+    roles: ["superadmin", "admin", "order_manager", "support_agent"],
     requiresDatabase: true
   },
   {

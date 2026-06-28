@@ -123,7 +123,7 @@ async function uploadToDatabaseMedia(file: File, request: Request) {
 }
 
 export async function POST(request: Request) {
-  const authenticatedAdmin = await requireAdminRole(["superadmin", "sales", "editor"]);
+  const authenticatedAdmin = await requireAdminRole(["superadmin", "admin", "product_manager"]);
 
   if (!authenticatedAdmin) {
     return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });

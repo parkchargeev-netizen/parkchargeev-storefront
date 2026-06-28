@@ -20,7 +20,7 @@ function parseListQuery(request: Request) {
 }
 
 export async function GET(request: Request) {
-  const authenticatedAdmin = await requireAdminRole(["superadmin", "operations", "technician"]);
+  const authenticatedAdmin = await requireAdminRole(["superadmin", "admin", "order_manager", "support_agent", "readonly"]);
 
   if (!authenticatedAdmin) {
     return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });

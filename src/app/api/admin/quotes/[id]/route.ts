@@ -12,7 +12,7 @@ type QuoteRouteProps = {
 };
 
 export async function GET(_request: Request, { params }: QuoteRouteProps) {
-  const authenticatedAdmin = await requireAdminRole(["superadmin", "sales"]);
+  const authenticatedAdmin = await requireAdminRole(["superadmin", "admin", "order_manager", "support_agent", "readonly"]);
 
   if (!authenticatedAdmin) {
     return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });
@@ -29,7 +29,7 @@ export async function GET(_request: Request, { params }: QuoteRouteProps) {
 }
 
 export async function PATCH(request: Request, { params }: QuoteRouteProps) {
-  const authenticatedAdmin = await requireAdminRole(["superadmin", "sales"]);
+  const authenticatedAdmin = await requireAdminRole(["superadmin", "admin", "order_manager"]);
 
   if (!authenticatedAdmin) {
     return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });

@@ -27,6 +27,30 @@ function splitAreas(value: string) {
     .filter(Boolean);
 }
 
+function parseOptionalLiraToKurus(value: string) {
+  const trimmed = value.trim().replace(",", ".");
+
+  if (!trimmed) {
+    return undefined;
+  }
+
+  const amount = Number(trimmed);
+
+  if (!Number.isFinite(amount) || amount < 0) {
+    return undefined;
+  }
+
+  return Math.round(amount * 100);
+}
+
+function formatKurusAsLira(value?: number) {
+  if (typeof value !== "number") {
+    return "";
+  }
+
+  return (value / 100).toString();
+}
+
 export function SiteSettingsForm({ settings }: SiteSettingsFormProps) {
   const router = useRouter();
   const [brandName, setBrandName] = useState(settings.brandName);
@@ -48,6 +72,32 @@ export function SiteSettingsForm({ settings }: SiteSettingsFormProps) {
   const [facebook, setFacebook] = useState(settings.socials.facebook ?? "");
   const [linkedin, setLinkedin] = useState(settings.socials.linkedin ?? "");
   const [youtube, setYoutube] = useState(settings.socials.youtube ?? "");
+  const [maintenanceMode, setMaintenanceMode] = useState(settings.maintenanceMode);
+  const [maintenanceMessage, setMaintenanceMessage] = useState(settings.maintenanceMessage);
+  const [freeShippingThreshold, setFreeShippingThreshold] = useState(
+    formatKurusAsLira(settings.shippingSettings.freeShippingThresholdKurus)
+  );
+  const [defaultShipping, setDefaultShipping] = useState(
+    formatKurusAsLira(settings.shippingSettings.defaultShippingKurus)
+  );
+  const [carrierName, setCarrierName] = useState(settings.shippingSettings.carrierName ?? "");
+  const [vatRate, setVatRate] = useState(
+    typeof settings.taxSettings.vatRate === "number"
+      ? String(settings.taxSettings.vatRate * 100)
+      : ""
+  );
+  const [pricesIncludeVat, setPricesIncludeVat] = useState(
+    settings.taxSettings.pricesIncludeVat ?? true
+  );
+  const [paymentProvider, setPaymentProvider] = useState(
+    settings.paymentSettings.provider ?? "paytr"
+  );
+  const [paymentTestMode, setPaymentTestMode] = useState(
+    settings.paymentSettings.testMode ?? false
+  );
+  const [installmentEnabled, setInstallmentEnabled] = useState(
+    settings.paymentSettings.installmentEnabled ?? false
+  );
   const [feedback, setFeedback] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -72,6 +122,22 @@ export function SiteSettingsForm({ settings }: SiteSettingsFormProps) {
       postalCode,
       addressCountry,
       mapEmbedUrl,
+      maintenanceMode,
+      maintenanceMessage,
+      shippingSettings: {
+        freeShippingThresholdKurus: parseOptionalLiraToKurus(freeShippingThreshold),
+        defaultShippingKurus: parseOptionalLiraToKurus(defaultShipping),
+        carrierName
+      },
+      taxSettings: {
+        vatRate: vatRate.trim() ? Number(vatRate.replace(",", ".")) / 100 : undefined,
+        pricesIncludeVat
+      },
+      paymentSettings: {
+        provider: paymentProvider,
+        testMode: paymentTestMode,
+        installmentEnabled
+      },
       serviceAreas: splitAreas(serviceAreas),
       socials: {
         instagram,
@@ -292,6 +358,106 @@ export function SiteSettingsForm({ settings }: SiteSettingsFormProps) {
               placeholder="YouTube URL"
               className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
             />
+          </div>
+        </section>
+      </div>
+
+      <div className="grid gap-4 xl:grid-cols-3">
+        <section className="rounded-lg border border-slate-200 bg-white p-4">
+          <p className="text-xs font-semibold uppercase tracking-normal text-emerald-700">
+            Bakim modu
+          </p>
+          <label className="mt-4 flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
+            <input
+              type="checkbox"
+              checked={maintenanceMode}
+              onChange={(event) => setMaintenanceMode(event.target.checked)}
+              className="h-4 w-4 rounded border-slate-300 text-emerald-700"
+            />
+            <span className="text-sm font-medium text-slate-700">Public siteyi bakima al</span>
+          </label>
+          <textarea
+            rows={4}
+            value={maintenanceMessage}
+            onChange={(event) => setMaintenanceMessage(event.target.value)}
+            className="mt-3 w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
+            placeholder="Bakim ekrani mesaji"
+          />
+        </section>
+
+        <section className="rounded-lg border border-slate-200 bg-white p-4">
+          <p className="text-xs font-semibold uppercase tracking-normal text-emerald-700">
+            Kargo ve vergi
+          </p>
+          <div className="mt-4 grid gap-3">
+            <input
+              value={carrierName}
+              onChange={(event) => setCarrierName(event.target.value)}
+              placeholder="Kargo firmasi"
+              className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
+            />
+            <input
+              value={freeShippingThreshold}
+              onChange={(event) => setFreeShippingThreshold(event.target.value)}
+              placeholder="Ucretsiz kargo esigi (TL)"
+              inputMode="decimal"
+              className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
+            />
+            <input
+              value={defaultShipping}
+              onChange={(event) => setDefaultShipping(event.target.value)}
+              placeholder="Varsayilan kargo (TL)"
+              inputMode="decimal"
+              className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
+            />
+            <input
+              value={vatRate}
+              onChange={(event) => setVatRate(event.target.value)}
+              placeholder="KDV orani (%)"
+              inputMode="decimal"
+              className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
+            />
+            <label className="flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
+              <input
+                type="checkbox"
+                checked={pricesIncludeVat}
+                onChange={(event) => setPricesIncludeVat(event.target.checked)}
+                className="h-4 w-4 rounded border-slate-300 text-emerald-700"
+              />
+              <span className="text-sm font-medium text-slate-700">Fiyatlara KDV dahil</span>
+            </label>
+          </div>
+        </section>
+
+        <section className="rounded-lg border border-slate-200 bg-white p-4">
+          <p className="text-xs font-semibold uppercase tracking-normal text-emerald-700">
+            Odeme ayarlari
+          </p>
+          <div className="mt-4 grid gap-3">
+            <input
+              value={paymentProvider}
+              onChange={(event) => setPaymentProvider(event.target.value)}
+              placeholder="Odeme saglayici"
+              className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
+            />
+            <label className="flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
+              <input
+                type="checkbox"
+                checked={paymentTestMode}
+                onChange={(event) => setPaymentTestMode(event.target.checked)}
+                className="h-4 w-4 rounded border-slate-300 text-emerald-700"
+              />
+              <span className="text-sm font-medium text-slate-700">Test modu isareti</span>
+            </label>
+            <label className="flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
+              <input
+                type="checkbox"
+                checked={installmentEnabled}
+                onChange={(event) => setInstallmentEnabled(event.target.checked)}
+                className="h-4 w-4 rounded border-slate-300 text-emerald-700"
+              />
+              <span className="text-sm font-medium text-slate-700">Taksit secenegi aktif</span>
+            </label>
           </div>
         </section>
       </div>

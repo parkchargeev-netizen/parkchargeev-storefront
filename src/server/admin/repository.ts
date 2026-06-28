@@ -1,12 +1,15 @@
 import {
   and,
+  asc,
   count,
   desc,
   eq,
   gte,
   ilike,
   inArray,
+  isNull,
   lt,
+  lte,
   or,
   sql
 } from "drizzle-orm";
@@ -62,8 +65,12 @@ import {
   blogPosts,
   brands,
   cartItems,
+  campaignCategories,
+  campaignProducts,
+  campaigns,
   categories,
   customers,
+  inventoryMovements,
   orderItems,
   orders,
   productCategoryAssignments,
@@ -669,6 +676,54 @@ function mapAdminProductToPublicProduct(
   };
 }
 
+type ActiveCampaignRow = typeof campaigns.$inferSelect;
+
+function applyCampaignPrice(priceKurus: number, campaign: ActiveCampaignRow) {
+  if (priceKurus <= 0) {
+    return priceKurus;
+  }
+
+  if (campaign.discountType === "percent") {
+    const percent = Math.min(Math.max(campaign.discountValue, 0), 100);
+    return Math.max(0, Math.round(priceKurus * ((100 - percent) / 100)));
+  }
+
+  return Math.max(0, priceKurus - Math.max(campaign.discountValue, 0));
+}
+
+function applyBestCampaignPrice(priceKurus: number, activeCampaigns: ActiveCampaignRow[]) {
+  return activeCampaigns.reduce(
+    (bestPrice, campaign) => Math.min(bestPrice, applyCampaignPrice(priceKurus, campaign)),
+    priceKurus
+  );
+}
+
+function applyCampaignsToProduct(product: ProductModel, activeCampaigns: ActiveCampaignRow[]) {
+  if (activeCampaigns.length === 0) {
+    return product;
+  }
+
+  const productPriceKurus = applyBestCampaignPrice(product.priceKurus, activeCampaigns);
+  const variants = product.variants?.map((variant) => {
+    const variantPriceKurus = applyBestCampaignPrice(variant.priceKurus, activeCampaigns);
+
+    return {
+      ...variant,
+      priceKurus: variantPriceKurus,
+      compareAtKurus:
+        variantPriceKurus < variant.priceKurus ? variant.priceKurus : variant.compareAtKurus
+    };
+  });
+
+  return {
+    ...product,
+    priceKurus: productPriceKurus,
+    compareAtKurus:
+      productPriceKurus < product.priceKurus ? product.priceKurus : product.compareAtKurus,
+    variants
+  };
+}
+
 async function loadPublicProducts() {
   if (!hasDatabaseConfig()) {
     return marketingProducts;
@@ -690,10 +745,127 @@ async function loadPublicProducts() {
       includeSpecs: false
     });
     const mappedProducts = rows.map((row) => mapAdminProductToPublicProduct(row, collections));
+    const productIdBySlug = new Map(rows.map((row) => [row.slug, row.id]));
+    const now = new Date();
+    const activeCampaignRows = await db
+      .select()
+      .from(campaigns)
+      .where(
+        and(
+          eq(campaigns.status, "active"),
+          isNull(campaigns.deletedAt),
+          or(isNull(campaigns.startsAt), lte(campaigns.startsAt, now)),
+          or(isNull(campaigns.endsAt), gte(campaigns.endsAt, now))
+        )
+      );
+    let campaignAdjustedProducts = mappedProducts;
+
+    if (activeCampaignRows.length > 0) {
+      const activeCampaignIds = activeCampaignRows.map((campaign) => campaign.id);
+      const [productCampaignLinks, categoryCampaignLinks, productCategoryLinks] =
+        await Promise.all([
+          db
+            .select({
+              campaignId: campaignProducts.campaignId,
+              productId: campaignProducts.productId
+            })
+            .from(campaignProducts)
+            .where(inArray(campaignProducts.campaignId, activeCampaignIds)),
+          db
+            .select({
+              campaignId: campaignCategories.campaignId,
+              categoryId: campaignCategories.categoryId
+            })
+            .from(campaignCategories)
+            .where(inArray(campaignCategories.campaignId, activeCampaignIds)),
+          db
+            .select({
+              productId: productCategoryAssignments.productId,
+              categoryId: productCategoryAssignments.categoryId
+            })
+            .from(productCategoryAssignments)
+            .where(
+              inArray(
+                productCategoryAssignments.productId,
+                rows.map((row) => row.id)
+              )
+            )
+        ]);
+      const scopedCampaignIds = new Set([
+        ...productCampaignLinks.map((link) => link.campaignId),
+        ...categoryCampaignLinks.map((link) => link.campaignId)
+      ]);
+      const campaignById = new Map(
+        activeCampaignRows.map((campaign) => [campaign.id, campaign])
+      );
+      const sitewideCampaigns = activeCampaignRows.filter(
+        (campaign) => !scopedCampaignIds.has(campaign.id)
+      );
+      const campaignsByProductId = new Map<string, ActiveCampaignRow[]>();
+      const campaignsByCategoryId = new Map<string, ActiveCampaignRow[]>();
+      const categoryIdsByProductId = new Map<string, string[]>();
+
+      for (const link of productCampaignLinks) {
+        const campaign = campaignById.get(link.campaignId);
+
+        if (!campaign) {
+          continue;
+        }
+
+        campaignsByProductId.set(link.productId, [
+          ...(campaignsByProductId.get(link.productId) ?? []),
+          campaign
+        ]);
+      }
+
+      for (const link of categoryCampaignLinks) {
+        const campaign = campaignById.get(link.campaignId);
+
+        if (!campaign) {
+          continue;
+        }
+
+        campaignsByCategoryId.set(link.categoryId, [
+          ...(campaignsByCategoryId.get(link.categoryId) ?? []),
+          campaign
+        ]);
+      }
+
+      for (const link of productCategoryLinks) {
+        categoryIdsByProductId.set(link.productId, [
+          ...(categoryIdsByProductId.get(link.productId) ?? []),
+          link.categoryId
+        ]);
+      }
+
+      campaignAdjustedProducts = mappedProducts.map((product) => {
+        const dbProductId = productIdBySlug.get(product.slug);
+
+        if (!dbProductId) {
+          return product;
+        }
+
+        const categoryCampaigns = (categoryIdsByProductId.get(dbProductId) ?? []).flatMap(
+          (categoryId) => campaignsByCategoryId.get(categoryId) ?? []
+        );
+        const applicableCampaigns = [
+          ...sitewideCampaigns,
+          ...(campaignsByProductId.get(dbProductId) ?? []),
+          ...categoryCampaigns
+        ];
+
+        return applyCampaignsToProduct(
+          product,
+          Array.from(
+            new Map(applicableCampaigns.map((campaign) => [campaign.id, campaign])).values()
+          )
+        );
+      });
+    }
     const mappedSlugs = new Set(mappedProducts.map((product) => product.slug));
 
     return [
-      ...mappedProducts,
+      ...campaignAdjustedProducts,
       ...marketingProducts.filter((product) => !mappedSlugs.has(product.slug))
     ];
   } catch {
@@ -904,12 +1076,17 @@ async function assertProductWriteIsUnique(
 async function writeProductVariants(
   productId: string,
   input: ProductInput,
-  normalizedVariants?: NormalizedProductVariant[]
+  normalizedVariants?: NormalizedProductVariant[],
+  actor?: AdminSessionPayload | null
 ) {
   const db = getDb();
   const variants = normalizedVariants ?? normalizeProductVariants(input);
   const existing = await db
-    .select({ id: productVariants.id, sku: productVariants.sku })
+    .select({
+      id: productVariants.id,
+      sku: productVariants.sku,
+      stockQuantity: productVariants.stockQuantity
+    })
     .from(productVariants)
     .where(eq(productVariants.productId, productId));
   const existingIds = new Set(existing.map((variant) => variant.id));
@@ -935,15 +1112,45 @@ async function writeProductVariants(
         : existingIdBySku.get(variant.sku);
 
     if (targetVariantId) {
+      const previousVariant = existing.find((item) => item.id === targetVariantId);
       await db
         .update(productVariants)
         .set(values)
         .where(and(eq(productVariants.id, targetVariantId), eq(productVariants.productId, productId)));
+      const previousStock = previousVariant?.stockQuantity ?? 0;
+      if (previousStock !== variant.stockQuantity) {
+        await db.insert(inventoryMovements).values({
+          productId,
+          variantId: targetVariantId,
+          sku: variant.sku,
+          quantityBefore: previousStock,
+          quantityAfter: variant.stockQuantity,
+          quantityDelta: variant.stockQuantity - previousStock,
+          reason: "manual_update",
+          note: "Admin ürün formu üzerinden stok güncellendi.",
+          adminUserId: actor?.sub ?? null
+        });
+      }
       retainedExistingIds.add(targetVariantId);
       continue;
     }
 
-    await db.insert(productVariants).values(values);
+    const [createdVariant] = await db
+      .insert(productVariants)
+      .values(values)
+      .returning({ id: productVariants.id });
+
+    await db.insert(inventoryMovements).values({
+      productId,
+      variantId: createdVariant.id,
+      sku: variant.sku,
+      quantityBefore: 0,
+      quantityAfter: variant.stockQuantity,
+      quantityDelta: variant.stockQuantity,
+      reason: "product_created",
+      note: "Admin ürün formu üzerinden varyant oluşturuldu.",
+      adminUserId: actor?.sub ?? null
+    });
   }
 
   const removableIds = existing
@@ -963,10 +1170,22 @@ async function writeProductVariants(
     if (Number(orderReference?.total ?? 0) === 0 && Number(cartReference?.total ?? 0) === 0) {
       await db.delete(productVariants).where(eq(productVariants.id, id));
     } else {
+      const previousVariant = existing.find((variant) => variant.id === id);
       await db
         .update(productVariants)
         .set({ isDefault: false, stockQuantity: 0 })
         .where(eq(productVariants.id, id));
+      await db.insert(inventoryMovements).values({
+        productId,
+        variantId: id,
+        sku: previousVariant?.sku ?? null,
+        quantityBefore: previousVariant?.stockQuantity ?? 0,
+        quantityAfter: 0,
+        quantityDelta: -(previousVariant?.stockQuantity ?? 0),
+        reason: "variant_archived",
+        note: "Sipariş veya sepet bağı olan varyant silinemedi, stok sıfırlandı.",
+        adminUserId: actor?.sub ?? null
+      });
     }
   }
 }
@@ -1283,6 +1502,75 @@ export async function listAdminProducts(input: ListQueryInput) {
     conditions.push(eq(products.status, input.status as typeof products.$inferSelect.status));
   }
 
+  if (input.brand) {
+    conditions.push(eq(products.brandId, input.brand));
+  }
+
+  if (input.category) {
+    const isCategoryUuid =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+        input.category
+      );
+    const categoryRows = await db
+      .select({ id: categories.id })
+      .from(categories)
+      .where(
+        isCategoryUuid
+          ? or(eq(categories.id, input.category), eq(categories.slug, input.category))
+          : eq(categories.slug, input.category)
+      );
+
+    if (categoryRows.length === 0) {
+      return { items: [], nextCursor: null };
+    }
+
+    const assignments = await db
+      .select({ productId: productCategoryAssignments.productId })
+      .from(productCategoryAssignments)
+      .where(
+        inArray(
+          productCategoryAssignments.categoryId,
+          categoryRows.map((category) => category.id)
+        )
+      );
+
+    if (assignments.length === 0) {
+      return { items: [], nextCursor: null };
+    }
+
+    conditions.push(inArray(products.id, assignments.map((assignment) => assignment.productId)));
+  }
+
+  if (input.stock && ["low", "out", "available"].includes(input.stock)) {
+    const variantRows = await db
+      .select({
+        productId: productVariants.productId,
+        stockQuantity: productVariants.stockQuantity
+      })
+      .from(productVariants);
+    const stockProductIds = new Set<string>();
+
+    for (const variant of variantRows) {
+      if (input.stock === "out" && variant.stockQuantity <= 0) {
+        stockProductIds.add(variant.productId);
+      }
+
+      if (input.stock === "low" && variant.stockQuantity > 0 && variant.stockQuantity <= 3) {
+        stockProductIds.add(variant.productId);
+      }
+
+      if (input.stock === "available" && variant.stockQuantity > 0) {
+        stockProductIds.add(variant.productId);
+      }
+    }
+
+    if (stockProductIds.size === 0) {
+      return { items: [], nextCursor: null };
+    }
+
+    conditions.push(inArray(products.id, [...stockProductIds]));
+  }
+
   const fromDate = parseFilterDate(input.from);
   const toDate = parseFilterDate(input.to, true);
 
@@ -1306,6 +1594,22 @@ export async function listAdminProducts(input: ListQueryInput) {
     );
   }
 
+  const orderByClauses =
+    input.sort === "name_asc"
+      ? [asc(products.name), desc(products.id)]
+      : input.sort === "price_desc"
+        ? [desc(products.defaultPriceKurus), desc(products.id)]
+        : input.sort === "stock_asc"
+          ? [
+              sql`(
+                select min(${productVariants.stockQuantity})
+                from ${productVariants}
+                where ${productVariants.productId} = ${products.id}
+              ) asc nulls last`,
+              desc(products.id)
+            ]
+          : [desc(products.updatedAt), desc(products.id)];
+
   const rows = await db
     .select({
       id: products.id,
@@ -1318,7 +1622,7 @@ export async function listAdminProducts(input: ListQueryInput) {
     })
     .from(products)
     .where(conditions.length > 0 ? and(...conditions) : undefined)
-    .orderBy(desc(products.updatedAt), desc(products.id))
+    .orderBy(...orderByClauses)
     .limit(input.limit + 1);
 
   const hasMore = rows.length > input.limit;
@@ -1354,6 +1658,50 @@ export async function listAdminProducts(input: ListQueryInput) {
         })
       : null
   };
+}
+
+export async function updateAdminProductStatuses(
+  ids: string[],
+  status: typeof products.$inferSelect.status,
+  actor: AdminSessionPayload | null,
+  requestMeta?: {
+    ipAddress?: string | null;
+    userAgent?: string | null;
+  }
+) {
+  if (!hasDatabaseConfig()) {
+    return { updatedCount: ids.length };
+  }
+
+  const db = getDb();
+  const beforeRows = await db.select().from(products).where(inArray(products.id, ids));
+
+  if (beforeRows.length === 0) {
+    return { updatedCount: 0 };
+  }
+
+  await db
+    .update(products)
+    .set({ status, updatedAt: new Date() })
+    .where(inArray(products.id, beforeRows.map((item) => item.id)));
+
+  for (const product of beforeRows) {
+    await recordAuditLog({
+      db,
+      actor,
+      entityType: "product",
+      entityId: product.id,
+      action: status === "archived" ? "archive" : "status_update",
+      summary: `${product.name} ürünü ${status} durumuna alındı.`,
+      beforePayload: product,
+      afterPayload: { ...product, status },
+      ipAddress: requestMeta?.ipAddress,
+      userAgent: requestMeta?.userAgent
+    });
+    revalidateProductSurfaces(product.slug);
+  }
+
+  return { updatedCount: beforeRows.length };
 }
 
 export async function getAdminProductById(id: string) {
@@ -1467,7 +1815,7 @@ export async function upsertAdminProduct(
       requestMeta?.ipAddress,
       requestMeta?.userAgent
     );
-    await writeProductVariants(input.id, input, normalizedVariants);
+    await writeProductVariants(input.id, input, normalizedVariants, actor);
 
     const after = await getAdminProductById(input.id);
 
@@ -1505,7 +1853,7 @@ export async function upsertAdminProduct(
     requestMeta?.ipAddress,
     requestMeta?.userAgent
   );
-  await writeProductVariants(createdProduct.id, input, normalizedVariants);
+  await writeProductVariants(createdProduct.id, input, normalizedVariants, actor);
 
   const after = await getAdminProductById(createdProduct.id);
 
@@ -2293,7 +2641,9 @@ export async function upsertAdminBrand(
     name: input.name,
     slug: slugify(input.slug || input.name),
     websiteUrl: input.websiteUrl || null,
-    description: input.description || null
+    description: input.description || null,
+    isActive: input.isActive,
+    deletedAt: input.isActive ? null : new Date()
   };
 
   if (input.id) {
@@ -2343,7 +2693,9 @@ export async function upsertAdminCategory(
     name: input.name,
     slug: slugify(input.slug || input.name),
     description: input.description || null,
-    parentId: input.parentId ?? null
+    parentId: input.parentId ?? null,
+    isActive: input.isActive,
+    deletedAt: input.isActive ? null : new Date()
   };
 
   if (input.id) {

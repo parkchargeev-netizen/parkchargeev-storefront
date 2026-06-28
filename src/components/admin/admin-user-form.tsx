@@ -40,7 +40,7 @@ export function AdminUserForm({ mode, user }: AdminUserFormProps) {
     defaultValues: {
       email: user?.email ?? "",
       fullName: user?.fullName ?? "",
-      role: user?.role ?? "operations",
+      role: user?.role ?? "admin",
       status: user?.status ?? "active",
       phone: user?.phone ?? "",
       password: ""

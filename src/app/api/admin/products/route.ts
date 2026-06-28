@@ -5,6 +5,7 @@ import { csvResponse } from "@/server/admin/csv";
 import {
   getProductLookupOptions,
   listAdminProducts,
+  updateAdminProductStatuses,
   upsertAdminProduct
 } from "@/server/admin/repository";
 import { isValidationError, validationErrorResponse } from "@/server/admin/http";
@@ -12,7 +13,11 @@ import {
   getAdminProductDatabaseConflictMessage,
   isAdminProductConflictError
 } from "@/server/admin/product-errors";
-import { adminListQuerySchema, adminProductSchema } from "@/server/admin/validators";
+import {
+  adminListQuerySchema,
+  adminProductBulkActionSchema,
+  adminProductSchema
+} from "@/server/admin/validators";
 import { getRequestMeta, requireAdminRole } from "@/server/auth/guards";
 
 function productConflictResponse(message: string) {
@@ -20,7 +25,7 @@ function productConflictResponse(message: string) {
 }
 
 export async function GET(request: Request) {
-  const authenticatedAdmin = await requireAdminRole(["superadmin", "sales"]);
+  const authenticatedAdmin = await requireAdminRole(["superadmin", "admin", "product_manager", "readonly"]);
 
   if (!authenticatedAdmin) {
     return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });
@@ -33,6 +38,10 @@ export async function GET(request: Request) {
     cursor: searchParams.get("cursor") ?? undefined,
     from: searchParams.get("from") ?? undefined,
     to: searchParams.get("to") ?? undefined,
+    sort: searchParams.get("sort") ?? undefined,
+    category: searchParams.get("category") ?? undefined,
+    brand: searchParams.get("brand") ?? undefined,
+    stock: searchParams.get("stock") ?? undefined,
     format: searchParams.get("format") ?? undefined,
     limit: searchParams.get("limit") ?? undefined
   });
@@ -60,7 +69,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const authenticatedAdmin = await requireAdminRole(["superadmin", "sales"]);
+  const authenticatedAdmin = await requireAdminRole(["superadmin", "admin", "product_manager"]);
 
   if (!authenticatedAdmin) {
     return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });
@@ -98,4 +107,49 @@ export async function POST(request: Request) {
 
     throw error;
   }
+}
+
+export async function PATCH(request: Request) {
+  const authenticatedAdmin = await requireAdminRole(["superadmin", "admin", "product_manager"]);
+
+  if (!authenticatedAdmin) {
+    return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });
+  }
+
+  const payload = adminProductBulkActionSchema.parse(await request.json());
+  const statusByAction = {
+    archive: "archived",
+    activate: "active",
+    draft: "draft"
+  } as const;
+  const requestMeta = await getRequestMeta();
+  const result = await updateAdminProductStatuses(
+    payload.ids,
+    statusByAction[payload.action],
+    authenticatedAdmin.session,
+    requestMeta
+  );
+
+  return NextResponse.json({ ok: true, ...result });
+}
+
+export async function DELETE(request: Request) {
+  const authenticatedAdmin = await requireAdminRole(["superadmin", "admin", "product_manager"]);
+
+  if (!authenticatedAdmin) {
+    return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });
+  }
+
+  const { searchParams } = new URL(request.url);
+  const ids = searchParams.getAll("id").filter(Boolean);
+  const payload = adminProductBulkActionSchema.parse({ ids, action: "archive" });
+  const requestMeta = await getRequestMeta();
+  const result = await updateAdminProductStatuses(
+    payload.ids,
+    "archived",
+    authenticatedAdmin.session,
+    requestMeta
+  );
+
+  return NextResponse.json({ ok: true, ...result });
 }

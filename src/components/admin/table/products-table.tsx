@@ -1,7 +1,8 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useCallback, useMemo, useState, type ReactNode } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import { formatPriceTRY } from "@/lib/format";
@@ -26,6 +27,8 @@ type ProductsTableProps = {
   footer?: ReactNode;
 };
 
+type BulkAction = "archive" | "activate" | "draft";
+
 function getProductTone(status: ProductRow["status"]) {
   switch (status) {
     case "active":
@@ -47,100 +50,241 @@ function formatProductStatus(status: ProductRow["status"]) {
   return labels[status];
 }
 
-const columns: Array<ColumnDef<ProductRow>> = [
-  {
-    accessorKey: "name",
-    header: "Ürün",
-    cell: ({ row }) => (
-      <div className="min-w-[260px]">
-        <Link
-          href={`/admin/urunler/${row.original.id}`}
-          prefetch={false}
-          className="text-sm font-semibold text-slate-950 transition hover:text-[#063326]"
-        >
-          {row.original.name}
-        </Link>
-        <p className="mt-1 text-xs uppercase tracking-normal text-slate-500">
-          {row.original.slug}
-        </p>
-        <p className="mt-2 line-clamp-2 text-sm text-slate-600">
-          {row.original.shortDescription}
-        </p>
-      </div>
-    )
-  },
-  {
-    accessorKey: "status",
-    header: "Durum",
-    cell: ({ row }) => (
-      <AdminStatusBadge
-        label={formatProductStatus(row.original.status)}
-        tone={getProductTone(row.original.status)}
-      />
-    )
-  },
-  {
-    id: "price",
-    header: "Varsayılan Fiyat",
-    accessorFn: (row) => row.defaultVariant?.priceKurus ?? 0,
-    cell: ({ row }) =>
-      row.original.defaultVariant
-        ? formatPriceTRY(row.original.defaultVariant.priceKurus)
-        : "-"
-  },
-  {
-    id: "stock",
-    header: "Stok",
-    accessorFn: (row) => row.defaultVariant?.stockQuantity ?? 0,
-    cell: ({ row }) => row.original.defaultVariant?.stockQuantity ?? 0
-  },
-  {
-    accessorKey: "categories",
-    header: "Kategoriler",
-    cell: ({ row }) => (
-      <div className="max-w-[220px] text-sm text-slate-600">
-        {row.original.categories.join(", ") || "-"}
-      </div>
-    )
-  },
-  {
-    id: "actions",
-    header: "Aksiyon",
-    enableSorting: false,
-    cell: ({ row }) => (
-      <div className="flex flex-wrap items-center gap-2">
-        <Link
-          href={`/admin/urunler/${row.original.id}`}
-          prefetch={false}
-          className="inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-800 transition hover:border-emerald-300 hover:bg-emerald-100"
-        >
-          Düzenle
-        </Link>
-        {row.original.status === "active" ? (
-          <Link
-            href={`/urun/${row.original.slug}`}
-            prefetch={false}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-white"
-          >
-            Sitede gör
-          </Link>
-        ) : null}
-      </div>
-    )
-  }
-];
-
 export function ProductsTable({ items, footer }: ProductsTableProps) {
+  const router = useRouter();
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [isMutating, setIsMutating] = useState(false);
+  const selectedSet = useMemo(() => new Set(selectedIds), [selectedIds]);
+  const allCurrentSelected =
+    items.length > 0 && items.every((item) => selectedSet.has(item.id));
+
+  const toggleSelected = useCallback((id: string, checked: boolean) => {
+    setSelectedIds((current) =>
+      checked ? Array.from(new Set([...current, id])) : current.filter((item) => item !== id)
+    );
+  }, []);
+
+  const toggleAll = useCallback((checked: boolean) => {
+    setSelectedIds(checked ? items.map((item) => item.id) : []);
+  }, [items]);
+
+  const runStatusAction = useCallback(async (ids: string[], action: BulkAction, confirmation: string) => {
+    if (ids.length === 0 || isMutating) {
+      return;
+    }
+
+    if (!window.confirm(confirmation)) {
+      return;
+    }
+
+    setIsMutating(true);
+
+    try {
+      const response = await fetch("/api/admin/products", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ ids, action })
+      });
+
+      if (!response.ok) {
+        const payload = await response.json().catch(() => null);
+        throw new Error(payload?.error ?? "Urun islemi tamamlanamadi.");
+      }
+
+      setSelectedIds([]);
+      router.refresh();
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : "Urun islemi tamamlanamadi.");
+    } finally {
+      setIsMutating(false);
+    }
+  }, [isMutating, router]);
+
+  const columns = useMemo<Array<ColumnDef<ProductRow>>>(
+    () => [
+      {
+        id: "select",
+        header: () => (
+          <input
+            type="checkbox"
+            aria-label="Bu sayfadaki tum urunleri sec"
+            checked={allCurrentSelected}
+            onChange={(event) => toggleAll(event.currentTarget.checked)}
+            className="h-4 w-4 rounded border-slate-300 text-emerald-700"
+          />
+        ),
+        enableSorting: false,
+        cell: ({ row }) => (
+          <input
+            type="checkbox"
+            aria-label={`${row.original.name} urununu sec`}
+            checked={selectedSet.has(row.original.id)}
+            onChange={(event) => toggleSelected(row.original.id, event.currentTarget.checked)}
+            className="h-4 w-4 rounded border-slate-300 text-emerald-700"
+          />
+        )
+      },
+      {
+        accessorKey: "name",
+        header: "Urun",
+        cell: ({ row }) => (
+          <div className="min-w-[260px]">
+            <Link
+              href={`/admin/urunler/${row.original.id}`}
+              prefetch={false}
+              className="text-sm font-semibold text-slate-950 transition hover:text-[#063326]"
+            >
+              {row.original.name}
+            </Link>
+            <p className="mt-1 text-xs uppercase tracking-normal text-slate-500">
+              {row.original.slug}
+            </p>
+            <p className="mt-2 line-clamp-2 text-sm text-slate-600">
+              {row.original.shortDescription}
+            </p>
+          </div>
+        )
+      },
+      {
+        accessorKey: "status",
+        header: "Durum",
+        cell: ({ row }) => (
+          <AdminStatusBadge
+            label={formatProductStatus(row.original.status)}
+            tone={getProductTone(row.original.status)}
+          />
+        )
+      },
+      {
+        id: "price",
+        header: "Varsayilan fiyat",
+        accessorFn: (row) => row.defaultVariant?.priceKurus ?? 0,
+        cell: ({ row }) =>
+          row.original.defaultVariant
+            ? formatPriceTRY(row.original.defaultVariant.priceKurus)
+            : "-"
+      },
+      {
+        id: "stock",
+        header: "Stok",
+        accessorFn: (row) => row.defaultVariant?.stockQuantity ?? 0,
+        cell: ({ row }) => row.original.defaultVariant?.stockQuantity ?? 0
+      },
+      {
+        accessorKey: "categories",
+        header: "Kategoriler",
+        cell: ({ row }) => (
+          <div className="max-w-[220px] text-sm text-slate-600">
+            {row.original.categories.join(", ") || "-"}
+          </div>
+        )
+      },
+      {
+        id: "actions",
+        header: "Aksiyon",
+        enableSorting: false,
+        cell: ({ row }) => (
+          <div className="flex flex-wrap items-center gap-2">
+            <Link
+              href={`/admin/urunler/${row.original.id}`}
+              prefetch={false}
+              className="inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-800 transition hover:border-emerald-300 hover:bg-emerald-100"
+            >
+              Duzenle
+            </Link>
+            {row.original.status === "active" ? (
+              <Link
+                href={`/urun/${row.original.slug}`}
+                prefetch={false}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-white"
+              >
+                Sitede gor
+              </Link>
+            ) : null}
+            {row.original.status !== "archived" ? (
+              <button
+                type="button"
+                disabled={isMutating}
+                onClick={() =>
+                  runStatusAction([row.original.id], "archive", "Bu urun arsivlensin mi?")
+                }
+                className="inline-flex rounded-full border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-700 transition hover:border-rose-300 hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                Arsivle
+              </button>
+            ) : (
+              <button
+                type="button"
+                disabled={isMutating}
+                onClick={() =>
+                  runStatusAction([row.original.id], "activate", "Bu urun tekrar aktif olsun mu?")
+                }
+                className="inline-flex rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-slate-300 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                Aktif et
+              </button>
+            )}
+          </div>
+        )
+      }
+    ],
+    [allCurrentSelected, isMutating, runStatusAction, selectedSet, toggleAll, toggleSelected]
+  );
+
   return (
-    <AdminDataTable
-      columns={columns}
-      data={items}
-      caption="Ürünler admin listesi"
-      emptyTitle="Ürün bulunamadı"
-      emptyDescription="Filtreleri değiştirerek veya yeni ürün oluşturarak devam edebilirsiniz."
-      footer={footer}
-    />
+    <div className="space-y-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white/90 px-4 py-3">
+        <p className="text-sm font-medium text-slate-600">
+          {selectedIds.length > 0
+            ? `${selectedIds.length} urun secildi`
+            : "Toplu islem icin urun secin"}
+        </p>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            disabled={selectedIds.length === 0 || isMutating}
+            onClick={() =>
+              runStatusAction(selectedIds, "activate", "Secili urunler aktif edilsin mi?")
+            }
+            className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-800 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Aktif et
+          </button>
+          <button
+            type="button"
+            disabled={selectedIds.length === 0 || isMutating}
+            onClick={() =>
+              runStatusAction(selectedIds, "draft", "Secili urunler taslaga alinsin mi?")
+            }
+            className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-800 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Taslak yap
+          </button>
+          <button
+            type="button"
+            disabled={selectedIds.length === 0 || isMutating}
+            onClick={() =>
+              runStatusAction(selectedIds, "archive", "Secili urunler arsivlensin mi?")
+            }
+            className="rounded-full border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-700 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Arsivle
+          </button>
+        </div>
+      </div>
+
+      <AdminDataTable
+        columns={columns}
+        data={items}
+        caption="Urunler admin listesi"
+        emptyTitle="Urun bulunamadi"
+        emptyDescription="Filtreleri degistirerek veya yeni urun olusturarak devam edebilirsiniz."
+        footer={footer}
+      />
+    </div>
   );
 }

@@ -4,6 +4,7 @@ import { normalizeAdminProductPayload } from "@/lib/admin-product-payload";
 import {
   getAdminProductById,
   getProductLookupOptions,
+  updateAdminProductStatuses,
   upsertAdminProduct
 } from "@/server/admin/repository";
 import { isValidationError, validationErrorResponse } from "@/server/admin/http";
@@ -25,7 +26,7 @@ type ProductRouteProps = {
 };
 
 export async function GET(_request: Request, { params }: ProductRouteProps) {
-  const authenticatedAdmin = await requireAdminRole(["superadmin", "sales"]);
+  const authenticatedAdmin = await requireAdminRole(["superadmin", "admin", "product_manager", "readonly"]);
 
   if (!authenticatedAdmin) {
     return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });
@@ -43,7 +44,7 @@ export async function GET(_request: Request, { params }: ProductRouteProps) {
 }
 
 export async function PATCH(request: Request, { params }: ProductRouteProps) {
-  const authenticatedAdmin = await requireAdminRole(["superadmin", "sales"]);
+  const authenticatedAdmin = await requireAdminRole(["superadmin", "admin", "product_manager"]);
 
   if (!authenticatedAdmin) {
     return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });
@@ -80,4 +81,27 @@ export async function PATCH(request: Request, { params }: ProductRouteProps) {
 
     throw error;
   }
+}
+
+export async function DELETE(_request: Request, { params }: ProductRouteProps) {
+  const authenticatedAdmin = await requireAdminRole(["superadmin", "admin", "product_manager"]);
+
+  if (!authenticatedAdmin) {
+    return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });
+  }
+
+  const { id } = await params;
+  const requestMeta = await getRequestMeta();
+  const result = await updateAdminProductStatuses(
+    [id],
+    "archived",
+    authenticatedAdmin.session,
+    requestMeta
+  );
+
+  if (result.updatedCount === 0) {
+    return NextResponse.json({ ok: false, message: "Ürün bulunamadı." }, { status: 404 });
+  }
+
+  return NextResponse.json({ ok: true, ...result });
 }
