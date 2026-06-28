@@ -293,6 +293,10 @@ export async function middleware(request: NextRequest) {
     return applyAdminSecurityHeaders(NextResponse.next());
   }
 
+  if (pathname === "/api/admin/cron/automations") {
+    return applyAdminSecurityHeaders(NextResponse.next());
+  }
+
   const token = request.cookies.get("parkchargeev_admin_session")?.value;
 
   if (!token) {

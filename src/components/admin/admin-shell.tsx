@@ -56,6 +56,8 @@ const navigationIconMap = {
   "/admin/envanter": Boxes,
   "/admin/kampanyalar": Sparkles,
   "/admin/bildirimler": Activity,
+  "/admin/yapay-zeka": Sparkles,
+  "/admin/otomasyonlar": Wrench,
   "/admin/paytr": CreditCard,
   "/admin/audit": ShieldCheck,
   "/admin/adminler": UserCog
@@ -97,7 +99,14 @@ const moduleGroups = [
   },
   {
     label: "Güvenlik",
-    items: ["/admin/erisim", "/admin/bildirimler", "/admin/audit", "/admin/adminler"],
+    items: [
+      "/admin/erisim",
+      "/admin/bildirimler",
+      "/admin/yapay-zeka",
+      "/admin/otomasyonlar",
+      "/admin/audit",
+      "/admin/adminler"
+    ],
     icon: ShieldCheck
   }
 ] as const;
@@ -184,7 +193,7 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
 
   return (
     <div
-      className="admin-experience min-h-screen bg-[#f4f8f6] text-slate-950"
+      className="admin-experience admin-enterprise-v2 min-h-screen bg-[#f4f8f6] text-slate-950"
       data-motion-scope
     >
       <AdminSessionGuard />

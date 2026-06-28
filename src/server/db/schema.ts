@@ -418,6 +418,7 @@ export const inventoryMovements = pgTable(
   "inventory_movements",
   {
     id: uuid("id").defaultRandom().primaryKey(),
+    idempotencyKey: varchar("idempotency_key", { length: 160 }),
     productId: uuid("product_id").references(() => products.id),
     variantId: uuid("variant_id").references(() => productVariants.id),
     sku: varchar("sku", { length: 120 }),
@@ -433,6 +434,9 @@ export const inventoryMovements = pgTable(
       .notNull()
   },
   (table) => ({
+    idempotencyIndex: uniqueIndex("inventory_movements_idempotency_key_idx").on(
+      table.idempotencyKey
+    ),
     productIndex: index("inventory_movements_product_idx").on(table.productId),
     variantIndex: index("inventory_movements_variant_idx").on(table.variantId),
     createdAtIndex: index("inventory_movements_created_at_idx").on(table.createdAt)
@@ -709,6 +713,132 @@ export const adminNotifications = pgTable(
   (table) => ({
     readIndex: index("admin_notifications_read_idx").on(table.isRead, table.createdAt),
     entityIndex: index("admin_notifications_entity_idx").on(table.entityType, table.entityId)
+  })
+);
+
+export const aiInsights = pgTable(
+  "ai_insights",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    moduleKey: varchar("module_key", { length: 80 }).notNull(),
+    title: varchar("title", { length: 180 }).notNull(),
+    summary: text("summary").notNull(),
+    severity: varchar("severity", { length: 40 }).default("info").notNull(),
+    confidence: integer("confidence").default(60).notNull(),
+    actionLabel: varchar("action_label", { length: 120 }),
+    actionHref: varchar("action_href", { length: 500 }),
+    sourceType: varchar("source_type", { length: 80 }),
+    sourceId: varchar("source_id", { length: 120 }),
+    payload: jsonb("payload"),
+    status: varchar("status", { length: 40 }).default("open").notNull(),
+    createdByAdminId: uuid("created_by_admin_id").references(() => adminUsers.id),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+  },
+  (table) => ({
+    moduleIndex: index("ai_insights_module_idx").on(table.moduleKey, table.status),
+    sourceIndex: index("ai_insights_source_idx").on(table.sourceType, table.sourceId),
+    createdAtIndex: index("ai_insights_created_at_idx").on(table.createdAt)
+  })
+);
+
+export const aiGenerationRuns = pgTable(
+  "ai_generation_runs",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    moduleKey: varchar("module_key", { length: 80 }).notNull(),
+    provider: varchar("provider", { length: 40 }).default("openai").notNull(),
+    model: varchar("model", { length: 80 }),
+    promptVersion: varchar("prompt_version", { length: 40 }).default("v1").notNull(),
+    status: varchar("status", { length: 40 }).default("success").notNull(),
+    inputPayload: jsonb("input_payload"),
+    outputPayload: jsonb("output_payload"),
+    errorMessage: text("error_message"),
+    durationMs: integer("duration_ms").default(0).notNull(),
+    createdByAdminId: uuid("created_by_admin_id").references(() => adminUsers.id),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+  },
+  (table) => ({
+    moduleIndex: index("ai_generation_runs_module_idx").on(table.moduleKey, table.createdAt),
+    statusIndex: index("ai_generation_runs_status_idx").on(table.status)
+  })
+);
+
+export const adminAutomations = pgTable(
+  "admin_automations",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    automationKey: varchar("automation_key", { length: 100 }).notNull(),
+    title: varchar("title", { length: 180 }).notNull(),
+    description: text("description").notNull(),
+    status: varchar("status", { length: 40 }).default("active").notNull(),
+    triggerType: varchar("trigger_type", { length: 60 }).default("scheduled").notNull(),
+    schedule: varchar("schedule", { length: 80 }).default("daily").notNull(),
+    config: jsonb("config"),
+    lastRunAt: timestamp("last_run_at", { withTimezone: true }),
+    lastStatus: varchar("last_status", { length: 40 }),
+    lastMessage: text("last_message"),
+    createdByAdminId: uuid("created_by_admin_id").references(() => adminUsers.id),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+  },
+  (table) => ({
+    keyIndex: uniqueIndex("admin_automations_key_idx").on(table.automationKey),
+    statusIndex: index("admin_automations_status_idx").on(table.status)
+  })
+);
+
+export const adminAutomationRuns = pgTable(
+  "admin_automation_runs",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    automationId: uuid("automation_id").references(() => adminAutomations.id),
+    automationKey: varchar("automation_key", { length: 100 }).notNull(),
+    triggerSource: varchar("trigger_source", { length: 40 }).default("manual").notNull(),
+    status: varchar("status", { length: 40 }).default("success").notNull(),
+    summary: text("summary"),
+    resultPayload: jsonb("result_payload"),
+    errorMessage: text("error_message"),
+    durationMs: integer("duration_ms").default(0).notNull(),
+    createdByAdminId: uuid("created_by_admin_id").references(() => adminUsers.id),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+  },
+  (table) => ({
+    automationIndex: index("admin_automation_runs_automation_idx").on(
+      table.automationKey,
+      table.createdAt
+    ),
+    statusIndex: index("admin_automation_runs_status_idx").on(table.status)
+  })
+);
+
+export const adminDailyReports = pgTable(
+  "admin_daily_reports",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    reportDate: varchar("report_date", { length: 10 }).notNull(),
+    title: varchar("title", { length: 180 }).notNull(),
+    summary: text("summary").notNull(),
+    payload: jsonb("payload"),
+    createdByRunId: uuid("created_by_run_id").references(() => adminAutomationRuns.id),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+  },
+  (table) => ({
+    reportDateIndex: uniqueIndex("admin_daily_reports_date_idx").on(table.reportDate)
   })
 );
 

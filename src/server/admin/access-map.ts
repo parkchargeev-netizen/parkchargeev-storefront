@@ -143,6 +143,20 @@ export const adminAccessLinks: AdminAccessLink[] = [
     roles: ["superadmin", "admin", "product_manager", "order_manager", "support_agent", "readonly"]
   },
   {
+    href: "/admin/yapay-zeka",
+    label: "Yapay Zeka Merkezi",
+    description: "AI operasyon asistanı, SEO önerileri, risk özeti ve günlük raporları yönet.",
+    group: "Operasyon",
+    roles: ["superadmin", "admin", "product_manager", "order_manager", "support_agent", "readonly"]
+  },
+  {
+    href: "/admin/otomasyonlar",
+    label: "Otomasyon Merkezi",
+    description: "Kritik stok, ödeme hatası, geciken sipariş ve günlük rapor otomasyonlarını yönet.",
+    group: "Operasyon",
+    roles: ["superadmin", "admin", "product_manager", "order_manager", "readonly"]
+  },
+  {
     href: "/api/admin/products?format=csv&limit=50",
     label: "Ürün CSV",
     description: "Filtrelenmemiş son 50 ürün kaydını indirir.",

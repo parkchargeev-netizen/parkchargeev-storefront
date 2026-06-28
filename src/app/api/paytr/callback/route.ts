@@ -265,6 +265,7 @@ export async function POST(request: Request) {
             continue;
           }
 
+          const stockMovementKey = `paytr:order_paid:${order.id}:${item.variantId}`;
           const [variantBefore] = await tx
             .select({
               id: productVariants.id,
@@ -275,6 +276,36 @@ export async function POST(request: Request) {
             .from(productVariants)
             .where(eq(productVariants.id, item.variantId))
             .limit(1);
+
+          if (!variantBefore) {
+            stockWarningNote =
+              "Ödeme alındı; stok varyantı bulunamadı. Manuel stok ve teslimat kontrolü gerekli.";
+            continue;
+          }
+
+          const [movementGuard] = await tx
+            .insert(inventoryMovements)
+            .values({
+              idempotencyKey: stockMovementKey,
+              productId: variantBefore.productId,
+              variantId: variantBefore.id,
+              sku: variantBefore.sku,
+              quantityBefore: variantBefore.stockQuantity,
+              quantityAfter: variantBefore.stockQuantity,
+              quantityDelta: 0,
+              reason: "order_paid_pending",
+              note: `PayTR callback stok düşümü hazırlanıyor: ${orderMerchantOid}.`,
+              orderId: order.id,
+              adminUserId: null
+            })
+            .onConflictDoNothing()
+            .returning({
+              id: inventoryMovements.id
+            });
+
+          if (!movementGuard) {
+            continue;
+          }
 
           const [updatedVariant] = await tx
             .update(productVariants)
@@ -300,7 +331,18 @@ export async function POST(request: Request) {
             continue;
           }
 
-          if (variantBefore) {
+          await tx
+            .update(inventoryMovements)
+            .set({
+              quantityBefore: variantBefore.stockQuantity,
+              quantityAfter: updatedVariant.stockQuantity,
+              quantityDelta: -item.quantity,
+              reason: "order_paid",
+              note: `PayTR callback ile ${orderMerchantOid} siparişi stok düşümü.`
+            })
+            .where(eq(inventoryMovements.id, movementGuard.id));
+
+          if (variantBefore && !movementGuard) {
             await tx.insert(inventoryMovements).values({
               productId: updatedVariant.productId,
               variantId: updatedVariant.id,
