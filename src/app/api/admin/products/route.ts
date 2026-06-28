@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { normalizeAdminProductPayload } from "@/lib/admin-product-payload";
 import { csvResponse } from "@/server/admin/csv";
 import {
+  deleteAdminProducts,
   getProductLookupOptions,
   listAdminProducts,
   updateAdminProductStatuses,
@@ -144,6 +145,22 @@ export async function DELETE(request: Request) {
   const ids = searchParams.getAll("id").filter(Boolean);
   const payload = adminProductBulkActionSchema.parse({ ids, action: "archive" });
   const requestMeta = await getRequestMeta();
+  const mode = searchParams.get("mode");
+
+  if (mode === "delete") {
+    const result = await deleteAdminProducts(payload.ids, authenticatedAdmin.session, requestMeta);
+    const blockedCount = result.blocked.length;
+
+    return NextResponse.json({
+      ok: true,
+      ...result,
+      message:
+        blockedCount > 0
+          ? `${result.deletedCount} ürün silindi, ${blockedCount} ürün sipariş/sepet geçmişi nedeniyle silinemedi.`
+          : `${result.deletedCount} ürün kalıcı olarak silindi.`
+    });
+  }
+
   const result = await updateAdminProductStatuses(
     payload.ids,
     "archived",

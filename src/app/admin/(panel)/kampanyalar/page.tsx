@@ -91,6 +91,13 @@ function ContentList({
                 id={item.id}
                 label={archiveLabel ?? "Arsivle"}
               />
+              <ArchiveOperationButton
+                endpoint={endpoint}
+                id={item.id}
+                label="Sil"
+                mode="delete"
+                confirmation="Bu kayıt kalıcı olarak silinsin mi?"
+              />
             </div>
           ))
         ) : (

@@ -4,7 +4,6 @@ import {
   BarChart3,
   BookOpen,
   Boxes,
-  Building2,
   CreditCard,
   Database,
   FileText,
@@ -17,8 +16,7 @@ import {
   ShieldCheck,
   ShoppingCart,
   Sparkles,
-  UserCog,
-  Wrench
+  UserCog
 } from "lucide-react";
 
 import {
@@ -56,8 +54,6 @@ const navigationIconMap = {
   "/admin/envanter": Boxes,
   "/admin/kampanyalar": Sparkles,
   "/admin/bildirimler": Activity,
-  "/admin/yapay-zeka": Sparkles,
-  "/admin/otomasyonlar": Wrench,
   "/admin/paytr": CreditCard,
   "/admin/audit": ShieldCheck,
   "/admin/adminler": UserCog
@@ -99,14 +95,7 @@ const moduleGroups = [
   },
   {
     label: "Güvenlik",
-    items: [
-      "/admin/erisim",
-      "/admin/bildirimler",
-      "/admin/yapay-zeka",
-      "/admin/otomasyonlar",
-      "/admin/audit",
-      "/admin/adminler"
-    ],
+    items: ["/admin/erisim", "/admin/bildirimler", "/admin/audit", "/admin/adminler"],
     icon: ShieldCheck
   }
 ] as const;
@@ -193,7 +182,7 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
 
   return (
     <div
-      className="admin-experience admin-enterprise-v2 min-h-screen bg-[#f4f8f6] text-slate-950"
+      className="admin-experience admin-enterprise-v2 admin-redesign-v3 min-h-screen bg-[#07120f] text-slate-950"
       data-motion-scope
     >
       <AdminSessionGuard />

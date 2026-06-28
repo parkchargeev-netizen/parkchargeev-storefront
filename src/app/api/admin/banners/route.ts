@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import {
   archiveAdminBanner,
+  deleteAdminBanner,
   listAdminBanners,
   upsertAdminBanner
 } from "@/server/admin/operations";
@@ -63,6 +64,17 @@ export async function DELETE(request: Request) {
   }
 
   const requestMeta = await getRequestMeta();
+  const mode = new URL(request.url).searchParams.get("mode");
+
+  if (mode === "delete") {
+    const result = await deleteAdminBanner(id, authenticatedAdmin.session, requestMeta);
+    return NextResponse.json({
+      ok: true,
+      ...result,
+      message: "Banner kalıcı olarak silindi."
+    });
+  }
+
   const result = await archiveAdminBanner(id, authenticatedAdmin.session, requestMeta);
   return NextResponse.json({ ok: true, ...result });
 }

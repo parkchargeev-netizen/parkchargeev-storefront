@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { normalizeAdminProductPayload } from "@/lib/admin-product-payload";
 import {
+  deleteAdminProducts,
   getAdminProductById,
   getProductLookupOptions,
   updateAdminProductStatuses,
@@ -83,7 +84,7 @@ export async function PATCH(request: Request, { params }: ProductRouteProps) {
   }
 }
 
-export async function DELETE(_request: Request, { params }: ProductRouteProps) {
+export async function DELETE(request: Request, { params }: ProductRouteProps) {
   const authenticatedAdmin = await requireAdminRole(["superadmin", "admin", "product_manager"]);
 
   if (!authenticatedAdmin) {
@@ -92,6 +93,25 @@ export async function DELETE(_request: Request, { params }: ProductRouteProps) {
 
   const { id } = await params;
   const requestMeta = await getRequestMeta();
+  const mode = new URL(request.url).searchParams.get("mode");
+
+  if (mode === "delete") {
+    const result = await deleteAdminProducts([id], authenticatedAdmin.session, requestMeta);
+
+    if (result.deletedCount === 0 && result.blocked.length === 0) {
+      return NextResponse.json({ ok: false, message: "ÃœrÃ¼n bulunamadÄ±." }, { status: 404 });
+    }
+
+    return NextResponse.json({
+      ok: true,
+      ...result,
+      message:
+        result.blocked.length > 0
+          ? result.blocked[0]?.reason ?? "ÃœrÃ¼n silinemedi."
+          : "ÃœrÃ¼n kalÄ±cÄ± olarak silindi."
+    });
+  }
+
   const result = await updateAdminProductStatuses(
     [id],
     "archived",

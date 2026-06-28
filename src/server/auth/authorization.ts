@@ -29,11 +29,6 @@ export type AdminPermission =
   | "notification:read"
   | "notification:write"
   | "risk:read"
-  | "ai:read"
-  | "ai:write"
-  | "automation:read"
-  | "automation:write"
-  | "report:read"
   | "audit:read"
   | "user:read"
   | "user:write"
@@ -64,11 +59,6 @@ const allPermissions: AdminPermission[] = [
   "notification:read",
   "notification:write",
   "risk:read",
-  "ai:read",
-  "ai:write",
-  "automation:read",
-  "automation:write",
-  "report:read",
   "audit:read",
   "user:read",
   "user:write",
@@ -95,10 +85,6 @@ const rolePermissionMap: Record<AdminRole, AdminPermission[]> = {
     "content:read",
     "media:write",
     "risk:read",
-    "ai:read",
-    "ai:write",
-    "automation:read",
-    "report:read",
     "notification:read",
     "notification:write"
   ],
@@ -115,9 +101,6 @@ const rolePermissionMap: Record<AdminRole, AdminPermission[]> = {
     "payment:write",
     "inventory:read",
     "risk:read",
-    "ai:read",
-    "automation:read",
-    "report:read",
     "notification:read",
     "notification:write"
   ],
@@ -129,9 +112,7 @@ const rolePermissionMap: Record<AdminRole, AdminPermission[]> = {
     "quote:read",
     "order:read",
     "notification:read",
-    "risk:read",
-    "ai:read",
-    "report:read"
+    "risk:read"
   ],
   readonly: [
     "dashboard:read",
@@ -147,9 +128,6 @@ const rolePermissionMap: Record<AdminRole, AdminPermission[]> = {
     "payment:read",
     "notification:read",
     "risk:read",
-    "ai:read",
-    "automation:read",
-    "report:read",
     "audit:read",
     "user:read"
   ]
@@ -182,10 +160,6 @@ const routePermissionMap: Array<{
   { prefix: "/admin/bildirimler", permission: "notification:read" },
   { prefix: "/admin/notifications", permission: "notification:read" },
   { prefix: "/admin/risk", permission: "risk:read" },
-  { prefix: "/admin/yapay-zeka", permission: "ai:read" },
-  { prefix: "/admin/ai", permission: "ai:read" },
-  { prefix: "/admin/otomasyonlar", permission: "automation:read" },
-  { prefix: "/admin/automations", permission: "automation:read" },
   { prefix: "/admin/audit", permission: "audit:read" },
   { prefix: "/admin/adminler", permission: "user:read" },
   { prefix: "/admin/users", permission: "user:read" },

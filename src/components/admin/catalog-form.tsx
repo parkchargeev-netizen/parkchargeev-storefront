@@ -31,14 +31,15 @@ export function CatalogForm({ type, item, categories = [] }: CatalogFormProps) {
   const [isActive, setIsActive] = useState(item?.isActive ?? true);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const endpoint =
+    type === "brand" ? "/api/admin/catalog/brands" : "/api/admin/catalog/categories";
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsSubmitting(true);
     setFeedback(null);
 
-    const endpoint =
-      type === "brand" ? "/api/admin/catalog/brands" : "/api/admin/catalog/categories";
     const method = item?.id ? "PATCH" : "POST";
     const payload =
       type === "brand"
@@ -74,6 +75,45 @@ export function CatalogForm({ type, item, categories = [] }: CatalogFormProps) {
         setIsActive(true);
       }
       router.refresh();
+    }
+  }
+
+  async function onDelete() {
+    if (!item?.id || isDeleting) {
+      return;
+    }
+
+    const label = type === "brand" ? "marka" : "kategori";
+
+    if (
+      !window.confirm(
+        `Bu ${label} kalıcı olarak silinsin mi? Bağlı ürün veya alt kayıt varsa işlem engellenir.`
+      )
+    ) {
+      return;
+    }
+
+    setIsDeleting(true);
+    setFeedback(null);
+
+    try {
+      const response = await fetch(`${endpoint}?id=${encodeURIComponent(item.id)}`, {
+        method: "DELETE"
+      });
+      const data = (await response.json().catch(() => ({ ok: false }))) as {
+        ok?: boolean;
+        message?: string;
+      };
+
+      setFeedback(data.ok ? `${label} silindi.` : data.message ?? "Silme işlemi başarısız.");
+
+      if (response.ok && data.ok) {
+        router.refresh();
+      }
+    } catch {
+      setFeedback("Sunucuya ulaşılamadı.");
+    } finally {
+      setIsDeleting(false);
     }
   }
 
@@ -133,13 +173,25 @@ export function CatalogForm({ type, item, categories = [] }: CatalogFormProps) {
         <span className="text-sm font-medium text-slate-700">Aktif kayit</span>
       </label>
       {feedback ? <p className="text-sm text-slate-600">{feedback}</p> : null}
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="rounded-lg bg-slate-950 px-4 py-3 text-sm font-semibold text-white disabled:opacity-70"
-      >
-        {isSubmitting ? "Kaydediliyor..." : item?.id ? "Güncelle" : "Ekle"}
-      </button>
+      <div className="flex flex-wrap gap-2">
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="rounded-lg bg-slate-950 px-4 py-3 text-sm font-semibold text-white disabled:opacity-70"
+        >
+          {isSubmitting ? "Kaydediliyor..." : item?.id ? "Güncelle" : "Ekle"}
+        </button>
+        {item?.id ? (
+          <button
+            type="button"
+            disabled={isDeleting}
+            onClick={onDelete}
+            className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700 transition hover:border-red-300 hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isDeleting ? "Siliniyor..." : "Sil"}
+          </button>
+        ) : null}
+      </div>
     </form>
   );
 }

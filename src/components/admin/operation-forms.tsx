@@ -235,12 +235,14 @@ export function ArchiveOperationButton({
   endpoint,
   id,
   label = "Arsivle",
-  confirmation = "Bu kayit arsivlensin mi?"
+  confirmation = "Bu kayit arsivlensin mi?",
+  mode = "archive"
 }: {
   endpoint: string;
   id: string;
   label?: string;
   confirmation?: string;
+  mode?: "archive" | "delete";
 }) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -255,7 +257,13 @@ export function ArchiveOperationButton({
     setMessage(null);
 
     try {
-      const response = await fetch(`${endpoint}?id=${encodeURIComponent(id)}`, {
+      const params = new URLSearchParams({ id });
+
+      if (mode === "delete") {
+        params.set("mode", "delete");
+      }
+
+      const response = await fetch(`${endpoint}?${params.toString()}`, {
         method: "DELETE"
       });
       const data = (await response.json().catch(() => ({ ok: false }))) as {
@@ -281,7 +289,11 @@ export function ArchiveOperationButton({
         type="button"
         disabled={isSubmitting}
         onClick={onClick}
-        className="rounded-full border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-700 disabled:cursor-not-allowed disabled:opacity-60"
+        className={
+          mode === "delete"
+            ? "rounded-full border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+            : "rounded-full border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-700 disabled:cursor-not-allowed disabled:opacity-60"
+        }
       >
         {isSubmitting ? "Isleniyor..." : label}
       </button>

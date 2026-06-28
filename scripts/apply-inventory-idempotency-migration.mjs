@@ -34,7 +34,7 @@ if (!databaseUrl) {
   process.exit(1);
 }
 
-const migrationPath = join(root, "drizzle", "0004_enterprise_admin_v2.sql");
+const migrationPath = join(root, "drizzle", "0004_inventory_idempotency.sql");
 const migrationSql = readFileSync(migrationPath, "utf8");
 const statements = migrationSql
   .split(/;\s*(?:\r?\n|$)/)
@@ -51,9 +51,9 @@ try {
     await sql.unsafe(statement);
   }
 
-  console.log("Enterprise admin v2 migration applied.");
+  console.log("Inventory idempotency migration applied.");
 } catch (error) {
-  console.error("Enterprise admin v2 migration failed.", {
+  console.error("Inventory idempotency migration failed.", {
     message: error instanceof Error ? error.message : String(error),
     code: error?.code
   });

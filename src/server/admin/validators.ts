@@ -375,41 +375,6 @@ export const adminNotificationPatchSchema = z.object({
   isRead: z.boolean()
 });
 
-export const adminAiModuleKeySchema = z.enum([
-  "operations_assistant",
-  "product_description",
-  "seo_suggestions",
-  "stock_risk",
-  "sales_forecast",
-  "campaign_suggestion",
-  "risk_summary",
-  "customer_order_analysis",
-  "log_summary",
-  "daily_report"
-]);
-
-export const adminAiGenerateSchema = z.object({
-  moduleKey: adminAiModuleKeySchema,
-  entityType: z.string().trim().max(80).optional().or(z.literal("")),
-  entityId: z.string().trim().max(120).optional().or(z.literal("")),
-  prompt: z.string().trim().max(2000).optional().or(z.literal(""))
-});
-
-export const adminAutomationSchema = z.object({
-  id: z.string().uuid().optional(),
-  automationKey: z.string().trim().min(3).max(100),
-  title: z.string().trim().min(3).max(180),
-  description: z.string().trim().min(10).max(2000),
-  status: z.enum(["active", "paused"]).default("active"),
-  triggerType: z.enum(["scheduled", "manual", "hybrid"]).default("scheduled"),
-  schedule: z.enum(["hourly", "daily", "weekly", "manual"]).default("daily"),
-  config: z.record(z.unknown()).optional().default({})
-});
-
-export const adminAutomationRunSchema = z.object({
-  triggerSource: z.enum(["manual", "cron"]).default("manual")
-});
-
 export const adminSitePageSchema = z.object({
   id: z.string().uuid().optional(),
   slug: z

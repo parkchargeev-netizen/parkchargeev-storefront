@@ -71,6 +71,7 @@ import {
   categories,
   customers,
   inventoryMovements,
+  merchandisingSlots,
   orderItems,
   orders,
   productCategoryAssignments,
@@ -1704,6 +1705,97 @@ export async function updateAdminProductStatuses(
   return { updatedCount: beforeRows.length };
 }
 
+export async function deleteAdminProducts(
+  ids: string[],
+  actor: AdminSessionPayload | null,
+  requestMeta?: {
+    ipAddress?: string | null;
+    userAgent?: string | null;
+  }
+) {
+  if (!hasDatabaseConfig()) {
+    return { deletedCount: ids.length, blocked: [] };
+  }
+
+  const db = getDb();
+  const beforeRows = await db.select().from(products).where(inArray(products.id, ids));
+  const blocked: Array<{ id: string; name: string; reason: string }> = [];
+  let deletedCount = 0;
+
+  for (const product of beforeRows) {
+    const variants = await db
+      .select({ id: productVariants.id })
+      .from(productVariants)
+      .where(eq(productVariants.productId, product.id));
+    const variantIds = variants.map((variant) => variant.id);
+    const [orderReference] = await db
+      .select({ total: count() })
+      .from(orderItems)
+      .where(
+        variantIds.length > 0
+          ? or(eq(orderItems.productId, product.id), inArray(orderItems.variantId, variantIds))
+          : eq(orderItems.productId, product.id)
+      );
+    const [cartReference] =
+      variantIds.length > 0
+        ? await db
+            .select({ total: count() })
+            .from(cartItems)
+            .where(inArray(cartItems.variantId, variantIds))
+        : [{ total: 0 }];
+
+    if (Number(orderReference?.total ?? 0) > 0 || Number(cartReference?.total ?? 0) > 0) {
+      blocked.push({
+        id: product.id,
+        name: product.name,
+        reason: "Sipariş veya sepet geçmişi olan ürünler kalıcı silinemez; arşivleyin."
+      });
+      continue;
+    }
+
+    await db.delete(campaignProducts).where(eq(campaignProducts.productId, product.id));
+    await db
+      .update(merchandisingSlots)
+      .set({ productId: null, updatedAt: new Date() })
+      .where(eq(merchandisingSlots.productId, product.id));
+    await db
+      .delete(productRelations)
+      .where(
+        or(
+          eq(productRelations.productId, product.id),
+          eq(productRelations.relatedProductId, product.id)
+        )
+      );
+    await db.delete(productCategoryAssignments).where(eq(productCategoryAssignments.productId, product.id));
+    await db.delete(productTagAssignments).where(eq(productTagAssignments.productId, product.id));
+    await db.delete(productVehicleCompatibilities).where(
+      eq(productVehicleCompatibilities.productId, product.id)
+    );
+    await db.delete(productMedia).where(eq(productMedia.productId, product.id));
+    await db.delete(productSpecs).where(eq(productSpecs.productId, product.id));
+    await db.delete(inventoryMovements).where(eq(inventoryMovements.productId, product.id));
+    await db.delete(productVariants).where(eq(productVariants.productId, product.id));
+    await db.delete(products).where(eq(products.id, product.id));
+
+    await recordAuditLog({
+      db,
+      actor,
+      entityType: "product",
+      entityId: product.id,
+      action: "delete",
+      summary: `${product.name} ürünü kalıcı olarak silindi.`,
+      beforePayload: product,
+      afterPayload: null,
+      ipAddress: requestMeta?.ipAddress,
+      userAgent: requestMeta?.userAgent
+    });
+    revalidateProductSurfaces(product.slug);
+    deletedCount += 1;
+  }
+
+  return { deletedCount, blocked };
+}
+
 export async function getAdminProductById(id: string) {
   if (!hasDatabaseConfig()) {
     return getFallbackAdminProductById(id);
@@ -2679,6 +2771,51 @@ export async function upsertAdminBrand(
   return created;
 }
 
+export async function deleteAdminBrand(
+  id: string,
+  actor: AdminSessionPayload | null,
+  requestMeta?: { ipAddress?: string | null; userAgent?: string | null }
+) {
+  if (!hasDatabaseConfig()) {
+    return { deletedCount: 0, blockedReason: null };
+  }
+
+  const db = getDb();
+  const [before] = await db.select().from(brands).where(eq(brands.id, id)).limit(1);
+
+  if (!before) {
+    return { deletedCount: 0, blockedReason: "Marka bulunamadı." };
+  }
+
+  const [productReference] = await db
+    .select({ total: count() })
+    .from(products)
+    .where(eq(products.brandId, id));
+
+  if (Number(productReference?.total ?? 0) > 0) {
+    return {
+      deletedCount: 0,
+      blockedReason: "Bu markaya bağlı ürünler var. Önce ürünleri başka markaya taşıyın veya markayı pasife alın."
+    };
+  }
+
+  await db.delete(brands).where(eq(brands.id, id));
+  await recordAuditLog({
+    db,
+    actor,
+    entityType: "brand",
+    entityId: id,
+    action: "delete",
+    summary: `${before.name} markası kalıcı olarak silindi.`,
+    beforePayload: before,
+    afterPayload: null,
+    ipAddress: requestMeta?.ipAddress,
+    userAgent: requestMeta?.userAgent
+  });
+  revalidateTag("admin-catalog");
+  return { deletedCount: 1, blockedReason: null };
+}
+
 export async function upsertAdminCategory(
   input: CategoryInput,
   actor: AdminSessionPayload | null,
@@ -2729,6 +2866,64 @@ export async function upsertAdminCategory(
   });
   revalidateTag("admin-catalog");
   return created;
+}
+
+export async function deleteAdminCategory(
+  id: string,
+  actor: AdminSessionPayload | null,
+  requestMeta?: { ipAddress?: string | null; userAgent?: string | null }
+) {
+  if (!hasDatabaseConfig()) {
+    return { deletedCount: 0, blockedReason: null };
+  }
+
+  const db = getDb();
+  const [before] = await db.select().from(categories).where(eq(categories.id, id)).limit(1);
+
+  if (!before) {
+    return { deletedCount: 0, blockedReason: "Kategori bulunamadı." };
+  }
+
+  const [childReference] = await db
+    .select({ total: count() })
+    .from(categories)
+    .where(eq(categories.parentId, id));
+  const [primaryProductReference] = await db
+    .select({ total: count() })
+    .from(products)
+    .where(eq(products.categoryId, id));
+  const [assignedProductReference] = await db
+    .select({ total: count() })
+    .from(productCategoryAssignments)
+    .where(eq(productCategoryAssignments.categoryId, id));
+
+  if (
+    Number(childReference?.total ?? 0) > 0 ||
+    Number(primaryProductReference?.total ?? 0) > 0 ||
+    Number(assignedProductReference?.total ?? 0) > 0
+  ) {
+    return {
+      deletedCount: 0,
+      blockedReason:
+        "Bu kategori ürün veya alt kategori bağlantısı taşıyor. Önce bağlantıları taşıyın veya kategoriyi pasife alın."
+    };
+  }
+
+  await db.delete(categories).where(eq(categories.id, id));
+  await recordAuditLog({
+    db,
+    actor,
+    entityType: "category",
+    entityId: id,
+    action: "delete",
+    summary: `${before.name} kategorisi kalıcı olarak silindi.`,
+    beforePayload: before,
+    afterPayload: null,
+    ipAddress: requestMeta?.ipAddress,
+    userAgent: requestMeta?.userAgent
+  });
+  revalidateTag("admin-catalog");
+  return { deletedCount: 1, blockedReason: null };
 }
 
 export async function listAdminAuditLogs(input: ListQueryInput) {

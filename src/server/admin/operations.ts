@@ -375,6 +375,14 @@ export async function archiveAdminBanner(
   return archiveSimpleContentRow("banner", banners, id, actor, requestMeta);
 }
 
+export async function deleteAdminBanner(
+  id: string,
+  actor: AdminSessionPayload | null,
+  requestMeta?: { ipAddress?: string | null; userAgent?: string | null }
+) {
+  return deleteSimpleContentRow("banner", banners, id, actor, requestMeta);
+}
+
 export async function listAdminCampaigns(
   input: ListQueryInput
 ): Promise<ListResult<InferSelectModel<typeof campaigns>>> {
@@ -452,6 +460,43 @@ export async function archiveAdminCampaign(
   requestMeta?: { ipAddress?: string | null; userAgent?: string | null }
 ) {
   return archiveSimpleContentRow("campaign", campaigns, id, actor, requestMeta);
+}
+
+export async function deleteAdminCampaign(
+  id: string,
+  actor: AdminSessionPayload | null,
+  requestMeta?: { ipAddress?: string | null; userAgent?: string | null }
+) {
+  if (!hasDatabaseConfig()) {
+    return { deletedCount: 0 };
+  }
+
+  const db = getDb();
+  const [before] = await db.select().from(campaigns).where(eq(campaigns.id, id)).limit(1);
+
+  if (!before) {
+    return { deletedCount: 0 };
+  }
+
+  await db.delete(campaignProducts).where(eq(campaignProducts.campaignId, id));
+  await db.delete(campaignCategories).where(eq(campaignCategories.campaignId, id));
+  await db.delete(campaigns).where(eq(campaigns.id, id));
+
+  await recordAuditLog({
+    db,
+    actor,
+    entityType: "campaign",
+    entityId: id,
+    action: "delete",
+    summary: `${before.name} kampanyası kalıcı olarak silindi.`,
+    beforePayload: before,
+    afterPayload: null,
+    ipAddress: requestMeta?.ipAddress,
+    userAgent: requestMeta?.userAgent
+  });
+
+  revalidateCommerceAdmin();
+  return { deletedCount: 1 };
 }
 
 export async function listAdminMerchandisingSlots(
@@ -547,6 +592,14 @@ export async function archiveAdminMerchandisingSlot(
 
   revalidateCommerceAdmin();
   return { updatedCount: 1 };
+}
+
+export async function deleteAdminMerchandisingSlot(
+  id: string,
+  actor: AdminSessionPayload | null,
+  requestMeta?: { ipAddress?: string | null; userAgent?: string | null }
+) {
+  return deleteSimpleContentRow("merchandising_slot", merchandisingSlots, id, actor, requestMeta);
 }
 
 type SimpleContentTable = typeof banners | typeof campaigns | typeof merchandisingSlots;
@@ -695,6 +748,43 @@ async function archiveSimpleContentRow(
 
   revalidateCommerceAdmin();
   return { updatedCount: 1 };
+}
+
+async function deleteSimpleContentRow(
+  entityType: string,
+  table: SimpleContentTable,
+  id: string,
+  actor: AdminSessionPayload | null,
+  requestMeta?: { ipAddress?: string | null; userAgent?: string | null }
+) {
+  if (!hasDatabaseConfig()) {
+    return { deletedCount: 0 };
+  }
+
+  const db = getDb();
+  const [before] = await db.select().from(table).where(eq(table.id, id)).limit(1);
+
+  if (!before) {
+    return { deletedCount: 0 };
+  }
+
+  await db.delete(table).where(eq(table.id, id));
+
+  await recordAuditLog({
+    db,
+    actor,
+    entityType,
+    entityId: id,
+    action: "delete",
+    summary: `${entityType} kalıcı olarak silindi.`,
+    beforePayload: before,
+    afterPayload: null,
+    ipAddress: requestMeta?.ipAddress,
+    userAgent: requestMeta?.userAgent
+  });
+
+  revalidateCommerceAdmin();
+  return { deletedCount: 1 };
 }
 
 function riskLevel(score: number) {

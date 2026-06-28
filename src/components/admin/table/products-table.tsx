@@ -102,6 +102,58 @@ export function ProductsTable({ items, footer }: ProductsTableProps) {
     }
   }, [isMutating, router]);
 
+  const runDeleteAction = useCallback(async (ids: string[], confirmation: string) => {
+    if (ids.length === 0 || isMutating) {
+      return;
+    }
+
+    if (!window.confirm(confirmation)) {
+      return;
+    }
+
+    setIsMutating(true);
+
+    try {
+      const params = new URLSearchParams({ mode: "delete" });
+
+      for (const id of ids) {
+        params.append("id", id);
+      }
+
+      const response = await fetch(`/api/admin/products?${params.toString()}`, {
+        method: "DELETE"
+      });
+      const payload = (await response.json().catch(() => null)) as {
+        ok?: boolean;
+        message?: string;
+        blocked?: Array<{ name?: string; reason?: string }>;
+      } | null;
+
+      if (!response.ok || !payload?.ok) {
+        throw new Error(payload?.message ?? "Urun silinemedi.");
+      }
+
+      setSelectedIds([]);
+
+      if (payload.message || payload.blocked?.length) {
+        window.alert(
+          [
+            payload.message,
+            ...(payload.blocked ?? []).map((item) => `${item.name ?? "Urun"}: ${item.reason ?? "Silinemedi."}`)
+          ]
+            .filter(Boolean)
+            .join("\n")
+        );
+      }
+
+      router.refresh();
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : "Urun silinemedi.");
+    } finally {
+      setIsMutating(false);
+    }
+  }, [isMutating, router]);
+
   const columns = useMemo<Array<ColumnDef<ProductRow>>>(
     () => [
       {
@@ -228,11 +280,24 @@ export function ProductsTable({ items, footer }: ProductsTableProps) {
                 Aktif et
               </button>
             )}
+            <button
+              type="button"
+              disabled={isMutating}
+              onClick={() =>
+                runDeleteAction(
+                  [row.original.id],
+                  "Bu ürün kalıcı olarak silinsin mi? Sipariş veya sepet geçmişi varsa silme engellenir."
+                )
+              }
+              className="inline-flex rounded-full border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 transition hover:border-red-300 hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              Sil
+            </button>
           </div>
         )
       }
     ],
-    [allCurrentSelected, isMutating, runStatusAction, selectedSet, toggleAll, toggleSelected]
+    [allCurrentSelected, isMutating, runDeleteAction, runStatusAction, selectedSet, toggleAll, toggleSelected]
   );
 
   return (
@@ -273,6 +338,19 @@ export function ProductsTable({ items, footer }: ProductsTableProps) {
             className="rounded-full border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Arsivle
+          </button>
+          <button
+            type="button"
+            disabled={selectedIds.length === 0 || isMutating}
+            onClick={() =>
+              runDeleteAction(
+                selectedIds,
+                "Secili ürünler kalıcı olarak silinsin mi? Sipariş veya sepet geçmişi olanlar silinmez."
+              )
+            }
+            className="rounded-full border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Sil
           </button>
         </div>
       </div>

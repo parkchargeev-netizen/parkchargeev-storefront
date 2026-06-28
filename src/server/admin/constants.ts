@@ -77,16 +77,6 @@ export const adminNavigation: Array<{
     roles: ["superadmin", "admin", "product_manager", "order_manager", "support_agent", "readonly"]
   },
   {
-    href: "/admin/yapay-zeka",
-    label: "Yapay Zeka",
-    roles: ["superadmin", "admin", "product_manager", "order_manager", "support_agent", "readonly"]
-  },
-  {
-    href: "/admin/otomasyonlar",
-    label: "Otomasyonlar",
-    roles: ["superadmin", "admin", "product_manager", "order_manager", "readonly"]
-  },
-  {
     href: "/admin/paytr",
     label: "PayTR",
     roles: ["superadmin", "admin", "order_manager", "readonly"]

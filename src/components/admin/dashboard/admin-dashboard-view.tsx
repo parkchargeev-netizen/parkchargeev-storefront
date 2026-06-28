@@ -305,6 +305,42 @@ function iconToneClass(tone: Tone) {
   }
 }
 
+function riskToneClass(score: number) {
+  if (score >= 80) {
+    return {
+      card: "border-red-200 bg-red-50 text-red-950",
+      pill: "bg-red-700 text-white",
+      bar: "bg-red-600",
+      link: "border-red-200 bg-white text-red-800 hover:bg-red-100"
+    };
+  }
+
+  if (score >= 60) {
+    return {
+      card: "border-orange-200 bg-orange-50 text-orange-950",
+      pill: "bg-orange-700 text-white",
+      bar: "bg-orange-500",
+      link: "border-orange-200 bg-white text-orange-800 hover:bg-orange-100"
+    };
+  }
+
+  if (score >= 35) {
+    return {
+      card: "border-amber-200 bg-amber-50 text-amber-950",
+      pill: "bg-amber-600 text-white",
+      bar: "bg-amber-500",
+      link: "border-amber-200 bg-white text-amber-800 hover:bg-amber-100"
+    };
+  }
+
+  return {
+    card: "border-emerald-200 bg-emerald-50 text-emerald-950",
+    pill: "bg-emerald-700 text-white",
+    bar: "bg-emerald-600",
+    link: "border-emerald-200 bg-white text-emerald-800 hover:bg-emerald-100"
+  };
+}
+
 function formatDate(value: string | Date) {
   return new Intl.DateTimeFormat("tr-TR", {
     day: "2-digit",
@@ -938,38 +974,61 @@ export function AdminDashboardView({
         </div>
       </section>
 
-      <section className="grid gap-5 xl:grid-cols-[0.82fr_1.18fr]">
-        <div className="surface-card border border-white/70 bg-[#063326] p-6 text-white">
+      <section className="grid gap-5 xl:grid-cols-[0.9fr_1.1fr]">
+        <div className="surface-card border border-emerald-200 bg-white p-6 text-slate-950">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="text-sm font-bold uppercase tracking-normal text-emerald-200">
+              <p className="text-sm font-bold uppercase tracking-normal text-[#0f8f6f]">
                 Risk radarı
               </p>
-              <h2 className="mt-2 text-2xl font-bold tracking-normal">
+              <h2 className="mt-2 text-2xl font-bold tracking-normal text-slate-950">
                 Genel skor {snapshot.risk.score}/100 · {snapshot.risk.level}
               </h2>
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                Kritik stok, ödeme, gecikme, güvenlik ve ürün kalitesi sinyalleri okunabilir aksiyon kartlarına ayrıldı.
+              </p>
             </div>
-            <AlertTriangle className="h-6 w-6 text-amber-200" />
+            <span className="rounded-lg bg-amber-100 p-3 text-amber-700">
+              <AlertTriangle className="h-6 w-6" />
+            </span>
           </div>
           <div className="mt-5 grid gap-3">
-            {snapshot.risk.items.map((risk) => (
-              <div key={risk.key} className="rounded-lg border border-white/10 bg-white/[0.12] p-4">
-                <div className="flex items-start justify-between gap-3">
-                  <p className="text-sm font-bold">{risk.label}</p>
-                  <span className="rounded-full bg-white px-2.5 py-1 text-xs font-bold text-[#063326]">
-                    {risk.score}
-                  </span>
+            {snapshot.risk.items.map((risk) => {
+              const classes = riskToneClass(risk.score);
+
+              return (
+                <div key={risk.key} className={`rounded-lg border p-4 ${classes.card}`}>
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-bold">{risk.label}</p>
+                      <p className="mt-1 text-xs font-semibold uppercase tracking-normal opacity-80">
+                        {risk.level}
+                      </p>
+                    </div>
+                    <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${classes.pill}`}>
+                      {risk.score}
+                    </span>
+                  </div>
+                  <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/80">
+                    <div
+                      className={`h-full rounded-full ${classes.bar}`}
+                      style={{ width: `${Math.min(100, Math.max(0, risk.score))}%` }}
+                    />
+                  </div>
+                  <p className="mt-3 text-xs leading-5 opacity-90">{risk.description}</p>
+                  <p className="mt-2 text-xs font-semibold leading-5">{risk.action}</p>
+                  <AdminPrefetchLink
+                    href={risk.href}
+                    className={`mt-3 inline-flex rounded-full border px-3 py-1.5 text-xs font-bold transition ${classes.link}`}
+                  >
+                    Aksiyona git
+                  </AdminPrefetchLink>
                 </div>
-                <p className="mt-2 text-xs leading-5 text-white/80">{risk.description}</p>
-                <p className="mt-2 text-xs leading-5 text-white/80">{risk.action}</p>
-                <AdminPrefetchLink
-                  href={risk.href}
-                  className="mt-3 inline-flex rounded-full border border-white/20 px-3 py-1.5 text-xs font-bold text-emerald-100 transition hover:bg-white/10"
-                >
-                  Aksiyona git
-                </AdminPrefetchLink>
-              </div>
-            ))}
+              );
+            })}
+            {snapshot.risk.items.length === 0 ? (
+              <EmptyState label="Risk sinyali yok." />
+            ) : null}
           </div>
         </div>
 

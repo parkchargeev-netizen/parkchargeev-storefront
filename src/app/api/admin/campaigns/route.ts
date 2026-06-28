@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import {
   archiveAdminCampaign,
+  deleteAdminCampaign,
   listAdminCampaigns,
   upsertAdminCampaign
 } from "@/server/admin/operations";
@@ -68,6 +69,17 @@ export async function DELETE(request: Request) {
   }
 
   const requestMeta = await getRequestMeta();
+  const mode = new URL(request.url).searchParams.get("mode");
+
+  if (mode === "delete") {
+    const result = await deleteAdminCampaign(id, authenticatedAdmin.session, requestMeta);
+    return NextResponse.json({
+      ok: true,
+      ...result,
+      message: "Kampanya kalıcı olarak silindi."
+    });
+  }
+
   const result = await archiveAdminCampaign(id, authenticatedAdmin.session, requestMeta);
   return NextResponse.json({ ok: true, ...result });
 }
