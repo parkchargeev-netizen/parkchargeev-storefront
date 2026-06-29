@@ -23,15 +23,102 @@ function filterRows(value: unknown, shouldKeep: (row: unknown) => boolean) {
   return Array.isArray(value) ? value.filter(shouldKeep) : [];
 }
 
+function getBoolean(value: unknown, fallback = true) {
+  return typeof value === "boolean" ? value : fallback;
+}
+
+function normalizeNumber(value: unknown, fallback: number) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function hasCompleteText(value: unknown, fields: string[]) {
+  return fields.every((field) => getText(value, field).length > 0);
+}
+
+function normalizeSmartFeatures(value: unknown) {
+  return filterRows(value, (row) => hasAnyText(row, ["title", "description", "iconName"]))
+    .filter((row) => hasCompleteText(row, ["title", "description"]))
+    .map((row, index) => {
+      const feature = row as Record<string, unknown>;
+
+      return {
+        title: getText(feature, "title"),
+        description: getText(feature, "description"),
+        iconName: getText(feature, "iconName") || "sparkles",
+        isActive: getBoolean(feature.isActive),
+        sortOrder: normalizeNumber(feature.sortOrder, index + 1)
+      };
+    });
+}
+
+function normalizeTechnicalGroups(value: unknown) {
+  return filterRows(value, (row) => hasAnyText(row, ["title", "description"]) || Array.isArray((row as Record<string, unknown> | null)?.items))
+    .map((row, groupIndex) => {
+      const group = (row ?? {}) as Record<string, unknown>;
+      const items = filterRows(group.items, (item) => hasAnyText(item, ["name", "value", "unit", "description"]))
+        .filter((item) => hasCompleteText(item, ["name", "value"]))
+        .map((item, itemIndex) => {
+          const spec = item as Record<string, unknown>;
+
+          return {
+            name: getText(spec, "name"),
+            value: getText(spec, "value"),
+            unit: getText(spec, "unit"),
+            description: getText(spec, "description"),
+            isActive: getBoolean(spec.isActive),
+            sortOrder: normalizeNumber(spec.sortOrder, itemIndex + 1)
+          };
+        });
+
+      return {
+        title: getText(group, "title") || "Teknik özellikler",
+        description: getText(group, "description"),
+        isActive: getBoolean(group.isActive),
+        sortOrder: normalizeNumber(group.sortOrder, groupIndex + 1),
+        items
+      };
+    })
+    .filter((group) => group.title && group.items.length > 0);
+}
+
+function flattenTechnicalGroupsToSpecs(groups: Array<Record<string, unknown>>) {
+  return groups.flatMap((group) => {
+    const groupName = getText(group, "title") || "Teknik";
+    const groupActive = getBoolean(group.isActive);
+    const items = Array.isArray(group.items) ? group.items : [];
+
+    if (!groupActive) {
+      return [];
+    }
+
+    return items
+      .filter((item): item is Record<string, unknown> => Boolean(item) && typeof item === "object")
+      .filter((item) => getBoolean(item.isActive) && hasCompleteText(item, ["name", "value"]))
+      .map((item) => {
+        const value = [getText(item, "value"), getText(item, "unit")].filter(Boolean).join(" ");
+
+        return {
+          groupName,
+          label: getText(item, "name"),
+          value
+        };
+      });
+  });
+}
+
 function normalizeDetailContent(detailContent: unknown) {
   if (!detailContent || typeof detailContent !== "object") {
     return detailContent;
   }
 
   const detail = detailContent as Record<string, unknown>;
+  const technicalGroups = normalizeTechnicalGroups(detail.technicalGroups);
 
   return {
     ...detail,
+    smartFeatures: normalizeSmartFeatures(detail.smartFeatures),
+    technicalGroups,
     purchaseReadiness: filterRows(
       detail.purchaseReadiness,
       (row) => hasAnyText(row, ["label", "value"])
@@ -76,6 +163,13 @@ export function normalizeAdminProductPayload<T>(payload: T): T {
 
   const product = payload as Record<string, unknown>;
 
+  const detailContent = normalizeDetailContent(product.detailContent);
+  const technicalGroups =
+    detailContent && typeof detailContent === "object"
+      ? ((detailContent as Record<string, unknown>).technicalGroups as Array<Record<string, unknown>> | undefined)
+      : undefined;
+  const groupedSpecs = technicalGroups?.length ? flattenTechnicalGroupsToSpecs(technicalGroups) : [];
+
   return {
     ...product,
     variants: filterRows(
@@ -86,10 +180,12 @@ export function normalizeAdminProductPayload<T>(payload: T): T {
         getNumber(row, "stockQuantity") > 0
     ),
     media: normalizeMediaRows(product.media),
-    specs: filterRows(
-      product.specs,
-      (row) => hasAnyText(row, ["label", "value"])
-    ),
-    detailContent: normalizeDetailContent(product.detailContent)
+    specs: groupedSpecs.length
+      ? groupedSpecs
+      : filterRows(
+          product.specs,
+          (row) => hasAnyText(row, ["label", "value"])
+        ),
+    detailContent
   } as T;
 }

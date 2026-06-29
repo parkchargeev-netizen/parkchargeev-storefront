@@ -1,13 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Cpu, Radio, Settings, ShieldCheck, Sparkles, Wifi, Zap } from "lucide-react";
 
 import { ProductGallery } from "@/components/shop/product-gallery";
 import { ProductCard } from "@/components/shop/product-card";
 import { ProductPurchasePanel } from "@/components/shop/product-purchase-panel";
 import { JsonLd } from "@/components/seo/json-ld";
 import { getDisplayProductImageUrl } from "@/lib/product-media";
-import { getProductDetailContent } from "@/lib/product-detail-content";
+import {
+  getActiveProductSmartFeatures,
+  getActiveProductTechnicalGroups,
+  getProductDetailContent
+} from "@/lib/product-detail-content";
 import { getProductStoreProfile } from "@/lib/shop-merchandising";
 import {
   getBreadcrumbJsonLd,
@@ -24,6 +29,26 @@ import {
 type ProductDetailPageProps = {
   params: Promise<{ slug: string }>;
 };
+
+function SmartFeatureIcon({ iconName }: { iconName?: string }) {
+  const normalizedIconName = iconName?.toLocaleLowerCase("tr-TR") ?? "";
+  const Icon =
+    normalizedIconName.includes("wifi") || normalizedIconName.includes("wi-fi")
+      ? Wifi
+      : normalizedIconName.includes("shield") || normalizedIconName.includes("güven")
+        ? ShieldCheck
+        : normalizedIconName.includes("zap") || normalizedIconName.includes("power")
+          ? Zap
+          : normalizedIconName.includes("radio") || normalizedIconName.includes("rfid")
+            ? Radio
+            : normalizedIconName.includes("cpu") || normalizedIconName.includes("ocpp")
+              ? Cpu
+              : normalizedIconName.includes("setting")
+                ? Settings
+                : Sparkles;
+
+  return <Icon className="h-5 w-5" aria-hidden />;
+}
 
 export async function generateStaticParams() {
   const productSlugs = await listPublicProductSlugs();
@@ -83,6 +108,8 @@ export default async function ProductDetailPage({
   const relatedProducts = await getPublicRelatedProducts(product);
   const productJsonLd = getProductJsonLd(product);
   const detailContent = getProductDetailContent(product);
+  const smartFeatures = getActiveProductSmartFeatures(product);
+  const technicalGroups = getActiveProductTechnicalGroups(product);
   const storeProfile = getProductStoreProfile(product);
   const mediaItems = detailContent.galleryItems;
   const productImageUrl = getDisplayProductImageUrl(product.imageUrl);
@@ -92,26 +119,49 @@ export default async function ProductDetailPage({
     { name: product.name, path: `/urun/${product.slug}` }
   ]);
   const faqJsonLd = getFaqJsonLd(detailContent.faqs);
-  const renderSpecsCard = () => (
+  const renderSpecsCard = () => technicalGroups.length ? (
     <div className="product-detail-spec-card surface-card p-8">
       <h2 className="text-3xl font-bold tracking-normal text-on-surface">
         {detailContent.specsHeading}
       </h2>
       <div className="mt-6 space-y-4">
-        {product.specs.map((spec) => (
-          <div
-            key={spec.label}
-            className="flex items-center justify-between gap-6 border-b border-outline-variant/30 pb-4"
+        {technicalGroups.map((group, groupIndex) => (
+          <details
+            key={`${group.title}-${groupIndex}`}
+            className="rounded-lg border border-outline-variant/35 bg-white/80"
+            open={groupIndex === 0}
           >
-            <span className="text-sm text-on-surface-variant">{spec.label}</span>
-            <span className="text-right font-semibold text-on-surface">
-              {spec.value}
-            </span>
-          </div>
+            <summary className="cursor-pointer px-5 py-4 text-base font-bold text-on-surface">
+              {group.title}
+            </summary>
+            {group.description ? (
+              <p className="px-5 pb-2 text-sm leading-6 text-on-surface-variant">
+                {group.description}
+              </p>
+            ) : null}
+            <div className="divide-y divide-outline-variant/25 px-5 pb-4">
+              {group.items.map((spec) => (
+                <div
+                  key={`${group.title}-${spec.name}-${spec.value}`}
+                  className="grid gap-2 py-4 sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1fr)] sm:items-start"
+                >
+                  <span className="text-sm font-semibold text-on-surface-variant">{spec.name}</span>
+                  <span className="text-sm font-bold leading-6 text-on-surface sm:text-right">
+                    {[spec.value, spec.unit].filter(Boolean).join(" ")}
+                    {spec.description ? (
+                      <small className="mt-1 block text-xs font-medium leading-5 text-on-surface-variant">
+                        {spec.description}
+                      </small>
+                    ) : null}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </details>
         ))}
       </div>
     </div>
-  );
+  ) : null;
   const renderDescriptionCard = () => (
     <div className="product-detail-description-card surface-card p-8">
       <p className="text-sm font-semibold uppercase tracking-normal text-primary">
@@ -238,6 +288,39 @@ export default async function ProductDetailPage({
           </div>
         </aside>
       </div>
+
+      {smartFeatures.length > 0 ? (
+        <section className="product-detail-smart-features mt-8">
+          <div className="surface-card p-8">
+            <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-normal text-primary">
+                  Akıllı özellikler
+                </p>
+                <h2 className="mt-3 text-3xl font-bold tracking-normal text-on-surface">
+                  Ürünü günlük kullanıma hazır hale getiren yetenekler.
+                </h2>
+              </div>
+            </div>
+            <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {smartFeatures.map((feature) => (
+                <article
+                  key={`${feature.title}-${feature.description}`}
+                  className="rounded-lg border border-outline-variant/35 bg-white/85 p-5 shadow-[0_16px_42px_rgba(6,51,38,0.08)]"
+                >
+                  <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary text-white shadow-[0_12px_28px_rgba(6,51,38,0.18)]">
+                    <SmartFeatureIcon iconName={feature.iconName} />
+                  </div>
+                  <h3 className="mt-4 text-lg font-bold text-on-surface">{feature.title}</h3>
+                  <p className="mt-2 text-sm leading-7 text-on-surface-variant">
+                    {feature.description}
+                  </p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null}
 
       <section className="product-detail-info-grid mt-8 grid gap-6 lg:hidden">
         {renderDescriptionCard()}

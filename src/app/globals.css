@@ -3151,7 +3151,7 @@ body {
     padding: 1rem;
   }
 
-  .product-gallery-stage--cover {
+  .product-gallery-stage--contain {
     min-height: 18.5rem !important;
   }
 
@@ -6767,14 +6767,14 @@ body {
     scroll-snap-type: x mandatory;
   }
 
-  .product-gallery-premium button {
+  .product-gallery-premium > .mt-5 button {
     flex: 0 0 5.75rem;
     border-radius: 0.72rem;
     padding: 0.3rem;
     scroll-snap-align: start;
   }
 
-  .product-gallery-premium button > div {
+  .product-gallery-premium > .mt-5 button > div {
     aspect-ratio: 16 / 10;
     border-radius: 0.65rem;
     font-size: 0.65rem;
@@ -7139,7 +7139,7 @@ body {
     padding: 0.68rem !important;
   }
 
-  .product-gallery-stage--cover {
+  .product-gallery-stage--contain {
     min-height: 12.9rem !important;
   }
 
@@ -7147,7 +7147,7 @@ body {
     gap: 0.35rem;
   }
 
-  .product-gallery-premium button {
+  .product-gallery-premium > .mt-5 button {
     flex-basis: 4.65rem;
   }
 

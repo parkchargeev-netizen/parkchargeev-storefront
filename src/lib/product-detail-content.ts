@@ -15,6 +15,31 @@ export type ProductDetailFaq = {
   answer: string;
 };
 
+export type ProductSmartFeature = {
+  title: string;
+  description: string;
+  iconName?: string;
+  isActive?: boolean;
+  sortOrder?: number;
+};
+
+export type ProductTechnicalSpecItem = {
+  name: string;
+  value: string;
+  unit?: string;
+  description?: string;
+  isActive?: boolean;
+  sortOrder?: number;
+};
+
+export type ProductTechnicalSpecGroup = {
+  title: string;
+  description?: string;
+  isActive?: boolean;
+  sortOrder?: number;
+  items: ProductTechnicalSpecItem[];
+};
+
 export type ProductSupportContent = {
   title: string;
   body: string;
@@ -34,6 +59,8 @@ export type ProductDetailContent = {
   useCases: string[];
   highlightsHeading: string;
   highlights: string[];
+  smartFeatures: ProductSmartFeature[];
+  technicalGroups: ProductTechnicalSpecGroup[];
   purchaseBenefits: string[];
   purchaseReadiness: ProductDetailTextPair[];
   decisionChecks: string[];
@@ -66,6 +93,43 @@ function compactList(values?: string[]) {
 
 function hasItems<T>(values: T[] | undefined): values is T[] {
   return Array.isArray(values) && values.length > 0;
+}
+
+function sortByOrder<T extends { sortOrder?: number }>(values: T[]) {
+  return [...values].sort((left, right) => (left.sortOrder ?? 0) - (right.sortOrder ?? 0));
+}
+
+function normalizeSmartFeatures(values?: ProductSmartFeature[]) {
+  return sortByOrder(values ?? [])
+    .map((item, index) => ({
+      title: item.title?.trim() ?? "",
+      description: item.description?.trim() ?? "",
+      iconName: item.iconName?.trim() || "sparkles",
+      isActive: item.isActive !== false,
+      sortOrder: Number.isFinite(Number(item.sortOrder)) ? Number(item.sortOrder) : index + 1
+    }))
+    .filter((item) => item.title && item.description);
+}
+
+function normalizeTechnicalGroups(values?: ProductTechnicalSpecGroup[]) {
+  return sortByOrder(values ?? [])
+    .map((group, groupIndex) => ({
+      title: group.title?.trim() ?? "",
+      description: group.description?.trim() ?? "",
+      isActive: group.isActive !== false,
+      sortOrder: Number.isFinite(Number(group.sortOrder)) ? Number(group.sortOrder) : groupIndex + 1,
+      items: sortByOrder(group.items ?? [])
+        .map((item, itemIndex) => ({
+          name: item.name?.trim() ?? "",
+          value: item.value?.trim() ?? "",
+          unit: item.unit?.trim() ?? "",
+          description: item.description?.trim() ?? "",
+          isActive: item.isActive !== false,
+          sortOrder: Number.isFinite(Number(item.sortOrder)) ? Number(item.sortOrder) : itemIndex + 1
+        }))
+        .filter((item) => item.name && item.value)
+    }))
+    .filter((group) => group.title && group.items.length > 0);
 }
 
 function getReadinessDefaults(product?: ProductModel): ProductDetailTextPair[] {
@@ -111,6 +175,8 @@ export function getDefaultProductDetailContent(product?: ProductModel): ProductD
     useCases: product?.useCases?.length ? product.useCases : [],
     highlightsHeading: "Satış ve kurulum avantajları",
     highlights: product?.highlights?.length ? product.highlights : [],
+    smartFeatures: [],
+    technicalGroups: [],
     purchaseBenefits: [
       "Tek sayfa güvenli ödeme ve net sipariş takibi",
       "Garanti, servis ve kurulum desteği",
@@ -182,6 +248,12 @@ export function mergeProductDetailContent(
     highlights: hasItems(input.highlights)
       ? compactList(input.highlights)
       : base.highlights,
+    smartFeatures: hasItems(input.smartFeatures)
+      ? normalizeSmartFeatures(input.smartFeatures)
+      : base.smartFeatures,
+    technicalGroups: hasItems(input.technicalGroups)
+      ? normalizeTechnicalGroups(input.technicalGroups)
+      : base.technicalGroups,
     purchaseReadiness: hasItems(input.purchaseReadiness)
       ? input.purchaseReadiness
       : base.purchaseReadiness,
@@ -204,6 +276,67 @@ export function getProductDetailContent(product: ProductModel): ProductDetailCon
     getDefaultProductDetailContent(product),
     product.detailContent
   );
+}
+
+export function getActiveProductSmartFeatures(product: ProductModel) {
+  const detailContent = getProductDetailContent(product);
+  const configuredFeatures = normalizeSmartFeatures(detailContent.smartFeatures)
+    .filter((item) => item.isActive !== false);
+
+  if (configuredFeatures.length > 0) {
+    return configuredFeatures;
+  }
+
+  return product.specs
+    .filter((spec) => {
+      const haystack = `${spec.groupName ?? ""} ${spec.label} ${spec.value}`.toLocaleLowerCase("tr-TR");
+      return /akıllı|akilli|wifi|wi-fi|rfid|4g|ocpp|yük|yuk|load|uygulama/.test(haystack);
+    })
+    .map((spec, index) => ({
+      title: spec.label,
+      description: spec.value,
+      iconName: "sparkles",
+      isActive: true,
+      sortOrder: index + 1
+    }));
+}
+
+export function getActiveProductTechnicalGroups(product: ProductModel) {
+  const detailContent = getProductDetailContent(product);
+  const configuredGroups = normalizeTechnicalGroups(detailContent.technicalGroups)
+    .filter((group) => group.isActive !== false)
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((item) => item.isActive !== false)
+    }))
+    .filter((group) => group.items.length > 0);
+
+  if (configuredGroups.length > 0) {
+    return configuredGroups;
+  }
+
+  const groupMap = new Map<string, ProductTechnicalSpecItem[]>();
+
+  product.specs.forEach((spec, index) => {
+    const groupName = spec.groupName?.trim() || "Genel Bilgiler";
+    groupMap.set(groupName, [
+      ...(groupMap.get(groupName) ?? []),
+      {
+        name: spec.label,
+        value: spec.value,
+        isActive: true,
+        sortOrder: index + 1
+      }
+    ]);
+  });
+
+  return Array.from(groupMap.entries()).map(([title, items], index) => ({
+    title,
+    description: "",
+    isActive: true,
+    sortOrder: index + 1,
+    items
+  }));
 }
 
 export function getProductDetailContentFromSchemaJsonLd(

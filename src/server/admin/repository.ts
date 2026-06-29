@@ -611,7 +611,7 @@ function mapAdminProductToPublicProduct(
   ];
   const specs =
     specRows.length > 0
-      ? specRows.map((spec) => ({ label: spec.label, value: spec.value }))
+      ? specRows.map((spec) => ({ groupName: spec.groupName, label: spec.label, value: spec.value }))
       : base?.specs ?? [];
   const media: ProductMediaModel[] = mediaRows.map((item) => ({
     url: item.url,

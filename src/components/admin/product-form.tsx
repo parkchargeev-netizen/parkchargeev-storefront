@@ -256,6 +256,143 @@ function uniqueList(values: string[]) {
   return Array.from(new Set(values.map((value) => value.trim()).filter(Boolean)));
 }
 
+function createSmartFeature(sortOrder: number) {
+  return {
+    title: "",
+    description: "",
+    iconName: "sparkles",
+    isActive: true,
+    sortOrder
+  };
+}
+
+function createTechnicalSpecItem(sortOrder: number) {
+  return {
+    name: "",
+    value: "",
+    unit: "",
+    description: "",
+    isActive: true,
+    sortOrder
+  };
+}
+
+function createTechnicalGroup(sortOrder: number, title = "Genel Bilgiler") {
+  return {
+    title,
+    description: "",
+    isActive: true,
+    sortOrder,
+    items: [createTechnicalSpecItem(1)]
+  };
+}
+
+function buildTechnicalGroupsFromSpecs(specs: ProductFormValues["specs"]) {
+  const groupMap = new Map<string, ReturnType<typeof createTechnicalGroup>>();
+
+  (specs ?? []).forEach((spec, index) => {
+    const label = cleanText(spec.label);
+    const value = cleanText(spec.value);
+
+    if (!label || !value) {
+      return;
+    }
+
+    const groupName = cleanText(spec.groupName) || "Genel Bilgiler";
+    const existingGroup =
+      groupMap.get(groupName) ?? {
+        ...createTechnicalGroup(groupMap.size + 1, groupName),
+        items: []
+      };
+
+    existingGroup.items.push({
+      name: label,
+      value,
+      unit: "",
+      description: "",
+      isActive: true,
+      sortOrder: index + 1
+    });
+    groupMap.set(groupName, existingGroup);
+  });
+
+  return Array.from(groupMap.values());
+}
+
+function buildSmartFeaturesFromSpecs(specs: ProductFormValues["specs"]) {
+  return (specs ?? [])
+    .filter((spec) => {
+      const haystack = `${spec.groupName ?? ""} ${spec.label ?? ""} ${spec.value ?? ""}`.toLocaleLowerCase("tr-TR");
+      return /akıllı|akilli|wifi|wi-fi|rfid|4g|ocpp|yük|yuk|load|uygulama/.test(haystack);
+    })
+    .map((spec, index) => ({
+      title: cleanText(spec.label),
+      description: cleanText(spec.value),
+      iconName: "sparkles",
+      isActive: true,
+      sortOrder: index + 1
+    }))
+    .filter((feature) => feature.title && feature.description);
+}
+
+function flattenTechnicalGroupsToSpecs(
+  groups: ProductDetailFormValues["technicalGroups"],
+  fallbackSpecs: ProductFormValues["specs"]
+) {
+  const specs = (groups ?? []).flatMap((group) => {
+    const groupName = cleanText(group.title) || "Teknik";
+
+    if (group.isActive === false) {
+      return [];
+    }
+
+    return (group.items ?? [])
+      .filter((item) => item.isActive !== false && cleanText(item.name) && cleanText(item.value))
+      .map((item) => ({
+        groupName,
+        label: cleanText(item.name),
+        value: [cleanText(item.value), cleanText(item.unit)].filter(Boolean).join(" ")
+      }));
+  });
+
+  return specs.length ? specs : (fallbackSpecs ?? []);
+}
+
+function validateStructuredProductDetails(detailContent: ProductDetailFormValues) {
+  const issues: string[] = [];
+
+  (detailContent.smartFeatures ?? []).forEach((feature, index) => {
+    const hasAnyValue = [feature.title, feature.description, feature.iconName].some((value) => cleanText(value));
+
+    if (hasAnyValue && (!cleanText(feature.title) || !cleanText(feature.description))) {
+      issues.push(`${index + 1}. akıllı özellikte başlık ve açıklama zorunlu.`);
+    }
+  });
+
+  (detailContent.technicalGroups ?? []).forEach((group, groupIndex) => {
+    const visibleItems = group.items ?? [];
+    const hasAnyGroupValue =
+      [group.title, group.description].some((value) => cleanText(value)) ||
+      visibleItems.some((item) =>
+        [item.name, item.value, item.unit, item.description].some((value) => cleanText(value))
+      );
+
+    if (hasAnyGroupValue && !cleanText(group.title)) {
+      issues.push(`${groupIndex + 1}. teknik grupta grup başlığı zorunlu.`);
+    }
+
+    visibleItems.forEach((item, itemIndex) => {
+      const hasAnyItemValue = [item.name, item.value, item.unit, item.description].some((value) => cleanText(value));
+
+      if (hasAnyItemValue && (!cleanText(item.name) || !cleanText(item.value))) {
+        issues.push(`${groupIndex + 1}. teknik grubun ${itemIndex + 1}. satırında özellik adı ve değer zorunlu.`);
+      }
+    });
+  });
+
+  return issues;
+}
+
 const adminPriceFormatter = new Intl.NumberFormat("tr-TR", {
   style: "currency",
   currency: "TRY",
@@ -455,6 +592,14 @@ export function ProductForm({
         highlights:
           initialValues?.detailContent?.highlights ??
           detailContentDefaults.highlights,
+        smartFeatures:
+          initialValues?.detailContent?.smartFeatures?.length
+            ? initialValues.detailContent.smartFeatures
+            : buildSmartFeaturesFromSpecs(initialValues?.specs),
+        technicalGroups:
+          initialValues?.detailContent?.technicalGroups?.length
+            ? initialValues.detailContent.technicalGroups
+            : buildTechnicalGroupsFromSpecs(initialValues?.specs),
         purchaseReadiness:
           initialValues?.detailContent?.purchaseReadiness ??
           detailContentDefaults.purchaseReadiness,
@@ -501,9 +646,15 @@ export function ProductForm({
     keyName: "fieldId"
   });
 
-  const specFields = useFieldArray({
+  const smartFeatureFields = useFieldArray({
     control,
-    name: "specs",
+    name: "detailContent.smartFeatures",
+    keyName: "fieldId"
+  });
+
+  const technicalGroupFields = useFieldArray({
+    control,
+    name: "detailContent.technicalGroups",
     keyName: "fieldId"
   });
 
@@ -551,10 +702,16 @@ export function ProductForm({
   const seoDescriptionValue = watch("seoDescription") ?? "";
   const aiSummaryValue = watch("aiSummary") ?? "";
   const detailContent = (watch("detailContent") ?? detailContentDefaults) as ProductDetailFormValues;
+  const smartFeatureValues = detailContent.smartFeatures ?? [];
+  const technicalGroupValues = detailContent.technicalGroups ?? [];
+  const flattenedTechnicalSpecValues = flattenTechnicalGroupsToSpecs(technicalGroupValues, specValues);
   const smartFeatureLabels = uniqueList([
     hasWifiValue ? "Wi-Fi" : "",
     hasRfidValue ? "RFID" : "",
-    has4gValue ? "4G" : ""
+    has4gValue ? "4G" : "",
+    ...smartFeatureValues
+      .filter((feature) => feature.isActive !== false)
+      .map((feature) => cleanText(feature.title))
   ]);
   const powerText = cleanText(powerLabelValue || (powerKwValue ? `${powerKwValue} kW` : ""));
   const chargeText = cleanText(chargeTypeValue).toUpperCase();
@@ -588,7 +745,7 @@ export function ProductForm({
     },
     {
       label: "Akıllı özellikler",
-      ok: smartFeatureLabels.length > 0 || specValues.some((item) => /ocpp|yük|yük|load|wifi|wi-fi|rfid/i.test(`${item.label} ${item.value}`)),
+      ok: smartFeatureLabels.length > 0 || flattenedTechnicalSpecValues.some((item) => /ocpp|yük|yuk|load|wifi|wi-fi|rfid/i.test(`${item.label} ${item.value}`)),
       detail: "Wi-Fi, RFID, 4G, OCPP veya yük dengeleme sinyali eklenmeli."
     },
     {
@@ -598,7 +755,7 @@ export function ProductForm({
     },
     {
       label: "Teknik tablo",
-      ok: specValues.filter((item) => cleanText(item.label) && cleanText(item.value)).length >= 6,
+      ok: flattenedTechnicalSpecValues.filter((item) => cleanText(item.label) && cleanText(item.value)).length >= 6,
       detail: "Güç, faz, konnektör, IP, akıllı özellik ve kapsam maddeleri olmalı."
     },
     {
@@ -650,8 +807,8 @@ export function ProductForm({
     },
     {
       label: "Teknik veri",
-      detail: `${specValues.length} özellik / ${variantValues.length || 1} varyant`,
-      ok: specValues.length >= 4 && Boolean(powerText || connectorText),
+      detail: `${flattenedTechnicalSpecValues.length} özellik / ${variantValues.length || 1} varyant`,
+      ok: flattenedTechnicalSpecValues.length >= 4 && Boolean(powerText || connectorText),
       icon: Sparkles
     },
     {
@@ -745,7 +902,7 @@ export function ProductForm({
 
   function appendCoreSpecsFromFields() {
     const existingSpecKeys = new Set(
-      (watch("specs") ?? [])
+      flattenedTechnicalSpecValues
         .filter((item) => cleanText(item.label))
         .map((item) => specKey(item.label ?? ""))
     );
@@ -815,16 +972,62 @@ export function ProductForm({
       {
         groupName: "Ticari",
         label: "Yönetim özellikleri",
-        value: specValues.some((item) => /ocpp|yük|yük|load/i.test(`${item.label} ${item.value}`))
+        value: flattenedTechnicalSpecValues.some((item) => /ocpp|yük|yuk|load/i.test(`${item.label} ${item.value}`))
           ? ""
           : "OCPP, yük dengeleme veya RFID ihtiyacı varsa teklif aşamasında netleştirilir"
       }
     ];
 
+    const nextGroups = [...technicalGroupValues];
+
     candidateSpecs
       .filter((item) => cleanText(item.value))
       .filter((item) => !existingSpecKeys.has(specKey(item.label)))
-      .forEach((item) => specFields.append(item));
+      .forEach((item) => {
+        const groupIndex = nextGroups.findIndex((group) => cleanText(group.title) === item.groupName);
+        const nextItem = {
+          name: item.label,
+          value: item.value,
+          unit: "",
+          description: "",
+          isActive: true,
+          sortOrder: groupIndex >= 0 ? (nextGroups[groupIndex].items?.length ?? 0) + 1 : 1
+        };
+
+        if (groupIndex >= 0) {
+          nextGroups[groupIndex] = {
+            ...nextGroups[groupIndex],
+            items: [...(nextGroups[groupIndex].items ?? []), nextItem]
+          };
+          return;
+        }
+
+        nextGroups.push({
+          title: item.groupName,
+          description: "",
+          isActive: true,
+          sortOrder: nextGroups.length + 1,
+          items: [nextItem]
+        });
+      });
+
+    setValue("detailContent.technicalGroups", nextGroups, {
+      shouldDirty: true,
+      shouldValidate: true
+    });
+
+    if (
+      smartSummary !== "Standart kontrol" &&
+      !smartFeatureValues.some((feature) => specKey(feature.title) === specKey("Bağlantı ve erişim"))
+    ) {
+      smartFeatureFields.append({
+        title: "Bağlantı ve erişim",
+        description: smartSummary,
+        iconName: "wifi",
+        isActive: true,
+        sortOrder: smartFeatureValues.length + 1
+      });
+    }
   }
 
   function buildProductCopyFromFeatures() {
@@ -1104,6 +1307,15 @@ export function ProductForm({
     setErrorMessage(null);
     setSuccessMessage(null);
 
+    const structuredIssues = validateStructuredProductDetails(
+      (values.detailContent ?? detailContentDefaults) as ProductDetailFormValues
+    );
+
+    if (structuredIssues.length > 0) {
+      setErrorMessage(structuredIssues.slice(0, 4).join(" "));
+      return;
+    }
+
     const endpoint =
       mode === "create" ? "/api/admin/products" : `/api/admin/products/${productId}`;
     const method = mode === "create" ? "POST" : "PATCH";
@@ -1126,6 +1338,10 @@ export function ProductForm({
         : {}),
       slug: values.slug || values.name,
       variantTitle: defaultVariant?.title || values.variantTitle || values.name,
+      specs: flattenTechnicalGroupsToSpecs(
+        (values.detailContent ?? detailContentDefaults).technicalGroups,
+        values.specs
+      ),
       variants: variants.map((variant, index) => ({
         ...variant,
         isDefault: defaultVariant ? variant === defaultVariant : index === 0
@@ -1262,10 +1478,10 @@ export function ProductForm({
               <div className="grid aspect-[4/3] place-items-center bg-gradient-to-br from-emerald-50 to-slate-100">
                 {primaryMedia?.url ? (
                   primaryMedia.mediaType === "video" ? (
-                    <video src={primaryMedia.url} className="h-full w-full object-cover" muted />
+                    <video src={primaryMedia.url} className="h-full w-full object-contain" muted />
                   ) : (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={primaryMedia.url} alt={primaryMedia.altText || currentName || "Ürün görseli"} className="h-full w-full object-cover" />
+                    <img src={primaryMedia.url} alt={primaryMedia.altText || currentName || "Ürün görseli"} className="h-full w-full object-contain p-2" />
                   )
                 ) : (
                   <div className="grid place-items-center gap-2 text-center text-slate-500">
@@ -1947,10 +2163,10 @@ export function ProductForm({
               <div className="grid aspect-square place-items-center overflow-hidden rounded-lg border border-slate-200 bg-white text-slate-400">
                 {mediaUrl ? (
                   mediaType === "video" ? (
-                    <video src={mediaUrl} className="h-full w-full object-cover" muted />
+                    <video src={mediaUrl} className="h-full w-full object-contain" muted />
                   ) : (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={mediaUrl} alt={mediaItem?.altText || "Ürün medyası"} className="h-full w-full object-cover" />
+                    <img src={mediaUrl} alt={mediaItem?.altText || "Ürün medyası"} className="h-full w-full object-contain p-2" />
                   )
                 ) : (
                   <ImagePlus className="h-6 w-6" aria-hidden />
@@ -2022,55 +2238,229 @@ export function ProductForm({
       <section id="özellikler" className="surface-card scroll-mt-28 border border-slate-200 bg-white/95 p-6">
         <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-slate-950">Teknik özellikler</h2>
+            <h2 className="text-xl font-semibold text-slate-950">Akıllı ve teknik özellikler</h2>
             <p className="mt-1 text-sm leading-6 text-slate-600">
-              Ürün detayındaki teknik özellik listesi burada görünür. Başlık ve değer alanı boş olmayan satırlar kaydedilir.
+              Ürün detayında görünen akıllı özellik kartlarını ve teknik özellik gruplarını buradan yönetin.
             </p>
-            <ExampleHint>Örnek satır: Grup Teknik, başlık Koruma sınıfı, değer IP54.</ExampleHint>
+            <ExampleHint>Boş grup veya boş satırlar kaydedilmez. Aktif olmayan alanlar kullanıcı tarafında gösterilmez.</ExampleHint>
           </div>
-          <button
-            type="button"
-            onClick={() => specFields.append({ groupName: "Teknik", label: "", value: "" })}
-            className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
-          >
-            <Plus className="h-4 w-4" aria-hidden />
-            Özellik satırı ekle
-          </button>
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={() => smartFeatureFields.append(createSmartFeature(smartFeatureValues.length + 1))}
+              className="inline-flex items-center justify-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-800 transition hover:bg-emerald-100"
+            >
+              <Plus className="h-4 w-4" aria-hidden />
+              Yeni Akıllı Özellik Ekle
+            </button>
+            <button
+              type="button"
+              onClick={() => technicalGroupFields.append(createTechnicalGroup(technicalGroupValues.length + 1))}
+              className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
+            >
+              <Plus className="h-4 w-4" aria-hidden />
+              Teknik Grup Ekle
+            </button>
+          </div>
         </div>
-        <TechnicalSpecExamples />
-        <div className="space-y-4">
-          {specFields.fields.map((field, index) => (
-            <div key={field.fieldId} className="grid gap-4 rounded-lg border border-slate-200 bg-slate-50 p-4 lg:grid-cols-[180px_minmax(0,1fr)_minmax(0,1.15fr)_auto] lg:items-end">
-              <div>
-                <label className="mb-2 block text-xs font-bold uppercase tracking-normal text-slate-500">Grup</label>
-                <select className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm" {...register(`specs.${index}.groupName`)}>
-                  <option value="Teknik">Teknik</option>
-                  <option value="Kurulum">Kurulum</option>
-                  <option value="Akıllı özellik">Akıllı özellik</option>
-                  <option value="Uyum">Uyum</option>
-                  <option value="Varyant">Varyant</option>
-                  <option value="Ticari">Ticari</option>
-                  <option value="general">Diğer</option>
-                </select>
-              </div>
-              <div>
-                <label className="mb-2 block text-xs font-bold uppercase tracking-normal text-slate-500">Başlık</label>
-                <input className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Maksimum güç" {...register(`specs.${index}.label`)} />
-              </div>
-              <div>
-                <label className="mb-2 block text-xs font-bold uppercase tracking-normal text-slate-500">Değer</label>
-                <input className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="22 kW AC" {...register(`specs.${index}.value`)} />
-              </div>
-              <button type="button" onClick={() => specFields.remove(index)} className="rounded-lg border border-red-200 px-3 py-3 text-sm font-bold text-red-700 transition hover:bg-red-50">
-                Sil
-              </button>
+
+        <div className="rounded-lg border border-emerald-100 bg-emerald-50/70 p-5">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h3 className="text-base font-bold text-[#063326]">Akıllı özellik kartları</h3>
+              <p className="mt-1 text-sm leading-6 text-slate-600">
+                Kullanıcı tarafında sadece aktif ve eksiksiz kartlar gösterilir.
+              </p>
             </div>
-          ))}
-          {specFields.fields.length === 0 ? (
-            <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-sm text-slate-600">
-              Henüz teknik özellik satırı yok. Üstteki teknik alanları doldurup “Alanlardan özellik üret” aksiyonunu kullanabilirsiniz.
+            <p className="rounded-full bg-white px-3 py-1 text-xs font-bold text-emerald-800">
+              {smartFeatureValues.filter((item) => item.isActive !== false && cleanText(item.title)).length} aktif kart
+            </p>
+          </div>
+
+          <div className="mt-5 grid gap-4">
+            {smartFeatureFields.fields.map((field, index) => (
+              <div key={field.fieldId} className="grid gap-4 rounded-lg border border-emerald-100 bg-white p-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)_150px_110px_auto] lg:items-end">
+                <div>
+                  <label className="mb-2 block text-xs font-bold uppercase tracking-normal text-slate-500">Özellik başlığı</label>
+                  <input className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Dinamik yük yönetimi" {...register(`detailContent.smartFeatures.${index}.title` as const)} />
+                </div>
+                <div>
+                  <label className="mb-2 block text-xs font-bold uppercase tracking-normal text-slate-500">Açıklama</label>
+                  <input className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Pano kapasitesini koruyarak şarjı dengeler." {...register(`detailContent.smartFeatures.${index}.description` as const)} />
+                </div>
+                <div>
+                  <label className="mb-2 block text-xs font-bold uppercase tracking-normal text-slate-500">İkon adı</label>
+                  <input className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="wifi, shield, zap" {...register(`detailContent.smartFeatures.${index}.iconName` as const)} />
+                </div>
+                <div>
+                  <label className="mb-2 block text-xs font-bold uppercase tracking-normal text-slate-500">Sıra</label>
+                  <input type="number" min={0} className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" {...register(`detailContent.smartFeatures.${index}.sortOrder` as const, { valueAsNumber: true })} />
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <label className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700">
+                    <input type="checkbox" {...register(`detailContent.smartFeatures.${index}.isActive` as const)} />
+                    Aktif
+                  </label>
+                  <button type="button" onClick={() => index > 0 && smartFeatureFields.swap(index, index - 1)} className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-bold text-slate-600">Yukarı</button>
+                  <button type="button" onClick={() => index < smartFeatureFields.fields.length - 1 && smartFeatureFields.swap(index, index + 1)} className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-bold text-slate-600">Aşağı</button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (window.confirm("Bu akıllı özellik silinsin mi?")) {
+                        smartFeatureFields.remove(index);
+                      }
+                    }}
+                    className="rounded-lg border border-red-200 px-3 py-2 text-sm font-bold text-red-700 transition hover:bg-red-50"
+                  >
+                    Sil
+                  </button>
+                </div>
+              </div>
+            ))}
+            {smartFeatureFields.fields.length === 0 ? (
+              <div className="rounded-lg border border-dashed border-emerald-200 bg-white/70 px-4 py-6 text-center text-sm text-slate-600">
+                Henüz akıllı özellik yok. Ürün sayfasında bu bölüm gizli kalır.
+              </div>
+            ) : null}
+          </div>
+        </div>
+
+        <div className="mt-6 rounded-lg border border-slate-200 bg-slate-50 p-5">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h3 className="text-base font-bold text-slate-950">Gruplu teknik özellikler</h3>
+              <p className="mt-1 text-sm leading-6 text-slate-600">
+                Grup başlıkları ürün detayında accordion/kart düzeninde gösterilir.
+              </p>
             </div>
-          ) : null}
+            <p className="rounded-full bg-white px-3 py-1 text-xs font-bold text-slate-700">
+              {technicalGroupValues.length} grup / {flattenedTechnicalSpecValues.length} özellik
+            </p>
+          </div>
+
+          <TechnicalSpecExamples />
+
+          <div className="mt-5 space-y-5">
+            {technicalGroupFields.fields.map((field, groupIndex) => {
+              const groupValue = technicalGroupValues[groupIndex] ?? createTechnicalGroup(groupIndex + 1);
+              const items = groupValue.items ?? [];
+
+              return (
+                <div key={field.fieldId} className="rounded-lg border border-slate-200 bg-white p-4">
+                  <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)_110px_auto] lg:items-end">
+                    <div>
+                      <label className="mb-2 block text-xs font-bold uppercase tracking-normal text-slate-500">Grup başlığı</label>
+                      <input className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Elektriksel Özellikler" {...register(`detailContent.technicalGroups.${groupIndex}.title` as const)} />
+                    </div>
+                    <div>
+                      <label className="mb-2 block text-xs font-bold uppercase tracking-normal text-slate-500">Grup açıklaması</label>
+                      <input className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Güç, faz, bağlantı ve çalışma aralığı." {...register(`detailContent.technicalGroups.${groupIndex}.description` as const)} />
+                    </div>
+                    <div>
+                      <label className="mb-2 block text-xs font-bold uppercase tracking-normal text-slate-500">Sıra</label>
+                      <input type="number" min={0} className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" {...register(`detailContent.technicalGroups.${groupIndex}.sortOrder` as const, { valueAsNumber: true })} />
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <label className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700">
+                        <input type="checkbox" {...register(`detailContent.technicalGroups.${groupIndex}.isActive` as const)} />
+                        Aktif
+                      </label>
+                      <button type="button" onClick={() => groupIndex > 0 && technicalGroupFields.swap(groupIndex, groupIndex - 1)} className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-bold text-slate-600">Yukarı</button>
+                      <button type="button" onClick={() => groupIndex < technicalGroupFields.fields.length - 1 && technicalGroupFields.swap(groupIndex, groupIndex + 1)} className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-bold text-slate-600">Aşağı</button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (window.confirm("Bu teknik özellik grubu silinsin mi?")) {
+                            technicalGroupFields.remove(groupIndex);
+                          }
+                        }}
+                        className="rounded-lg border border-red-200 px-3 py-2 text-sm font-bold text-red-700 transition hover:bg-red-50"
+                      >
+                        Grubu sil
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 space-y-3">
+                    {items.map((item, itemIndex) => (
+                      <div key={`${field.fieldId}-item-${itemIndex}`} className="grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_110px_minmax(0,1fr)_90px_auto] lg:items-end">
+                        <div>
+                          <label className="mb-2 block text-xs font-bold uppercase tracking-normal text-slate-500">Özellik adı</label>
+                          <input className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm" placeholder="Maksimum güç" {...register(`detailContent.technicalGroups.${groupIndex}.items.${itemIndex}.name` as const)} />
+                        </div>
+                        <div>
+                          <label className="mb-2 block text-xs font-bold uppercase tracking-normal text-slate-500">Değer</label>
+                          <input className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm" placeholder="22" {...register(`detailContent.technicalGroups.${groupIndex}.items.${itemIndex}.value` as const)} />
+                        </div>
+                        <div>
+                          <label className="mb-2 block text-xs font-bold uppercase tracking-normal text-slate-500">Birim</label>
+                          <input className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm" placeholder="kW" {...register(`detailContent.technicalGroups.${groupIndex}.items.${itemIndex}.unit` as const)} />
+                        </div>
+                        <div>
+                          <label className="mb-2 block text-xs font-bold uppercase tracking-normal text-slate-500">Açıklama</label>
+                          <input className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm" placeholder="Opsiyonel teknik not" {...register(`detailContent.technicalGroups.${groupIndex}.items.${itemIndex}.description` as const)} />
+                        </div>
+                        <div>
+                          <label className="mb-2 block text-xs font-bold uppercase tracking-normal text-slate-500">Sıra</label>
+                          <input type="number" min={0} className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm" {...register(`detailContent.technicalGroups.${groupIndex}.items.${itemIndex}.sortOrder` as const, { valueAsNumber: true })} />
+                        </div>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <label className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700">
+                            <input type="checkbox" {...register(`detailContent.technicalGroups.${groupIndex}.items.${itemIndex}.isActive` as const)} />
+                            Aktif
+                          </label>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (!window.confirm("Bu teknik özellik silinsin mi?")) {
+                                return;
+                              }
+
+                              const nextGroups = [...technicalGroupValues];
+                              nextGroups[groupIndex] = {
+                                ...groupValue,
+                                items: items.filter((_, currentIndex) => currentIndex !== itemIndex)
+                              };
+                              setValue("detailContent.technicalGroups", nextGroups, {
+                                shouldDirty: true,
+                                shouldValidate: true
+                              });
+                            }}
+                            className="rounded-lg border border-red-200 px-3 py-2 text-xs font-bold text-red-700 transition hover:bg-red-50"
+                          >
+                            Sil
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const nextGroups = [...technicalGroupValues];
+                        nextGroups[groupIndex] = {
+                          ...groupValue,
+                          items: [...items, createTechnicalSpecItem(items.length + 1)]
+                        };
+                        setValue("detailContent.technicalGroups", nextGroups, {
+                          shouldDirty: true,
+                          shouldValidate: true
+                        });
+                      }}
+                      className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
+                    >
+                      <Plus className="h-4 w-4" aria-hidden />
+                      Bu gruba özellik ekle
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+            {technicalGroupFields.fields.length === 0 ? (
+              <div className="rounded-lg border border-dashed border-slate-300 bg-white px-4 py-6 text-center text-sm text-slate-600">
+                Henüz teknik özellik grubu yok. Üstteki teknik alanları doldurup “Alanlardan özellik üret” aksiyonunu kullanabilirsiniz.
+              </div>
+            ) : null}
+          </div>
         </div>
       </section>
 

@@ -74,6 +74,31 @@ const productDetailFaqSchema = z.object({
   answer: z.string().trim().min(10).max(1200)
 });
 
+const productSmartFeatureSchema = z.object({
+  title: z.string().trim().min(2).max(120),
+  description: z.string().trim().min(3).max(500),
+  iconName: z.string().trim().max(80).optional().or(z.literal("")),
+  isActive: z.boolean().default(true),
+  sortOrder: z.coerce.number().int().min(0).max(999).default(0)
+});
+
+const productTechnicalSpecItemSchema = z.object({
+  name: z.string().trim().min(1).max(120),
+  value: z.string().trim().min(1).max(255),
+  unit: z.string().trim().max(40).optional().or(z.literal("")),
+  description: z.string().trim().max(500).optional().or(z.literal("")),
+  isActive: z.boolean().default(true),
+  sortOrder: z.coerce.number().int().min(0).max(999).default(0)
+});
+
+const productTechnicalSpecGroupSchema = z.object({
+  title: z.string().trim().min(2).max(120),
+  description: z.string().trim().max(500).optional().or(z.literal("")),
+  isActive: z.boolean().default(true),
+  sortOrder: z.coerce.number().int().min(0).max(999).default(0),
+  items: z.array(productTechnicalSpecItemSchema).default([])
+});
+
 export const productDetailContentSchema = z
   .object({
     galleryItems: productDetailStringListSchema,
@@ -87,6 +112,8 @@ export const productDetailContentSchema = z
     useCases: productDetailStringListSchema,
     highlightsHeading: z.string().trim().max(120).optional().or(z.literal("")),
     highlights: productDetailStringListSchema,
+    smartFeatures: z.array(productSmartFeatureSchema).default([]),
+    technicalGroups: z.array(productTechnicalSpecGroupSchema).default([]),
     purchaseBenefits: productDetailStringListSchema,
     purchaseReadiness: z.array(productDetailTextPairSchema).default([]),
     decisionChecks: productDetailStringListSchema,

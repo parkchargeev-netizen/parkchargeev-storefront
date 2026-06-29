@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import type { ProductMediaModel } from "@/lib/mock-data";
 
@@ -103,7 +103,7 @@ function ProductGalleryMedia({
         ) : (
           <video
             src={media.url}
-            className="h-full w-full object-cover"
+            className="h-full w-full object-contain"
             controls
             playsInline
             preload="metadata"
@@ -121,7 +121,7 @@ function ProductGalleryMedia({
         fill
         unoptimized
         sizes="(min-width: 1024px) 360px, 90vw"
-        className="h-full w-full object-cover"
+        className="h-full w-full object-contain p-4"
       />
     </div>
   );
@@ -153,7 +153,7 @@ function ProductGalleryStageMedia({
     return (
       <video
         src={media.url}
-        className="absolute inset-0 h-full w-full object-cover"
+        className="absolute inset-0 h-full w-full object-contain bg-black"
         controls
         playsInline
         preload="metadata"
@@ -169,7 +169,7 @@ function ProductGalleryStageMedia({
       unoptimized
       priority={false}
       sizes="(min-width: 1024px) 760px, 92vw"
-      className="object-cover"
+      className="object-contain p-4"
     />
   );
 }
@@ -183,6 +183,7 @@ export function ProductGallery({
   deviceCaption = "Ölçekli cihaz temsili"
 }: ProductGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const galleryMedia =
     mediaItems?.length
       ? mediaItems
@@ -200,19 +201,70 @@ export function ProductGallery({
   const activeMedia = galleryMedia[activeIndex];
   const activeItem = activeMedia?.altText ?? items[activeIndex] ?? items[0];
   const hasRealMedia = Boolean(activeMedia);
+  const lightboxMedia =
+    lightboxIndex !== null && galleryMedia[lightboxIndex]?.mediaType === "image"
+      ? galleryMedia[lightboxIndex]
+      : undefined;
+  const imageIndexes = galleryMedia
+    .map((media, index) => (media.mediaType === "image" ? index : null))
+    .filter((index): index is number => index !== null);
+
+  useEffect(() => {
+    if (lightboxIndex === null) {
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setLightboxIndex(null);
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [lightboxIndex]);
+
+  function moveLightbox(direction: -1 | 1) {
+    if (lightboxIndex === null || imageIndexes.length <= 1) {
+      return;
+    }
+
+    const currentImagePosition = imageIndexes.indexOf(lightboxIndex);
+    const nextPosition =
+      (currentImagePosition + direction + imageIndexes.length) % imageIndexes.length;
+    setLightboxIndex(imageIndexes[nextPosition]);
+  }
 
   return (
     <div className="product-gallery-premium surface-card p-5">
       <div className="overflow-hidden rounded-lg bg-linear-to-br from-secondary-container/20 via-white to-primary/12 p-6">
         <div
-          className={`relative min-h-[340px] overflow-hidden rounded-lg bg-slate-950 ${
+          className={`relative min-h-[340px] overflow-hidden rounded-lg ${
             hasRealMedia
-              ? "product-gallery-stage--cover flex aspect-[4/3]"
+              ? "product-gallery-stage--contain grid aspect-[4/3] place-items-center bg-white"
               : "grid aspect-[4/3] px-6 py-7 text-white md:grid-cols-[1fr_0.8fr]"
           }`}
         >
           {activeMedia ? (
-            <ProductGalleryStageMedia media={activeMedia} productName={productName} />
+            activeMedia.mediaType === "image" ? (
+              <button
+                type="button"
+                onClick={() => setLightboxIndex(activeIndex)}
+                className="absolute inset-0 block h-full w-full cursor-zoom-in rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                aria-label={`${activeMedia.altText || productName} görselini büyüt`}
+              >
+                <ProductGalleryStageMedia media={activeMedia} productName={productName} />
+              </button>
+            ) : (
+              <ProductGalleryStageMedia media={activeMedia} productName={productName} />
+            )
           ) : null}
 
           {activeMedia ? null : (
@@ -279,7 +331,7 @@ export function ProductGallery({
                     fill
                     unoptimized
                     sizes="(min-width: 1024px) 120px, 24vw"
-                    className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                    className="h-full w-full object-contain p-2 transition duration-300 group-hover:scale-[1.02]"
                   />
                 ) : (
                   <ProductThumbnailFallback label={item.altText} />
@@ -292,6 +344,65 @@ export function ProductGallery({
           );
         })}
       </div>
+
+      {lightboxMedia ? (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${productName} büyütülmüş ürün görseli`}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/86 p-4 backdrop-blur-md"
+          onClick={() => setLightboxIndex(null)}
+        >
+          <button
+            type="button"
+            onClick={() => setLightboxIndex(null)}
+            className="absolute right-4 top-4 z-10 rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-sm font-bold text-white backdrop-blur transition hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
+          >
+            Kapat
+          </button>
+
+          {imageIndexes.length > 1 ? (
+            <>
+              <button
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  moveLightbox(-1);
+                }}
+                className="absolute left-4 top-1/2 z-10 hidden -translate-y-1/2 rounded-lg border border-white/20 bg-white/10 px-4 py-4 text-2xl font-bold text-white backdrop-blur transition hover:bg-white/20 sm:block"
+                aria-label="Önceki görsel"
+              >
+                ‹
+              </button>
+              <button
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  moveLightbox(1);
+                }}
+                className="absolute right-4 top-1/2 z-10 hidden -translate-y-1/2 rounded-lg border border-white/20 bg-white/10 px-4 py-4 text-2xl font-bold text-white backdrop-blur transition hover:bg-white/20 sm:block"
+                aria-label="Sonraki görsel"
+              >
+                ›
+              </button>
+            </>
+          ) : null}
+
+          <div
+            className="relative h-[84vh] w-[min(94vw,1180px)] overflow-hidden rounded-lg border border-white/15 bg-white shadow-[0_36px_120px_rgba(0,0,0,0.5)]"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <Image
+              src={lightboxMedia.url}
+              alt={lightboxMedia.altText || productName}
+              fill
+              unoptimized
+              sizes="94vw"
+              className="object-contain p-4"
+            />
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

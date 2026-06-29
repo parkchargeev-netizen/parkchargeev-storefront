@@ -3,6 +3,7 @@ import type { ProductMediaKind } from "@/lib/product-media";
 import { evChargingArticles } from "@/lib/ev-charging-articles";
 
 export type ProductSpec = {
+  groupName?: string;
   label: string;
   value: string;
 };
