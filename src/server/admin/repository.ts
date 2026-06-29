@@ -613,9 +613,9 @@ function mapAdminProductToPublicProduct(
     specRows.length > 0
       ? specRows.map((spec) => ({ groupName: spec.groupName, label: spec.label, value: spec.value }))
       : base?.specs ?? [];
-  const media: ProductMediaModel[] = mediaRows.map((item) => ({
+  const media: ProductMediaModel[] = mediaRows.map((item, index) => ({
     url: item.url,
-    altText: item.altText,
+    altText: item.altText || `${row.name} görsel ${index + 1}`,
     mediaType: inferProductMediaType(item.url, item.mediaType),
     isPrimary: item.isPrimary
   }));
@@ -629,6 +629,7 @@ function mapAdminProductToPublicProduct(
     name: row.name,
     category: getPublicCategoryLabel(categorySlugs, base),
     badge: getPublicProductBadge(tags, base),
+    tags: tags.length ? tags : base?.tags ?? [],
     summary: row.shortDescription || base?.summary || row.name,
     description: stripHtml(row.description) || base?.description || row.shortDescription,
     priceKurus,
@@ -1448,7 +1449,7 @@ async function writeProductCollections(
         productId,
         mediaType: item.mediaType ?? inferProductMediaType(item.url),
         url: item.url,
-        altText: item.altText,
+        altText: item.altText ?? "",
         isPrimary: item.isPrimary || index === 0,
         sortOrder: index
       }))

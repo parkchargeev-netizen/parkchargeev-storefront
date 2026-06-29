@@ -1147,7 +1147,7 @@ function normalizeProductRecord(
     id: item.id ?? randomUUID(),
     mediaType: item.mediaType ?? inferProductMediaType(item.url),
     url: item.url,
-    altText: item.altText,
+    altText: item.altText ?? "",
     isPrimary: primaryMedia ? primaryMedia.url === item.url : index === 0
   }));
 

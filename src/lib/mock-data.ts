@@ -40,6 +40,7 @@ export type ProductModel = {
   name: string;
   category: string;
   badge?: string;
+  tags?: string[];
   summary: string;
   description: string;
   priceKurus: number;

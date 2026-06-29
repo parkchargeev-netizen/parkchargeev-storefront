@@ -7,6 +7,7 @@ import { ProductGallery } from "@/components/shop/product-gallery";
 import { ProductCard } from "@/components/shop/product-card";
 import { ProductPurchasePanel } from "@/components/shop/product-purchase-panel";
 import { JsonLd } from "@/components/seo/json-ld";
+import { getProductCommerceBadges } from "@/lib/product-commerce-tags";
 import { getDisplayProductImageUrl } from "@/lib/product-media";
 import {
   getActiveProductSmartFeatures,
@@ -110,6 +111,14 @@ export default async function ProductDetailPage({
   const detailContent = getProductDetailContent(product);
   const smartFeatures = getActiveProductSmartFeatures(product);
   const technicalGroups = getActiveProductTechnicalGroups(product);
+  const commerceBadges = getProductCommerceBadges(product);
+  const technicalSpecs = technicalGroups.flatMap((group) =>
+    group.items.map((spec) => ({
+      label: spec.name,
+      value: [spec.value, spec.unit].filter(Boolean).join(" "),
+      description: spec.description
+    }))
+  );
   const storeProfile = getProductStoreProfile(product);
   const mediaItems = detailContent.galleryItems;
   const productImageUrl = getDisplayProductImageUrl(product.imageUrl);
@@ -119,44 +128,27 @@ export default async function ProductDetailPage({
     { name: product.name, path: `/urun/${product.slug}` }
   ]);
   const faqJsonLd = getFaqJsonLd(detailContent.faqs);
-  const renderSpecsCard = () => technicalGroups.length ? (
+  const renderSpecsCard = () => technicalSpecs.length ? (
     <div className="product-detail-spec-card surface-card p-8">
       <h2 className="text-3xl font-bold tracking-normal text-on-surface">
         {detailContent.specsHeading}
       </h2>
       <div className="mt-6 space-y-4">
-        {technicalGroups.map((group, groupIndex) => (
-          <article
-            key={`${group.title}-${groupIndex}`}
-            className="rounded-lg border border-outline-variant/35 bg-white/80 px-5 py-4"
+        {technicalSpecs.map((spec) => (
+          <div
+            key={`${spec.label}-${spec.value}`}
+            className="flex items-start justify-between gap-6 border-b border-outline-variant/30 pb-4"
           >
-            <h3 className="text-base font-bold text-on-surface">
-              {group.title}
-            </h3>
-            {group.description ? (
-              <p className="mt-2 text-sm leading-6 text-on-surface-variant">
-                {group.description}
-              </p>
-            ) : null}
-            <div className="mt-3 divide-y divide-outline-variant/25">
-              {group.items.map((spec) => (
-                <div
-                  key={`${group.title}-${spec.name}-${spec.value}`}
-                  className="grid gap-2 py-4 sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1fr)] sm:items-start"
-                >
-                  <span className="text-sm font-semibold text-on-surface-variant">{spec.name}</span>
-                  <span className="text-sm font-bold leading-6 text-on-surface sm:text-right">
-                    {[spec.value, spec.unit].filter(Boolean).join(" ")}
-                    {spec.description ? (
-                      <small className="mt-1 block text-xs font-medium leading-5 text-on-surface-variant">
-                        {spec.description}
-                      </small>
-                    ) : null}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </article>
+            <span className="text-sm text-on-surface-variant">{spec.label}</span>
+            <span className="max-w-[58%] text-right font-semibold leading-6 text-on-surface">
+              {spec.value}
+              {spec.description ? (
+                <small className="mt-1 block text-xs font-medium leading-5 text-on-surface-variant">
+                  {spec.description}
+                </small>
+              ) : null}
+            </span>
+          </div>
         ))}
       </div>
     </div>
@@ -219,6 +211,18 @@ export default async function ProductDetailPage({
             <span className="rounded-full bg-surface-container-low px-3 py-2 text-sm font-semibold text-primary">
               {product.stockLabel}
             </span>
+            {commerceBadges.map((badge) => (
+              <span
+                key={badge.label}
+                className={
+                  badge.tone === "success"
+                    ? "rounded-full bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-800"
+                    : "rounded-full bg-secondary-container px-3 py-2 text-sm font-semibold text-secondary"
+                }
+              >
+                {badge.label}
+              </span>
+            ))}
           </div>
 
           <h1 className="mt-6 text-3xl font-bold tracking-normal text-on-surface md:text-4xl">

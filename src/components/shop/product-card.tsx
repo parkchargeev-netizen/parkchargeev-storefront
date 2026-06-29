@@ -7,6 +7,7 @@ import { ProductCompareMarker } from "@/components/shop/product-compare-marker";
 import { ProductDevicePreview } from "@/components/shop/product-device-preview";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { formatPriceTRY } from "@/lib/format";
+import { getProductCommerceBadges } from "@/lib/product-commerce-tags";
 import type { ProductModel } from "@/lib/mock-data";
 import { getDisplayProductImageUrl } from "@/lib/product-media";
 import { getProductStoreProfile } from "@/lib/shop-merchandising";
@@ -107,10 +108,12 @@ function ProductFixedBadge({ badge }: { badge?: string }) {
 function ProductStatusRow({
   category,
   decisionBadge,
+  logisticsBadges = [],
   stockLabel
 }: {
   category: string;
   decisionBadge?: string;
+  logisticsBadges?: ReturnType<typeof getProductCommerceBadges>;
   stockLabel: string;
 }) {
   const isOutOfStock = stockLabel === "Stokta Yok";
@@ -122,6 +125,11 @@ function ProductStatusRow({
         {stockLabel}
       </StatusBadge>
       {decisionBadge ? <StatusBadge>{decisionBadge}</StatusBadge> : null}
+      {logisticsBadges.map((badge) => (
+        <StatusBadge key={badge.label} tone={badge.tone}>
+          {badge.label}
+        </StatusBadge>
+      ))}
     </div>
   );
 }
@@ -182,6 +190,7 @@ export function ProductCard({
 }: ProductCardProps) {
   const profile = getProductStoreProfile(product);
   const imageUrl = getDisplayProductImageUrl(product.imageUrl) ?? null;
+  const logisticsBadges = getProductCommerceBadges(product);
   const compactSpecs = [
     ["Güç", profile.powerTier],
     ["Saha", profile.installationMode],
@@ -217,6 +226,7 @@ export function ProductCard({
               <ProductStatusRow
                 category={product.category}
                 decisionBadge={profile.decisionBadge}
+                logisticsBadges={logisticsBadges}
                 stockLabel={product.stockLabel}
               />
 
@@ -276,6 +286,7 @@ export function ProductCard({
 
         <ProductStatusRow
           category={product.category}
+          logisticsBadges={logisticsBadges}
           stockLabel={product.stockLabel}
         />
 

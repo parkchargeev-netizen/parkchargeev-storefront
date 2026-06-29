@@ -798,9 +798,9 @@ export function ProductForm({
       detail: "Güç, faz, konnektör, IP, akıllı özellik ve kapsam maddeleri olmalı."
     },
     {
-      label: "Görsel + alt text",
-      ok: mediaValues.some((item) => cleanText(item.url) && cleanText(item.altText)),
-      detail: "En az bir görsel ve anlamli alt text girilmeli."
+      label: "Görsel",
+      ok: mediaValues.some((item) => cleanText(item.url)),
+      detail: "En az bir görsel URL gerekli; alt text opsiyonel SEO desteği sağlar."
     },
     {
       label: "SEO + AI",
@@ -841,7 +841,7 @@ export function ProductForm({
     {
       label: "Medya",
       detail: hasPrimaryMedia ? `${mediaValues.length} medya` : "Ana görsel bekleniyor",
-      ok: hasPrimaryMedia && mediaValues.some((item) => cleanText(item.altText)),
+      ok: hasPrimaryMedia,
       icon: ImagePlus
     },
     {
@@ -1970,8 +1970,8 @@ export function ProductForm({
           </div>
 
           <div>
-            <p className="mb-3 text-sm font-semibold text-slate-800">Vitrin rozetleri</p>
-            <ExampleHint>Örnek: Çok satan veya stokta rozetleri ürün kartında görünür.</ExampleHint>
+            <p className="mb-3 text-sm font-semibold text-slate-800">Vitrin ve kargo etiketleri</p>
+            <ExampleHint>Örnek: Çok Satan ana rozet olarak; Kargo bedava ve Yarın kargoda ürün kartı/detay etiketi olarak görünür.</ExampleHint>
             <div className="space-y-2">
               {productTagOptions.map((option) => (
                 <label key={option.value} className="flex items-center gap-3 rounded-lg bg-slate-50 px-4 py-3 text-sm text-slate-700">

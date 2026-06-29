@@ -40,7 +40,7 @@ export const productMediaSchema = z.object({
   id: z.string().optional(),
   mediaType: z.enum(["image", "video"]).default("image"),
   url: publicOrRemoteUrlSchema,
-  altText: z.string().trim().min(2).max(255),
+  altText: z.string().trim().max(255).optional().or(z.literal("")),
   isPrimary: z.boolean().default(false)
 });
 

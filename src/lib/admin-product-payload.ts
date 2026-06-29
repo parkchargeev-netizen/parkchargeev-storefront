@@ -137,7 +137,7 @@ function normalizeDetailContent(detailContent: unknown) {
 function normalizeMediaRows(value: unknown) {
   return filterRows(
     value,
-    (row) => hasAnyText(row, ["url", "altText"])
+    (row) => hasAnyText(row, ["url"])
   ).map((row) => {
     if (!row || typeof row !== "object") {
       return row;
