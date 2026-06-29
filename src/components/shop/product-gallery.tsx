@@ -388,9 +388,14 @@ export function ProductGallery({
             </>
           ) : null}
 
-          <div
-            className="relative h-[84vh] w-[min(94vw,1180px)] overflow-hidden rounded-lg border border-white/15 bg-white shadow-[0_36px_120px_rgba(0,0,0,0.5)]"
-            onClick={(event) => event.stopPropagation()}
+          <button
+            type="button"
+            className="relative h-[84vh] w-[min(94vw,1180px)] cursor-zoom-out overflow-hidden rounded-lg border border-white/15 bg-white shadow-[0_36px_120px_rgba(0,0,0,0.5)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
+            onClick={(event) => {
+              event.stopPropagation();
+              setLightboxIndex(null);
+            }}
+            aria-label="Büyütülmüş görseli küçült"
           >
             <Image
               src={lightboxMedia.url}
@@ -400,7 +405,7 @@ export function ProductGallery({
               sizes="94vw"
               className="object-contain p-4"
             />
-          </div>
+          </button>
         </div>
       ) : null}
     </div>

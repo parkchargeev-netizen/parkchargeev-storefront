@@ -287,6 +287,45 @@ function createTechnicalGroup(sortOrder: number, title = "Genel Bilgiler") {
   };
 }
 
+function createTechnicalGroupTemplate() {
+  return [
+    {
+      ...createTechnicalGroup(1, "Genel Bilgiler"),
+      description: "Ürünün temel sınıfı, kullanım alanı ve uyumluluk bilgileri.",
+      items: [
+        { ...createTechnicalSpecItem(1), name: "Ürün tipi", value: "AC duvar tipi şarj cihazı" },
+        { ...createTechnicalSpecItem(2), name: "Kullanım alanı", value: "Ev, site ve işletme" }
+      ]
+    },
+    {
+      ...createTechnicalGroup(2, "Elektriksel Özellikler"),
+      description: "Güç, faz, akım ve bağlantı değerleri.",
+      items: [
+        { ...createTechnicalSpecItem(1), name: "Maksimum güç", value: "22", unit: "kW" },
+        { ...createTechnicalSpecItem(2), name: "Faz yapısı", value: "Trifaz" },
+        { ...createTechnicalSpecItem(3), name: "Konnektör", value: "Type 2" }
+      ]
+    },
+    {
+      ...createTechnicalGroup(3, "Bağlantı ve Akıllı Özellikler"),
+      description: "Uzaktan yönetim, haberleşme ve kullanıcı doğrulama özellikleri.",
+      items: [
+        { ...createTechnicalSpecItem(1), name: "Wi-Fi", value: "Desteklenir" },
+        { ...createTechnicalSpecItem(2), name: "RFID", value: "Opsiyonel" },
+        { ...createTechnicalSpecItem(3), name: "OCPP", value: "Uyumlu" }
+      ]
+    },
+    {
+      ...createTechnicalGroup(4, "Güvenlik ve Koruma"),
+      description: "Saha güvenliği ve çevresel dayanım bilgileri.",
+      items: [
+        { ...createTechnicalSpecItem(1), name: "Koruma sınıfı", value: "IP54 / IP65" },
+        { ...createTechnicalSpecItem(2), name: "Kaçak akım koruması", value: "Desteklenir" }
+      ]
+    }
+  ];
+}
+
 function buildTechnicalGroupsFromSpecs(specs: ProductFormValues["specs"]) {
   const groupMap = new Map<string, ReturnType<typeof createTechnicalGroup>>();
 
@@ -1303,6 +1342,52 @@ export function ProductForm({
     }
   }
 
+  function addSmartFeatureFromTechnicalFields() {
+    const enabledLabels = [
+      hasWifiValue ? "Wi-Fi" : "",
+      hasRfidValue ? "RFID" : "",
+      has4gValue ? "4G" : "",
+      installRequiredValue ? "Kurulum desteği" : ""
+    ].filter(Boolean);
+
+    smartFeatureFields.append({
+      ...createSmartFeature(smartFeatureValues.length + 1),
+      title: enabledLabels[0] ?? "Yeni akıllı özellik",
+      description:
+        enabledLabels.length > 1
+          ? `${enabledLabels.join(", ")} özellikleriyle ürün detayında vurgulanır.`
+          : "Bu özelliğin kullanıcıya sağladığı faydayı yazın.",
+      iconName: hasWifiValue ? "wifi" : hasRfidValue ? "radio" : has4gValue ? "signal" : "sparkles"
+    });
+  }
+
+  function moveTechnicalSpecItem(groupIndex: number, itemIndex: number, direction: -1 | 1) {
+    const groupValue = technicalGroupValues[groupIndex] ?? createTechnicalGroup(groupIndex + 1);
+    const items = [...(groupValue.items ?? [])];
+    const nextIndex = itemIndex + direction;
+
+    if (nextIndex < 0 || nextIndex >= items.length) {
+      return;
+    }
+
+    const [movedItem] = items.splice(itemIndex, 1);
+    items.splice(nextIndex, 0, movedItem);
+
+    const nextGroups = [...technicalGroupValues];
+    nextGroups[groupIndex] = {
+      ...groupValue,
+      items: items.map((item, index) => ({
+        ...item,
+        sortOrder: index + 1
+      }))
+    };
+
+    setValue("detailContent.technicalGroups", nextGroups, {
+      shouldDirty: true,
+      shouldValidate: true
+    });
+  }
+
   const onSubmit = handleSubmit(async (values) => {
     setErrorMessage(null);
     setSuccessMessage(null);
@@ -2077,7 +2162,14 @@ export function ProductForm({
                 Kurulum gerekir
               </label>
             </div>
-            <ExampleHint>Seçimler teknik özellik ve satış metni üretiminde kullanılır.</ExampleHint>
+            <button
+              type="button"
+              onClick={addSmartFeatureFromTechnicalFields}
+              className="mt-3 inline-flex w-full items-center justify-center rounded-lg border border-emerald-200 bg-white px-3 py-2 text-sm font-bold text-emerald-800 transition hover:bg-emerald-50"
+            >
+              Seçimlerden akıllı özellik kartı ekle
+            </button>
+            <ExampleHint>Seçimler teknik özellik, satış metni ve aşağıdaki akıllı özellik kartları için kullanılabilir.</ExampleHint>
           </div>
         </div>
       </section>
@@ -2225,6 +2317,22 @@ export function ProductForm({
                     }}
                   />
                 </label>
+                <button
+                  type="button"
+                  disabled={index === 0}
+                  onClick={() => mediaFields.swap(index, index - 1)}
+                  className="rounded-full border border-slate-200 px-3 py-2 text-sm text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  Yukarı
+                </button>
+                <button
+                  type="button"
+                  disabled={index === mediaFields.fields.length - 1}
+                  onClick={() => mediaFields.swap(index, index + 1)}
+                  className="rounded-full border border-slate-200 px-3 py-2 text-sm text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  Aşağı
+                </button>
                 <button type="button" onClick={() => mediaFields.remove(index)} className="rounded-full border border-red-200 px-3 py-2 text-sm text-red-700">
                   Sil
                 </button>
@@ -2260,6 +2368,22 @@ export function ProductForm({
             >
               <Plus className="h-4 w-4" aria-hidden />
               Teknik Grup Ekle
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                if (
+                  technicalGroupValues.length > 0 &&
+                  !window.confirm("Mevcut teknik gruplar hazır şablonla değiştirilsin mi?")
+                ) {
+                  return;
+                }
+
+                technicalGroupFields.replace(createTechnicalGroupTemplate());
+              }}
+              className="inline-flex items-center justify-center gap-2 rounded-lg border border-primary/25 bg-primary/5 px-4 py-3 text-sm font-bold text-primary transition hover:bg-primary/10"
+            >
+              Hazır Teknik Şablon Yükle
             </button>
           </div>
         </div>
@@ -2330,7 +2454,7 @@ export function ProductForm({
             <div>
               <h3 className="text-base font-bold text-slate-950">Gruplu teknik özellikler</h3>
               <p className="mt-1 text-sm leading-6 text-slate-600">
-                Grup başlıkları ürün detayında accordion/kart düzeninde gösterilir.
+                Grup başlıkları ürün detayında tek sayfada, kart düzeninde ve tamamen görünür gösterilir.
               </p>
             </div>
             <p className="rounded-full bg-white px-3 py-1 text-xs font-bold text-slate-700">
@@ -2411,6 +2535,22 @@ export function ProductForm({
                           </label>
                           <button
                             type="button"
+                            disabled={itemIndex === 0}
+                            onClick={() => moveTechnicalSpecItem(groupIndex, itemIndex, -1)}
+                            className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold text-slate-600 disabled:cursor-not-allowed disabled:opacity-40"
+                          >
+                            Yukarı
+                          </button>
+                          <button
+                            type="button"
+                            disabled={itemIndex === items.length - 1}
+                            onClick={() => moveTechnicalSpecItem(groupIndex, itemIndex, 1)}
+                            className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold text-slate-600 disabled:cursor-not-allowed disabled:opacity-40"
+                          >
+                            Aşağı
+                          </button>
+                          <button
+                            type="button"
                             onClick={() => {
                               if (!window.confirm("Bu teknik özellik silinsin mi?")) {
                                 return;
@@ -2457,7 +2597,7 @@ export function ProductForm({
             })}
             {technicalGroupFields.fields.length === 0 ? (
               <div className="rounded-lg border border-dashed border-slate-300 bg-white px-4 py-6 text-center text-sm text-slate-600">
-                Henüz teknik özellik grubu yok. Üstteki teknik alanları doldurup “Alanlardan özellik üret” aksiyonunu kullanabilirsiniz.
+                Henüz teknik özellik grubu yok. “Teknik Grup Ekle” veya “Hazır Teknik Şablon Yükle” aksiyonunu kullanabilirsiniz.
               </div>
             ) : null}
           </div>

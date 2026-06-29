@@ -126,20 +126,19 @@ export default async function ProductDetailPage({
       </h2>
       <div className="mt-6 space-y-4">
         {technicalGroups.map((group, groupIndex) => (
-          <details
+          <article
             key={`${group.title}-${groupIndex}`}
-            className="rounded-lg border border-outline-variant/35 bg-white/80"
-            open={groupIndex === 0}
+            className="rounded-lg border border-outline-variant/35 bg-white/80 px-5 py-4"
           >
-            <summary className="cursor-pointer px-5 py-4 text-base font-bold text-on-surface">
+            <h3 className="text-base font-bold text-on-surface">
               {group.title}
-            </summary>
+            </h3>
             {group.description ? (
-              <p className="px-5 pb-2 text-sm leading-6 text-on-surface-variant">
+              <p className="mt-2 text-sm leading-6 text-on-surface-variant">
                 {group.description}
               </p>
             ) : null}
-            <div className="divide-y divide-outline-variant/25 px-5 pb-4">
+            <div className="mt-3 divide-y divide-outline-variant/25">
               {group.items.map((spec) => (
                 <div
                   key={`${group.title}-${spec.name}-${spec.value}`}
@@ -157,7 +156,7 @@ export default async function ProductDetailPage({
                 </div>
               ))}
             </div>
-          </details>
+          </article>
         ))}
       </div>
     </div>

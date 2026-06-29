@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import type { FormEvent } from "react";
+import type { FormEvent, ReactNode } from "react";
 import { useState } from "react";
 
 type FormState = {
@@ -65,6 +65,15 @@ function SubmitButton({ isSubmitting, label }: { isSubmitting: boolean; label: s
   );
 }
 
+function ExampleNote({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <div className="rounded-lg border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm text-emerald-950">
+      <p className="font-bold">{title}</p>
+      <div className="mt-1 leading-6 text-emerald-900/85">{children}</div>
+    </div>
+  );
+}
+
 export function BannerForm() {
   const { isSubmitting, message, submit } = useOperationForm();
 
@@ -87,18 +96,22 @@ export function BannerForm() {
   return (
     <form onSubmit={onSubmit} className="grid gap-3 rounded-lg border border-slate-200 bg-white p-4">
       <p className="text-sm font-bold text-slate-950">Banner ekle</p>
-      <input name="title" required placeholder="Başlık" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
-      <textarea name="subtitle" placeholder="Açıklama" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+      <ExampleNote title="Örnek banner">
+        Başlık: Ev ve işletmeler için akıllı şarj çözümleri | Yerleşim: home_hero |
+        Görsel URL: /images/home/hero-charger.jpg | Buton: Mağazayı incele -&gt; /magaza
+      </ExampleNote>
+      <input name="title" required placeholder="Ev ve işletmeler için akıllı şarj çözümleri" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+      <textarea name="subtitle" placeholder="AC/DC şarj cihazları, kurulum ve teknik destek tek merkezde." className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
       <div className="grid gap-3 md:grid-cols-2">
-        <input name="placement" defaultValue="home" placeholder="Yerleşim" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+        <input name="placement" defaultValue="home" placeholder="home, home_hero, store_top" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
         <select name="status" defaultValue="draft" className="rounded-lg border border-slate-300 px-3 py-2 text-sm">
           <option value="draft">Taslak</option>
           <option value="active">Aktif</option>
           <option value="archived">Arşiv</option>
         </select>
-        <input name="imageUrl" placeholder="Görsel URL" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
-        <input name="sortOrder" type="number" min="0" defaultValue="0" placeholder="Sıra" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
-        <input name="ctaLabel" placeholder="Buton metni" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+        <input name="imageUrl" placeholder="/images/home/hero-charger.jpg veya https://..." className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+        <input name="sortOrder" type="number" min="0" defaultValue="0" placeholder="Sıra: 0 önce görünür" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+        <input name="ctaLabel" placeholder="Mağazayı incele" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
         <input name="ctaHref" placeholder="/magaza" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
       </div>
       {message ? <p className="text-sm text-slate-600">{message}</p> : null}
@@ -129,10 +142,14 @@ export function CampaignForm() {
   return (
     <form onSubmit={onSubmit} className="grid gap-3 rounded-lg border border-slate-200 bg-white p-4">
       <p className="text-sm font-bold text-slate-950">Kampanya ekle</p>
-      <input name="name" required placeholder="Kampanya adı" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
-      <textarea name="description" placeholder="Açıklama" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+      <ExampleNote title="Örnek kampanya">
+        Yüzde: Yaz fırsatı, slug: yaz-firsati, indirim: %10 | Tutar: Kablo indirimi,
+        slug: kablo-indirimi, indirim: 1500 TL. Ürün/kategori ID alanları virgül ile ayrılır.
+      </ExampleNote>
+      <input name="name" required placeholder="Yaz fırsatı" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+      <textarea name="description" placeholder="Seçili şarj cihazlarında yaz dönemine özel indirim." className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
       <div className="grid gap-3 md:grid-cols-2">
-        <input name="slug" placeholder="slug" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+        <input name="slug" placeholder="yaz-firsati" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
         <select name="status" defaultValue="draft" className="rounded-lg border border-slate-300 px-3 py-2 text-sm">
           <option value="draft">Taslak</option>
           <option value="active">Aktif</option>
@@ -142,9 +159,9 @@ export function CampaignForm() {
           <option value="percent">Yüzde</option>
           <option value="amount">Tutar</option>
         </select>
-        <input name="discountValue" type="number" min="0" defaultValue="0" placeholder="İndirim değeri" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
-        <input name="productIds" placeholder="Ürün ID listesi, virgülle" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
-        <input name="categoryIds" placeholder="Kategori ID listesi, virgülle" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+        <input name="discountValue" type="number" min="0" defaultValue="0" placeholder="10 veya 1500" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+        <input name="productIds" placeholder="Ürün ID listesi: id-1, id-2" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+        <input name="categoryIds" placeholder="Kategori ID listesi: cat-1, cat-2" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
       </div>
       {message ? <p className="text-sm text-slate-600">{message}</p> : null}
       <SubmitButton isSubmitting={isSubmitting} label="Kampanya kaydet" />
@@ -171,11 +188,15 @@ export function MerchandisingSlotForm() {
   return (
     <form onSubmit={onSubmit} className="grid gap-3 rounded-lg border border-slate-200 bg-white p-4">
       <p className="text-sm font-bold text-slate-950">Vitrin ürünü ekle</p>
+      <ExampleNote title="Örnek vitrin slotu">
+        Slot: home_featured veya store_featured | Başlık: En çok tercih edilenler |
+        Ürün ID: vitrinde gösterilecek ürün | Sıra: küçük sayı önce gelir.
+      </ExampleNote>
       <div className="grid gap-3 md:grid-cols-2">
-        <input name="slotKey" defaultValue="home_featured" placeholder="Slot" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
-        <input name="title" placeholder="Başlık" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+        <input name="slotKey" defaultValue="home_featured" placeholder="home_featured, store_featured" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+        <input name="title" placeholder="En çok tercih edilenler" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
         <input name="productId" placeholder="Ürün ID" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
-        <input name="sortOrder" type="number" min="0" defaultValue="0" placeholder="Sıra" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+        <input name="sortOrder" type="number" min="0" defaultValue="0" placeholder="Sıra: 0 önce görünür" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
         <select name="isActive" defaultValue="true" className="rounded-lg border border-slate-300 px-3 py-2 text-sm">
           <option value="true">Aktif</option>
           <option value="false">Pasif</option>
