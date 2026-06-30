@@ -45,9 +45,16 @@ export function ProductPurchasePanel({
   const isOutOfStock = product.stockLabel === "Stokta Yok";
   const isAddDisabled = isOutOfStock || !isHydrated;
   const estimatedLineTotal = selectedOption.priceKurus * quantity;
-  const commerceBadges = getProductCommerceBadges(product);
-  const hasFreeShipping = product.tags?.includes("free_shipping") ?? false;
-  const hasShipsTomorrow = product.tags?.includes("ships_tomorrow") ?? false;
+  const explicitCommerceBadges = getProductCommerceBadges(product);
+  const commerceBadges =
+    explicitCommerceBadges.length > 0 || isOutOfStock
+      ? explicitCommerceBadges
+      : [
+          { label: "Kargo bedava", tone: "success" as const },
+          { label: "Yarın kargoda", tone: "primary" as const }
+        ];
+  const hasFreeShipping = commerceBadges.some((badge) => badge.label === "Kargo bedava");
+  const hasShipsTomorrow = commerceBadges.some((badge) => badge.label === "Yarın kargoda");
   const selectedVariant =
     product.variants?.find((variant) => variant.cableLength === cableOption) ??
     product.variants?.find((variant) => variant.isDefault) ??

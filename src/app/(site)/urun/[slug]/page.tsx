@@ -133,10 +133,17 @@ export default async function ProductDetailPage({
   const smartFeatures = getActiveProductSmartFeatures(product);
   const technicalGroups = getActiveProductTechnicalGroups(product);
   const commerceBadges = getProductCommerceBadges(product);
+  const displayCommerceBadges =
+    commerceBadges.length > 0 || product.stockLabel === "Stokta Yok"
+      ? commerceBadges
+      : [
+          { label: "Kargo bedava", tone: "success" as const },
+          { label: "Yarın kargoda", tone: "primary" as const }
+        ];
   const defaultVariant = product.variants?.find((variant) => variant.isDefault) ?? product.variants?.[0];
   const productSku = defaultVariant?.sku ?? product.slug.toUpperCase();
-  const hasFreeShipping = product.tags?.includes("free_shipping") ?? false;
-  const hasShipsTomorrow = product.tags?.includes("ships_tomorrow") ?? false;
+  const hasFreeShipping = displayCommerceBadges.some((badge) => badge.label === "Kargo bedava");
+  const hasShipsTomorrow = displayCommerceBadges.some((badge) => badge.label === "Yarın kargoda");
   const technicalSpecs = technicalGroups.flatMap((group) =>
     group.items.map((spec) => ({
       label: spec.name,
@@ -221,7 +228,7 @@ export default async function ProductDetailPage({
             mediaItems={product.media}
             featureLabels={detailContent.galleryFeatureLabels}
             deviceCaption={detailContent.galleryDeviceCaption}
-            commerceBadges={commerceBadges}
+            commerceBadges={displayCommerceBadges}
           />
           <div className="product-detail-desktop-under-gallery mt-5 hidden gap-4 lg:grid">
             {renderDescriptionCard()}
@@ -254,7 +261,7 @@ export default async function ProductDetailPage({
             <span className="product-detail-commerce-pill product-detail-commerce-pill--stock">
               {product.stockLabel}
             </span>
-            {commerceBadges.map((badge) => (
+            {displayCommerceBadges.map((badge) => (
               <span
                 key={badge.label}
                 className={
