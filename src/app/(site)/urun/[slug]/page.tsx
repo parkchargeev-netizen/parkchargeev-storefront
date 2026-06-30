@@ -17,6 +17,7 @@ import { ProductGallery } from "@/components/shop/product-gallery";
 import { ProductPurchasePanel } from "@/components/shop/product-purchase-panel";
 import { ProductReviews } from "@/components/shop/product-reviews";
 import { JsonLd } from "@/components/seo/json-ld";
+import { formatPriceTRY } from "@/lib/format";
 import { getProductCommerceBadges } from "@/lib/product-commerce-tags";
 import { getDisplayProductImageUrl } from "@/lib/product-media";
 import {
@@ -128,6 +129,7 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
   const productSku = defaultVariant?.sku ?? product.slug.toUpperCase();
   const storeProfile = getProductStoreProfile(product);
   const productImageUrl = getDisplayProductImageUrl(product.imageUrl);
+  const formattedPrice = formatPriceTRY(product.priceKurus);
   const descriptionHtml = formatProductDescriptionHtml(
     product.descriptionHtml ?? product.description,
     product.summary
@@ -140,108 +142,104 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
   const faqJsonLd = getFaqJsonLd(detailContent.faqs);
 
   return (
-    <main className="product-detail-page mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <main className="product-detail-commerce-page">
       <JsonLd data={[productJsonLd, breadcrumbJsonLd, faqJsonLd]} />
 
-      <nav className="mb-6 flex flex-wrap items-center gap-2 text-sm text-on-surface-variant" aria-label="Ürün yolu">
-        <Link href="/" className="transition hover:text-primary">
-          Ana Sayfa
-        </Link>
-        <span>/</span>
-        <Link href="/magaza" className="transition hover:text-primary">
-          Mağaza
-        </Link>
-        <span>/</span>
-        <span>{product.category}</span>
-        <span>/</span>
-        <span className="text-on-surface">{product.name}</span>
-      </nav>
+      <div className="product-commerce-shell">
+        <nav className="product-commerce-breadcrumb" aria-label="Ürün yolu">
+          <Link href="/">Ana Sayfa</Link>
+          <span>/</span>
+          <Link href="/magaza">Mağaza</Link>
+          <span>/</span>
+          <span>{product.category}</span>
+          <span>/</span>
+          <strong>{product.name}</strong>
+        </nav>
 
-      <section className="product-detail-hero-v2">
-        <div className="product-detail-gallery-column">
-          <ProductGallery
-            productName={product.name}
-            items={detailContent.galleryItems}
-            imageUrl={productImageUrl}
-            mediaItems={product.media}
-            featureLabels={detailContent.galleryFeatureLabels}
-            deviceCaption={detailContent.galleryDeviceCaption}
-          />
+        <section className="product-commerce-hero">
+          <div className="product-commerce-media">
+            <ProductGallery
+              productName={product.name}
+              items={detailContent.galleryItems}
+              imageUrl={productImageUrl}
+              mediaItems={product.media}
+              featureLabels={detailContent.galleryFeatureLabels}
+              deviceCaption={detailContent.galleryDeviceCaption}
+            />
+            <div className="product-commerce-proof-strip">
+              {detailContent.purchaseReadiness.slice(0, 3).map((item) => (
+                <div key={item.label}>
+                  <span>{item.label}</span>
+                  <strong>{item.value}</strong>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <aside id="satinal" className="product-commerce-buybox">
+            <div className="product-commerce-meta">
+              <span>ParkChargeEV seçkisi</span>
+              <span>Ürün kodu: {productSku}</span>
+            </div>
+
+            <div className="product-commerce-rating">
+              <strong>5/5</strong>
+              <span>Teknik kontrol, güvenli ödeme ve kurulum desteği</span>
+            </div>
+
+            <div className="product-commerce-badges">
+              {product.badge ? (
+                <span className="product-detail-commerce-pill product-detail-commerce-pill--primary">
+                  {product.badge}
+                </span>
+              ) : null}
+              <ProductCommerceBadges badges={commerceBadges} stockLabel={product.stockLabel} />
+            </div>
+
+            <h1>{product.name}</h1>
+            <p className="product-commerce-summary">{storeProfile.primaryFit}</p>
+
+            <div className="product-commerce-keyfacts">
+              {[
+                ["Güç", storeProfile.powerTier],
+                ["Uyum", storeProfile.connectorHint],
+                ["Kurulum", storeProfile.installationMode]
+              ].map(([label, value]) => (
+                <div key={label}>
+                  <span>{label}</span>
+                  <strong>{value}</strong>
+                </div>
+              ))}
+            </div>
+
+            <ProductPurchasePanel product={product} benefits={detailContent.purchaseBenefits} />
+          </aside>
+        </section>
+      </div>
+
+      <div className="product-commerce-content">
+        <ProductHighlightGrid product={product} detailContent={detailContent} />
+        <ProductTrustGrid detailContent={detailContent} />
+        <ProductSmartFeatures features={smartFeatures} />
+        <ProductTechnicalSpecs groups={technicalGroups} />
+        <ProductDescriptionBlock
+          product={product}
+          detailContent={detailContent}
+          descriptionHtml={descriptionHtml}
+        />
+        <ProductPolicies detailContent={detailContent} />
+        <ProductReviews productName={product.name} productSlug={product.slug} />
+        <ProductFaqs detailContent={detailContent} />
+        <ProductRelatedProducts detailContent={detailContent} relatedProducts={relatedProducts} />
+      </div>
+
+      <div className="product-commerce-mobile-dock" aria-label="Mobil satın alma kısayolu">
+        <div>
+          <span>{product.stockLabel}</span>
+          <strong>{formattedPrice}</strong>
         </div>
-
-        <aside className="product-detail-buybox-v2 surface-card">
-          <div className="flex flex-wrap items-center gap-2 text-xs font-bold uppercase tracking-normal text-on-surface-variant">
-            <span>Marka: ParkChargeEV seçkisi</span>
-            <span className="text-on-surface-variant/50">|</span>
-            <span>Ürün kodu: {productSku}</span>
-          </div>
-
-          <div className="mt-3 flex flex-wrap items-center gap-2">
-            <span className="rounded-full bg-amber-100 px-3 py-1.5 text-sm font-bold text-amber-700">
-              ★★★★★
-            </span>
-            <span className="text-sm font-semibold text-on-surface-variant">
-              Teknik kontrol, güvenli ödeme ve kurulum desteği
-            </span>
-          </div>
-
-          <div className="mt-4 flex flex-wrap items-center gap-2">
-            {product.badge ? (
-              <span className="product-detail-commerce-pill product-detail-commerce-pill--primary">
-                {product.badge}
-              </span>
-            ) : null}
-            <ProductCommerceBadges badges={commerceBadges} stockLabel={product.stockLabel} />
-          </div>
-
-          <h1 className="mt-5 text-3xl font-bold tracking-normal text-on-surface md:text-4xl">
-            {product.name}
-          </h1>
-          <p className="mt-4 text-base leading-7 text-on-surface-variant">
-            {storeProfile.primaryFit}
-          </p>
-
-          <div className="mt-5 grid gap-3 sm:grid-cols-3">
-            {[
-              ["Güç", storeProfile.powerTier],
-              ["Uyum", storeProfile.connectorHint],
-              ["Kurulum", storeProfile.installationMode]
-            ].map(([label, value]) => (
-              <div key={label} className="rounded-lg bg-surface-container-low px-4 py-3">
-                <p className="text-xs font-semibold uppercase tracking-normal text-on-surface-variant">
-                  {label}
-                </p>
-                <p className="mt-1 text-sm font-bold leading-5 text-on-surface">{value}</p>
-              </div>
-            ))}
-          </div>
-
-          <ProductPurchasePanel product={product} benefits={detailContent.purchaseBenefits} />
-
-          <div className="product-detail-readiness-strip mt-5">
-            {detailContent.purchaseReadiness.slice(0, 3).map((item) => (
-              <div key={item.label} className="product-detail-readiness-chip">
-                <span>{item.label}</span>
-                <strong>{item.value}</strong>
-              </div>
-            ))}
-          </div>
-        </aside>
-      </section>
-
-      <ProductHighlightGrid product={product} detailContent={detailContent} />
-      <ProductTrustGrid detailContent={detailContent} />
-      <ProductSmartFeatures features={smartFeatures} />
-      <ProductTechnicalSpecs groups={technicalGroups} />
-      <ProductDescriptionBlock
-        product={product}
-        detailContent={detailContent}
-        descriptionHtml={descriptionHtml}
-      />
-      <ProductPolicies detailContent={detailContent} />
-      <ProductReviews productName={product.name} productSlug={product.slug} />
-      <ProductFaqs detailContent={detailContent} />
-      <ProductRelatedProducts detailContent={detailContent} relatedProducts={relatedProducts} />
+        <a href="#satinal">Satın alma alanı</a>
+      </div>
     </main>
   );
 }

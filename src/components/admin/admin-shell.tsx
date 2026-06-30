@@ -180,181 +180,123 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
   const mobileQuickItems = items.slice(0, 8);
 
   return (
-    <div
-      className="admin-experience admin-enterprise-v2 admin-redesign-v3 min-h-screen bg-[#07120f] text-slate-950"
-      data-motion-scope
-    >
+    <div className="admin-experience admin-control-center min-h-screen text-slate-950" data-motion-scope>
       <AdminSessionGuard />
-      <div className="admin-ambient-layer" data-motion-loop="ambient" aria-hidden>
-        <span className="admin-ambient-layer__line admin-ambient-layer__line--one" />
-        <span className="admin-ambient-layer__line admin-ambient-layer__line--two" />
-        <span className="admin-ambient-layer__line admin-ambient-layer__line--three" />
-      </div>
+      <div className="admin-control-backdrop" aria-hidden />
 
-      <div className="relative mx-auto max-w-[1680px] px-4 py-5 lg:px-6">
-        <div className="grid gap-6 xl:grid-cols-[316px_minmax(0,1fr)]">
-          <aside className="hidden xl:block">
-            <div className="sticky top-5 space-y-4">
-              <section className="surface-card overflow-hidden border border-white/70 p-5">
-                <div className="rounded-lg bg-[#063326] p-5 text-white">
-                  <div className="flex items-center gap-3">
-                    <span className="grid h-12 w-12 place-items-center rounded-lg bg-white/[0.16] text-sm font-bold">
-                      {getAdminInitials(admin.fullName)}
-                    </span>
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold">{admin.fullName}</p>
-                      <p className="truncate text-xs text-white/76">{admin.email}</p>
-                    </div>
-                  </div>
-                  <div className="mt-5 flex flex-wrap gap-2">
-                    <span className="rounded-full bg-white px-3 py-1 text-xs font-bold text-[#063326]">
-                      {adminRoleLabels[admin.role]}
-                    </span>
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-white/[0.14] px-3 py-1 text-xs font-semibold text-white">
-                      <Database className="h-3.5 w-3.5" />
-                      {databaseEnabled ? "Canlı veri" : "Yerel veri"}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="mt-5 rounded-lg border border-emerald-100 bg-emerald-50/70 px-4 py-3 text-xs font-bold leading-5 text-[#063326]">
-                  Ürün, sipariş, stok ve site operasyonları tek panelden yönetilir.
-                </div>
-              </section>
-
-              <section className="surface-card border border-white/70 p-4">
-                <div className="flex items-center gap-2 px-2 text-xs font-bold uppercase tracking-normal text-slate-500">
-                  <Sparkles className="h-4 w-4" />
-                  Çalışma Alanı
-                </div>
-                <nav className="mt-4 space-y-5" aria-label="Admin modülleri">
-                  {moduleGroups.map((group) => {
-                    const visibleGroupItems = group.items.flatMap((href) => {
-                      const item = itemByHref.get(href);
-                      return item ? [item] : [];
-                    });
-
-                    if (visibleGroupItems.length === 0) {
-                      return null;
-                    }
-
-                    const GroupIcon = group.icon;
-
-                    return (
-                      <div key={group.label}>
-                        <p className="mb-2 flex items-center gap-2 px-2 text-xs font-bold uppercase tracking-normal text-slate-400">
-                          <GroupIcon className="h-3.5 w-3.5" />
-                          {group.label}
-                        </p>
-                        <div className="space-y-1.5">
-                          {visibleGroupItems.map((item) => {
-                            const Icon =
-                              navigationIconMap[item.href as keyof typeof navigationIconMap] ??
-                              LayoutDashboard;
-
-                            return (
-                              <AdminNavLink
-                                key={item.href}
-                                href={item.href}
-                                icon={<Icon className="h-4 w-4" />}
-                                label={item.label}
-                              />
-                            );
-                          })}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </nav>
-              </section>
-
-              <section className="surface-card border border-white/70 p-4">
-                <p className="text-xs font-bold uppercase tracking-normal text-slate-500">
-                  Hızlı panel
-                </p>
-                <div className="mt-3 grid gap-2">
-                  <AdminPrefetchLink
-                    href="/admin/teklifler"
-                    className="rounded-lg bg-emerald-50 px-4 py-3 text-sm font-bold text-[#063326] transition hover:bg-emerald-100"
-                  >
-                    Teklifleri önceliklendir
-                  </AdminPrefetchLink>
-                  <AdminPrefetchLink
-                    href="/admin/saha"
-                    className="rounded-lg bg-slate-100 px-4 py-3 text-sm font-bold text-slate-800 transition hover:bg-slate-200"
-                  >
-                    Saha planını aç
-                  </AdminPrefetchLink>
-                  <AdminLogoutButton />
-                </div>
-              </section>
+      <div className="admin-control-layout">
+        <aside className="admin-control-sidebar">
+          <div className="admin-control-brand">
+            <span>PC</span>
+            <div>
+              <strong>ParkChargeEV</strong>
+              <small>Commerce OS</small>
             </div>
-          </aside>
+          </div>
 
-          <main className="min-w-0 space-y-5" data-motion-scope>
-            <section className="surface-card border border-white/70 p-4 xl:hidden">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-normal text-[#063326]">
-                    ParkChargeEV Admin
+          <div className="admin-control-operator">
+            <span>{getAdminInitials(admin.fullName)}</span>
+            <div>
+              <strong>{admin.fullName}</strong>
+              <small>{admin.email}</small>
+            </div>
+          </div>
+
+          <div className="admin-control-status">
+            <span>{adminRoleLabels[admin.role]}</span>
+            <span>
+              <Database className="h-3.5 w-3.5" aria-hidden />
+              {databaseEnabled ? "Canlı veri" : "Yerel veri"}
+            </span>
+          </div>
+
+          <nav className="admin-control-nav" aria-label="Admin modülleri">
+            {moduleGroups.map((group) => {
+              const visibleGroupItems = group.items.flatMap((href) => {
+                const item = itemByHref.get(href);
+                return item ? [item] : [];
+              });
+
+              if (visibleGroupItems.length === 0) {
+                return null;
+              }
+
+              const GroupIcon = group.icon;
+
+              return (
+                <section key={group.label} className="admin-control-nav-group">
+                  <p>
+                    <GroupIcon className="h-3.5 w-3.5" aria-hidden />
+                    {group.label}
                   </p>
-                  <h1 className="mt-2 text-2xl font-bold tracking-normal text-slate-950">
-                    Kontrol merkezi
-                  </h1>
-                  <p className="mt-1 text-sm text-slate-600">{admin.fullName}</p>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-[#063326]">
-                    {adminRoleLabels[admin.role]}
-                  </span>
-                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-700">
-                    {databaseEnabled ? "Canlı veri" : "Yerel veri"}
-                  </span>
-                </div>
-              </div>
-              <nav className="mt-4 grid gap-2 sm:grid-cols-2" aria-label="Admin mobil modülleri">
-                {mobileQuickItems.map((item) => {
-                  const Icon =
-                    navigationIconMap[item.href as keyof typeof navigationIconMap] ??
-                    LayoutDashboard;
+                  <div>
+                    {visibleGroupItems.map((item) => {
+                      const Icon =
+                        navigationIconMap[item.href as keyof typeof navigationIconMap] ??
+                        LayoutDashboard;
 
-                  return (
-                    <AdminNavLink
-                      key={item.href}
-                      href={item.href}
-                      icon={<Icon className="h-4 w-4" />}
-                      label={item.label}
-                    />
-                  );
-                })}
-              </nav>
-              <div className="mt-4">
-                <AdminLogoutButton />
-              </div>
-            </section>
+                      return (
+                        <AdminNavLink
+                          key={item.href}
+                          href={item.href}
+                          icon={<Icon className="h-4 w-4" />}
+                          label={item.label}
+                        />
+                      );
+                    })}
+                  </div>
+                </section>
+              );
+            })}
+          </nav>
 
-            <section className="surface-card border border-white/70 px-5 py-4">
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                <div className="min-w-0">
-                  <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-normal text-[#0f8f6f]">
-                    <Search className="h-4 w-4" />
-                    Admin operasyonu
-                  </p>
-                  <h2 className="mt-2 text-2xl font-bold tracking-normal text-slate-950">
-                    Satış, saha, içerik ve güvenlik tek ekranda.
-                  </h2>
-                </div>
-                <AdminCommandMenu
-                  items={commandItems}
-                  roleLabel={adminRoleLabels[admin.role]}
-                  databaseEnabled={databaseEnabled}
+          <div className="admin-control-quick">
+            <p>
+              <Sparkles className="h-4 w-4" aria-hidden />
+              Hızlı işlemler
+            </p>
+            <AdminPrefetchLink href="/admin/urunler/yeni">Yeni ürün oluştur</AdminPrefetchLink>
+            <AdminPrefetchLink href="/admin/kampanyalar">Kampanya ve vitrin</AdminPrefetchLink>
+            <AdminPrefetchLink href="/admin/site">Site ayarlarını yönet</AdminPrefetchLink>
+            <AdminLogoutButton />
+          </div>
+        </aside>
+
+        <main className="admin-control-workspace" data-motion-scope>
+          <header className="admin-control-topbar">
+            <div>
+              <p>
+                <Search className="h-4 w-4" aria-hidden />
+                Operasyon merkezi
+              </p>
+              <h1>Ürün, sipariş, stok ve site yönetimi tek panelde.</h1>
+            </div>
+            <AdminCommandMenu
+              items={commandItems}
+              roleLabel={adminRoleLabels[admin.role]}
+              databaseEnabled={databaseEnabled}
+            />
+          </header>
+
+          <section className="admin-control-mobile-nav" aria-label="Admin mobil modülleri">
+            {mobileQuickItems.map((item) => {
+              const Icon =
+                navigationIconMap[item.href as keyof typeof navigationIconMap] ??
+                LayoutDashboard;
+
+              return (
+                <AdminNavLink
+                  key={item.href}
+                  href={item.href}
+                  icon={<Icon className="h-4 w-4" />}
+                  label={item.label}
                 />
-              </div>
-            </section>
+              );
+            })}
+          </section>
 
-            <div className="space-y-6 py-1">{children}</div>
-          </main>
-        </div>
+          <div className="admin-control-content">{children}</div>
+        </main>
       </div>
     </div>
   );

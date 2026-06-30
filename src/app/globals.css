@@ -12177,123 +12177,7 @@ body {
     linear-gradient(180deg, rgba(247, 252, 250, 0.98), rgba(236, 247, 242, 0.97)) !important;
 }
 
-.admin-enterprise-v2 {
-  --admin-ink: #071611;
-  --admin-muted: #55645e;
-  --admin-line: rgba(10, 74, 56, 0.12);
-  --admin-panel: rgba(255, 255, 255, 0.92);
-  --admin-panel-strong: rgba(255, 255, 255, 0.98);
-  --admin-green: #063326;
-  --admin-green-soft: #e9fbf3;
-  color: var(--admin-ink);
-  background:
-    radial-gradient(circle at 12% 0%, rgba(126, 236, 201, 0.18), transparent 30rem),
-    radial-gradient(circle at 88% 8%, rgba(14, 165, 132, 0.12), transparent 26rem),
-    linear-gradient(180deg, #f7fbf8 0%, #edf7f2 46%, #f6faf8 100%) !important;
-}
-
-.admin-enterprise-v2::before {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  content: "";
-  pointer-events: none;
-  background:
-    linear-gradient(rgba(6, 51, 38, 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(6, 51, 38, 0.04) 1px, transparent 1px);
-  background-size: 44px 44px;
-  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.85), transparent 78%);
-}
-
-.admin-enterprise-v2 :where(.surface-card, .ds-surface) {
-  border: 1px solid rgba(255, 255, 255, 0.82) !important;
-  border-radius: 8px !important;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 252, 250, 0.9)) !important;
-  box-shadow:
-    0 18px 54px rgba(6, 51, 38, 0.08),
-    0 1px 0 rgba(255, 255, 255, 0.95) inset !important;
-  backdrop-filter: blur(14px);
-}
-
-.admin-enterprise-v2 :where(.surface-card:hover, .ds-surface:hover) {
-  transform: translate3d(0, -1px, 0);
-  border-color: rgba(15, 143, 111, 0.24) !important;
-  box-shadow:
-    0 24px 70px rgba(6, 51, 38, 0.12),
-    0 0 0 1px rgba(126, 236, 201, 0.08) inset !important;
-}
-
-.admin-enterprise-v2 :where(input:not([type="checkbox"]):not([type="radio"]), textarea, select) {
-  min-height: 42px;
-  border-radius: 8px !important;
-  border-color: rgba(15, 23, 42, 0.14) !important;
-  background: rgba(255, 255, 255, 0.94) !important;
-  color: #071611 !important;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) inset;
-}
-
-.admin-enterprise-v2 :where(input, textarea, select):focus {
-  outline: 3px solid rgba(16, 185, 129, 0.18) !important;
-  border-color: rgba(5, 150, 105, 0.55) !important;
-}
-
-.admin-enterprise-v2 :where(table) {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-.admin-enterprise-v2 :where(th) {
-  color: #475569;
-  font-size: 0.75rem;
-  font-weight: 800;
-  letter-spacing: 0;
-  text-transform: uppercase;
-  background: rgba(248, 250, 252, 0.86);
-}
-
-.admin-enterprise-v2 :where(td, th) {
-  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
-}
-
-.admin-enterprise-v2 :where(a, button) {
-  transition:
-    transform 180ms ease,
-    border-color 180ms ease,
-    background-color 180ms ease,
-    box-shadow 180ms ease,
-    color 180ms ease;
-}
-
-/* Product detail v2: marketplace-familiar, EV-specific and fast. */
-.product-detail-page {
-  position: relative;
-}
-
-.product-detail-hero-v2 {
-  display: grid;
-  gap: clamp(1.25rem, 2vw, 2.5rem);
-  align-items: start;
-}
-
-@media (min-width: 1024px) {
-  .product-detail-hero-v2 {
-    grid-template-columns: minmax(0, 1.08fr) minmax(380px, 0.82fr);
-  }
-}
-
-.product-detail-buybox-v2 {
-  position: sticky;
-  top: 6.5rem;
-  padding: clamp(1.25rem, 2.4vw, 2rem);
-  border: 1px solid rgba(6, 51, 38, 0.12);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 253, 250, 0.94));
-  box-shadow:
-    0 24px 74px rgba(6, 51, 38, 0.1),
-    0 1px 0 rgba(255, 255, 255, 0.95) inset;
-}
+/* Shared PDP sections for the rebuilt commerce product page. */
 
 .product-detail-section {
   margin-top: clamp(1.5rem, 3vw, 3rem);
@@ -12524,167 +12408,6 @@ body {
   border: 1px solid rgba(6, 51, 38, 0.1);
 }
 
-@media (max-width: 1023px) {
-  .product-detail-buybox-v2 {
-    position: static;
-  }
-}
-
-.admin-enterprise-v2 :where(button:not(:disabled):hover, a:hover) {
-  transform: translate3d(0, -1px, 0);
-}
-
-.admin-enterprise-v2 :where([aria-current="page"]) {
-  box-shadow:
-    0 12px 34px rgba(6, 51, 38, 0.12),
-    0 0 0 1px rgba(16, 185, 129, 0.18) inset;
-}
-
-.admin-enterprise-v2 :where(.ds-page-header) {
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(237, 251, 245, 0.84)),
-    radial-gradient(circle at 92% 8%, rgba(126, 236, 201, 0.24), transparent 18rem);
-  padding: clamp(1.25rem, 2vw, 2rem);
-  box-shadow: 0 18px 54px rgba(6, 51, 38, 0.08);
-}
-
-.admin-enterprise-v2 :where(.ds-page-title) {
-  max-width: 860px;
-  font-size: clamp(2rem, 4vw, 3.8rem);
-  line-height: 1.02;
-  letter-spacing: 0;
-}
-
-.admin-enterprise-v2 :where(.ds-eyebrow) {
-  color: #047857;
-  letter-spacing: 0;
-}
-
-.admin-redesign-v3 {
-  --admin-v3-ink: #07120f;
-  --admin-v3-muted: #63756f;
-  --admin-v3-line: rgba(10, 42, 34, 0.14);
-  --admin-v3-accent: #00a878;
-  --admin-v3-accent-strong: #063326;
-  background:
-    radial-gradient(circle at 9% 4%, rgba(0, 255, 178, 0.18), transparent 24rem),
-    radial-gradient(circle at 88% 0%, rgba(56, 189, 248, 0.14), transparent 30rem),
-    linear-gradient(180deg, #07120f 0, #0a1c17 18rem, #edf6f2 18.1rem, #f6faf8 100%) !important;
-}
-
-.admin-redesign-v3::before {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  content: "";
-  pointer-events: none;
-  background:
-    linear-gradient(rgba(126, 236, 201, 0.09) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(126, 236, 201, 0.07) 1px, transparent 1px),
-    linear-gradient(118deg, transparent 0 26%, rgba(126, 236, 201, 0.18) 26.1% 26.28%, transparent 26.5% 68%, rgba(56, 189, 248, 0.12) 68.1% 68.24%, transparent 68.5%);
-  background-size: 58px 58px, 58px 58px, 100% 100%;
-  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.92), transparent 68%);
-}
-
-.admin-redesign-v3 :where(.surface-card, .ds-surface) {
-  border: 1px solid rgba(8, 47, 37, 0.12) !important;
-  border-radius: 8px !important;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(244, 250, 247, 0.94)) !important;
-  box-shadow:
-    0 22px 70px rgba(2, 28, 22, 0.12),
-    0 0 0 1px rgba(255, 255, 255, 0.9) inset !important;
-}
-
-.admin-redesign-v3 :where(.surface-card:hover, .ds-surface:hover) {
-  transform: translate3d(0, -2px, 0);
-  border-color: rgba(0, 168, 120, 0.25) !important;
-  box-shadow:
-    0 28px 90px rgba(2, 28, 22, 0.16),
-    0 0 0 1px rgba(126, 236, 201, 0.16) inset !important;
-}
-
-.admin-redesign-v3 aside .surface-card {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(237, 250, 244, 0.9)) !important;
-}
-
-.admin-redesign-v3 aside .surface-card:first-child > .rounded-lg:first-child,
-.admin-redesign-v3 .surface-card .bg-\[\#063326\] {
-  background:
-    radial-gradient(circle at 10% 0%, rgba(126, 236, 201, 0.28), transparent 18rem),
-    linear-gradient(135deg, #051b15, #063326 52%, #0b4b39) !important;
-  box-shadow: 0 20px 54px rgba(4, 30, 23, 0.22);
-}
-
-.admin-redesign-v3 :where(.ds-page-header) {
-  border: 1px solid rgba(126, 236, 201, 0.22);
-  background:
-    radial-gradient(circle at 88% 12%, rgba(126, 236, 201, 0.28), transparent 20rem),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(231, 248, 240, 0.94)) !important;
-  box-shadow: 0 30px 90px rgba(2, 28, 22, 0.16);
-}
-
-.admin-redesign-v3 :where(.ds-page-title) {
-  color: #06120f;
-  text-wrap: balance;
-}
-
-.admin-redesign-v3 :where(input:not([type="checkbox"]):not([type="radio"]), textarea, select) {
-  border-color: rgba(15, 41, 34, 0.18) !important;
-  background: rgba(255, 255, 255, 0.98) !important;
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.9) inset,
-    0 10px 28px rgba(2, 28, 22, 0.04);
-}
-
-.admin-redesign-v3 :where(input, textarea, select):focus {
-  outline: 3px solid rgba(0, 168, 120, 0.2) !important;
-  border-color: rgba(0, 168, 120, 0.62) !important;
-}
-
-.admin-redesign-v3 :where(table) {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 251, 249, 0.96));
-}
-
-.admin-redesign-v3 :where(th) {
-  background: linear-gradient(180deg, #ecf8f3, #e4f2ed) !important;
-  color: #27433a !important;
-}
-
-.admin-redesign-v3 :where(tbody tr:hover) {
-  background: rgba(219, 251, 239, 0.55) !important;
-}
-
-.admin-redesign-v3 :where([aria-current="page"]) {
-  background:
-    linear-gradient(135deg, rgba(6, 51, 38, 0.96), rgba(0, 126, 89, 0.92)) !important;
-  color: #ffffff !important;
-  box-shadow:
-    0 16px 40px rgba(6, 51, 38, 0.24),
-    0 0 0 1px rgba(126, 236, 201, 0.28) inset !important;
-}
-
-.admin-redesign-v3 :where([aria-current="page"] svg) {
-  color: #ffffff !important;
-}
-
-.admin-redesign-v3 :where(button, a) {
-  will-change: transform;
-}
-
-@media (max-width: 1023px) {
-  .admin-enterprise-v2 :where(.ds-page-title) {
-    font-size: clamp(1.8rem, 8vw, 2.7rem);
-  }
-
-  .admin-enterprise-v2 :where(.surface-card, .ds-surface) {
-    border-radius: 8px !important;
-  }
-}
-
 .admin-login-experience > :not(.admin-ambient-layer) {
   position: relative;
   z-index: 1;
@@ -12716,6 +12439,554 @@ body {
   opacity: 0;
   background: linear-gradient(90deg, transparent, rgba(15, 143, 111, 0.58), rgba(126, 236, 201, 0.9), transparent);
   box-shadow: 0 0 18px rgba(126, 236, 201, 0.34);
+}
+
+/* Product commerce v3: rebuilt PDP with marketplace clarity and EV-specific trust. */
+.product-detail-commerce-page {
+  position: relative;
+  padding: clamp(1rem, 2vw, 1.75rem);
+  background:
+    radial-gradient(circle at 12% 0%, rgba(126, 236, 201, 0.18), transparent 28rem),
+    radial-gradient(circle at 88% 8%, rgba(56, 189, 248, 0.12), transparent 32rem),
+    linear-gradient(180deg, rgba(241, 248, 245, 0.72), rgba(248, 252, 250, 0.96) 34rem, #f7fbf9);
+}
+
+.product-commerce-shell,
+.product-commerce-content {
+  width: min(100%, 1440px);
+  margin-inline: auto;
+}
+
+.product-commerce-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  align-items: center;
+  margin-bottom: clamp(1rem, 2vw, 1.5rem);
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.product-commerce-breadcrumb a {
+  color: #0f766e;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.product-commerce-breadcrumb strong {
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.product-commerce-hero {
+  display: grid;
+  gap: clamp(1rem, 2.5vw, 2rem);
+  align-items: start;
+}
+
+@media (min-width: 1100px) {
+  .product-commerce-hero {
+    grid-template-columns: minmax(0, 1.12fr) minmax(410px, 0.88fr);
+  }
+}
+
+.product-commerce-media .product-gallery-premium {
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(243, 249, 246, 0.95)) !important;
+  box-shadow:
+    0 30px 90px rgba(15, 23, 42, 0.08),
+    0 1px 0 rgba(255, 255, 255, 0.95) inset !important;
+}
+
+.product-commerce-proof-strip {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+@media (min-width: 760px) {
+  .product-commerce-proof-strip {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.product-commerce-proof-strip > div {
+  min-height: 5.4rem;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.88);
+  padding: 1rem;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.05);
+}
+
+.product-commerce-proof-strip span,
+.product-commerce-keyfacts span,
+.product-commerce-mobile-dock span {
+  display: block;
+  color: #64748b;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.product-commerce-proof-strip strong,
+.product-commerce-keyfacts strong {
+  display: block;
+  margin-top: 0.35rem;
+  color: #0f172a;
+  font-size: 0.98rem;
+  line-height: 1.35;
+}
+
+.product-commerce-buybox {
+  position: sticky;
+  top: 6.25rem;
+  overflow: hidden;
+  border: 1px solid rgba(6, 51, 38, 0.14);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(126, 236, 201, 0.24), transparent 16rem),
+    linear-gradient(180deg, #ffffff, #f7fbf9);
+  padding: clamp(1rem, 2vw, 1.6rem);
+  box-shadow:
+    0 34px 100px rgba(6, 51, 38, 0.13),
+    0 0 0 1px rgba(255, 255, 255, 0.88) inset;
+}
+
+@media (max-width: 1099px) {
+  .product-commerce-buybox {
+    position: static;
+  }
+}
+
+.product-commerce-meta,
+.product-commerce-rating,
+.product-commerce-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.product-commerce-meta span {
+  border-radius: 999px;
+  background: #eef7f3;
+  padding: 0.45rem 0.7rem;
+  color: #0f513f;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.product-commerce-rating {
+  margin-top: 1rem;
+}
+
+.product-commerce-rating strong {
+  border-radius: 999px;
+  background: #fef3c7;
+  padding: 0.42rem 0.7rem;
+  color: #92400e;
+  font-size: 0.9rem;
+}
+
+.product-commerce-rating span {
+  color: #475569;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.product-commerce-badges {
+  margin-top: 1rem;
+}
+
+.product-commerce-buybox h1 {
+  margin-top: 1.2rem;
+  color: #06120f;
+  font-size: clamp(2rem, 3.4vw, 3.55rem);
+  font-weight: 900;
+  line-height: 1.02;
+  letter-spacing: 0;
+  text-wrap: balance;
+}
+
+.product-commerce-summary {
+  margin-top: 1rem;
+  color: #475569;
+  font-size: 1.02rem;
+  line-height: 1.7;
+}
+
+.product-commerce-keyfacts {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .product-commerce-keyfacts {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.product-commerce-keyfacts > div {
+  border: 1px solid rgba(6, 51, 38, 0.09);
+  border-radius: 8px;
+  background: rgba(242, 248, 245, 0.84);
+  padding: 0.9rem;
+}
+
+.product-commerce-content {
+  margin-top: clamp(1.25rem, 3vw, 2.5rem);
+}
+
+.product-commerce-content .product-detail-section {
+  border-color: rgba(15, 23, 42, 0.08);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 251, 249, 0.94));
+  box-shadow: 0 22px 70px rgba(15, 23, 42, 0.07);
+}
+
+.product-commerce-mobile-dock {
+  position: fixed;
+  right: 0.85rem;
+  bottom: 0.85rem;
+  left: 0.85rem;
+  z-index: 45;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 1px solid rgba(6, 51, 38, 0.16);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.96);
+  padding: 0.8rem;
+  box-shadow: 0 24px 80px rgba(6, 51, 38, 0.18);
+  backdrop-filter: blur(16px);
+}
+
+.product-commerce-mobile-dock strong {
+  display: block;
+  margin-top: 0.2rem;
+  color: #06120f;
+  font-size: 1rem;
+}
+
+.product-commerce-mobile-dock a {
+  display: inline-flex;
+  min-height: 2.8rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: #063326;
+  padding: 0.75rem 1rem;
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+@media (max-width: 760px) {
+  .product-detail-commerce-page {
+    padding-bottom: 5.6rem;
+  }
+
+  .product-commerce-mobile-dock {
+    display: flex;
+  }
+}
+
+/* Admin control center v4: rebuilt SaaS shell, independent from the previous admin skin. */
+.admin-control-center {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 6% 0%, rgba(34, 197, 94, 0.16), transparent 26rem),
+    radial-gradient(circle at 96% 0%, rgba(14, 165, 233, 0.12), transparent 30rem),
+    linear-gradient(135deg, #06120f 0 18rem, #eef6f2 18.05rem, #f8fbfa 100%);
+}
+
+.admin-control-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(126, 236, 201, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(126, 236, 201, 0.055) 1px, transparent 1px),
+    linear-gradient(120deg, transparent 0 28%, rgba(126, 236, 201, 0.14) 28.1% 28.22%, transparent 28.34%);
+  background-size: 64px 64px, 64px 64px, 100% 100%;
+  mask-image: linear-gradient(180deg, black 0 22rem, transparent 70%);
+}
+
+.admin-control-layout {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: clamp(1rem, 2vw, 1.5rem);
+  width: min(100%, 1760px);
+  margin-inline: auto;
+  padding: clamp(0.85rem, 1.6vw, 1.35rem);
+}
+
+@media (min-width: 1180px) {
+  .admin-control-layout {
+    grid-template-columns: 292px minmax(0, 1fr);
+  }
+}
+
+.admin-control-sidebar {
+  display: none;
+}
+
+@media (min-width: 1180px) {
+  .admin-control-sidebar {
+    position: sticky;
+    top: 1rem;
+    display: flex;
+    height: calc(100vh - 2rem);
+    flex-direction: column;
+    gap: 1rem;
+    overflow-y: auto;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(126, 236, 201, 0.18), transparent 18rem),
+      linear-gradient(180deg, rgba(7, 18, 15, 0.98), rgba(4, 12, 10, 0.96));
+    padding: 1rem;
+    box-shadow: 0 28px 90px rgba(2, 8, 7, 0.24);
+  }
+}
+
+.admin-control-brand,
+.admin-control-operator {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+.admin-control-brand > span,
+.admin-control-operator > span {
+  display: grid;
+  width: 2.8rem;
+  height: 2.8rem;
+  place-items: center;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #d1fae5;
+  font-weight: 900;
+}
+
+.admin-control-brand strong,
+.admin-control-operator strong {
+  display: block;
+  color: #ffffff;
+  font-size: 0.98rem;
+  line-height: 1.2;
+}
+
+.admin-control-brand small,
+.admin-control-operator small {
+  display: block;
+  margin-top: 0.15rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.78rem;
+}
+
+.admin-control-operator {
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 0.85rem;
+}
+
+.admin-control-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.admin-control-status span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.45rem 0.65rem;
+  color: #dcfce7;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.admin-control-nav {
+  display: grid;
+  gap: 1rem;
+}
+
+.admin-control-nav-group > p,
+.admin-control-quick > p {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 0.5rem;
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.admin-control-nav-group > div {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.admin-control-center .admin-control-sidebar a[aria-current="page"],
+.admin-control-center .admin-control-mobile-nav a[aria-current="page"] {
+  background: linear-gradient(135deg, #ffffff, #dffcef) !important;
+  color: #063326 !important;
+}
+
+.admin-control-center .admin-control-sidebar a {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: rgba(255, 255, 255, 0.82) !important;
+}
+
+.admin-control-center .admin-control-sidebar a:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+.admin-control-quick {
+  margin-top: auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 1rem;
+}
+
+.admin-control-quick a,
+.admin-control-quick button {
+  display: flex;
+  width: 100%;
+  min-height: 2.65rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 0.7rem 0.9rem;
+  color: #ffffff;
+  font-size: 0.84rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.admin-control-quick > * + * {
+  margin-top: 0.5rem;
+}
+
+.admin-control-workspace {
+  min-width: 0;
+}
+
+.admin-control-topbar {
+  display: grid;
+  gap: 1rem;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 98% 0%, rgba(126, 236, 201, 0.24), transparent 20rem),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(238, 250, 244, 0.94));
+  padding: clamp(1rem, 2vw, 1.35rem);
+  box-shadow: 0 28px 80px rgba(2, 28, 22, 0.14);
+}
+
+@media (min-width: 980px) {
+  .admin-control-topbar {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+}
+
+.admin-control-topbar p {
+  display: flex;
+  gap: 0.45rem;
+  align-items: center;
+  color: #047857;
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.admin-control-topbar h1 {
+  margin-top: 0.35rem;
+  color: #06120f;
+  font-size: clamp(1.7rem, 3vw, 2.75rem);
+  font-weight: 900;
+  line-height: 1.04;
+  letter-spacing: 0;
+  text-wrap: balance;
+}
+
+.admin-control-mobile-nav {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+@media (min-width: 720px) {
+  .admin-control-mobile-nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1180px) {
+  .admin-control-mobile-nav {
+    display: none;
+  }
+}
+
+.admin-control-content {
+  margin-top: 1rem;
+}
+
+.admin-control-center :where(.surface-card, .ds-surface) {
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+  border-radius: 8px !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 251, 249, 0.96)) !important;
+  box-shadow:
+    0 20px 70px rgba(15, 23, 42, 0.08),
+    0 1px 0 rgba(255, 255, 255, 0.96) inset !important;
+}
+
+.admin-control-center :where(.surface-card:hover, .ds-surface:hover) {
+  transform: none;
+  border-color: rgba(4, 120, 87, 0.2) !important;
+}
+
+.admin-control-center :where(input:not([type="checkbox"]):not([type="radio"]), textarea, select) {
+  min-height: 42px;
+  border-radius: 8px !important;
+  border-color: rgba(15, 23, 42, 0.13) !important;
+  background: #ffffff !important;
+  color: #071611 !important;
+}
+
+.admin-control-center :where(input, textarea, select):focus {
+  outline: 3px solid rgba(16, 185, 129, 0.18) !important;
+  border-color: rgba(5, 150, 105, 0.55) !important;
+}
+
+.admin-control-center :where(th) {
+  background: #f1f5f9 !important;
+  color: #334155 !important;
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.admin-control-center :where(td, th) {
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
 }
 
 .admin-ambient-layer__line--one {

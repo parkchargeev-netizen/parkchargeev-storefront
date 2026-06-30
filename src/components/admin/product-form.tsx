@@ -1582,14 +1582,27 @@ export function ProductForm({
               </a>
             ))}
           </div>
-          <button
-            type="submit"
-            disabled={!isHydrated || isSubmitting}
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:opacity-70"
-          >
-            <Save className="h-4 w-4" aria-hidden />
-            {isSubmitting ? "Kaydediliyor..." : "Kaydet"}
-          </button>
+          <div className="flex flex-col gap-2 sm:flex-row xl:justify-end">
+            {cleanText(currentSlug) ? (
+              <a
+                href={`/urun/${cleanText(currentSlug)}`}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center justify-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-5 py-3 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-100"
+              >
+                <LinkIcon className="h-4 w-4" aria-hidden />
+                Sitede önizle
+              </a>
+            ) : null}
+            <button
+              type="submit"
+              disabled={!isHydrated || isSubmitting}
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:opacity-70"
+            >
+              <Save className="h-4 w-4" aria-hidden />
+              {isSubmitting ? "Kaydediliyor..." : "Kaydet"}
+            </button>
+          </div>
         </div>
       </div>
       <fieldset
