@@ -25,6 +25,7 @@
     "db:enterprise-admin": "node scripts/apply-enterprise-admin-migration.mjs",
     "db:inventory-idempotency": "node scripts/apply-inventory-idempotency-migration.mjs",
     "db:product-reviews": "node scripts/apply-product-reviews-migration.mjs",
+    "db:product-bluetooth": "node scripts/apply-product-bluetooth-migration.mjs",
     "db:site-settings": "node scripts/ensure-site-settings.mjs",
     "db:paytr-callback": "node scripts/apply-paytr-callback-migration.mjs",
     "db:media-assets": "node scripts/ensure-media-assets.mjs",

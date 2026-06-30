@@ -53,7 +53,7 @@ export const adminRevenuePlays: PanelActionCard[] = [
   },
   {
     label: "Ticari lokasyon yatirimcisi",
-    detail: "DC veya çoklu AC saha için trafo, enerji kapasitesi ve ROI ön fizibilitesi istenir.",
+    detail: "DC veya coklu AC saha için trafo, enerji kapasitesi ve ROI on fizibilitesi istenir.",
     signal: "Fizibilite",
     href: "/admin/saha",
     tone: "danger"
@@ -85,8 +85,8 @@ export const adminOpsChecklist = [
 
 export const customerSelfServiceCards: PanelActionCard[] = [
   {
-    label: "Doğru cihazı bul",
-    detail: "Araç, kullanım alanı, faz ve günlük ihtiyaca göre en uygun wallbox seçilir.",
+    label: "Dogru cihazı bul",
+    detail: "Araç, kullanım alanı, faz ve günlük ihtiyaca göre en uygun wallbox secilir.",
     signal: "Ürün secici",
     href: "/urun-secici",
     tone: "success"
@@ -94,7 +94,7 @@ export const customerSelfServiceCards: PanelActionCard[] = [
   {
     label: "Keşif uygunluğunu kontrol et",
     detail: "Türkiye'nin 81 ilinden keşif ve kurulum talebi oluşturun; uygunluğu ekip teyit etsin.",
-    signal: "81 il talep",
+    signal: "Ücretsiz keşif: Sakarya",
     href: "/iletisim?reason=%C3%9Ccretsiz%20ke%C5%9Fif%20talebi",
     tone: "info"
   },
@@ -116,12 +116,12 @@ export const customerSelfServiceCards: PanelActionCard[] = [
 
 export const customerTrustTimeline = [
   {
-    label: "1. Uygunluk",
+    label: "1. Uygünlük",
     detail: "Araç, konnektör, güç ve kurulum alanı netleşir."
   },
   {
     label: "2. Teklif / sepet",
-    detail: "Ürün, aksesuar ve kurulum ihtiyacı birlikte seçilir."
+    detail: "Ürün, aksesuar ve kurulum ihtiyacı birlikte secilir."
   },
   {
     label: "3. Kargo / keşif",

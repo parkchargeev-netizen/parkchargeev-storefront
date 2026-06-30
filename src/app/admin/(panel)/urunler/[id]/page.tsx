@@ -74,6 +74,7 @@ export default async function EditAdminProductPage({ params }: EditProductPagePr
           phaseType: product.phaseType ?? "single_phase",
           ipClass: product.ipClass ?? "",
           hasWifi: product.hasWifi,
+          hasBluetooth: product.hasBluetooth,
           hasRfid: product.hasRfid,
           has4g: product.has4g,
           installRequired: product.installRequired,

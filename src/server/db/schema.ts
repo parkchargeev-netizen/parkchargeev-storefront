@@ -347,6 +347,7 @@ export const products = pgTable(
     phaseType: productPhaseEnum("phase_type"),
     ipClass: varchar("ip_class", { length: 24 }),
     hasWifi: boolean("has_wifi").default(false).notNull(),
+    hasBluetooth: boolean("has_bluetooth").default(false).notNull(),
     hasRfid: boolean("has_rfid").default(false).notNull(),
     has4g: boolean("has_4g").default(false).notNull(),
     installRequired: boolean("install_required").default(false).notNull(),

@@ -109,6 +109,7 @@ type FallbackProductRecord = {
   ipClass: string | null;
   hasWifi: boolean;
   hasRfid: boolean;
+  hasBluetooth: boolean;
   has4g: boolean;
   installRequired: boolean;
   adminNotes: string | null;
@@ -416,6 +417,7 @@ function createSeedProducts(): FallbackProductRecord[] {
       minimumStockThreshold: 4,
       vehicles: ["TOGG", "Tesla", "BYD"],
       hasWifi: true,
+      hasBluetooth: true,
       hasRfid: true,
       has4g: false,
       installRequired: true,
@@ -431,6 +433,7 @@ function createSeedProducts(): FallbackProductRecord[] {
       minimumStockThreshold: 2,
       vehicles: ["TOGG", "Tesla", "BMW"],
       hasWifi: true,
+      hasBluetooth: true,
       hasRfid: true,
       has4g: true,
       installRequired: true,
@@ -446,6 +449,7 @@ function createSeedProducts(): FallbackProductRecord[] {
       minimumStockThreshold: 3,
       vehicles: ["Renault", "Hyundai", "Diğer"],
       hasWifi: false,
+      hasBluetooth: false,
       hasRfid: false,
       has4g: false,
       installRequired: true,
@@ -461,6 +465,7 @@ function createSeedProducts(): FallbackProductRecord[] {
       minimumStockThreshold: 1,
       vehicles: ["TOGG", "Tesla", "BYD"],
       hasWifi: true,
+      hasBluetooth: true,
       hasRfid: true,
       has4g: true,
       installRequired: true,
@@ -476,6 +481,7 @@ function createSeedProducts(): FallbackProductRecord[] {
       minimumStockThreshold: 6,
       vehicles: ["TOGG", "Tesla", "Renault", "Hyundai"],
       hasWifi: false,
+      hasBluetooth: false,
       hasRfid: false,
       has4g: false,
       installRequired: false,
@@ -526,6 +532,7 @@ function createSeedProducts(): FallbackProductRecord[] {
       phaseType: derivePhaseType(source.powerLabel),
       ipClass,
       hasWifi: config.hasWifi,
+      hasBluetooth: config.hasBluetooth,
       hasRfid: config.hasRfid,
       has4g: config.has4g,
       installRequired: config.installRequired,
@@ -1190,6 +1197,7 @@ function normalizeProductRecord(
     phaseType: input.phaseType ?? null,
     ipClass: input.ipClass || null,
     hasWifi: input.hasWifi,
+    hasBluetooth: input.hasBluetooth,
     hasRfid: input.hasRfid,
     has4g: input.has4g,
     installRequired: input.installRequired,

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BatteryCharging, CheckCircle2, Cpu, Headphones, Home, Radio, RotateCcw, Settings, ShieldCheck, Sparkles, Truck, Wifi, Zap } from "lucide-react";
+import { BatteryCharging, Bluetooth, CheckCircle2, Cpu, Headphones, Home, Radio, RotateCcw, Settings, ShieldCheck, Sparkles, Truck, Wifi, Zap } from "lucide-react";
 
 import { ProductCard } from "@/components/shop/product-card";
 import type { ProductModel } from "@/lib/mock-data";
@@ -25,6 +25,8 @@ function SmartFeatureIcon({ iconName }: { iconName?: string }) {
   const Icon =
     normalizedIconName.includes("wifi") || normalizedIconName.includes("wi-fi")
       ? Wifi
+      : normalizedIconName.includes("bluetooth")
+        ? Bluetooth
       : normalizedIconName.includes("shield") || normalizedIconName.includes("güven")
         ? ShieldCheck
         : normalizedIconName.includes("zap") || normalizedIconName.includes("power")

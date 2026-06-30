@@ -171,6 +171,7 @@ export const adminProductSchema = z.object({
   phaseType: z.enum(productPhaseEnum.enumValues).nullable().optional(),
   ipClass: z.string().trim().max(24).optional().or(z.literal("")),
   hasWifi: z.boolean().default(false),
+  hasBluetooth: z.boolean().default(false),
   hasRfid: z.boolean().default(false),
   has4g: z.boolean().default(false),
   installRequired: z.boolean().default(false),

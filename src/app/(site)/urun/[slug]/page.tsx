@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Cpu, Radio, Settings, ShieldCheck, Sparkles, Wifi, Zap } from "lucide-react";
+import { Bluetooth, Cpu, Radio, Settings, ShieldCheck, Sparkles, Wifi, Zap } from "lucide-react";
 
 import { ProductGallery } from "@/components/shop/product-gallery";
 import { ProductCard } from "@/components/shop/product-card";
@@ -36,6 +36,8 @@ function SmartFeatureIcon({ iconName }: { iconName?: string }) {
   const Icon =
     normalizedIconName.includes("wifi") || normalizedIconName.includes("wi-fi")
       ? Wifi
+      : normalizedIconName.includes("bluetooth")
+        ? Bluetooth
       : normalizedIconName.includes("shield") || normalizedIconName.includes("güven")
         ? ShieldCheck
         : normalizedIconName.includes("zap") || normalizedIconName.includes("power")

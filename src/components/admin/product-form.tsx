@@ -131,6 +131,7 @@ const emptyValues: ProductFormValues = {
   phaseType: "single_phase",
   ipClass: "",
   hasWifi: false,
+  hasBluetooth: false,
   hasRfid: false,
   has4g: false,
   installRequired: false,
@@ -744,6 +745,7 @@ export function ProductForm({
   const phaseTypeValue = watch("phaseType") ?? "";
   const ipClassValue = watch("ipClass") ?? "";
   const hasWifiValue = Boolean(watch("hasWifi"));
+  const hasBluetoothValue = Boolean(watch("hasBluetooth"));
   const hasRfidValue = Boolean(watch("hasRfid"));
   const has4gValue = Boolean(watch("has4g"));
   const installRequiredValue = Boolean(watch("installRequired"));
@@ -759,6 +761,7 @@ export function ProductForm({
   const flattenedTechnicalSpecValues = flattenTechnicalGroupsToSpecs(technicalGroupValues, specValues);
   const smartFeatureLabels = uniqueList([
     hasWifiValue ? "Wi-Fi" : "",
+    hasBluetoothValue ? "Bluetooth" : "",
     hasRfidValue ? "RFID" : "",
     has4gValue ? "4G" : "",
     ...smartFeatureValues
@@ -1359,6 +1362,7 @@ export function ProductForm({
   function addSmartFeatureFromTechnicalFields() {
     const enabledLabels = [
       hasWifiValue ? "Wi-Fi" : "",
+      hasBluetoothValue ? "Bluetooth" : "",
       hasRfidValue ? "RFID" : "",
       has4gValue ? "4G" : "",
       installRequiredValue ? "Kurulum desteği" : ""
@@ -1371,7 +1375,7 @@ export function ProductForm({
         enabledLabels.length > 1
           ? `${enabledLabels.join(", ")} özellikleriyle ürün detayında vurgulanır.`
           : "Bu özelliğin kullanıcıya sağladığı faydayı yazın.",
-      iconName: hasWifiValue ? "wifi" : hasRfidValue ? "radio" : has4gValue ? "signal" : "sparkles"
+      iconName: hasWifiValue ? "wifi" : hasBluetoothValue ? "bluetooth" : hasRfidValue ? "radio" : has4gValue ? "signal" : "sparkles"
     });
   }
 
@@ -2259,6 +2263,10 @@ export function ProductForm({
                 WiFi
               </label>
               <label className="flex items-center gap-2 text-sm text-slate-700">
+                <input type="checkbox" {...register("hasBluetooth")} />
+                Bluetooth
+              </label>
+              <label className="flex items-center gap-2 text-sm text-slate-700">
                 <input type="checkbox" {...register("hasRfid")} />
                 RFID
               </label>
@@ -2522,21 +2530,14 @@ export function ProductForm({
       <section id="özellikler" className="surface-card scroll-mt-28 border border-slate-200 bg-white/95 p-6">
         <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-slate-950">Akıllı ve teknik özellikler</h2>
+            <h2 className="text-xl font-semibold text-slate-950">Teknik özellikler</h2>
             <p className="mt-1 text-sm leading-6 text-slate-600">
-              Ürün detayında görünen akıllı özellik kartlarını ve teknik özellik gruplarını buradan yönetin.
+              Ürün detayında görünen teknik özellikleri buradan yönetin.
             </p>
             <ExampleHint>Boş grup veya boş satırlar kaydedilmez. Aktif olmayan alanlar kullanıcı tarafında gösterilmez.</ExampleHint>
           </div>
+
           <div className="flex flex-wrap gap-3">
-            <button
-              type="button"
-              onClick={() => smartFeatureFields.append(createSmartFeature(smartFeatureValues.length + 1))}
-              className="inline-flex items-center justify-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-800 transition hover:bg-emerald-100"
-            >
-              <Plus className="h-4 w-4" aria-hidden />
-              Yeni Akıllı Özellik Ekle
-            </button>
             <button
               type="button"
               onClick={() => {
@@ -2555,6 +2556,7 @@ export function ProductForm({
               <Plus className="h-4 w-4" aria-hidden />
               Teknik Özellik Ekle
             </button>
+
             <button
               type="button"
               onClick={() => {
@@ -2571,67 +2573,6 @@ export function ProductForm({
             >
               Hazır Teknik Şablon Yükle
             </button>
-          </div>
-        </div>
-
-        <div className="rounded-lg border border-emerald-100 bg-emerald-50/70 p-5">
-          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div>
-              <h3 className="text-base font-bold text-[#063326]">Akıllı özellik kartları</h3>
-              <p className="mt-1 text-sm leading-6 text-slate-600">
-                Kullanıcı tarafında sadece aktif ve eksiksiz kartlar gösterilir.
-              </p>
-            </div>
-            <p className="rounded-full bg-white px-3 py-1 text-xs font-bold text-emerald-800">
-              {smartFeatureValues.filter((item) => item.isActive !== false && cleanText(item.title)).length} aktif kart
-            </p>
-          </div>
-
-          <div className="mt-5 grid gap-4">
-            {smartFeatureFields.fields.map((field, index) => (
-              <div key={field.fieldId} className="grid gap-4 rounded-lg border border-emerald-100 bg-white p-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)_150px_110px_auto] lg:items-end">
-                <div>
-                  <label className="mb-2 block text-xs font-bold uppercase tracking-normal text-slate-500">Özellik başlığı</label>
-                  <input className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Dinamik yük yönetimi" {...register(`detailContent.smartFeatures.${index}.title` as const)} />
-                </div>
-                <div>
-                  <label className="mb-2 block text-xs font-bold uppercase tracking-normal text-slate-500">Açıklama</label>
-                  <input className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Pano kapasitesini koruyarak şarjı dengeler." {...register(`detailContent.smartFeatures.${index}.description` as const)} />
-                </div>
-                <div>
-                  <label className="mb-2 block text-xs font-bold uppercase tracking-normal text-slate-500">İkon adı</label>
-                  <input className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="wifi, shield, zap" {...register(`detailContent.smartFeatures.${index}.iconName` as const)} />
-                </div>
-                <div>
-                  <label className="mb-2 block text-xs font-bold uppercase tracking-normal text-slate-500">Sıra</label>
-                  <input type="number" min={0} className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" {...register(`detailContent.smartFeatures.${index}.sortOrder` as const, { valueAsNumber: true })} />
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <label className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700">
-                    <input type="checkbox" {...register(`detailContent.smartFeatures.${index}.isActive` as const)} />
-                    Aktif
-                  </label>
-                  <button type="button" onClick={() => index > 0 && smartFeatureFields.swap(index, index - 1)} className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-bold text-slate-600">Yukarı</button>
-                  <button type="button" onClick={() => index < smartFeatureFields.fields.length - 1 && smartFeatureFields.swap(index, index + 1)} className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-bold text-slate-600">Aşağı</button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (window.confirm("Bu akıllı özellik silinsin mi?")) {
-                        smartFeatureFields.remove(index);
-                      }
-                    }}
-                    className="rounded-lg border border-red-200 px-3 py-2 text-sm font-bold text-red-700 transition hover:bg-red-50"
-                  >
-                    Sil
-                  </button>
-                </div>
-              </div>
-            ))}
-            {smartFeatureFields.fields.length === 0 ? (
-              <div className="rounded-lg border border-dashed border-emerald-200 bg-white/70 px-4 py-6 text-center text-sm text-slate-600">
-                Henüz akıllı özellik yok. Ürün sayfasında bu bölüm gizli kalır.
-              </div>
-            ) : null}
           </div>
         </div>
 
@@ -2660,38 +2601,81 @@ export function ProductForm({
                   <input type="hidden" {...register(`detailContent.technicalGroups.${groupIndex}.title` as const)} />
                   <input type="hidden" {...register(`detailContent.technicalGroups.${groupIndex}.description` as const)} />
                   <input type="hidden" {...register(`detailContent.technicalGroups.${groupIndex}.sortOrder` as const, { valueAsNumber: true })} />
+
                   <div className="rounded-lg bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700">
                     Teknik özellikleri tek listede yönetin. Satırları yukarı/aşağı alarak ürün detayındaki sıralamayı değiştirebilirsiniz.
                   </div>
 
                   <div className="mt-4 space-y-3">
                     {items.map((item, itemIndex) => (
-                      <div key={`${field.fieldId}-item-${itemIndex}`} className="grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_110px_minmax(0,1fr)_90px_auto] lg:items-end">
+                      <div
+                        key={`${field.fieldId}-item-${itemIndex}`}
+                        className="grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_110px_minmax(0,1fr)_90px_auto] lg:items-end"
+                      >
                         <div>
-                          <label className="mb-2 block text-xs font-bold uppercase tracking-normal text-slate-500">Özellik adı</label>
-                          <input className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm" placeholder="Maksimum güç" {...register(`detailContent.technicalGroups.${groupIndex}.items.${itemIndex}.name` as const)} />
+                          <label className="mb-2 block text-xs font-bold uppercase tracking-normal text-slate-500">
+                            Özellik adı
+                          </label>
+                          <input
+                            className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm"
+                            placeholder="Maksimum güç"
+                            {...register(`detailContent.technicalGroups.${groupIndex}.items.${itemIndex}.name` as const)}
+                          />
                         </div>
+
                         <div>
-                          <label className="mb-2 block text-xs font-bold uppercase tracking-normal text-slate-500">Değer</label>
-                          <input className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm" placeholder="22" {...register(`detailContent.technicalGroups.${groupIndex}.items.${itemIndex}.value` as const)} />
+                          <label className="mb-2 block text-xs font-bold uppercase tracking-normal text-slate-500">
+                            Değer
+                          </label>
+                          <input
+                            className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm"
+                            placeholder="22"
+                            {...register(`detailContent.technicalGroups.${groupIndex}.items.${itemIndex}.value` as const)}
+                          />
                         </div>
+
                         <div>
-                          <label className="mb-2 block text-xs font-bold uppercase tracking-normal text-slate-500">Birim</label>
-                          <input className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm" placeholder="kW" {...register(`detailContent.technicalGroups.${groupIndex}.items.${itemIndex}.unit` as const)} />
+                          <label className="mb-2 block text-xs font-bold uppercase tracking-normal text-slate-500">
+                            Birim
+                          </label>
+                          <input
+                            className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm"
+                            placeholder="kW"
+                            {...register(`detailContent.technicalGroups.${groupIndex}.items.${itemIndex}.unit` as const)}
+                          />
                         </div>
+
                         <div>
-                          <label className="mb-2 block text-xs font-bold uppercase tracking-normal text-slate-500">Açıklama</label>
-                          <input className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm" placeholder="Opsiyonel teknik not" {...register(`detailContent.technicalGroups.${groupIndex}.items.${itemIndex}.description` as const)} />
+                          <label className="mb-2 block text-xs font-bold uppercase tracking-normal text-slate-500">
+                            Açıklama
+                          </label>
+                          <input
+                            className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm"
+                            placeholder="Opsiyonel teknik not"
+                            {...register(`detailContent.technicalGroups.${groupIndex}.items.${itemIndex}.description` as const)}
+                          />
                         </div>
+
                         <div>
-                          <label className="mb-2 block text-xs font-bold uppercase tracking-normal text-slate-500">Sıra</label>
-                          <input type="number" min={0} className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm" {...register(`detailContent.technicalGroups.${groupIndex}.items.${itemIndex}.sortOrder` as const, { valueAsNumber: true })} />
+                          <label className="mb-2 block text-xs font-bold uppercase tracking-normal text-slate-500">
+                            Sıra
+                          </label>
+                          <input
+                            type="number"
+                            min={0}
+                            className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm"
+                            {...register(`detailContent.technicalGroups.${groupIndex}.items.${itemIndex}.sortOrder` as const, {
+                              valueAsNumber: true
+                            })}
+                          />
                         </div>
+
                         <div className="flex flex-wrap items-center gap-2">
                           <label className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700">
                             <input type="checkbox" {...register(`detailContent.technicalGroups.${groupIndex}.items.${itemIndex}.isActive` as const)} />
                             Aktif
                           </label>
+
                           <button
                             type="button"
                             disabled={itemIndex === 0}
@@ -2700,6 +2684,7 @@ export function ProductForm({
                           >
                             Yukarı
                           </button>
+
                           <button
                             type="button"
                             disabled={itemIndex === items.length - 1}
@@ -2708,6 +2693,7 @@ export function ProductForm({
                           >
                             Aşağı
                           </button>
+
                           <button
                             type="button"
                             onClick={() => {
@@ -2720,6 +2706,7 @@ export function ProductForm({
                                 ...groupValue,
                                 items: items.filter((_, currentIndex) => currentIndex !== itemIndex)
                               };
+
                               setValue("detailContent.technicalGroups", nextGroups, {
                                 shouldDirty: true,
                                 shouldValidate: true
@@ -2732,6 +2719,7 @@ export function ProductForm({
                         </div>
                       </div>
                     ))}
+
                     <button
                       type="button"
                       onClick={() => {
@@ -2740,6 +2728,7 @@ export function ProductForm({
                           ...groupValue,
                           items: [...items, createTechnicalSpecItem(items.length + 1)]
                         };
+
                         setValue("detailContent.technicalGroups", nextGroups, {
                           shouldDirty: true,
                           shouldValidate: true
@@ -2754,6 +2743,7 @@ export function ProductForm({
                 </div>
               );
             })}
+
             {technicalGroupFields.fields.length === 0 ? (
               <div className="rounded-lg border border-dashed border-slate-300 bg-white px-4 py-6 text-center text-sm text-slate-600">
                 Henüz teknik özellik yok. “Teknik Özellik Ekle” veya “Hazır Teknik Şablon Yükle” aksiyonunu kullanabilirsiniz.
