@@ -55,10 +55,13 @@ function readStoredCartItems() {
   }
 
   try {
-    const rawCart = window.localStorage.getItem(CART_STORAGE_KEY);
+    const rawCart = window.sessionStorage.getItem(CART_STORAGE_KEY);
+
+    window.localStorage.removeItem(CART_STORAGE_KEY);
 
     return rawCart ? normalizeStoredCartItems(JSON.parse(rawCart)) : [];
   } catch {
+    window.sessionStorage.removeItem(CART_STORAGE_KEY);
     window.localStorage.removeItem(CART_STORAGE_KEY);
     return [];
   }
@@ -69,7 +72,16 @@ function persistCartItems(items: CartItem[]) {
     return;
   }
 
-  window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(normalizeStoredCartItems(items)));
+  const normalizedItems = normalizeStoredCartItems(items);
+
+  if (normalizedItems.length === 0) {
+    window.sessionStorage.removeItem(CART_STORAGE_KEY);
+    window.localStorage.removeItem(CART_STORAGE_KEY);
+    return;
+  }
+
+  window.sessionStorage.setItem(CART_STORAGE_KEY, JSON.stringify(normalizedItems));
+  window.localStorage.removeItem(CART_STORAGE_KEY);
 }
 
 function syncCartFromStorageEvent(event: StorageEvent) {

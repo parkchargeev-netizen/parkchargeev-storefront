@@ -537,6 +537,32 @@ export const productTagAssignments = pgTable(
   })
 );
 
+export const productReviews = pgTable(
+  "product_reviews",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    productId: uuid("product_id")
+      .notNull()
+      .references(() => products.id),
+    authorName: varchar("author_name", { length: 120 }).notNull(),
+    authorEmail: varchar("author_email", { length: 180 }),
+    rating: integer("rating").default(5).notNull(),
+    title: varchar("title", { length: 160 }),
+    body: text("body").notNull(),
+    status: varchar("status", { length: 40 }).default("approved").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull()
+  },
+  (table) => ({
+    productIndex: index("product_reviews_product_idx").on(table.productId, table.status),
+    createdAtIndex: index("product_reviews_created_at_idx").on(table.createdAt)
+  })
+);
+
 export const productVehicleCompatibilities = pgTable(
   "product_vehicle_compatibilities",
   {

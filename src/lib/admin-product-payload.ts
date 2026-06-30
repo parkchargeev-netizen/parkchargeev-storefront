@@ -53,7 +53,7 @@ function normalizeSmartFeatures(value: unknown) {
 }
 
 function normalizeTechnicalGroups(value: unknown) {
-  return filterRows(value, (row) => hasAnyText(row, ["title", "description"]) || Array.isArray((row as Record<string, unknown> | null)?.items))
+  const groups = filterRows(value, (row) => hasAnyText(row, ["title", "description"]) || Array.isArray((row as Record<string, unknown> | null)?.items))
     .map((row, groupIndex) => {
       const group = (row ?? {}) as Record<string, unknown>;
       const items = filterRows(group.items, (item) => hasAnyText(item, ["name", "value", "unit", "description"]))
@@ -80,6 +80,23 @@ function normalizeTechnicalGroups(value: unknown) {
       };
     })
     .filter((group) => group.title && group.items.length > 0);
+
+  const items = groups.flatMap((group) => group.items);
+
+  return items.length
+    ? [
+        {
+          title: "Teknik özellikler",
+          description: "Ürün detayında tek tabloda görünen teknik özellikler.",
+          isActive: true,
+          sortOrder: 1,
+          items: items.map((item, index) => ({
+            ...item,
+            sortOrder: index + 1
+          }))
+        }
+      ]
+    : [];
 }
 
 function flattenTechnicalGroupsToSpecs(groups: Array<Record<string, unknown>>) {
