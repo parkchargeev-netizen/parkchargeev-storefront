@@ -9,6 +9,7 @@ import { useCart } from "@/components/providers/cart-provider";
 import { trackConversionEvent } from "@/lib/conversion-events";
 import { formatPriceTRY } from "@/lib/format";
 import type { ProductModel } from "@/lib/mock-data";
+import { getProductCommerceBadges } from "@/lib/product-commerce-tags";
 import {
   getProductCableOptions,
   getProductSelectedCableOption
@@ -44,6 +45,16 @@ export function ProductPurchasePanel({
   const isOutOfStock = product.stockLabel === "Stokta Yok";
   const isAddDisabled = isOutOfStock || !isHydrated;
   const estimatedLineTotal = selectedOption.priceKurus * quantity;
+  const explicitCommerceBadges = getProductCommerceBadges(product);
+  const commerceBadges =
+    explicitCommerceBadges.length > 0 || isOutOfStock
+      ? explicitCommerceBadges
+      : [
+          { label: "Kargo bedava", tone: "success" as const },
+          { label: "Yarın kargoda", tone: "primary" as const }
+        ];
+  const hasFreeShipping = commerceBadges.some((badge) => badge.label === "Kargo bedava");
+  const hasShipsTomorrow = commerceBadges.some((badge) => badge.label === "Yarın kargoda");
   const selectedVariant =
     product.variants?.find((variant) => variant.cableLength === cableOption) ??
     product.variants?.find((variant) => variant.isDefault) ??
@@ -160,61 +171,22 @@ export function ProductPurchasePanel({
             <span>Güvenli PayTR altyapısı</span>
           </div>
         </div>
-
-        <div className="mt-5 rounded-lg border border-outline-variant/35 bg-surface-container-low p-4">
-          <p className="text-sm font-medium text-on-surface-variant">Miktar</p>
-          <div className="product-purchase-panel__action-row mt-3 flex flex-col gap-4 sm:flex-row sm:items-center">
-            <div className="flex items-center gap-4 rounded-lg bg-white px-4 py-3">
-              <button
-                type="button"
-                onClick={() => setQuantity((current) => Math.max(1, current - 1))}
-                className="text-xl text-on-surface-variant transition hover:text-primary"
-                aria-label="Miktarı azalt"
+        {commerceBadges.length > 0 ? (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {commerceBadges.map((badge) => (
+              <span
+                key={badge.label}
+                className={
+                  badge.tone === "success"
+                    ? "rounded-full bg-emerald-50 px-3 py-2 text-xs font-bold uppercase tracking-normal text-emerald-800"
+                    : "rounded-full bg-amber-100 px-3 py-2 text-xs font-bold uppercase tracking-normal text-amber-800"
+                }
               >
-                -
-              </button>
-              <span className="min-w-8 text-center text-lg font-semibold text-on-surface">
-                {quantity}
+                {badge.label}
               </span>
-              <button
-                type="button"
-                onClick={() => setQuantity((current) => Math.min(99, current + 1))}
-                className="text-xl text-on-surface-variant transition hover:text-primary"
-                aria-label="Miktarı artır"
-              >
-                +
-              </button>
-            </div>
-            <button
-              type="button"
-              onClick={handleAddToCart}
-              disabled={isAddDisabled}
-              aria-busy={!isHydrated}
-              className="product-purchase-panel__add-button inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-linear-to-r from-primary to-secondary px-6 py-4 text-center text-base font-semibold text-white shadow-[0_18px_50px_rgba(6,51,38,0.22)] disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              <ShoppingCart className="h-5 w-5" aria-hidden />
-              {isOutOfStock ? "Stokta Yok" : "Sepete Ekle"}
-            </button>
-            <button
-              type="button"
-              onClick={handleBuyNow}
-              disabled={isAddDisabled}
-              aria-busy={!isHydrated}
-              className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-emerald-500 px-6 py-4 text-center text-base font-bold text-white shadow-[0_18px_50px_rgba(16,185,129,0.22)] transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              <Zap className="h-5 w-5" aria-hidden />
-              Hemen Satın Al
-            </button>
+            ))}
           </div>
-          {feedback ? (
-            <p className="mt-4 text-sm font-medium text-secondary" aria-live="polite">
-              {feedback}{" "}
-              <Link href="/sepet" className="text-primary underline underline-offset-4">
-                Sepete git
-              </Link>
-            </p>
-          ) : null}
-        </div>
+        ) : null}
       </div>
 
       <div className="product-purchase-panel__trust mt-5 grid gap-2 sm:grid-cols-3">
@@ -249,7 +221,7 @@ export function ProductPurchasePanel({
             {[
               {
                 value: "product",
-                label: "Ürün siparişi",
+                label: "Hemen al",
                 detail: "Stoktan sevk"
               },
               {
@@ -310,6 +282,61 @@ export function ProductPurchasePanel({
           </div>
         </div>
 
+        <div className="mt-6">
+          <p className="text-sm font-medium text-on-surface-variant">Miktar</p>
+          <div className="product-purchase-panel__action-row mt-3 flex flex-col gap-4 sm:flex-row sm:items-center">
+            <div className="flex items-center gap-4 rounded-lg bg-white px-4 py-3">
+              <button
+                type="button"
+                onClick={() => setQuantity((current) => Math.max(1, current - 1))}
+                className="text-xl text-on-surface-variant transition hover:text-primary"
+                aria-label="Miktarı azalt"
+              >
+                -
+              </button>
+              <span className="min-w-8 text-center text-lg font-semibold text-on-surface">
+                {quantity}
+              </span>
+              <button
+                type="button"
+                onClick={() => setQuantity((current) => Math.min(99, current + 1))}
+                className="text-xl text-on-surface-variant transition hover:text-primary"
+                aria-label="Miktarı artır"
+              >
+                +
+              </button>
+            </div>
+            <button
+              type="button"
+              onClick={handleAddToCart}
+              disabled={isAddDisabled}
+              aria-busy={!isHydrated}
+              className="product-purchase-panel__add-button inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-linear-to-r from-primary to-secondary px-6 py-4 text-center text-base font-semibold text-white shadow-[0_18px_50px_rgba(6,51,38,0.22)] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <ShoppingCart className="h-5 w-5" aria-hidden />
+              {isOutOfStock ? "Stokta Yok" : "Sepete Ekle"}
+            </button>
+            <button
+              type="button"
+              onClick={handleBuyNow}
+              disabled={isAddDisabled}
+              aria-busy={!isHydrated}
+              className="product-purchase-panel__buy-now inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-emerald-500 px-6 py-4 text-center text-base font-bold text-white shadow-[0_18px_50px_rgba(16,185,129,0.24)] transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <Zap className="h-5 w-5" aria-hidden />
+              Hemen Al
+            </button>
+          </div>
+          {feedback ? (
+            <p className="mt-4 text-sm font-medium text-secondary" aria-live="polite">
+              {feedback}{" "}
+              <Link href="/sepet" className="text-primary underline underline-offset-4">
+                Sepete git
+              </Link>
+            </p>
+          ) : null}
+        </div>
+
         <div className="mt-6 rounded-lg border border-outline-variant/35 bg-white p-4">
           <div className="flex items-center justify-between gap-4">
             <span className="text-sm text-on-surface-variant">Tahmini ara toplam</span>
@@ -322,14 +349,14 @@ export function ProductPurchasePanel({
               <Truck className="h-4 w-4" aria-hidden />
               Kargo
             </span>
-            <span className="font-semibold text-primary">
-              Sepette netleşir
+            <span className={hasFreeShipping ? "font-bold text-emerald-700" : "font-semibold text-primary"}>
+              {hasFreeShipping ? "Kargo bedava" : "Sepette hesaplanır"}
             </span>
           </div>
           <div className="mt-3 flex items-center justify-between gap-4 text-sm text-on-surface-variant">
             <span>Teslimat</span>
             <span className="font-semibold text-primary">
-              {purchaseMode === "survey" ? "Keşif talebi önerilir" : "Stok ve operasyon planına göre"}
+              {hasShipsTomorrow ? "Yarın kargoda" : purchaseMode === "survey" ? "Keşif talebi önerilir" : "Ürün sevkiyatı"}
             </span>
           </div>
           <p className="mt-3 text-xs leading-5 text-on-surface-variant">
