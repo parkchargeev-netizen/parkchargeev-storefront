@@ -133,6 +133,10 @@ export default async function ProductDetailPage({
   const smartFeatures = getActiveProductSmartFeatures(product);
   const technicalGroups = getActiveProductTechnicalGroups(product);
   const commerceBadges = getProductCommerceBadges(product);
+  const defaultVariant = product.variants?.find((variant) => variant.isDefault) ?? product.variants?.[0];
+  const productSku = defaultVariant?.sku ?? product.slug.toUpperCase();
+  const hasFreeShipping = product.tags?.includes("free_shipping") ?? false;
+  const hasShipsTomorrow = product.tags?.includes("ships_tomorrow") ?? false;
   const technicalSpecs = technicalGroups.flatMap((group) =>
     group.items.map((spec) => ({
       label: spec.name,
@@ -217,6 +221,7 @@ export default async function ProductDetailPage({
             mediaItems={product.media}
             featureLabels={detailContent.galleryFeatureLabels}
             deviceCaption={detailContent.galleryDeviceCaption}
+            commerceBadges={commerceBadges}
           />
           <div className="product-detail-desktop-under-gallery mt-5 hidden gap-4 lg:grid">
             {renderDescriptionCard()}
@@ -225,13 +230,28 @@ export default async function ProductDetailPage({
         </section>
 
         <aside className="product-detail-buybox surface-card h-fit p-8">
-          <div className="flex items-center gap-3">
+          <div className="product-detail-buybox-meta flex flex-wrap items-center gap-2 text-xs font-bold uppercase tracking-normal text-on-surface-variant">
+            <span>Marka: ParkChargeEV seçkisi</span>
+            <span className="text-on-surface-variant/50">|</span>
+            <span>Ürün kodu: {productSku}</span>
+          </div>
+
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <span className="rounded-full bg-amber-100 px-3 py-1.5 text-sm font-bold text-amber-700">
+              ★★★★★
+            </span>
+            <span className="text-sm font-semibold text-on-surface-variant">
+              Teknik kontrol ve güvenli ödeme
+            </span>
+          </div>
+
+          <div className="mt-4 flex flex-wrap items-center gap-3">
             {product.badge ? (
-              <span className="rounded-full bg-secondary-container px-3 py-2 text-sm font-semibold text-secondary">
+              <span className="product-detail-commerce-pill product-detail-commerce-pill--primary">
                 {product.badge}
               </span>
             ) : null}
-            <span className="rounded-full bg-surface-container-low px-3 py-2 text-sm font-semibold text-primary">
+            <span className="product-detail-commerce-pill product-detail-commerce-pill--stock">
               {product.stockLabel}
             </span>
             {commerceBadges.map((badge) => (
@@ -239,8 +259,8 @@ export default async function ProductDetailPage({
                 key={badge.label}
                 className={
                   badge.tone === "success"
-                    ? "rounded-full bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-800"
-                    : "rounded-full bg-secondary-container px-3 py-2 text-sm font-semibold text-secondary"
+                    ? "product-detail-commerce-pill product-detail-commerce-pill--success"
+                    : "product-detail-commerce-pill product-detail-commerce-pill--warning"
                 }
               >
                 {badge.label}
@@ -248,12 +268,25 @@ export default async function ProductDetailPage({
             ))}
           </div>
 
-          <h1 className="mt-6 text-3xl font-bold tracking-normal text-on-surface md:text-4xl">
+          <h1 className="mt-5 text-3xl font-bold tracking-normal text-on-surface md:text-4xl">
             {product.name}
           </h1>
           <p className="mt-4 line-clamp-2 text-base leading-7 text-on-surface-variant">
             {storeProfile.primaryFit}
           </p>
+
+          <div className="product-detail-commerce-alerts mt-5 grid gap-3 sm:grid-cols-2">
+            <div className={hasFreeShipping ? "product-detail-commerce-alert product-detail-commerce-alert--success" : "product-detail-commerce-alert"}>
+              <span>Kargo</span>
+              <strong>{hasFreeShipping ? "Kargo bedava" : "Kargo bilgisi sepette"}</strong>
+              <small>{hasFreeShipping ? "Türkiye geneli ürün sevkiyatı için avantajlı teslimat." : "Teslimat ve kargo koşulları adreste netleşir."}</small>
+            </div>
+            <div className={hasShipsTomorrow ? "product-detail-commerce-alert product-detail-commerce-alert--warning" : "product-detail-commerce-alert"}>
+              <span>Teslimat</span>
+              <strong>{hasShipsTomorrow ? "Yarın kargoda" : "Stoktan hızlı sevk"}</strong>
+              <small>{hasShipsTomorrow ? "Uygun saat içinde tamamlanan siparişler hızlı hazırlanır." : "Stok ve operasyon durumuna göre sevkiyat planlanır."}</small>
+            </div>
+          </div>
 
           <div className="product-detail-feature-strip mt-6 grid gap-3 sm:grid-cols-3">
             {[

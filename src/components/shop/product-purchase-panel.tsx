@@ -1,12 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
+import { BadgeCheck, CreditCard, ShieldCheck, ShoppingCart, Truck, Zap } from "lucide-react";
 
 import { useCart } from "@/components/providers/cart-provider";
 import { trackConversionEvent } from "@/lib/conversion-events";
 import { formatPriceTRY } from "@/lib/format";
 import type { ProductModel } from "@/lib/mock-data";
+import { getProductCommerceBadges } from "@/lib/product-commerce-tags";
 import {
   getProductCableOptions,
   getProductSelectedCableOption
@@ -29,6 +32,7 @@ export function ProductPurchasePanel({
   benefits = defaultBenefits
 }: ProductPurchasePanelProps) {
   const { addItem, isHydrated } = useCart();
+  const router = useRouter();
   const cableOptions = getProductCableOptions(product);
   const [cableOption, setCableOption] = useState(cableOptions[0]?.label ?? "");
   const cableOptionRef = useRef(cableOptions[0]?.label ?? "");
@@ -41,6 +45,14 @@ export function ProductPurchasePanel({
   const isOutOfStock = product.stockLabel === "Stokta Yok";
   const isAddDisabled = isOutOfStock || !isHydrated;
   const estimatedLineTotal = selectedOption.priceKurus * quantity;
+  const commerceBadges = getProductCommerceBadges(product);
+  const hasFreeShipping = product.tags?.includes("free_shipping") ?? false;
+  const hasShipsTomorrow = product.tags?.includes("ships_tomorrow") ?? false;
+  const selectedVariant =
+    product.variants?.find((variant) => variant.cableLength === cableOption) ??
+    product.variants?.find((variant) => variant.isDefault) ??
+    product.variants?.[0];
+  const selectedSku = selectedVariant?.sku ?? product.slug.toUpperCase();
   const discountPercent = selectedOption.compareAtKurus
     ? Math.round(
         ((selectedOption.compareAtKurus - selectedOption.priceKurus) /
@@ -49,14 +61,14 @@ export function ProductPurchasePanel({
       )
     : null;
   const purchaseTrustSignals = [
-    { label: "Uyum", detail: storeProfile.connectorHint },
-    { label: "Kurulum", detail: storeProfile.installationMode },
-    { label: "Ödeme", detail: "Güvenli checkout" }
+    { label: "Uyum", detail: storeProfile.connectorHint, icon: BadgeCheck },
+    { label: "Kurulum", detail: storeProfile.installationMode, icon: Zap },
+    { label: "Ödeme", detail: "Güvenli checkout", icon: ShieldCheck }
   ];
 
-  function handleAddToCart() {
+  function addCurrentSelection() {
     if (isOutOfStock) {
-      return;
+      return false;
     }
 
     addItem({
@@ -75,6 +87,17 @@ export function ProductPurchasePanel({
       cableOption: cableOptionRef.current
     });
     setFeedback(`${quantity} adet ürün sepete eklendi.`);
+    return true;
+  }
+
+  function handleAddToCart() {
+    addCurrentSelection();
+  }
+
+  function handleBuyNow() {
+    if (addCurrentSelection()) {
+      router.push("/checkout");
+    }
   }
 
   function selectCableOption(nextCableOption: string) {
@@ -108,10 +131,16 @@ export function ProductPurchasePanel({
         </button>
       </div>
 
-      <div className="product-purchase-panel__price mt-8 flex flex-wrap items-end gap-4">
-        <p className="text-5xl font-bold text-primary">
-          {formatPriceTRY(selectedOption.priceKurus)}
-        </p>
+      <div className="product-purchase-panel__price mt-8 rounded-lg border border-primary/12 bg-white p-5 shadow-[0_18px_44px_rgba(6,51,38,0.08)]">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-normal text-on-surface-variant">
+              ParkChargeEV fiyatı
+            </p>
+            <p className="mt-2 text-5xl font-bold text-primary">
+              {formatPriceTRY(selectedOption.priceKurus)}
+            </p>
+          </div>
         {selectedOption.compareAtKurus ? (
           <div className="pb-1">
             <p className="text-lg font-semibold text-on-surface-variant line-through">
@@ -124,20 +153,54 @@ export function ProductPurchasePanel({
             ) : null}
           </div>
         ) : null}
+        </div>
+        <div className="mt-4 grid gap-2 sm:grid-cols-2">
+          <div className="product-purchase-panel__deal product-purchase-panel__deal--red">
+            <CreditCard className="h-4 w-4" aria-hidden />
+            <span>Havale/EFT ve kartlı ödeme</span>
+          </div>
+          <div className="product-purchase-panel__deal product-purchase-panel__deal--dark">
+            <ShieldCheck className="h-4 w-4" aria-hidden />
+            <span>Güvenli PayTR altyapısı</span>
+          </div>
+        </div>
+        {commerceBadges.length > 0 ? (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {commerceBadges.map((badge) => (
+              <span
+                key={badge.label}
+                className={
+                  badge.tone === "success"
+                    ? "rounded-full bg-emerald-50 px-3 py-2 text-xs font-bold uppercase tracking-normal text-emerald-800"
+                    : "rounded-full bg-amber-100 px-3 py-2 text-xs font-bold uppercase tracking-normal text-amber-800"
+                }
+              >
+                {badge.label}
+              </span>
+            ))}
+          </div>
+        ) : null}
       </div>
 
       <div className="product-purchase-panel__trust mt-5 grid gap-2 sm:grid-cols-3">
-        {purchaseTrustSignals.map((signal) => (
-          <div key={signal.label} className="rounded-lg border border-outline-variant/35 bg-white px-4 py-3">
-            <p className="text-xs font-semibold uppercase text-on-surface-variant">
-              {signal.label}
-            </p>
-            <p className="mt-1 text-sm font-bold leading-5 text-on-surface">{signal.detail}</p>
-          </div>
-        ))}
+        {purchaseTrustSignals.map((signal) => {
+          const Icon = signal.icon;
+
+          return (
+            <div key={signal.label} className="rounded-lg border border-outline-variant/35 bg-white px-4 py-3">
+              <div className="flex items-center gap-2">
+                <Icon className="h-4 w-4 text-primary" aria-hidden />
+                <p className="text-xs font-semibold uppercase text-on-surface-variant">
+                  {signal.label}
+                </p>
+              </div>
+              <p className="mt-1 text-sm font-bold leading-5 text-on-surface">{signal.detail}</p>
+            </div>
+          );
+        })}
       </div>
       <p className="product-purchase-panel__fit-note mt-3 rounded-lg bg-surface-container-low px-4 py-3 text-xs leading-5 text-on-surface-variant">
-        Emin değilseniz keşifle ilerleyin.
+        Emin değilseniz keşifle ilerleyin. Ürün kodu: <strong>{selectedSku}</strong>
       </p>
 
       <div className="product-purchase-panel__route mt-8 rounded-lg bg-surface-container-low p-6">
@@ -241,9 +304,20 @@ export function ProductPurchasePanel({
               onClick={handleAddToCart}
               disabled={isAddDisabled}
               aria-busy={!isHydrated}
-              className="product-purchase-panel__add-button flex-1 rounded-lg bg-linear-to-r from-primary to-secondary px-6 py-4 text-center text-base font-semibold text-white shadow-[0_18px_50px_rgba(6,51,38,0.22)] disabled:cursor-not-allowed disabled:opacity-60"
+              className="product-purchase-panel__add-button inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-linear-to-r from-primary to-secondary px-6 py-4 text-center text-base font-semibold text-white shadow-[0_18px_50px_rgba(6,51,38,0.22)] disabled:cursor-not-allowed disabled:opacity-60"
             >
+              <ShoppingCart className="h-5 w-5" aria-hidden />
               {isOutOfStock ? "Stokta Yok" : "Sepete Ekle"}
+            </button>
+            <button
+              type="button"
+              onClick={handleBuyNow}
+              disabled={isAddDisabled}
+              aria-busy={!isHydrated}
+              className="product-purchase-panel__buy-now inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-emerald-500 px-6 py-4 text-center text-base font-bold text-white shadow-[0_18px_50px_rgba(16,185,129,0.24)] transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <Zap className="h-5 w-5" aria-hidden />
+              Hemen Al
             </button>
           </div>
           {feedback ? (
@@ -264,17 +338,22 @@ export function ProductPurchasePanel({
             </span>
           </div>
           <div className="mt-3 flex items-center justify-between gap-4 text-sm text-on-surface-variant">
-            <span>Kargo</span>
-            <span className="font-semibold text-secondary">81 il</span>
+            <span className="inline-flex items-center gap-2">
+              <Truck className="h-4 w-4" aria-hidden />
+              Kargo
+            </span>
+            <span className={hasFreeShipping ? "font-bold text-emerald-700" : "font-semibold text-primary"}>
+              {hasFreeShipping ? "Kargo bedava" : "Sepette hesaplanır"}
+            </span>
           </div>
           <div className="mt-3 flex items-center justify-between gap-4 text-sm text-on-surface-variant">
-            <span>Kurulum akışı</span>
+            <span>Teslimat</span>
             <span className="font-semibold text-primary">
-              {purchaseMode === "survey" ? "Keşif talebi önerilir" : "Ürün sevkiyatı"}
+              {hasShipsTomorrow ? "Yarın kargoda" : purchaseMode === "survey" ? "Keşif talebi önerilir" : "Ürün sevkiyatı"}
             </span>
           </div>
           <p className="mt-3 text-xs leading-5 text-on-surface-variant">
-            KDV ve kurulum kalemi sepette ayrılır.
+            KDV, teslimat ve varsa kurulum kalemi sepette netleşir.
           </p>
         </div>
 
