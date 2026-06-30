@@ -51,6 +51,27 @@ function SmartFeatureIcon({ iconName }: { iconName?: string }) {
   return <Icon className="h-5 w-5" aria-hidden />;
 }
 
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function formatProductDescriptionHtml(description: string, summary: string) {
+  const hasHtml = /<\/?[a-z][\s\S]*>/i.test(description);
+  const descriptionHtml = hasHtml
+    ? description
+        .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "")
+        .replace(/\son\w+=(?:"[^"]*"|'[^']*')/gi, "")
+        .replace(/\sstyle=(?:"[^"]*"|'[^']*')/gi, "")
+        .replace(/href=(?:"javascript:[^"]*"|'javascript:[^']*')/gi, 'href="/"')
+    : `<p>${escapeHtml(description)}</p>`;
+
+  return `${descriptionHtml}<p>${escapeHtml(summary)}</p>`;
+}
+
 export async function generateStaticParams() {
   const productSlugs = await listPublicProductSlugs();
   return productSlugs.map((slug) => ({ slug }));
@@ -161,10 +182,12 @@ export default async function ProductDetailPage({
       <h2 className="mt-3 text-3xl font-bold tracking-normal text-on-surface">
         {product.name} hakkında
       </h2>
-      <div className="mt-5 space-y-4 text-base leading-8 text-on-surface-variant">
-        <p>{product.description}</p>
-        <p>{product.summary}</p>
-      </div>
+      <div
+        className="managed-richtext mt-5 text-base leading-8 text-on-surface-variant"
+        dangerouslySetInnerHTML={{
+          __html: formatProductDescriptionHtml(product.descriptionHtml ?? product.description, product.summary)
+        }}
+      />
     </div>
   );
   return (

@@ -99,6 +99,7 @@ export default async function EditAdminProductPage({ params }: EditProductPagePr
             mediaType: item.mediaType === "video" ? "video" : "image",
             url: item.url,
             altText: item.altText,
+            sortOrder: item.sortOrder,
             isPrimary: item.isPrimary
           })),
           specs: product.specs.map((item) => ({

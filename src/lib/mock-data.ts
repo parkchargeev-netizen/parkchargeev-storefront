@@ -25,6 +25,7 @@ export type ProductMediaModel = {
   url: string;
   altText: string;
   mediaType: ProductMediaKind;
+  sortOrder?: number;
   isPrimary?: boolean;
 };
 
@@ -43,6 +44,7 @@ export type ProductModel = {
   tags?: string[];
   summary: string;
   description: string;
+  descriptionHtml?: string;
   priceKurus: number;
   compareAtKurus?: number;
   stockLabel: "Stokta" | "Az Stok" | "Stokta Yok";

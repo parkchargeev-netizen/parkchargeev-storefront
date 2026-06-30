@@ -48,6 +48,7 @@ export type ProductSupportContent = {
 };
 
 export type ProductDetailContent = {
+  adminSortOrder: number;
   galleryItems: string[];
   galleryFeatureLabels: string[];
   galleryDeviceCaption: string;
@@ -161,6 +162,7 @@ function getReadinessDefaults(product?: ProductModel): ProductDetailTextPair[] {
 
 export function getDefaultProductDetailContent(product?: ProductModel): ProductDetailContent {
   return {
+    adminSortOrder: 0,
     galleryItems: product?.galleryItems?.length
       ? product.galleryItems
       : ["Ön görünüm", "Yan profil", "Montaj görünümü", "Video"],
@@ -232,6 +234,9 @@ export function mergeProductDetailContent(
   return {
     ...base,
     ...input,
+    adminSortOrder: Number.isFinite(Number(input.adminSortOrder))
+      ? Number(input.adminSortOrder)
+      : base.adminSortOrder,
     galleryItems: hasItems(input.galleryItems) ? compactList(input.galleryItems) : base.galleryItems,
     galleryFeatureLabels: hasItems(input.galleryFeatureLabels)
       ? compactList(input.galleryFeatureLabels)

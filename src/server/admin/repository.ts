@@ -28,6 +28,7 @@ import {
   getProductDetailContent,
   getProductDetailContentFromSchemaJsonLd,
   mergeProductDetailContent,
+  productDetailContentSchemaKey,
   withProductDetailContentSchemaJsonLd
 } from "@/lib/product-detail-content";
 import { parseCableOptionPriceDeltaKurus } from "@/lib/product-options";
@@ -156,6 +157,19 @@ function buildProductSchemaJsonLd(input: ProductInput) {
           : "https://schema.org/OutOfStock"
     }
   }, input.detailContent);
+}
+
+function getProductAdminSortOrder(schemaJsonLd: unknown) {
+  const detailContent = getProductDetailContentFromSchemaJsonLd(schemaJsonLd) as
+    | { adminSortOrder?: unknown }
+    | undefined;
+  const parsed = Number(detailContent?.adminSortOrder ?? 0);
+
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function productAdminSortOrderSql() {
+  return sql<number>`coalesce(nullif(${products.schemaJsonLd} -> ${productDetailContentSchemaKey} ->> 'adminSortOrder', '')::integer, 0)`;
 }
 
 function revalidateProductSurfaces(slug: string) {
@@ -617,6 +631,7 @@ function mapAdminProductToPublicProduct(
     url: item.url,
     altText: item.altText || `${row.name} görsel ${index + 1}`,
     mediaType: inferProductMediaType(item.url, item.mediaType),
+    sortOrder: item.sortOrder,
     isPrimary: item.isPrimary
   }));
   const primaryImage =
@@ -632,6 +647,7 @@ function mapAdminProductToPublicProduct(
     tags: tags.length ? tags : base?.tags ?? [],
     summary: row.shortDescription || base?.summary || row.name,
     description: stripHtml(row.description) || base?.description || row.shortDescription,
+    descriptionHtml: row.description,
     priceKurus,
     compareAtKurus: compareAtKurus && compareAtKurus > priceKurus ? compareAtKurus : undefined,
     stockLabel: getPublicStockLabel(defaultVariant?.stockQuantity ?? 0),
@@ -737,7 +753,7 @@ async function loadPublicProducts() {
       .select()
       .from(products)
       .where(eq(products.status, "active"))
-      .orderBy(desc(products.updatedAt), desc(products.id));
+      .orderBy(asc(productAdminSortOrderSql()), desc(products.updatedAt), desc(products.id));
 
     if (rows.length === 0) {
       return marketingProducts;
@@ -1443,15 +1459,22 @@ async function writeProductCollections(
     await db.insert(productRelations).values(productRelationsToInsert);
   }
 
-  if (input.media.length > 0) {
+  const sortedMedia = [...input.media].sort((left, right) => {
+    const leftOrder = Number(left.sortOrder ?? 0);
+    const rightOrder = Number(right.sortOrder ?? 0);
+
+    return leftOrder - rightOrder;
+  });
+
+  if (sortedMedia.length > 0) {
     await db.insert(productMedia).values(
-      input.media.map((item, index) => ({
+      sortedMedia.map((item, index) => ({
         productId,
         mediaType: item.mediaType ?? inferProductMediaType(item.url),
         url: item.url,
         altText: item.altText ?? "",
         isPrimary: item.isPrimary || index === 0,
-        sortOrder: index
+        sortOrder: Number.isFinite(Number(item.sortOrder)) ? Number(item.sortOrder) : index + 1
       }))
     );
   }
@@ -1597,7 +1620,9 @@ export async function listAdminProducts(input: ListQueryInput) {
   }
 
   const orderByClauses =
-    input.sort === "name_asc"
+    input.sort === "manual_order"
+      ? [asc(productAdminSortOrderSql()), desc(products.updatedAt), desc(products.id)]
+      : input.sort === "name_asc"
       ? [asc(products.name), desc(products.id)]
       : input.sort === "price_desc"
         ? [desc(products.defaultPriceKurus), desc(products.id)]
@@ -1620,6 +1645,7 @@ export async function listAdminProducts(input: ListQueryInput) {
       shortDescription: products.shortDescription,
       status: products.status,
       defaultPriceKurus: products.defaultPriceKurus,
+      schemaJsonLd: products.schemaJsonLd,
       updatedAt: products.updatedAt
     })
     .from(products)
@@ -1645,6 +1671,7 @@ export async function listAdminProducts(input: ListQueryInput) {
       const media = collections.media.get(item.id) ?? [];
       return {
         ...item,
+        sortOrder: getProductAdminSortOrder(item.schemaJsonLd),
         defaultVariant,
         variants,
         media,
@@ -1729,32 +1756,20 @@ export async function deleteAdminProducts(
       .from(productVariants)
       .where(eq(productVariants.productId, product.id));
     const variantIds = variants.map((variant) => variant.id);
-    const [orderReference] = await db
-      .select({ total: count() })
-      .from(orderItems)
-      .where(
-        variantIds.length > 0
-          ? or(eq(orderItems.productId, product.id), inArray(orderItems.variantId, variantIds))
-          : eq(orderItems.productId, product.id)
-      );
-    const [cartReference] =
-      variantIds.length > 0
-        ? await db
-            .select({ total: count() })
-            .from(cartItems)
-            .where(inArray(cartItems.variantId, variantIds))
-        : [{ total: 0 }];
-
-    if (Number(orderReference?.total ?? 0) > 0 || Number(cartReference?.total ?? 0) > 0) {
-      blocked.push({
-        id: product.id,
-        name: product.name,
-        reason: "Sipariş veya sepet geçmişi olan ürünler kalıcı silinemez; arşivleyin."
-      });
-      continue;
-    }
 
     await db.delete(campaignProducts).where(eq(campaignProducts.productId, product.id));
+    if (variantIds.length > 0) {
+      await db.delete(cartItems).where(inArray(cartItems.variantId, variantIds));
+      await db
+        .update(orderItems)
+        .set({ productId: null, variantId: null })
+        .where(or(eq(orderItems.productId, product.id), inArray(orderItems.variantId, variantIds)));
+    } else {
+      await db
+        .update(orderItems)
+        .set({ productId: null })
+        .where(eq(orderItems.productId, product.id));
+    }
     await db
       .update(merchandisingSlots)
       .set({ productId: null, updatedAt: new Date() })

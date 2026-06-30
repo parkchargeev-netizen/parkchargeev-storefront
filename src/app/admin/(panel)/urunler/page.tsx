@@ -146,6 +146,7 @@ export default async function AdminProductsPage({ searchParams }: ProductListPag
             className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm"
           >
             <option value="">Varsayilan</option>
+            <option value="manual_order">Manuel sıra</option>
             <option value="name_asc">Ada gore</option>
             <option value="price_desc">Fiyat yuksek</option>
             <option value="stock_asc">Stok azalan risk</option>

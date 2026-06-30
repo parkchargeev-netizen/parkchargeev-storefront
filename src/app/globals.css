@@ -869,11 +869,16 @@ body {
   margin-top: 0.9rem;
 }
 
+.managed-richtext-editor h1,
 .managed-richtext-editor h2,
 .managed-richtext-editor h3 {
   color: #063326;
   font-weight: 900;
   line-height: 1.18;
+}
+
+.managed-richtext-editor h1 {
+  font-size: 1.7rem;
 }
 
 .managed-richtext-editor h2 {
@@ -894,6 +899,20 @@ body {
 .managed-richtext-editor ul,
 .managed-richtext-editor ol {
   padding-left: 1.25rem;
+}
+
+.managed-richtext-editor code {
+  border-radius: 0.45rem;
+  background: rgba(15, 23, 42, 0.08);
+  padding: 0.12rem 0.35rem;
+  color: #063326;
+  font-weight: 800;
+}
+
+.managed-richtext-editor hr {
+  margin: 1rem 0;
+  border: 0;
+  border-top: 1px solid rgba(148, 163, 184, 0.45);
 }
 
 .managed-richtext-editor blockquote {
@@ -917,11 +936,16 @@ body {
   margin-top: 1.25rem;
 }
 
+.managed-richtext h1,
 .managed-richtext h2,
 .managed-richtext h3 {
   color: var(--color-on-surface);
   font-weight: 800;
   line-height: 1.15;
+}
+
+.managed-richtext h1 {
+  font-size: 2.15rem;
 }
 
 .managed-richtext h2 {
@@ -933,6 +957,10 @@ body {
 }
 
 @media (min-width: 768px) {
+  .managed-richtext h1 {
+    font-size: 2.75rem;
+  }
+
   .managed-richtext h2 {
     font-size: 2.5rem;
   }
@@ -954,6 +982,29 @@ body {
 
 .managed-richtext li + li {
   margin-top: 0.5rem;
+}
+
+.managed-richtext blockquote {
+  border-left: 3px solid var(--color-secondary);
+  border-radius: 0.9rem;
+  background: color-mix(in srgb, var(--color-secondary-container) 42%, white);
+  padding: 1rem 1.1rem;
+  color: var(--color-on-surface);
+  font-weight: 700;
+}
+
+.managed-richtext code {
+  border-radius: 0.45rem;
+  background: color-mix(in srgb, var(--color-primary) 10%, white);
+  padding: 0.12rem 0.35rem;
+  color: var(--color-primary);
+  font-weight: 800;
+}
+
+.managed-richtext hr {
+  margin: 1.4rem 0;
+  border: 0;
+  border-top: 1px solid color-mix(in srgb, var(--color-outline-variant) 70%, transparent);
 }
 
 .deferred-section {

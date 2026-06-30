@@ -27,7 +27,6 @@ import { AdminLogoutButton } from "@/components/admin/admin-logout-button";
 import { AdminNavLink } from "@/components/admin/admin-nav-link";
 import { AdminPrefetchLink } from "@/components/admin/admin-prefetch-link";
 import { AdminSessionGuard } from "@/components/admin/admin-session-guard";
-import { serviceCoverageSummary } from "@/lib/service-coverage";
 import { adminNavigation, adminRoleLabels } from "@/server/admin/constants";
 import type { AdminRole } from "@/server/auth/authorization";
 
@@ -218,19 +217,8 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
                   </div>
                 </div>
 
-                <div className="mt-5 grid gap-2">
-                  {[
-                    serviceCoverageSummary.shipping,
-                    serviceCoverageSummary.freeSurvey,
-                    serviceCoverageSummary.installation
-                  ].map((item) => (
-                    <span
-                      key={item}
-                      className="rounded-lg border border-emerald-100 bg-emerald-50/70 px-4 py-2 text-xs font-bold text-[#063326]"
-                    >
-                      {item}
-                    </span>
-                  ))}
+                <div className="mt-5 rounded-lg border border-emerald-100 bg-emerald-50/70 px-4 py-3 text-xs font-bold leading-5 text-[#063326]">
+                  Ürün, sipariş, stok ve site operasyonları tek panelden yönetilir.
                 </div>
               </section>
 

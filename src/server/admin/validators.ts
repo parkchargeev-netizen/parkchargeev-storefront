@@ -41,6 +41,7 @@ export const productMediaSchema = z.object({
   mediaType: z.enum(["image", "video"]).default("image"),
   url: publicOrRemoteUrlSchema,
   altText: z.string().trim().max(255).optional().or(z.literal("")),
+  sortOrder: z.coerce.number().int().min(0).max(999).default(0),
   isPrimary: z.boolean().default(false)
 });
 
@@ -101,6 +102,7 @@ const productTechnicalSpecGroupSchema = z.object({
 
 export const productDetailContentSchema = z
   .object({
+    adminSortOrder: z.coerce.number().int().min(0).max(9999).default(0),
     galleryItems: productDetailStringListSchema,
     galleryFeatureLabels: productDetailStringListSchema,
     galleryDeviceCaption: z.string().trim().max(120).optional().or(z.literal("")),

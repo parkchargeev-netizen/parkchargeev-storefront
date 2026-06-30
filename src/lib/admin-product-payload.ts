@@ -138,7 +138,7 @@ function normalizeMediaRows(value: unknown) {
   return filterRows(
     value,
     (row) => hasAnyText(row, ["url"])
-  ).map((row) => {
+  ).map((row, index) => {
     if (!row || typeof row !== "object") {
       return row;
     }
@@ -151,8 +151,14 @@ function normalizeMediaRows(value: unknown) {
       ...media,
       mediaType: mediaType === "video" || mediaType === "image"
         ? mediaType
-        : inferProductMediaType(url)
+        : inferProductMediaType(url),
+      sortOrder: normalizeNumber(media.sortOrder, index + 1)
     };
+  }).sort((left, right) => {
+    const leftOrder = typeof left === "object" && left ? Number((left as Record<string, unknown>).sortOrder ?? 0) : 0;
+    const rightOrder = typeof right === "object" && right ? Number((right as Record<string, unknown>).sortOrder ?? 0) : 0;
+
+    return leftOrder - rightOrder;
   });
 }
 

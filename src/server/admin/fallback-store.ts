@@ -55,6 +55,7 @@ type FallbackProductMedia = {
   mediaType: ProductMediaKind;
   url: string;
   altText: string;
+  sortOrder: number;
   isPrimary: boolean;
 };
 
@@ -551,6 +552,7 @@ function createSeedProducts(): FallbackProductRecord[] {
           mediaType: "image",
           url: `https://placehold.co/1200x900/png?text=${encodeURIComponent(source.name)}`,
           altText: source.name,
+          sortOrder: 1,
           isPrimary: true
         }
       ],
@@ -1148,6 +1150,7 @@ function normalizeProductRecord(
     mediaType: item.mediaType ?? inferProductMediaType(item.url),
     url: item.url,
     altText: item.altText ?? "",
+    sortOrder: Number.isFinite(Number(item.sortOrder)) ? Number(item.sortOrder) : index + 1,
     isPrimary: primaryMedia ? primaryMedia.url === item.url : index === 0
   }));
 

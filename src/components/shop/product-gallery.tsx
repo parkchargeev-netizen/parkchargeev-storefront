@@ -243,8 +243,8 @@ export function ProductGallery({
   }
 
   return (
-    <div className="product-gallery-premium surface-card p-5">
-      <div className="overflow-hidden rounded-lg bg-linear-to-br from-secondary-container/20 via-white to-primary/12 p-6">
+    <div className="product-gallery-premium surface-card grid gap-4 p-5 lg:grid-cols-[88px_minmax(0,1fr)]">
+      <div className="order-first overflow-hidden rounded-lg bg-linear-to-br from-secondary-container/20 via-white to-primary/12 p-4 lg:order-2 lg:p-6">
         <div
           className={`relative min-h-[340px] overflow-hidden rounded-lg ${
             hasRealMedia
@@ -308,7 +308,7 @@ export function ProductGallery({
         </div>
       </div>
 
-      <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <div className="order-last flex gap-3 overflow-x-auto pb-1 lg:order-1 lg:max-h-[520px] lg:flex-col lg:overflow-x-visible lg:overflow-y-auto lg:pr-1">
         {thumbnailItems.map((item, index) => {
           const hasImage = isProductMediaItem(item) && item.mediaType === "image";
 
@@ -317,7 +317,7 @@ export function ProductGallery({
               key={`${item.altText}-${index}`}
               type="button"
               onClick={() => setActiveIndex(index)}
-              className={`group overflow-hidden rounded-lg p-2 text-left transition ${
+              className={`group w-20 shrink-0 overflow-hidden rounded-lg p-1.5 text-left transition lg:w-full ${
                 index === activeIndex
                   ? "border-2 border-primary bg-white shadow-[0_16px_36px_rgba(6,51,38,0.12)]"
                   : "border border-outline-variant/30 bg-white hover:border-primary/25"
@@ -336,7 +336,7 @@ export function ProductGallery({
                 ) : (
                   <ProductThumbnailFallback label={item.altText} />
                 )}
-                <span className="absolute inset-x-2 bottom-2 rounded-full bg-white/86 px-2 py-1 text-center text-xs font-bold text-on-surface shadow-[0_8px_18px_rgba(15,23,42,0.12)] backdrop-blur">
+                <span className="absolute inset-x-1 bottom-1 rounded-full bg-white/90 px-1.5 py-0.5 text-center text-xs font-bold leading-4 text-on-surface shadow-[0_8px_18px_rgba(15,23,42,0.12)] backdrop-blur">
                   {item.altText}
                 </span>
               </div>

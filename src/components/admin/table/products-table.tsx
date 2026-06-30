@@ -15,6 +15,7 @@ type ProductRow = {
   name: string;
   shortDescription: string;
   status: "draft" | "active" | "archived";
+  sortOrder?: number;
   categories: string[];
   defaultVariant?: {
     priceKurus: number;
@@ -210,6 +211,11 @@ export function ProductsTable({ items, footer }: ProductsTableProps) {
         )
       },
       {
+        accessorKey: "sortOrder",
+        header: "Sıra",
+        cell: ({ row }) => row.original.sortOrder ?? 0
+      },
+      {
         id: "price",
         header: "Varsayilan fiyat",
         accessorFn: (row) => row.defaultVariant?.priceKurus ?? 0,
@@ -286,7 +292,7 @@ export function ProductsTable({ items, footer }: ProductsTableProps) {
               onClick={() =>
                 runDeleteAction(
                   [row.original.id],
-                  "Bu ürün kalıcı olarak silinsin mi? Sipariş veya sepet geçmişi varsa silme engellenir."
+                  "Bu ürün kalıcı olarak silinsin mi? Sipariş geçmişindeki metin ve tutar bilgileri korunur; canlı ürün bağlantısı kaldırılır."
                 )
               }
               className="inline-flex rounded-full border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 transition hover:border-red-300 hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
@@ -345,7 +351,7 @@ export function ProductsTable({ items, footer }: ProductsTableProps) {
             onClick={() =>
               runDeleteAction(
                 selectedIds,
-                "Secili ürünler kalıcı olarak silinsin mi? Sipariş veya sepet geçmişi olanlar silinmez."
+                "Seçili ürünler kalıcı olarak silinsin mi? Sipariş geçmişindeki metin ve tutar bilgileri korunur; canlı ürün bağlantıları kaldırılır."
               )
             }
             className="rounded-full border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 disabled:cursor-not-allowed disabled:opacity-50"

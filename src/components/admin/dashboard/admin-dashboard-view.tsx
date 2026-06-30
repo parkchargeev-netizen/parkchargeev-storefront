@@ -30,7 +30,6 @@ import {
   adminOpsChecklist,
   adminRevenuePlays
 } from "@/lib/panel-experience";
-import { serviceCoverageSummary } from "@/lib/service-coverage";
 import type { AdminDashboardSnapshot } from "@/server/admin/dashboard";
 import type { AdminRole } from "@/server/auth/authorization";
 
@@ -554,14 +553,10 @@ export function AdminDashboardView({
               </div>
               <div className="rounded-lg border border-slate-200 bg-white/70 p-4">
                 <p className="text-xs font-bold uppercase tracking-normal text-slate-500">
-                  Kapsam
+                  Operasyon kapsamı
                 </p>
                 <p className="mt-2 text-xs font-bold leading-5 text-slate-950">
-                  {serviceCoverageSummary.shipping}
-                  <br />
-                  {serviceCoverageSummary.freeSurvey}
-                  <br />
-                  {serviceCoverageSummary.installation}
+                  Ürün, stok, sipariş ve ödeme takibi tek merkezden yönetilir.
                 </p>
               </div>
             </div>

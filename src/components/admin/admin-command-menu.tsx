@@ -135,7 +135,7 @@ export function AdminCommandMenu({
 
       {isOpen ? (
         <div
-          className="fixed inset-0 z-50 bg-slate-950/30 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-[9999] isolate bg-slate-950/40 p-4 backdrop-blur-sm"
           role="presentation"
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) {
@@ -147,7 +147,7 @@ export function AdminCommandMenu({
             role="dialog"
             aria-modal="true"
             aria-label="Admin komut menüsü"
-            className="mx-auto mt-8 max-w-2xl overflow-hidden rounded-lg border border-white/70 bg-white shadow-[0_28px_90px_rgba(15,23,42,0.22)]"
+            className="relative z-[10000] mx-auto mt-8 max-w-2xl overflow-hidden rounded-lg border border-white/70 bg-white shadow-[0_28px_90px_rgba(15,23,42,0.22)]"
           >
             <div className="border-b border-slate-200 p-4">
               <div className="flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">

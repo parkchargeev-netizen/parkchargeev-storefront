@@ -996,7 +996,7 @@ export function ProductForm({
       {
         groupName: "Kurulum",
         label: "Hizmet kapsamı",
-        value: "81 il ürün kargosu; Türkiye geneli keşif ve kurulum talebi"
+        value: "Kargo ve kurulum kapsamı sipariş/teklif sürecinde netleştirilir"
       },
       {
         groupName: "Uyum",
@@ -1094,15 +1094,15 @@ export function ProductForm({
       `${productName}, ${usageArea} için doğru cihaz, doğru altyapı ve güvenli kullanım odağıyla hazırlanmış bir ParkChargeEV çözümüdür.`,
       `Teknik tarafta ${primaryPower}, ${connectorText} konnektör, ${phaseText} faz yapısı${ipClassValue ? `, ${ipClassValue} koruma sınıfı` : ""} ve ${smartSummary} bilgisi öne çıkar.`,
       `Uyum tarafında ${vehicleSummary} için karar vermeyi kolaylaştırır. ${installSummary}`,
-      "Ürünler Türkiye genelinde 81 ile kargolanır."
+      "Kargo ve kurulum kapsamı sipariş/teklif sürecinde netleştirilir."
     ];
     const featureBullets = uniqueList([
       primaryPower ? `${primaryPower} güç sınıfı` : "",
       connectorText ? `${connectorText} konnektör uyumu` : "",
       phaseText ? `${phaseText} altyapı bilgisi` : "",
       smartSummary ? `${smartSummary} özellikleri` : "",
-      "81 il ürün kargosu",
-      "Türkiye geneli keşif talebi",
+      "Kargo kapsamı ürün etiketleriyle yönetilir",
+      "Keşif talebi teklif sürecinde değerlendirilir",
       "Saha uygunluğuna göre kurulum planı"
     ]);
     const descriptionHtml = [
@@ -1123,7 +1123,7 @@ export function ProductForm({
     setValue("aiSummary", aiSummary, { shouldDirty: true, shouldValidate: true });
     setValue(
       "detailContent.galleryFeatureLabels",
-      uniqueList([primaryPower, connectorText, phaseText, ...smartFeatureLabels, "81 il kargo"]),
+      uniqueList([primaryPower, connectorText, phaseText, ...smartFeatureLabels]),
       { shouldDirty: true, shouldValidate: true }
     );
     setValue(
@@ -1142,8 +1142,8 @@ export function ProductForm({
       "detailContent.purchaseBenefits",
       uniqueList([
         "Güvenli ödeme ve sipariş takibi",
-        "Kurulum: Sakarya ve Kocaeli",
-        "Türkiye geneli keşif talebi",
+        "Kargo kapsamı ürün etiketleriyle yönetilir",
+        "Keşif talebi teklif sürecinde değerlendirilir",
         "Saha uygunluğuna göre planlı kurulum"
       ]),
       { shouldDirty: true, shouldValidate: true }
@@ -1196,6 +1196,7 @@ export function ProductForm({
       mediaType: data.mediaType ?? inferProductMediaType(data.url),
       url: data.url,
       altText: watch("name") || "Ürün medyası",
+      sortOrder: mediaValues.length + 1,
       isPrimary: mediaFields.fields.length === 0
     });
   }
@@ -1359,6 +1360,46 @@ export function ProductForm({
           : "Bu özelliğin kullanıcıya sağladığı faydayı yazın.",
       iconName: hasWifiValue ? "wifi" : hasRfidValue ? "radio" : has4gValue ? "signal" : "sparkles"
     });
+  }
+
+  function reorderMediaItem(index: number, direction: -1 | 1) {
+    const nextIndex = index + direction;
+
+    if (nextIndex < 0 || nextIndex >= mediaValues.length) {
+      return;
+    }
+
+    const nextMedia = [...mediaValues];
+    const [movedItem] = nextMedia.splice(index, 1);
+    nextMedia.splice(nextIndex, 0, movedItem);
+
+    setValue(
+      "media",
+      nextMedia.map((item, itemIndex) => ({
+        ...item,
+        sortOrder: itemIndex + 1
+      })),
+      {
+        shouldDirty: true,
+        shouldValidate: true
+      }
+    );
+  }
+
+  function sortMediaByManualOrder() {
+    setValue(
+      "media",
+      [...mediaValues]
+        .sort((left, right) => Number(left.sortOrder ?? 0) - Number(right.sortOrder ?? 0))
+        .map((item, index) => ({
+          ...item,
+          sortOrder: index + 1
+        })),
+      {
+        shouldDirty: true,
+        shouldValidate: true
+      }
+    );
   }
 
   function moveTechnicalSpecItem(groupIndex: number, itemIndex: number, direction: -1 | 1) {
@@ -1721,6 +1762,17 @@ export function ProductForm({
               ))}
             </select>
             <ExampleHint>Taslak siteye çıkmaz; Aktif seçilirse mağazada görünür.</ExampleHint>
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-700">Ürün sırası</label>
+            <input
+              type="number"
+              min={0}
+              className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
+              {...register("detailContent.adminSortOrder", { valueAsNumber: true })}
+            />
+            <ExampleHint>Düşük sıra değeri mağaza ve admin listelerinde ürünü daha öne alır.</ExampleHint>
           </div>
 
           <div>
@@ -2209,6 +2261,7 @@ export function ProductForm({
                   mediaType: "image",
                   url: "",
                   altText: "",
+                  sortOrder: mediaValues.length + 1,
                   isPrimary: mediaFields.fields.length === 0
                 })
               }
@@ -2216,6 +2269,14 @@ export function ProductForm({
             >
               <LinkIcon className="h-4 w-4" aria-hidden />
               URL ekle
+            </button>
+            <button
+              type="button"
+              onClick={sortMediaByManualOrder}
+              disabled={mediaValues.length < 2}
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Sıraya göre diz
             </button>
           </div>
         </div>
@@ -2251,7 +2312,7 @@ export function ProductForm({
             const mediaType = mediaItem?.mediaType ?? field.mediaType;
 
             return (
-            <div key={field.fieldId} className="grid gap-4 rounded-lg border border-slate-200 bg-slate-50 p-4 lg:grid-cols-[112px_150px_minmax(0,1fr)_220px_auto]">
+            <div key={field.fieldId} className="grid gap-4 rounded-lg border border-slate-200 bg-slate-50 p-4 lg:grid-cols-[96px_130px_90px_minmax(0,1fr)_200px_auto]">
               <div className="grid aspect-square place-items-center overflow-hidden rounded-lg border border-slate-200 bg-white text-slate-400">
                 {mediaUrl ? (
                   mediaType === "video" ? (
@@ -2277,6 +2338,17 @@ export function ProductForm({
                 <option value="image">Görsel</option>
                 <option value="video">Video</option>
               </select>
+              <div>
+                <label className="mb-1 block text-xs font-bold uppercase tracking-normal text-slate-500">
+                  Sıra
+                </label>
+                <input
+                  type="number"
+                  min={0}
+                  className="w-full rounded-lg border border-slate-300 px-3 py-3 text-sm"
+                  {...register(`media.${index}.sortOrder`, { valueAsNumber: true })}
+                />
+              </div>
               <input
                 className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
                 placeholder="https://... veya /uploads/..."
@@ -2320,7 +2392,7 @@ export function ProductForm({
                 <button
                   type="button"
                   disabled={index === 0}
-                  onClick={() => mediaFields.swap(index, index - 1)}
+                  onClick={() => reorderMediaItem(index, -1)}
                   className="rounded-full border border-slate-200 px-3 py-2 text-sm text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   Yukarı
@@ -2328,7 +2400,7 @@ export function ProductForm({
                 <button
                   type="button"
                   disabled={index === mediaFields.fields.length - 1}
-                  onClick={() => mediaFields.swap(index, index + 1)}
+                  onClick={() => reorderMediaItem(index, 1)}
                   className="rounded-full border border-slate-200 px-3 py-2 text-sm text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   Aşağı

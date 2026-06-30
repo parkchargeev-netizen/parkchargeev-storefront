@@ -6,16 +6,20 @@ import { EditorContent, useEditor, type Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import {
   Bold,
+  Code2,
   Eraser,
+  Heading1,
   Heading2,
   Heading3,
   Italic,
   Link as LinkIcon,
   List,
   ListOrdered,
+  Minus,
   Pilcrow,
   Quote,
   Redo2,
+  Strikethrough,
   Undo2,
   Unlink,
   type LucideIcon
@@ -98,6 +102,13 @@ export function RichTextEditor({
   const toolbarGroups: ToolbarAction[][] = [
     [
       {
+        label: "H1",
+        title: "Başlık 1",
+        icon: Heading1,
+        action: (currentEditor) => currentEditor.chain().focus().toggleHeading({ level: 1 }).run(),
+        active: (currentEditor) => currentEditor.isActive("heading", { level: 1 })
+      },
+      {
         label: "P",
         title: "Normal paragraf",
         icon: Pilcrow,
@@ -133,6 +144,20 @@ export function RichTextEditor({
         icon: Italic,
         action: (currentEditor) => currentEditor.chain().focus().toggleItalic().run(),
         active: (currentEditor) => currentEditor.isActive("italic")
+      },
+      {
+        label: "S",
+        title: "Üstü çizili",
+        icon: Strikethrough,
+        action: (currentEditor) => currentEditor.chain().focus().toggleStrike().run(),
+        active: (currentEditor) => currentEditor.isActive("strike")
+      },
+      {
+        label: "Kod",
+        title: "Kod vurgusu",
+        icon: Code2,
+        action: (currentEditor) => currentEditor.chain().focus().toggleCode().run(),
+        active: (currentEditor) => currentEditor.isActive("code")
       }
     ],
     [
@@ -156,6 +181,12 @@ export function RichTextEditor({
         icon: Quote,
         action: (currentEditor) => currentEditor.chain().focus().toggleBlockquote().run(),
         active: (currentEditor) => currentEditor.isActive("blockquote")
+      },
+      {
+        label: "Çizgi",
+        title: "Yatay çizgi",
+        icon: Minus,
+        action: (currentEditor) => currentEditor.chain().focus().setHorizontalRule().run()
       }
     ],
     [
