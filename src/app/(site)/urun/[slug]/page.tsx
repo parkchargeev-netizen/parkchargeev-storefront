@@ -322,9 +322,143 @@ export default async function ProductDetailPage({
         </section>
       ) : null}
 
+      <section className="mt-8 grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+        <div className="surface-card p-8">
+          <p className="text-sm font-semibold uppercase tracking-normal text-primary">
+            {detailContent.intentHeading}
+          </p>
+          <h2 className="mt-3 text-3xl font-bold tracking-normal text-on-surface">
+            Satın alma niyeti ve kullanım senaryoları
+          </h2>
+          <p className="mt-4 text-sm leading-7 text-on-surface-variant">
+            {detailContent.intentBody}
+          </p>
+
+          {detailContent.seoIntents.length > 0 ? (
+            <div className="mt-6 flex flex-wrap gap-2">
+              {detailContent.seoIntents.map((intent) => (
+                <span
+                  key={intent}
+                  className="rounded-full border border-primary/15 bg-primary/5 px-3 py-2 text-xs font-bold uppercase tracking-normal text-primary"
+                >
+                  {intent}
+                </span>
+              ))}
+            </div>
+          ) : null}
+
+          {detailContent.useCases.length > 0 ? (
+            <div className="mt-6">
+              <h3 className="text-base font-bold text-on-surface">
+                {detailContent.useCasesHeading}
+              </h3>
+              <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                {detailContent.useCases.map((useCase) => (
+                  <div
+                    key={useCase}
+                    className="rounded-lg border border-outline-variant/35 bg-white px-4 py-3 text-sm font-semibold leading-6 text-on-surface"
+                  >
+                    {useCase}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null}
+        </div>
+
+        {detailContent.highlights.length > 0 ? (
+          <div className="surface-card p-8">
+            <p className="text-sm font-semibold uppercase tracking-normal text-primary">
+              {detailContent.highlightsHeading}
+            </p>
+            <h2 className="mt-3 text-3xl font-bold tracking-normal text-on-surface">
+              Öne çıkan avantajlar
+            </h2>
+            <div className="mt-6 grid gap-3">
+              {detailContent.highlights.map((highlight, index) => (
+                <div
+                  key={highlight}
+                  className="flex gap-3 rounded-lg border border-outline-variant/35 bg-surface-container-low p-4"
+                >
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-white">
+                    {index + 1}
+                  </span>
+                  <p className="text-sm font-semibold leading-6 text-on-surface">
+                    {highlight}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : null}
+      </section>
+
       <section className="product-detail-info-grid mt-8 grid gap-6 lg:hidden">
         {renderDescriptionCard()}
         {renderSpecsCard()}
+      </section>
+
+      <section className="mt-8 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+        {detailContent.purchaseReadiness.length > 0 ? (
+          <div className="surface-card p-8">
+            <p className="text-sm font-semibold uppercase tracking-normal text-primary">
+              Satın alma hazırlığı
+            </p>
+            <h2 className="mt-3 text-3xl font-bold tracking-normal text-on-surface">
+              Sipariş öncesi netleşmesi gerekenler
+            </h2>
+            <div className="product-detail-readiness-strip mt-6">
+              {detailContent.purchaseReadiness.map((item) => (
+                <div
+                  key={`${item.label}-${item.value}`}
+                  className="product-detail-readiness-chip"
+                >
+                  <span>{item.label}</span>
+                  <strong>{item.value}</strong>
+                </div>
+              ))}
+            </div>
+            {detailContent.decisionChecks.length > 0 ? (
+              <div className="mt-5 grid gap-3">
+                {detailContent.decisionChecks.map((item) => (
+                  <p
+                    key={item}
+                    className="rounded-lg border border-outline-variant/35 bg-white px-4 py-3 text-sm leading-7 text-on-surface-variant"
+                  >
+                    {item}
+                  </p>
+                ))}
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+
+        {detailContent.policyDetails.length > 0 ? (
+          <div className="surface-card p-8">
+            <p className="text-sm font-semibold uppercase tracking-normal text-primary">
+              Teslimat, iade ve garanti
+            </p>
+            <h2 className="mt-3 text-3xl font-bold tracking-normal text-on-surface">
+              Satın alma sonrası süreç
+            </h2>
+            <div className="mt-6 overflow-hidden rounded-lg border border-outline-variant/40 bg-white">
+              {detailContent.policyDetails.map((detail, index) => (
+                <details
+                  key={detail.title}
+                  className={index > 0 ? "border-t border-outline-variant/30" : undefined}
+                  open={index === 0}
+                >
+                  <summary className="cursor-pointer px-5 py-4 text-sm font-semibold text-on-surface">
+                    {detail.title}
+                  </summary>
+                  <p className="px-5 pb-5 text-sm leading-7 text-on-surface-variant">
+                    {detail.body}
+                  </p>
+                </details>
+              ))}
+            </div>
+          </div>
+        ) : null}
       </section>
 
       <section className="mt-8 surface-card p-8">
@@ -362,8 +496,6 @@ export default async function ProductDetailPage({
           ))}
         </div>
       </section>
-
-      <ProductReviews productName={product.name} productSlug={product.slug} />
 
       <section className="product-detail-related mt-12">
         <div className="surface-card p-8">
@@ -404,6 +536,8 @@ export default async function ProductDetailPage({
           ))}
         </div>
       </section>
+
+      <ProductReviews productName={product.name} productSlug={product.slug} />
     </div>
   );
 }

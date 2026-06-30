@@ -350,13 +350,13 @@ export function ProductGallery({
           role="dialog"
           aria-modal="true"
           aria-label={`${productName} büyütülmüş ürün görseli`}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/86 p-4 backdrop-blur-md"
+          className="fixed inset-0 z-[2147483647] flex items-center justify-center bg-slate-950/94 backdrop-blur-md"
           onClick={() => setLightboxIndex(null)}
         >
           <button
             type="button"
             onClick={() => setLightboxIndex(null)}
-            className="absolute right-4 top-4 z-10 rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-sm font-bold text-white backdrop-blur transition hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
+            className="absolute right-4 top-4 z-20 rounded-lg border border-white/20 bg-white/12 px-4 py-3 text-sm font-bold text-white backdrop-blur transition hover:bg-white/22 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
           >
             Kapat
           </button>
@@ -369,7 +369,7 @@ export function ProductGallery({
                   event.stopPropagation();
                   moveLightbox(-1);
                 }}
-                className="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-lg border border-white/20 bg-white/10 px-4 py-4 text-2xl font-bold text-white backdrop-blur transition hover:bg-white/20"
+                className="absolute left-4 top-1/2 z-20 -translate-y-1/2 rounded-lg border border-white/20 bg-white/12 px-4 py-4 text-2xl font-bold text-white backdrop-blur transition hover:bg-white/22"
                 aria-label="Önceki görsel"
               >
                 ‹
@@ -380,7 +380,7 @@ export function ProductGallery({
                   event.stopPropagation();
                   moveLightbox(1);
                 }}
-                className="absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-lg border border-white/20 bg-white/10 px-4 py-4 text-2xl font-bold text-white backdrop-blur transition hover:bg-white/20"
+                className="absolute right-4 top-1/2 z-20 -translate-y-1/2 rounded-lg border border-white/20 bg-white/12 px-4 py-4 text-2xl font-bold text-white backdrop-blur transition hover:bg-white/22"
                 aria-label="Sonraki görsel"
               >
                 ›
@@ -390,7 +390,7 @@ export function ProductGallery({
 
           <button
             type="button"
-            className="relative h-[84vh] w-[min(94vw,1180px)] cursor-zoom-out overflow-hidden rounded-lg border border-white/15 bg-white shadow-[0_36px_120px_rgba(0,0,0,0.5)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
+            className="relative h-screen w-screen cursor-zoom-out overflow-hidden bg-white shadow-[0_36px_120px_rgba(0,0,0,0.5)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
             onClick={(event) => {
               event.stopPropagation();
               setLightboxIndex(null);
@@ -402,8 +402,8 @@ export function ProductGallery({
               alt={lightboxMedia.altText || productName}
               fill
               unoptimized
-              sizes="94vw"
-              className="object-contain p-4"
+              sizes="100vw"
+              className="object-contain p-4 sm:p-8"
             />
           </button>
         </div>

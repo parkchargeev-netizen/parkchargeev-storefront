@@ -248,16 +248,6 @@ function uniqueList(values: string[]) {
   return Array.from(new Set(values.map((value) => value.trim()).filter(Boolean)));
 }
 
-function createSmartFeature(sortOrder: number) {
-  return {
-    title: "",
-    description: "",
-    iconName: "sparkles",
-    isActive: true,
-    sortOrder
-  };
-}
-
 function createTechnicalSpecItem(sortOrder: number) {
   return {
     name: "",
@@ -597,11 +587,6 @@ export function ProductForm({
   const [uploadNotice, setUploadNotice] = useState<UploadNotice | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [vehicleBrandInput, setVehicleBrandInput] = useState("");
-  const [quickSmartFeature, setQuickSmartFeature] = useState({
-    title: "",
-    description: "",
-    iconName: "sparkles"
-  });
 
   const mergedDefaults = useMemo<ProductFormValues>(
     () => withFormPriceAmounts({
@@ -625,17 +610,21 @@ export function ProductForm({
           initialValues?.detailContent?.galleryFeatureLabels ??
           detailContentDefaults.galleryFeatureLabels,
         purchaseBenefits:
-          initialValues?.detailContent?.purchaseBenefits ??
-          detailContentDefaults.purchaseBenefits,
+          initialValues?.detailContent?.purchaseBenefits?.length
+            ? initialValues.detailContent.purchaseBenefits
+            : detailContentDefaults.purchaseBenefits,
         seoIntents:
-          initialValues?.detailContent?.seoIntents ??
-          detailContentDefaults.seoIntents,
+          initialValues?.detailContent?.seoIntents?.length
+            ? initialValues.detailContent.seoIntents
+            : detailContentDefaults.seoIntents,
         useCases:
-          initialValues?.detailContent?.useCases ??
-          detailContentDefaults.useCases,
+          initialValues?.detailContent?.useCases?.length
+            ? initialValues.detailContent.useCases
+            : detailContentDefaults.useCases,
         highlights:
-          initialValues?.detailContent?.highlights ??
-          detailContentDefaults.highlights,
+          initialValues?.detailContent?.highlights?.length
+            ? initialValues.detailContent.highlights
+            : detailContentDefaults.highlights,
         smartFeatures:
           initialValues?.detailContent?.smartFeatures?.length
             ? initialValues.detailContent.smartFeatures
@@ -687,12 +676,6 @@ export function ProductForm({
   const variantFields = useFieldArray({
     control,
     name: "variants",
-    keyName: "fieldId"
-  });
-
-  const smartFeatureFields = useFieldArray({
-    control,
-    name: "detailContent.smartFeatures",
     keyName: "fieldId"
   });
 
@@ -1106,29 +1089,6 @@ export function ProductForm({
     for (const file of Array.from(files)) {
       await uploadMediaFile(file);
     }
-  }
-
-  function addQuickSmartFeature() {
-    const title = cleanText(quickSmartFeature.title);
-    const description = cleanText(quickSmartFeature.description);
-
-    if (!title || !description) {
-      setErrorMessage("Akıllı özellik eklemek için başlık ve açıklama yazın.");
-      return;
-    }
-
-    smartFeatureFields.append({
-      ...createSmartFeature(smartFeatureValues.length + 1),
-      title,
-      description,
-      iconName: cleanText(quickSmartFeature.iconName) || "sparkles"
-    });
-    setQuickSmartFeature({
-      title: "",
-      description: "",
-      iconName: "sparkles"
-    });
-    setErrorMessage(null);
   }
 
   function reorderMediaItem(index: number, direction: -1 | 1) {
@@ -1983,54 +1943,7 @@ export function ProductForm({
                 Kurulum gerekir
               </label>
             </div>
-            <div className="mt-4 grid gap-2 border-t border-slate-200 pt-4">
-              <input
-                type="text"
-                value={quickSmartFeature.title}
-                onChange={(event) =>
-                  setQuickSmartFeature((current) => ({
-                    ...current,
-                    title: event.target.value
-                  }))
-                }
-                className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm"
-                placeholder="Yeni özellik: Bluetooth, OCPP, dinamik yük yönetimi"
-              />
-              <textarea
-                rows={3}
-                value={quickSmartFeature.description}
-                onChange={(event) =>
-                  setQuickSmartFeature((current) => ({
-                    ...current,
-                    description: event.target.value
-                  }))
-                }
-                className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm"
-                placeholder="Bu özelliğin kullanıcıya sağladığı faydayı yazın."
-              />
-              <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
-                <input
-                  type="text"
-                  value={quickSmartFeature.iconName}
-                  onChange={(event) =>
-                    setQuickSmartFeature((current) => ({
-                      ...current,
-                      iconName: event.target.value
-                    }))
-                  }
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm"
-                  placeholder="ikon adı: wifi, shield, zap"
-                />
-                <button
-                  type="button"
-                  onClick={addQuickSmartFeature}
-                  className="inline-flex items-center justify-center rounded-lg bg-[#063326] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#0f513f]"
-                >
-                  Ekle
-                </button>
-              </div>
-            </div>
-            <ExampleHint>Seçimler teknik özellik, satış metni ve aşağıdaki akıllı özellik kartları için kullanılabilir.</ExampleHint>
+            <ExampleHint>Bu seçimler ürün kartı, teknik tablo ve ürün detayındaki otomatik özellik vurgularını besler.</ExampleHint>
           </div>
         </div>
       </section>

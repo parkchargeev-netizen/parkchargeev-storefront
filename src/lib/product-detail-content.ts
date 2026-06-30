@@ -160,6 +160,74 @@ function getReadinessDefaults(product?: ProductModel): ProductDetailTextPair[] {
   ];
 }
 
+function getConnectorLabel(product?: ProductModel) {
+  const variantConnector =
+    product?.variants?.find((variant) => variant.isDefault)?.connectorType ??
+    product?.variants?.find((variant) => variant.connectorType)?.connectorType;
+  const specConnector = product?.specs.find((spec) =>
+    /konnektör|konnektor|soket|connector/i.test(spec.label)
+  )?.value;
+
+  return variantConnector || specConnector || "Type 2 uyumlu";
+}
+
+function getIntentDefaults(product?: ProductModel) {
+  const category = product?.category ?? "";
+  const powerLabel = product?.powerLabel || "EV şarj cihazı";
+  const connector = getConnectorLabel(product);
+  const isAccessory = category === "Aksesuar";
+
+  return isAccessory
+    ? [
+        "elektrikli araç şarj aksesuarı arayanlar",
+        "Type 2 kablo veya bağlantı ekipmanı ihtiyacı olanlar",
+        "mevcut şarj kurulumunu tamamlamak isteyen kullanıcılar"
+      ]
+    : [
+        `${powerLabel} elektrikli araç şarj cihazı arayanlar`,
+        `${connector} araçlar için güvenli şarj çözümü isteyenler`,
+        "ev, site, iş yeri veya otopark için planlı şarj kurulumu düşünenler"
+      ];
+}
+
+function getUseCaseDefaults(product?: ProductModel) {
+  const category = product?.category ?? "";
+
+  if (category === "Aksesuar") {
+    return [
+      "Ev tipi şarj kullanımını tamamlayan aksesuar ihtiyacı",
+      "Site ve otoparklarda yedek kablo/bağlantı çözümü",
+      "Type 2 destekli araçlarda günlük kullanım"
+    ];
+  }
+
+  if (category.toLocaleLowerCase("tr-TR").includes("dc")) {
+    return [
+      "Ticari hızlı şarj lokasyonları",
+      "Filo ve otopark işletmeleri",
+      "Yüksek devirli müşteri kullanım senaryoları"
+    ];
+  }
+
+  return [
+    "Ev, villa ve bireysel otopark kullanımı",
+    "Site ve apartman otoparklarında kontrollü şarj",
+    "İş yeri, ofis ve küçük filo şarj ihtiyaçları"
+  ];
+}
+
+function getHighlightDefaults(product?: ProductModel) {
+  const powerLabel = product?.powerLabel || "Net güç sınıfı";
+  const connector = getConnectorLabel(product);
+
+  return [
+    `${powerLabel} bilgisiyle hızlı teknik karar`,
+    `${connector} ve altyapı uyumu için sade ürün bilgisi`,
+    "Sepete ekleme, teslimat ve kurulum kapsamı tek akışta ilerler",
+    "Garanti, iade ve teknik destek bilgileri ürün sayfasında açıkça görünür"
+  ];
+}
+
 export function getDefaultProductDetailContent(product?: ProductModel): ProductDetailContent {
   return {
     adminSortOrder: 0,
@@ -172,11 +240,11 @@ export function getDefaultProductDetailContent(product?: ProductModel): ProductD
     intentHeading: "Bu ürün kimin için?",
     intentBody:
       "Ürün, aşağıdaki satın alma senaryolarında hızlı ve güvenli karar vermenize yardımcı olur.",
-    seoIntents: product?.seoIntent?.length ? product.seoIntent : [],
+    seoIntents: product?.seoIntent?.length ? product.seoIntent : getIntentDefaults(product),
     useCasesHeading: "Uygun kullanım alanı",
-    useCases: product?.useCases?.length ? product.useCases : [],
+    useCases: product?.useCases?.length ? product.useCases : getUseCaseDefaults(product),
     highlightsHeading: "Satış ve kurulum avantajları",
-    highlights: product?.highlights?.length ? product.highlights : [],
+    highlights: product?.highlights?.length ? product.highlights : getHighlightDefaults(product),
     smartFeatures: [],
     technicalGroups: [],
     purchaseBenefits: [
