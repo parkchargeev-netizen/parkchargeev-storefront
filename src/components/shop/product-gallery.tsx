@@ -4,7 +4,6 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 
 import type { ProductMediaModel } from "@/lib/mock-data";
-import type { ProductCommerceBadge } from "@/lib/product-commerce-tags";
 
 type ProductGalleryProps = {
   productName: string;
@@ -13,7 +12,6 @@ type ProductGalleryProps = {
   mediaItems?: ProductMediaModel[];
   featureLabels?: string[];
   deviceCaption?: string;
-  commerceBadges?: ProductCommerceBadge[];
 };
 
 type ProductGalleryThumbnail = ProductMediaModel | { altText: string };
@@ -182,8 +180,7 @@ export function ProductGallery({
   imageUrl,
   mediaItems,
   featureLabels = ["IP koruma", "Type 2", "Kurulum"],
-  deviceCaption = "Ölçekli cihaz temsili",
-  commerceBadges = []
+  deviceCaption = "Ölçekli cihaz temsili"
 }: ProductGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
@@ -268,23 +265,6 @@ export function ProductGallery({
             ) : (
               <ProductGalleryStageMedia media={activeMedia} productName={productName} />
             )
-          ) : null}
-
-          {activeMedia && commerceBadges.length > 0 ? (
-            <div className="product-gallery-commerce-badges absolute left-4 top-4 z-20 flex flex-wrap gap-2">
-              {commerceBadges.slice(0, 2).map((badge) => (
-                <span
-                  key={badge.label}
-                  className={
-                    badge.tone === "success"
-                      ? "rounded-full bg-emerald-500 px-3 py-2 text-xs font-bold uppercase tracking-normal text-white shadow-[0_14px_34px_rgba(16,185,129,0.34)]"
-                      : "rounded-full bg-amber-400 px-3 py-2 text-xs font-bold uppercase tracking-normal text-slate-950 shadow-[0_14px_34px_rgba(245,158,11,0.28)]"
-                  }
-                >
-                  {badge.label}
-                </span>
-              ))}
-            </div>
           ) : null}
 
           {activeMedia ? null : (
@@ -389,7 +369,7 @@ export function ProductGallery({
                   event.stopPropagation();
                   moveLightbox(-1);
                 }}
-                className="absolute left-4 top-1/2 z-10 hidden -translate-y-1/2 rounded-lg border border-white/20 bg-white/10 px-4 py-4 text-2xl font-bold text-white backdrop-blur transition hover:bg-white/20 sm:block"
+                className="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-lg border border-white/20 bg-white/10 px-4 py-4 text-2xl font-bold text-white backdrop-blur transition hover:bg-white/20"
                 aria-label="Önceki görsel"
               >
                 ‹
@@ -400,7 +380,7 @@ export function ProductGallery({
                   event.stopPropagation();
                   moveLightbox(1);
                 }}
-                className="absolute right-4 top-1/2 z-10 hidden -translate-y-1/2 rounded-lg border border-white/20 bg-white/10 px-4 py-4 text-2xl font-bold text-white backdrop-blur transition hover:bg-white/20 sm:block"
+                className="absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-lg border border-white/20 bg-white/10 px-4 py-4 text-2xl font-bold text-white backdrop-blur transition hover:bg-white/20"
                 aria-label="Sonraki görsel"
               >
                 ›

@@ -6,6 +6,7 @@ import { Bluetooth, Cpu, Radio, Settings, ShieldCheck, Sparkles, Wifi, Zap } fro
 import { ProductGallery } from "@/components/shop/product-gallery";
 import { ProductCard } from "@/components/shop/product-card";
 import { ProductPurchasePanel } from "@/components/shop/product-purchase-panel";
+import { ProductReviews } from "@/components/shop/product-reviews";
 import { JsonLd } from "@/components/seo/json-ld";
 import { getProductCommerceBadges } from "@/lib/product-commerce-tags";
 import { getDisplayProductImageUrl } from "@/lib/product-media";
@@ -135,17 +136,9 @@ export default async function ProductDetailPage({
   const smartFeatures = getActiveProductSmartFeatures(product);
   const technicalGroups = getActiveProductTechnicalGroups(product);
   const commerceBadges = getProductCommerceBadges(product);
-  const displayCommerceBadges =
-    commerceBadges.length > 0 || product.stockLabel === "Stokta Yok"
-      ? commerceBadges
-      : [
-          { label: "Kargo bedava", tone: "success" as const },
-          { label: "Yarın kargoda", tone: "primary" as const }
-        ];
+  const displayCommerceBadges = commerceBadges;
   const defaultVariant = product.variants?.find((variant) => variant.isDefault) ?? product.variants?.[0];
   const productSku = defaultVariant?.sku ?? product.slug.toUpperCase();
-  const hasFreeShipping = displayCommerceBadges.some((badge) => badge.label === "Kargo bedava");
-  const hasShipsTomorrow = displayCommerceBadges.some((badge) => badge.label === "Yarın kargoda");
   const technicalSpecs = technicalGroups.flatMap((group) =>
     group.items.map((spec) => ({
       label: spec.name,
@@ -230,7 +223,6 @@ export default async function ProductDetailPage({
             mediaItems={product.media}
             featureLabels={detailContent.galleryFeatureLabels}
             deviceCaption={detailContent.galleryDeviceCaption}
-            commerceBadges={displayCommerceBadges}
           />
           <div className="product-detail-desktop-under-gallery mt-5 hidden gap-4 lg:grid">
             {renderDescriptionCard()}
@@ -243,15 +235,6 @@ export default async function ProductDetailPage({
             <span>Marka: ParkChargeEV seçkisi</span>
             <span className="text-on-surface-variant/50">|</span>
             <span>Ürün kodu: {productSku}</span>
-          </div>
-
-          <div className="mt-3 flex flex-wrap items-center gap-2">
-            <span className="rounded-full bg-amber-100 px-3 py-1.5 text-sm font-bold text-amber-700">
-              ★★★★★
-            </span>
-            <span className="text-sm font-semibold text-on-surface-variant">
-              Teknik kontrol ve güvenli ödeme
-            </span>
           </div>
 
           <div className="mt-4 flex flex-wrap items-center gap-3">
@@ -281,21 +264,8 @@ export default async function ProductDetailPage({
             {product.name}
           </h1>
           <p className="mt-4 line-clamp-2 text-base leading-7 text-on-surface-variant">
-            {storeProfile.primaryFit}
+            {product.summary || storeProfile.primaryFit}
           </p>
-
-          <div className="product-detail-commerce-alerts mt-5 grid gap-3 sm:grid-cols-2">
-            <div className={hasFreeShipping ? "product-detail-commerce-alert product-detail-commerce-alert--success" : "product-detail-commerce-alert"}>
-              <span>Kargo</span>
-              <strong>{hasFreeShipping ? "Kargo bedava" : "Kargo bilgisi sepette"}</strong>
-              <small>{hasFreeShipping ? "Türkiye geneli ürün sevkiyatı için avantajlı teslimat." : "Teslimat ve kargo koşulları adreste netleşir."}</small>
-            </div>
-            <div className={hasShipsTomorrow ? "product-detail-commerce-alert product-detail-commerce-alert--warning" : "product-detail-commerce-alert"}>
-              <span>Teslimat</span>
-              <strong>{hasShipsTomorrow ? "Yarın kargoda" : "Stoktan hızlı sevk"}</strong>
-              <small>{hasShipsTomorrow ? "Uygun saat içinde tamamlanan siparişler hızlı hazırlanır." : "Stok ve operasyon durumuna göre sevkiyat planlanır."}</small>
-            </div>
-          </div>
 
           <div className="product-detail-feature-strip mt-6 grid gap-3 sm:grid-cols-3">
             {[
@@ -316,44 +286,6 @@ export default async function ProductDetailPage({
             product={product}
             benefits={detailContent.purchaseBenefits}
           />
-
-          <div className="product-detail-readiness-strip mt-5">
-            {detailContent.purchaseReadiness.slice(0, 3).map((item) => (
-              <div
-                key={item.label}
-                className="product-detail-readiness-chip"
-              >
-                <span>{item.label}</span>
-                <strong>{item.value}</strong>
-              </div>
-            ))}
-          </div>
-
-          <details className="product-detail-checklist mt-4">
-            <summary>Uygunluk notları</summary>
-            <div>
-              {detailContent.decisionChecks.slice(0, 3).map((item) => (
-                <p key={item}>{item}</p>
-              ))}
-            </div>
-          </details>
-
-          <div className="mt-6 overflow-hidden rounded-lg border border-outline-variant/40 bg-white">
-            {detailContent.policyDetails.map((detail, index) => (
-              <details
-                key={detail.title}
-                className={index > 0 ? "border-t border-outline-variant/30" : undefined}
-                open={index === 0}
-              >
-                <summary className="cursor-pointer px-5 py-4 text-sm font-semibold text-on-surface">
-                  {detail.title}
-                </summary>
-                <p className="px-5 pb-5 text-sm leading-7 text-on-surface-variant">
-                  {detail.body}
-                </p>
-              </details>
-            ))}
-          </div>
         </aside>
       </div>
 
@@ -431,6 +363,8 @@ export default async function ProductDetailPage({
         </div>
       </section>
 
+      <ProductReviews productName={product.name} productSlug={product.slug} />
+
       <section className="product-detail-related mt-12">
         <div className="surface-card p-8">
           <h2 className="text-3xl font-bold tracking-normal text-on-surface">
@@ -462,7 +396,7 @@ export default async function ProductDetailPage({
         </div>
 
         <div
-          className="product-detail-related-track mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3"
+          className="product-detail-related-track mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
           aria-label="İlgili ürünler kaydırmalı liste"
         >
           {relatedProducts.map((relatedProduct) => (

@@ -97,7 +97,7 @@ export async function POST(request: Request, context: ProductReviewRouteContext)
       return reviewError("Ürün bulunamadı.", 404);
     }
 
-    const [review] = await db
+    await db
       .insert(productReviews)
       .values({
         productId: product.id,
@@ -106,24 +106,12 @@ export async function POST(request: Request, context: ProductReviewRouteContext)
         rating: payload.rating,
         title: payload.title || null,
         body: payload.body,
-        status: "approved"
-      })
-      .returning({
-        id: productReviews.id,
-        authorName: productReviews.authorName,
-        rating: productReviews.rating,
-        title: productReviews.title,
-        body: productReviews.body,
-        createdAt: productReviews.createdAt
+        status: "pending"
       });
 
     return NextResponse.json({
       ok: true,
-      message: "Yorumunuz ürün sayfasına eklendi.",
-      review: {
-        ...review,
-        createdAt: review.createdAt.toISOString()
-      }
+      message: "Yorumunuz onaydan sonra yayınlanacak."
     });
   } catch (error) {
     if (error instanceof z.ZodError) {

@@ -11,6 +11,7 @@ import {
   LayoutDashboard,
   ListTree,
   Map as MapIcon,
+  MessageSquare,
   Package,
   Search,
   ShieldCheck,
@@ -52,6 +53,7 @@ const navigationIconMap = {
   "/admin/katalog": ListTree,
   "/admin/envanter": Boxes,
   "/admin/kampanyalar": Sparkles,
+  "/admin/yorumlar": MessageSquare,
   "/admin/bildirimler": Activity,
   "/admin/paytr": CreditCard,
   "/admin/audit": ShieldCheck,
@@ -70,6 +72,7 @@ const navigationDetailMap: Record<string, string> = {
   "/admin/katalog": "Kategori ve marka sözlükleri",
   "/admin/envanter": "Stok hareketleri ve kritik stok uyarıları",
   "/admin/kampanyalar": "Banner, kampanya ve vitrin yönetimi",
+  "/admin/yorumlar": "Ürün yorum onayı ve moderasyonu",
   "/admin/bildirimler": "Okunmamış operasyon bildirimleri",
   "/admin/paytr": "Ödeme hareketleri ve callback kayıtları",
   "/admin/audit": "İşlem kayıtları ve güvenlik izleme",
@@ -84,7 +87,7 @@ const moduleGroups = [
   },
   {
     label: "Ticaret",
-    items: ["/admin/urunler", "/admin/katalog", "/admin/envanter", "/admin/kampanyalar", "/admin/paytr"],
+    items: ["/admin/urunler", "/admin/katalog", "/admin/envanter", "/admin/kampanyalar", "/admin/yorumlar", "/admin/paytr"],
     icon: Boxes
   },
   {

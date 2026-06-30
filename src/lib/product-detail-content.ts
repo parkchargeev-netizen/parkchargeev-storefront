@@ -188,7 +188,7 @@ export function getDefaultProductDetailContent(product?: ProductModel): ProductD
     decisionChecks: [
       "Araç uyumu, güç ihtiyacı ve kurulum kapsamı ürün seçimi sırasında netleştirilir.",
       "Keşif talebiyle pano kapasitesi, faz yapısı ve kablo hattı netleştirilebilir.",
-      "Güvenli ödeme akışı kart verisini site sunucusuna taşımaz."
+      "Sepet ve checkout akışı kullanıcıyı gereksiz ara adımlarla yormadan ilerler."
     ],
     support: {
       title: "Uygunluğu birlikte kontrol edelim",

@@ -1,9 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
-import { BadgeCheck, CreditCard, ShieldCheck, ShoppingCart, Truck, Zap } from "lucide-react";
+import { ShoppingCart, Truck } from "lucide-react";
 
 import { useCart } from "@/components/providers/cart-provider";
 import { trackConversionEvent } from "@/lib/conversion-events";
@@ -14,47 +13,25 @@ import {
   getProductCableOptions,
   getProductSelectedCableOption
 } from "@/lib/product-options";
-import { getProductStoreProfile } from "@/lib/shop-merchandising";
 
 type ProductPurchasePanelProps = {
   product: ProductModel;
   benefits?: string[];
 };
 
-const defaultBenefits = [
-  "Tek sayfa güvenli ödeme",
-  "Garanti ve teknik destek",
-  "Keşifle doğru kurulum"
-];
-
-export function ProductPurchasePanel({
-  product,
-  benefits = defaultBenefits
-}: ProductPurchasePanelProps) {
+export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
   const { addItem, isHydrated } = useCart();
-  const router = useRouter();
   const cableOptions = getProductCableOptions(product);
   const [cableOption, setCableOption] = useState(cableOptions[0]?.label ?? "");
   const cableOptionRef = useRef(cableOptions[0]?.label ?? "");
-  const [purchaseMode, setPurchaseMode] = useState<"product" | "survey">("product");
   const [quantity, setQuantity] = useState(1);
   const [feedback, setFeedback] = useState<string | null>(null);
 
   const selectedOption = getProductSelectedCableOption(product, cableOption);
-  const storeProfile = getProductStoreProfile(product);
   const isOutOfStock = product.stockLabel === "Stokta Yok";
   const isAddDisabled = isOutOfStock || !isHydrated;
   const estimatedLineTotal = selectedOption.priceKurus * quantity;
-  const explicitCommerceBadges = getProductCommerceBadges(product);
-  const commerceBadges =
-    explicitCommerceBadges.length > 0 || isOutOfStock
-      ? explicitCommerceBadges
-      : [
-          { label: "Kargo bedava", tone: "success" as const },
-          { label: "Yarın kargoda", tone: "primary" as const }
-        ];
-  const hasFreeShipping = commerceBadges.some((badge) => badge.label === "Kargo bedava");
-  const hasShipsTomorrow = commerceBadges.some((badge) => badge.label === "Yarın kargoda");
+  const commerceBadges = getProductCommerceBadges(product);
   const selectedVariant =
     product.variants?.find((variant) => variant.cableLength === cableOption) ??
     product.variants?.find((variant) => variant.isDefault) ??
@@ -67,15 +44,10 @@ export function ProductPurchasePanel({
           100
       )
     : null;
-  const purchaseTrustSignals = [
-    { label: "Uyum", detail: storeProfile.connectorHint, icon: BadgeCheck },
-    { label: "Kurulum", detail: storeProfile.installationMode, icon: Zap },
-    { label: "Ödeme", detail: "Güvenli checkout", icon: ShieldCheck }
-  ];
 
   function addCurrentSelection() {
     if (isOutOfStock) {
-      return false;
+      return;
     }
 
     addItem({
@@ -90,21 +62,10 @@ export function ProductPurchasePanel({
       category: product.category,
       priceKurus: selectedOption.priceKurus,
       quantity,
-      purchaseMode,
+      purchaseMode: "cart",
       cableOption: cableOptionRef.current
     });
     setFeedback(`${quantity} adet ürün sepete eklendi.`);
-    return true;
-  }
-
-  function handleAddToCart() {
-    addCurrentSelection();
-  }
-
-  function handleBuyNow() {
-    if (addCurrentSelection()) {
-      router.push("/checkout");
-    }
   }
 
   function selectCableOption(nextCableOption: string) {
@@ -112,17 +73,8 @@ export function ProductPurchasePanel({
     setCableOption(nextCableOption);
   }
 
-  function selectPurchaseMode(nextPurchaseMode: "product" | "survey") {
-    setPurchaseMode(nextPurchaseMode);
-    trackConversionEvent("purchase_mode_select", {
-      productId: product.id,
-      productName: product.name,
-      mode: nextPurchaseMode
-    });
-  }
-
   return (
-    <div className="product-purchase-panel">
+    <div className="product-purchase-panel product-purchase-panel--focused">
       <div className="product-mobile-inline-atc" aria-label="Mobil hızlı sepete ekle">
         <div>
           <span>Sepet toplamı</span>
@@ -130,7 +82,7 @@ export function ProductPurchasePanel({
         </div>
         <button
           type="button"
-          onClick={handleAddToCart}
+          onClick={addCurrentSelection}
           disabled={isAddDisabled}
           aria-busy={!isHydrated}
         >
@@ -138,159 +90,105 @@ export function ProductPurchasePanel({
         </button>
       </div>
 
-      <div className="product-purchase-panel__price mt-8 rounded-lg border border-primary/12 bg-white p-5 shadow-[0_18px_44px_rgba(6,51,38,0.08)]">
+      <div className="product-purchase-panel__price mt-7 rounded-lg border border-primary/12 bg-white p-5 shadow-[0_18px_44px_rgba(6,51,38,0.08)]">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="text-xs font-bold uppercase tracking-normal text-on-surface-variant">
               ParkChargeEV fiyatı
             </p>
-            <p className="mt-2 text-5xl font-bold text-primary">
+            <p className="mt-2 text-4xl font-bold text-primary md:text-5xl">
               {formatPriceTRY(selectedOption.priceKurus)}
             </p>
           </div>
-        {selectedOption.compareAtKurus ? (
-          <div className="pb-1">
-            <p className="text-lg font-semibold text-on-surface-variant line-through">
-              {formatPriceTRY(selectedOption.compareAtKurus)}
-            </p>
-            {discountPercent ? (
-              <p className="mt-1 text-sm font-semibold text-secondary">
-                %{discountPercent} avantaj
+          {selectedOption.compareAtKurus ? (
+            <div className="pb-1 text-right">
+              <p className="text-lg font-semibold text-on-surface-variant line-through">
+                {formatPriceTRY(selectedOption.compareAtKurus)}
               </p>
-            ) : null}
-          </div>
-        ) : null}
-        </div>
-        <div className="mt-4 grid gap-2 sm:grid-cols-2">
-          <div className="product-purchase-panel__deal product-purchase-panel__deal--red">
-            <CreditCard className="h-4 w-4" aria-hidden />
-            <span>Havale/EFT ve kartlı ödeme</span>
-          </div>
-          <div className="product-purchase-panel__deal product-purchase-panel__deal--dark">
-            <ShieldCheck className="h-4 w-4" aria-hidden />
-            <span>Güvenli PayTR altyapısı</span>
-          </div>
-        </div>
-        {commerceBadges.length > 0 ? (
-          <div className="mt-3 flex flex-wrap gap-2">
-            {commerceBadges.map((badge) => (
-              <span
-                key={badge.label}
-                className={
-                  badge.tone === "success"
-                    ? "rounded-full bg-emerald-50 px-3 py-2 text-xs font-bold uppercase tracking-normal text-emerald-800"
-                    : "rounded-full bg-amber-100 px-3 py-2 text-xs font-bold uppercase tracking-normal text-amber-800"
-                }
-              >
-                {badge.label}
-              </span>
-            ))}
-          </div>
-        ) : null}
-      </div>
-
-      <div className="product-purchase-panel__trust mt-5 grid gap-2 sm:grid-cols-3">
-        {purchaseTrustSignals.map((signal) => {
-          const Icon = signal.icon;
-
-          return (
-            <div key={signal.label} className="rounded-lg border border-outline-variant/35 bg-white px-4 py-3">
-              <div className="flex items-center gap-2">
-                <Icon className="h-4 w-4 text-primary" aria-hidden />
-                <p className="text-xs font-semibold uppercase text-on-surface-variant">
-                  {signal.label}
+              {discountPercent ? (
+                <p className="mt-1 text-sm font-semibold text-secondary">
+                  %{discountPercent} avantaj
                 </p>
-              </div>
-              <p className="mt-1 text-sm font-bold leading-5 text-on-surface">{signal.detail}</p>
+              ) : null}
             </div>
-          );
-        })}
-      </div>
-      <p className="product-purchase-panel__fit-note mt-3 rounded-lg bg-surface-container-low px-4 py-3 text-xs leading-5 text-on-surface-variant">
-        Emin değilseniz keşifle ilerleyin. Ürün kodu: <strong>{selectedSku}</strong>
-      </p>
-
-      <div className="product-purchase-panel__route mt-8 rounded-lg bg-surface-container-low p-6">
-        <p className="text-sm font-semibold uppercase text-on-surface-variant">
-          1 karar yeterli
-        </p>
-
-        <div className="mt-5">
-          <p className="text-sm font-medium text-on-surface-variant">Nasıl ilerlemek istersiniz?</p>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            {[
-              {
-                value: "product",
-                label: "Hemen al",
-                detail: "Stoktan sevk"
-              },
-              {
-                value: "survey",
-                label: "Keşifle al",
-                detail: storeProfile.installationMode
-              }
-            ].map((option) => (
-              <button
-                key={option.value}
-                type="button"
-                aria-pressed={purchaseMode === option.value}
-                onClick={() => selectPurchaseMode(option.value as "product" | "survey")}
-                className={`rounded-lg border px-4 py-3 text-left text-sm font-medium transition ${
-                  purchaseMode === option.value
-                    ? "border-primary bg-white text-primary"
-                    : "border-outline-variant/40 bg-surface text-on-surface hover:border-primary/20"
-                }`}
-              >
-                <span>{option.label}</span>
-                <span className="mt-1 block text-xs text-on-surface-variant">
-                  {option.detail}
-                </span>
-              </button>
-            ))}
-          </div>
-          {purchaseMode === "survey" ? (
-            <p className="mt-3 rounded-lg border border-primary/15 bg-white px-4 py-3 text-xs leading-5 text-on-surface-variant">
-              Sepete ekleyin, keşifte hat, pano ve randevu bilgisi netleşsin.
-            </p>
           ) : null}
         </div>
 
-        <div className="mt-5">
-          <p className="text-sm font-medium text-on-surface-variant">Kablo uzunluğu</p>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            {cableOptions.map((option) => (
-              <button
-                key={option.label}
-                type="button"
-                aria-pressed={option.label === cableOption}
-                disabled={!isHydrated}
-                onClick={() => selectCableOption(option.label)}
-                className={`rounded-lg border px-4 py-3 text-sm font-medium transition ${
-                  option.label === cableOption
-                    ? "border-primary bg-white text-primary"
-                    : "border-outline-variant/40 bg-surface text-on-surface hover:border-primary/20"
-                } disabled:cursor-not-allowed disabled:opacity-60`}
-              >
-                <span>{option.label}</span>
-                {option.priceDeltaKurus > 0 ? (
-                  <span className="mt-1 block text-xs text-on-surface-variant">
-                    {formatPriceTRY(option.priceKurus)}
-                  </span>
-                ) : null}
-              </button>
-            ))}
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          <span
+            className={
+              isOutOfStock
+                ? "rounded-full bg-red-50 px-3 py-2 text-xs font-bold uppercase tracking-normal text-red-700"
+                : "rounded-full bg-emerald-50 px-3 py-2 text-xs font-bold uppercase tracking-normal text-emerald-800"
+            }
+          >
+            {product.stockLabel}
+          </span>
+          {commerceBadges.map((badge) => (
+            <span
+              key={badge.label}
+              className={
+                badge.tone === "success"
+                  ? "rounded-full bg-emerald-50 px-3 py-2 text-xs font-bold uppercase tracking-normal text-emerald-800"
+                  : "rounded-full bg-amber-100 px-3 py-2 text-xs font-bold uppercase tracking-normal text-amber-800"
+              }
+            >
+              {badge.label}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-5 rounded-lg bg-surface-container-low p-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-xs font-bold uppercase text-on-surface-variant">Ürün kodu</p>
+            <p className="mt-1 text-sm font-semibold text-on-surface">{selectedSku}</p>
+          </div>
+          <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-2 text-xs font-semibold text-on-surface-variant">
+            <Truck className="h-4 w-4 text-primary" aria-hidden />
+            Kargo bilgisi sepette netleşir
           </div>
         </div>
 
-        <div className="mt-6">
-          <p className="text-sm font-medium text-on-surface-variant">Miktar</p>
+        {cableOptions.length > 1 ? (
+          <div className="mt-5">
+            <p className="text-sm font-medium text-on-surface-variant">Kablo uzunluğu</p>
+            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+              {cableOptions.map((option) => (
+                <button
+                  key={option.label}
+                  type="button"
+                  aria-pressed={option.label === cableOption}
+                  disabled={!isHydrated}
+                  onClick={() => selectCableOption(option.label)}
+                  className={`rounded-lg border px-4 py-3 text-sm font-medium transition ${
+                    option.label === cableOption
+                      ? "border-primary bg-white text-primary"
+                      : "border-outline-variant/40 bg-surface text-on-surface hover:border-primary/20"
+                  } disabled:cursor-not-allowed disabled:opacity-60`}
+                >
+                  <span>{option.label}</span>
+                  {option.priceDeltaKurus > 0 ? (
+                    <span className="mt-1 block text-xs text-on-surface-variant">
+                      {formatPriceTRY(option.priceKurus)}
+                    </span>
+                  ) : null}
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
+        <div className="mt-5">
+          <p className="text-sm font-medium text-on-surface-variant">Adet</p>
           <div className="product-purchase-panel__action-row mt-3 flex flex-col gap-4 sm:flex-row sm:items-center">
             <div className="flex items-center gap-4 rounded-lg bg-white px-4 py-3">
               <button
                 type="button"
                 onClick={() => setQuantity((current) => Math.max(1, current - 1))}
                 className="text-xl text-on-surface-variant transition hover:text-primary"
-                aria-label="Miktarı azalt"
+                aria-label="Adeti azalt"
               >
                 -
               </button>
@@ -301,30 +199,20 @@ export function ProductPurchasePanel({
                 type="button"
                 onClick={() => setQuantity((current) => Math.min(99, current + 1))}
                 className="text-xl text-on-surface-variant transition hover:text-primary"
-                aria-label="Miktarı artır"
+                aria-label="Adeti artır"
               >
                 +
               </button>
             </div>
             <button
               type="button"
-              onClick={handleAddToCart}
+              onClick={addCurrentSelection}
               disabled={isAddDisabled}
               aria-busy={!isHydrated}
-              className="product-purchase-panel__add-button inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-linear-to-r from-primary to-secondary px-6 py-4 text-center text-base font-semibold text-white shadow-[0_18px_50px_rgba(6,51,38,0.22)] disabled:cursor-not-allowed disabled:opacity-60"
+              className="product-purchase-panel__add-button inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-linear-to-r from-primary to-secondary px-6 py-4 text-center text-base font-semibold text-white shadow-[0_18px_50px_rgba(6,51,38,0.22)] transition hover:translate-y-[-1px] disabled:cursor-not-allowed disabled:opacity-60"
             >
               <ShoppingCart className="h-5 w-5" aria-hidden />
               {isOutOfStock ? "Stokta Yok" : "Sepete Ekle"}
-            </button>
-            <button
-              type="button"
-              onClick={handleBuyNow}
-              disabled={isAddDisabled}
-              aria-busy={!isHydrated}
-              className="product-purchase-panel__buy-now inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-emerald-500 px-6 py-4 text-center text-base font-bold text-white shadow-[0_18px_50px_rgba(16,185,129,0.24)] transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              <Zap className="h-5 w-5" aria-hidden />
-              Hemen Al
             </button>
           </div>
           {feedback ? (
@@ -337,46 +225,16 @@ export function ProductPurchasePanel({
           ) : null}
         </div>
 
-        <div className="mt-6 rounded-lg border border-outline-variant/35 bg-white p-4">
+        <div className="mt-5 rounded-lg border border-outline-variant/35 bg-white p-4">
           <div className="flex items-center justify-between gap-4">
             <span className="text-sm text-on-surface-variant">Tahmini ara toplam</span>
             <span className="text-lg font-bold text-on-surface">
               {formatPriceTRY(estimatedLineTotal)}
             </span>
           </div>
-          <div className="mt-3 flex items-center justify-between gap-4 text-sm text-on-surface-variant">
-            <span className="inline-flex items-center gap-2">
-              <Truck className="h-4 w-4" aria-hidden />
-              Kargo
-            </span>
-            <span className={hasFreeShipping ? "font-bold text-emerald-700" : "font-semibold text-primary"}>
-              {hasFreeShipping ? "Kargo bedava" : "Sepette hesaplanır"}
-            </span>
-          </div>
-          <div className="mt-3 flex items-center justify-between gap-4 text-sm text-on-surface-variant">
-            <span>Teslimat</span>
-            <span className="font-semibold text-primary">
-              {hasShipsTomorrow ? "Yarın kargoda" : purchaseMode === "survey" ? "Keşif talebi önerilir" : "Ürün sevkiyatı"}
-            </span>
-          </div>
           <p className="mt-3 text-xs leading-5 text-on-surface-variant">
-            KDV, teslimat ve varsa kurulum kalemi sepette netleşir.
+            KDV, teslimat ve varsa kurulum kalemi sepet/checkout adımında netleşir.
           </p>
-        </div>
-
-        {purchaseMode === "survey" ? (
-          <Link
-            href={`/iletisim?reason=${encodeURIComponent(`${product.name} kurulum keşfi`)}`}
-            className="mt-4 block rounded-lg border border-primary/20 bg-white px-5 py-4 text-center text-sm font-semibold text-primary"
-          >
-            Kurulum keşfi iste
-          </Link>
-        ) : null}
-
-        <div className="product-purchase-panel__benefits mt-6 flex flex-wrap gap-2 text-sm text-on-surface-variant">
-          {benefits.map((benefit) => (
-            <span key={benefit}>{benefit}</span>
-          ))}
         </div>
       </div>
     </div>

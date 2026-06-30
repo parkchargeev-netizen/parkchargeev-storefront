@@ -116,7 +116,7 @@ export function ProductHighlightGrid({ product, detailContent }: Pick<ProductDet
 
 export function ProductTrustGrid({ detailContent }: Pick<ProductDetailSectionsProps, "detailContent">) {
   const trustItems = [
-    { title: "Güvenli ödeme", body: "PayTR altyapısı ile ödeme oturumu güvenli şekilde hazırlanır.", icon: ShieldCheck },
+    { title: "Sipariş takibi", body: "Sepete ekleme ve ödeme adımları kısa, açık ve izlenebilir şekilde ilerler.", icon: ShieldCheck },
     { title: "Kargo ve teslimat", body: "Kargo kapsamı ürün etiketleri ve sepet adımıyla netleşir.", icon: Truck },
     { title: "Garanti ve iade", body: "Garanti, iade ve destek detayları ürün politikasında açıkça gösterilir.", icon: RotateCcw },
     { title: "Teknik destek", body: detailContent.support.body || "Satış öncesi uygunluk ve kurulum soruları için destek alınabilir.", icon: Headphones }

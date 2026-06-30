@@ -232,15 +232,6 @@ function cleanText(value: unknown) {
   return String(value ?? "").trim();
 }
 
-function escapeHtmlText(value: string) {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
 function phaseLabel(value: string) {
   if (value === "three_phase") {
     return "trifaz";
@@ -754,7 +745,6 @@ export function ProductForm({
   const variantValues = watch("variants") ?? [];
   const seoTitleValue = watch("seoTitle") ?? "";
   const seoDescriptionValue = watch("seoDescription") ?? "";
-  const aiSummaryValue = watch("aiSummary") ?? "";
   const detailContent = (watch("detailContent") ?? detailContentDefaults) as ProductDetailFormValues;
   const smartFeatureValues = detailContent.smartFeatures ?? [];
   const technicalGroupValues = detailContent.technicalGroups ?? [];
@@ -819,9 +809,9 @@ export function ProductForm({
       detail: "En az bir görsel URL gerekli; alt text opsiyonel SEO desteği sağlar."
     },
     {
-      label: "SEO + AI",
-      ok: Boolean(cleanText(seoTitleValue) && cleanText(seoDescriptionValue) && cleanText(aiSummaryValue)),
-      detail: "Meta başlık, meta açıklama ve AI özeti tamamlanmalı."
+      label: "SEO kalitesi",
+      ok: Boolean(cleanText(seoTitleValue) && cleanText(seoDescriptionValue)),
+      detail: "Meta başlık ve meta açıklama tamamlanmalı."
     }
   ];
   const readyFeatureCount = featureAuditItems.filter((item) => item.ok).length;
@@ -867,14 +857,13 @@ export function ProductForm({
       icon: Sparkles
     },
     {
-      label: "SEO ve AI",
+      label: "SEO ve içerik",
       detail: `${seoTitleLength}/60 başlık, ${seoDescriptionLength}/160 açıklama, ${plainDescriptionLength} içerik`,
       ok:
         seoTitleLength >= 35 &&
         seoTitleLength <= 70 &&
         seoDescriptionLength >= 110 &&
-        seoDescriptionLength <= 170 &&
-        cleanText(aiSummaryValue).length >= 40,
+        seoDescriptionLength <= 170,
       icon: SearchCheck
     }
   ];
@@ -953,246 +942,6 @@ export function ProductForm({
         shouldValidate: true
       });
     }
-  }
-
-  function appendCoreSpecsFromFields() {
-    const existingSpecKeys = new Set(
-      flattenedTechnicalSpecValues
-        .filter((item) => cleanText(item.label))
-        .map((item) => specKey(item.label ?? ""))
-    );
-    const variantSummary = uniqueList(
-      (watch("variants") ?? [])
-        .map((variant) =>
-          [variant.powerLabel, variant.cableLength, variant.connectorType].filter(Boolean).join(" / ")
-        )
-        .filter(Boolean)
-    ).join(", ");
-    const smartSummary = smartFeatureLabels.length
-      ? smartFeatureLabels.join(", ")
-      : "Standart kontrol";
-    const candidateSpecs = [
-      {
-        groupName: singleTechnicalGroupTitle,
-        label: "Güç",
-        value: powerText
-      },
-      {
-        groupName: singleTechnicalGroupTitle,
-        label: "Şarj tipi",
-        value: chargeText
-      },
-      {
-        groupName: singleTechnicalGroupTitle,
-        label: "Faz",
-        value: phaseText
-      },
-      {
-        groupName: singleTechnicalGroupTitle,
-        label: "Konnektor",
-        value: connectorText
-      },
-      {
-        groupName: singleTechnicalGroupTitle,
-        label: "IP sınıfı",
-        value: cleanText(ipClassValue)
-      },
-      {
-        groupName: singleTechnicalGroupTitle,
-        label: "Bağlantı ve erişim",
-        value: smartSummary
-      },
-      {
-        groupName: singleTechnicalGroupTitle,
-        label: "Kurulum gereksinimi",
-        value: installRequiredValue
-          ? "Keşif ve profesyonel kurulum önerilir"
-          : "Ürün kargo ile teslim edilir; uygunluk destekle netleşir"
-      },
-      {
-        groupName: singleTechnicalGroupTitle,
-        label: "Hizmet kapsamı",
-        value: "Kargo ve kurulum kapsamı sipariş/teklif sürecinde netleştirilir"
-      },
-      {
-        groupName: singleTechnicalGroupTitle,
-        label: "Araç uyumu",
-        value: selectedVehicles.length ? selectedVehicles.join(", ") : connectorText
-      },
-      {
-        groupName: singleTechnicalGroupTitle,
-        label: "Varyant özeti",
-        value: variantSummary || cleanText(cableLengthValue)
-      },
-      {
-        groupName: singleTechnicalGroupTitle,
-        label: "Yönetim özellikleri",
-        value: flattenedTechnicalSpecValues.some((item) => /ocpp|yük|yuk|load/i.test(`${item.label} ${item.value}`))
-          ? ""
-          : "OCPP, yük dengeleme veya RFID ihtiyacı varsa teklif aşamasında netleştirilir"
-      }
-    ];
-
-    const nextGroups = mergeTechnicalGroupsToSingleGroup(technicalGroupValues, specValues);
-
-    candidateSpecs
-      .filter((item) => cleanText(item.value))
-      .filter((item) => !existingSpecKeys.has(specKey(item.label)))
-      .forEach((item) => {
-        const groupIndex = 0;
-        const nextItem = {
-          name: item.label,
-          value: item.value,
-          unit: "",
-          description: "",
-          isActive: true,
-          sortOrder: groupIndex >= 0 ? (nextGroups[groupIndex].items?.length ?? 0) + 1 : 1
-        };
-
-        if (groupIndex >= 0) {
-          nextGroups[groupIndex] = {
-            ...nextGroups[groupIndex],
-            items: [...(nextGroups[groupIndex].items ?? []), nextItem]
-          };
-          return;
-        }
-
-        nextGroups.push({
-          title: item.groupName,
-          description: "",
-          isActive: true,
-          sortOrder: nextGroups.length + 1,
-          items: [nextItem]
-        });
-      });
-
-    setValue("detailContent.technicalGroups", nextGroups, {
-      shouldDirty: true,
-      shouldValidate: true
-    });
-
-    if (
-      smartSummary !== "Standart kontrol" &&
-      !smartFeatureValues.some((feature) => specKey(feature.title) === specKey("Bağlantı ve erişim"))
-    ) {
-      smartFeatureFields.append({
-        title: "Bağlantı ve erişim",
-        description: smartSummary,
-        iconName: "wifi",
-        isActive: true,
-        sortOrder: smartFeatureValues.length + 1
-      });
-    }
-  }
-
-  function buildProductCopyFromFeatures() {
-    const productName = cleanText(currentName) || "ParkChargeEV şarj çözümü";
-    const usageArea = selectedCategories.includes("aksesuar")
-      ? "aksesuar ihtiyacı"
-      : selectedCategories.includes("dc-hizli-sarj")
-        ? "ticari lokasyon ve hızlı şarj yatırımı"
-        : selectedCategories.includes("is-yeri-tipi")
-          ? "işletme, ofis ve otopark kullanımı"
-          : "ev tipi AC şarj kullanımı";
-    const smartSummary = smartFeatureLabels.length
-      ? smartFeatureLabels.join(", ")
-      : "net teknik seçim";
-    const vehicleSummary = selectedVehicles.length
-      ? selectedVehicles.join(", ")
-      : `${connectorText} uyumlu elektrikli araçlar`;
-    const installSummary = installRequiredValue
-      ? "Kurulum öncesi pano, faz, kablo hattı ve koruma ekipmanı kontrol edilerek ilerlenir."
-      : "Ürün kargo ile teslim edilir; uyumluluk veya montaj soruları destek ekibiyle netleştirilebilir.";
-    const primaryPower = powerText || `${chargeText} şarj`;
-    const shortDescription =
-      `${productName}, ${usageArea} için ${primaryPower} güç sınıfı, ${connectorText} konnektör, ${phaseText} altyapı ve ${smartSummary} özelliklerini tek pakette sunar.`;
-    const descriptionParagraphs = [
-      `${productName}, ${usageArea} için doğru cihaz, doğru altyapı ve güvenli kullanım odağıyla hazırlanmış bir ParkChargeEV çözümüdür.`,
-      `Teknik tarafta ${primaryPower}, ${connectorText} konnektör, ${phaseText} faz yapısı${ipClassValue ? `, ${ipClassValue} koruma sınıfı` : ""} ve ${smartSummary} bilgisi öne çıkar.`,
-      `Uyum tarafında ${vehicleSummary} için karar vermeyi kolaylaştırır. ${installSummary}`,
-      "Kargo ve kurulum kapsamı sipariş/teklif sürecinde netleştirilir."
-    ];
-    const featureBullets = uniqueList([
-      primaryPower ? `${primaryPower} güç sınıfı` : "",
-      connectorText ? `${connectorText} konnektör uyumu` : "",
-      phaseText ? `${phaseText} altyapı bilgisi` : "",
-      smartSummary ? `${smartSummary} özellikleri` : "",
-      "Kargo kapsamı ürün etiketleriyle yönetilir",
-      "Keşif talebi teklif sürecinde değerlendirilir",
-      "Saha uygunluğuna göre kurulum planı"
-    ]);
-    const descriptionHtml = [
-      ...descriptionParagraphs.map((paragraph) => `<p>${escapeHtmlText(paragraph)}</p>`),
-      `<ul>${featureBullets.map((item) => `<li>${escapeHtmlText(item)}</li>`).join("")}</ul>`
-    ].join("");
-    const seoTitle = `${productName} | ParkChargeEV`;
-    const seoDescription = shortDescription.slice(0, 310);
-    const aiSummary = `${productName}; ${primaryPower}, ${connectorText}, ${phaseText} ve kurulum/kargo kapsamı net olan EV şarj çözümüdür.`.slice(0, 178);
-
-    setValue("shortDescription", shortDescription.slice(0, 360), {
-      shouldDirty: true,
-      shouldValidate: true
-    });
-    setValue("description", descriptionHtml, { shouldDirty: true, shouldValidate: true });
-    setValue("seoTitle", seoTitle.slice(0, 255), { shouldDirty: true, shouldValidate: true });
-    setValue("seoDescription", seoDescription, { shouldDirty: true, shouldValidate: true });
-    setValue("aiSummary", aiSummary, { shouldDirty: true, shouldValidate: true });
-    setValue(
-      "detailContent.galleryFeatureLabels",
-      uniqueList([primaryPower, connectorText, phaseText, ...smartFeatureLabels]),
-      { shouldDirty: true, shouldValidate: true }
-    );
-    setValue(
-      "detailContent.highlights",
-      uniqueList([
-        `${primaryPower} güç sınıfı ile net seçim`,
-        `${connectorText} uyumlu araçlar için pratik kullanım`,
-        installRequiredValue
-          ? "Keşif ve kurulum planıyla altyapı riski azalır"
-          : "Kargo ile hızlı teslimata uygun ürün akışı",
-        "ParkChargeEV destek ekibiyle karar ve kurulum süreci netleşir"
-      ]),
-      { shouldDirty: true, shouldValidate: true }
-    );
-    setValue(
-      "detailContent.purchaseBenefits",
-      uniqueList([
-        "Güvenli ödeme ve sipariş takibi",
-        "Kargo kapsamı ürün etiketleriyle yönetilir",
-        "Keşif talebi teklif sürecinde değerlendirilir",
-        "Saha uygunluğuna göre planlı kurulum"
-      ]),
-      { shouldDirty: true, shouldValidate: true }
-    );
-    setValue(
-      "detailContent.decisionChecks",
-      uniqueList([
-        "Aracınızın konnektör ve AC/DC uyumunu kontrol edin.",
-        "Pano, faz ve kablo hattı durumunu keşif veya destekle netleştirin.",
-        "Ev, site veya işletme ihtiyacına göre güç sınıfını seçin."
-      ]),
-      { shouldDirty: true, shouldValidate: true }
-    );
-    setValue(
-      "detailContent.seoIntents",
-      uniqueList([
-        `${productName} fiyat`,
-        `${powerText || chargeText} şarj cihazı`,
-        `${connectorText} şarj cihazı`,
-        "elektrikli araç şarj cihazı kurulumu"
-      ]),
-      { shouldDirty: true, shouldValidate: true }
-    );
-    setValue(
-      "detailContent.useCases",
-      uniqueList([
-        usageArea,
-        "evde planlı şarj",
-        "site ve apartman otoparkı",
-        "işletme ve ofis otoparkı"
-      ]),
-      { shouldDirty: true, shouldValidate: true }
-    );
   }
 
   function applyUploadedMedia(data: MediaUploadResponse, targetIndex?: number) {
@@ -1357,26 +1106,6 @@ export function ProductForm({
     for (const file of Array.from(files)) {
       await uploadMediaFile(file);
     }
-  }
-
-  function addSmartFeatureFromTechnicalFields() {
-    const enabledLabels = [
-      hasWifiValue ? "Wi-Fi" : "",
-      hasBluetoothValue ? "Bluetooth" : "",
-      hasRfidValue ? "RFID" : "",
-      has4gValue ? "4G" : "",
-      installRequiredValue ? "Kurulum desteği" : ""
-    ].filter(Boolean);
-
-    smartFeatureFields.append({
-      ...createSmartFeature(smartFeatureValues.length + 1),
-      title: enabledLabels[0] ?? "Yeni akıllı özellik",
-      description:
-        enabledLabels.length > 1
-          ? `${enabledLabels.join(", ")} özellikleriyle ürün detayında vurgulanır.`
-          : "Bu özelliğin kullanıcıya sağladığı faydayı yazın.",
-      iconName: hasWifiValue ? "wifi" : hasBluetoothValue ? "bluetooth" : hasRfidValue ? "radio" : has4gValue ? "signal" : "sparkles"
-    });
   }
 
   function addQuickSmartFeature() {
@@ -1700,15 +1429,14 @@ export function ProductForm({
         <div className="grid gap-6 xl:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)] xl:items-start">
           <div>
             <p className="text-sm font-semibold uppercase tracking-normal text-emerald-700">
-              Ürün içerik asistanı
+              Ürün kalite skoru
             </p>
             <h2 className="mt-2 text-2xl font-semibold text-slate-950">
-              Açıklama, teknik özellik, SEO ve AI metni eksiksiz ilerlesin.
+              Ürün bilgileri yayın öncesi net ve eksiksiz görünsün.
             </h2>
             <p className="mt-3 text-sm leading-6 text-slate-600">
-              Ürün metninde güç, faz, konnektör, akıllı özellikler, kurulum, kargo, uyumlu
-              araçlar, garanti/destek ve SEO sinyalleri birlikte görünmeli. Eksik alanları
-              kontrol edip tek tıkla taslak metin üretebilirsiniz.
+              Ürün adı, kısa açıklama, teknik tablo, medya ve SEO alanlarını kontrol edin.
+              Bu bölüm otomatik metin üretmez; yalnızca eksik alanları okunabilir şekilde gösterir.
             </p>
             <div className="mt-5 rounded-lg bg-[#063326] p-5 text-white">
               <div className="flex items-end justify-between gap-4">
@@ -1730,22 +1458,6 @@ export function ProductForm({
                   style={{ width: `${featureReadinessPercent}%` }}
                 />
               </div>
-            </div>
-            <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-              <button
-                type="button"
-                onClick={buildProductCopyFromFeatures}
-                className="rounded-lg bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
-              >
-                Özelliklerden metin oluştur
-              </button>
-              <button
-                type="button"
-                onClick={appendCoreSpecsFromFields}
-                className="rounded-lg border border-emerald-200 bg-emerald-50 px-5 py-3 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-100"
-              >
-                Eksik teknik özellikleri ekle
-              </button>
             </div>
           </div>
 
@@ -2193,7 +1905,7 @@ export function ProductForm({
       </section>
 
       <section id="teknik" className="surface-card scroll-mt-28 border border-slate-200 bg-white/95 p-6">
-        <div className="mb-6 grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+        <div className="mb-6">
           <div>
             <h2 className="text-xl font-semibold text-slate-950">Teknik alanlar</h2>
             <p className="mt-1 text-sm leading-6 text-slate-600">
@@ -2201,14 +1913,6 @@ export function ProductForm({
             </p>
             <ExampleHint>Örnek: Güç 11, konnektör Type 2, IP sınıfı IP54, kablo uzunluğu 5 Metre.</ExampleHint>
           </div>
-          <button
-            type="button"
-            onClick={appendCoreSpecsFromFields}
-            className="inline-flex items-center justify-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-5 py-3 text-sm font-bold text-emerald-800 transition hover:bg-emerald-100"
-          >
-            <Sparkles className="h-4 w-4" aria-hidden />
-            Alanlardan özellik üret
-          </button>
         </div>
 
         <TechnicalFieldExamples />
@@ -2279,13 +1983,6 @@ export function ProductForm({
                 Kurulum gerekir
               </label>
             </div>
-            <button
-              type="button"
-              onClick={addSmartFeatureFromTechnicalFields}
-              className="mt-3 inline-flex w-full items-center justify-center rounded-lg border border-emerald-200 bg-white px-3 py-2 text-sm font-bold text-emerald-800 transition hover:bg-emerald-50"
-            >
-              Seçimlerden akıllı özellik kartı ekle
-            </button>
             <div className="mt-4 grid gap-2 border-t border-slate-200 pt-4">
               <input
                 type="text"
@@ -3067,8 +2764,8 @@ export function ProductForm({
 
       <section id="seo" className="surface-card scroll-mt-28 border border-slate-200 bg-white/95 p-6">
         <div className="mb-6">
-          <h2 className="text-xl font-semibold text-slate-950">SEO + AIEO</h2>
-          <ExampleHint>Örnek meta başlık: HomeCharge Pro 11kW EV Şarj Cihazı. AI özeti tek cümle, satış odaklı olmalı.</ExampleHint>
+          <h2 className="text-xl font-semibold text-slate-950">SEO</h2>
+          <ExampleHint>Örnek meta başlık: HomeCharge Pro 11kW EV Şarj Cihazı. Meta açıklama kullanıcıya net satın alma sebebi vermeli.</ExampleHint>
         </div>
         <div className="grid gap-5 md:grid-cols-2">
           <div>
@@ -3085,12 +2782,7 @@ export function ProductForm({
             </p>
           </div>
           <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm md:col-span-2" placeholder="Open Graph görsel URL" {...register("ogImageUrl")} />
-          <div className="md:col-span-2">
-            <textarea rows={3} className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="AI özeti" {...register("aiSummary")} />
-            <p className="mt-2 text-xs font-semibold text-slate-500">
-              {cleanText(aiSummaryValue).length}/180 karakter · tek cümle ürün cevabı önerilir
-            </p>
-          </div>
+          <input type="hidden" {...register("aiSummary")} />
           <div className="md:col-span-2">
             <label className="mb-2 block text-sm font-medium text-slate-700">Arama kelimeleri</label>
             <input

@@ -52,8 +52,8 @@ function ProductMedia({
   store?: boolean;
 }) {
   const mediaClassName = store
-    ? "h-full min-h-44 w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-    : "aspect-[4/3] w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]";
+    ? "h-full min-h-36 w-full object-contain p-3 transition-transform duration-300 group-hover:scale-[1.03]"
+    : "aspect-[5/4] w-full object-contain p-3 transition-transform duration-300 group-hover:scale-[1.02]";
 
   return (
     <>
@@ -73,7 +73,7 @@ function ProductMedia({
           unoptimized
           sizes={
             store
-              ? "(min-width: 1024px) 180px, 100vw"
+              ? "(min-width: 1024px) 150px, 100vw"
               : "(min-width: 1280px) 25vw, (min-width: 768px) 50vw, 100vw"
           }
           className={mediaClassName}
@@ -84,7 +84,7 @@ function ProductMedia({
           powerLabel={product.powerLabel}
           className={
             store
-              ? "h-full min-h-44 transition-transform duration-300 group-hover:scale-[1.03]"
+              ? "h-full min-h-36 transition-transform duration-300 group-hover:scale-[1.03]"
               : "transition-transform duration-300 group-hover:scale-[1.02]"
           }
         />
@@ -201,15 +201,14 @@ export function ProductCard({
     const storeSpecs = [
       ["Güç", product.powerLabel],
       ["Kullanım", profile.primaryFit],
-      ["Soket", profile.connectorHint],
-      ["Gönderim", "81 il"]
+      ["Soket", profile.connectorHint]
     ] as const;
 
     return (
       <ProductCardLink product={product}>
-        <article className="premium-product-card premium-product-card--store surface-card grid h-full gap-4 rounded-lg p-3 transition-transform duration-200 group-hover:-translate-y-1 group-hover:border-primary/30 md:grid-cols-[180px_1fr]">
+        <article className="premium-product-card premium-product-card--store surface-card grid h-full gap-4 rounded-lg p-3 transition-transform duration-200 group-hover:-translate-y-1 group-hover:border-primary/30 md:grid-cols-[150px_1fr]">
           <ProductFixedBadge badge={product.badge} />
-          <div className="premium-product-card__media relative min-h-44 overflow-hidden rounded-lg bg-surface-container">
+          <div className="premium-product-card__media relative min-h-36 overflow-hidden rounded-lg bg-surface-container">
             <ProductMedia
               imagePriority={imagePriority}
               imageUrl={imageUrl}
@@ -238,7 +237,7 @@ export function ProductCard({
               </p>
 
               <ProductSpecs
-                className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-4"
+                className="mt-4 grid gap-2 sm:grid-cols-3"
                 specs={storeSpecs}
                 valueClassName="mt-1 line-clamp-2 text-xs font-bold leading-5 text-on-surface"
               />
@@ -249,12 +248,12 @@ export function ProductCard({
               </div>
             </div>
 
-            <div className="flex flex-col justify-between gap-4 rounded-lg border border-outline-variant/35 bg-white/76 p-4">
+            <div className="flex flex-col justify-between gap-4 rounded-lg border border-outline-variant/35 bg-white/76 p-3">
               <div>
                 <p className="ds-text-meta font-bold uppercase text-on-surface-variant">
                   Fiyat
                 </p>
-                <p className="mt-1 text-2xl font-bold leading-none text-primary">
+                <p className="mt-1 text-xl font-bold leading-none text-primary">
                   {formatPriceTRY(product.priceKurus)}
                 </p>
                 <p className="ds-text-meta mt-2 font-bold uppercase text-on-surface-variant">

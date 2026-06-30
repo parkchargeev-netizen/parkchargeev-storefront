@@ -36,7 +36,7 @@ export default async function EditAdminProductPage({ params }: EditProductPagePr
         </p>
         <h1 className="mt-3 text-3xl font-semibold text-slate-950">{product.name}</h1>
         <p className="mt-3 max-w-3xl text-sm text-slate-600">
-          Bu ekran ürünün katalog, teknik, SEO ve AI özeti alanlarını aynı anda günceller.
+          Bu ekran ürünün katalog, teknik ve SEO alanlarını aynı anda günceller.
         </p>
       </section>
 

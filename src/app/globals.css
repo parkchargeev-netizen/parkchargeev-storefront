@@ -12886,9 +12886,12 @@ body {
 
 .admin-control-workspace {
   min-width: 0;
+  position: relative;
 }
 
 .admin-control-topbar {
+  position: relative;
+  z-index: 60;
   display: grid;
   gap: 1rem;
   align-items: center;
@@ -12947,6 +12950,8 @@ body {
 
 .admin-control-content {
   margin-top: 1rem;
+  position: relative;
+  z-index: 1;
 }
 
 .admin-control-center :where(.surface-card, .ds-surface) {

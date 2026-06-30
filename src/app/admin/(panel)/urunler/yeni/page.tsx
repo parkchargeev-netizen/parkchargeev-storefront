@@ -12,7 +12,7 @@ export default async function NewAdminProductPage() {
         </p>
         <h1 className="mt-3 text-3xl font-semibold text-slate-950">Katalog kaydı oluştur</h1>
         <p className="mt-3 max-w-3xl text-sm text-slate-600">
-          Ürün bilgileri, varsayılan varyant, SEO alanları ve AI özeti tek formda kaydedilir.
+          Ürün bilgileri, varsayılan varyant, teknik özellikler ve SEO alanları tek formda kaydedilir.
         </p>
       </section>
 

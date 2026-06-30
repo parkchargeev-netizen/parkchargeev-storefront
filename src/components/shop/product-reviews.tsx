@@ -1,12 +1,10 @@
 "use client";
 
-import { type FormEvent, useEffect, useMemo, useState } from "react";
-import { Star } from "lucide-react";
+import { type FormEvent, useEffect, useState } from "react";
 
 type ProductReview = {
   id: string;
   authorName: string;
-  rating: number;
   title?: string | null;
   body: string;
   createdAt: string;
@@ -16,7 +14,6 @@ type ProductReviewResponse = {
   ok: boolean;
   message?: string;
   reviews?: ProductReview[];
-  review?: ProductReview;
   summary?: {
     count: number;
     average: number;
@@ -27,8 +24,6 @@ type ProductReviewsProps = {
   productName: string;
   productSlug: string;
 };
-
-const ratingOptions = [5, 4, 3, 2, 1] as const;
 
 function formatReviewDate(value: string) {
   const date = new Date(value);
@@ -44,30 +39,11 @@ function formatReviewDate(value: string) {
   }).format(date);
 }
 
-function ReviewStars({ rating }: { rating: number }) {
-  return (
-    <span className="inline-flex items-center gap-0.5" aria-label={`${rating}/5 puan`}>
-      {Array.from({ length: 5 }, (_, index) => (
-        <Star
-          key={index}
-          className={`h-4 w-4 ${index < rating ? "fill-amber-400 text-amber-400" : "text-slate-300"}`}
-          aria-hidden
-        />
-      ))}
-    </span>
-  );
-}
-
 export function ProductReviews({ productName, productSlug }: ProductReviewsProps) {
   const [reviews, setReviews] = useState<ProductReview[]>([]);
   const [summary, setSummary] = useState({ count: 0, average: 0 });
   const [status, setStatus] = useState<"idle" | "loading" | "submitting">("loading");
   const [message, setMessage] = useState<string | null>(null);
-
-  const averageLabel = useMemo(
-    () => (summary.average > 0 ? summary.average.toFixed(1).replace(".", ",") : "Yeni"),
-    [summary.average]
-  );
 
   useEffect(() => {
     let cancelled = false;
@@ -119,29 +95,19 @@ export function ProductReviews({ productName, productSlug }: ProductReviewsProps
         body: JSON.stringify({
           authorName: formData.get("authorName"),
           authorEmail: formData.get("authorEmail"),
-          rating: formData.get("rating"),
+          rating: 5,
           title: formData.get("title"),
           body: formData.get("body")
         })
       });
       const data = (await response.json()) as ProductReviewResponse;
 
-      if (!response.ok || !data.ok || !data.review) {
+      if (!response.ok || !data.ok) {
         throw new Error(data.message ?? "Yorum kaydedilemedi.");
       }
 
-      setReviews((current) => [data.review as ProductReview, ...current]);
-      setSummary((current) => {
-        const nextCount = current.count + 1;
-        const nextAverage = (current.average * current.count + data.review!.rating) / nextCount;
-
-        return {
-          count: nextCount,
-          average: nextAverage
-        };
-      });
       form.reset();
-      setMessage(data.message ?? "Yorumunuz eklendi.");
+      setMessage(data.message ?? "Yorumunuz onaydan sonra yayınlanacak.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Yorum kaydedilemedi.");
     } finally {
@@ -161,10 +127,9 @@ export function ProductReviews({ productName, productSlug }: ProductReviewsProps
               {productName} için kullanıcı deneyimleri
             </h2>
             <div className="mt-5 inline-flex items-center gap-3 rounded-lg border border-outline-variant/35 bg-white px-4 py-3">
-              <ReviewStars rating={Math.round(summary.average || 0)} />
-              <strong className="text-lg text-on-surface">{averageLabel}</strong>
+              <strong className="text-lg text-on-surface">{summary.count}</strong>
               <span className="text-sm text-on-surface-variant">
-                {summary.count > 0 ? `${summary.count} yorum` : "İlk yorumu siz yazın"}
+                {summary.count > 0 ? "onaylı yorum" : "İlk yorumu siz yazın"}
               </span>
             </div>
 
@@ -186,26 +151,12 @@ export function ProductReviews({ productName, productSlug }: ProductReviewsProps
                   placeholder="E-posta (opsiyonel)"
                 />
               </div>
-              <div className="grid gap-3 sm:grid-cols-[140px_1fr]">
-                <select
-                  name="rating"
-                  defaultValue="5"
-                  className="rounded-lg border border-outline-variant/60 bg-white px-4 py-3 text-sm"
-                  aria-label="Puan"
-                >
-                  {ratingOptions.map((rating) => (
-                    <option key={rating} value={rating}>
-                      {rating} yıldız
-                    </option>
-                  ))}
-                </select>
-                <input
-                  name="title"
-                  maxLength={160}
-                  className="rounded-lg border border-outline-variant/60 bg-white px-4 py-3 text-sm"
-                  placeholder="Kısa başlık"
-                />
-              </div>
+              <input
+                name="title"
+                maxLength={160}
+                className="rounded-lg border border-outline-variant/60 bg-white px-4 py-3 text-sm"
+                placeholder="Kısa başlık"
+              />
               <textarea
                 name="body"
                 required
@@ -245,14 +196,13 @@ export function ProductReviews({ productName, productSlug }: ProductReviewsProps
                         {review.authorName} {formatReviewDate(review.createdAt) ? `- ${formatReviewDate(review.createdAt)}` : ""}
                       </p>
                     </div>
-                    <ReviewStars rating={review.rating} />
                   </div>
                   <p className="mt-4 text-sm leading-7 text-on-surface-variant">{review.body}</p>
                 </article>
               ))
             ) : (
               <div className="rounded-lg border border-dashed border-outline-variant/50 bg-surface-container-low p-6 text-sm leading-7 text-on-surface-variant">
-                Bu ürün için henüz yorum yok. Deneyiminizi paylaşarak diğer kullanıcılara yardımcı olabilirsiniz.
+                Bu ürün için henüz onaylı yorum yok. Deneyiminizi paylaştığınızda admin onayından sonra yayınlanır.
               </div>
             )}
           </div>
