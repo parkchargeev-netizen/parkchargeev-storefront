@@ -145,29 +145,41 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
           ) : null}
 
         <div className={cableOptions.length > 1 ? "mt-5" : ""}>
-          <p className="text-sm font-medium text-on-surface-variant">Adet</p>
-          <div className="product-purchase-panel__action-row mt-3 flex flex-col gap-3">
-            <div className="flex items-center gap-4 rounded-lg bg-white px-4 py-3">
-              <button
-                type="button"
-                onClick={() => setQuantity((current) => Math.max(1, current - 1))}
-                className="text-xl text-on-surface-variant transition hover:text-primary"
-                aria-label="Adeti azalt"
-              >
-                -
-              </button>
-              <span className="min-w-8 text-center text-lg font-semibold text-on-surface">
-                {quantity}
-              </span>
-              <button
-                type="button"
-                onClick={() => setQuantity((current) => Math.min(99, current + 1))}
-                className="text-xl text-on-surface-variant transition hover:text-primary"
-                aria-label="Adeti artır"
-              >
-                +
-              </button>
+          <div className="product-purchase-panel__quantity-total">
+            <div className="product-purchase-panel__quantity-box">
+              <p className="text-sm font-medium text-on-surface-variant">Adet</p>
+              <div className="mt-3 flex items-center justify-between gap-4 rounded-lg bg-white px-4 py-3">
+                <button
+                  type="button"
+                  onClick={() => setQuantity((current) => Math.max(1, current - 1))}
+                  className="text-xl text-on-surface-variant transition hover:text-primary"
+                  aria-label="Adeti azalt"
+                >
+                  -
+                </button>
+                <span className="min-w-8 text-center text-lg font-semibold text-on-surface">
+                  {quantity}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setQuantity((current) => Math.min(99, current + 1))}
+                  className="text-xl text-on-surface-variant transition hover:text-primary"
+                  aria-label="Adeti artır"
+                >
+                  +
+                </button>
+              </div>
             </div>
+
+            <div className="product-purchase-panel__subtotal rounded-lg border border-outline-variant/35 bg-white p-4">
+              <span className="text-sm text-on-surface-variant">Tahmini ara toplam</span>
+              <strong className="mt-3 block text-xl font-bold text-on-surface">
+                {formatPriceTRY(estimatedLineTotal)}
+              </strong>
+            </div>
+          </div>
+
+          <div className="product-purchase-panel__action-row mt-4 flex flex-col gap-3">
             <button
               type="button"
               onClick={addCurrentSelection}
@@ -194,15 +206,6 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
               </Link>
             </p>
           ) : null}
-        </div>
-
-        <div className="product-purchase-panel__subtotal mt-5 rounded-lg border border-outline-variant/35 bg-white p-4">
-          <div className="flex items-center justify-between gap-4">
-            <span className="text-sm text-on-surface-variant">Tahmini ara toplam</span>
-            <span className="text-lg font-bold text-on-surface">
-              {formatPriceTRY(estimatedLineTotal)}
-            </span>
-          </div>
         </div>
       </div>
     </div>

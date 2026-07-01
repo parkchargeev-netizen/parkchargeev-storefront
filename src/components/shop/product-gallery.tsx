@@ -407,7 +407,7 @@ export function ProductGallery({
 
           <button
             type="button"
-            className="product-gallery-lightbox__image relative h-[92vh] w-[92vw] cursor-zoom-out overflow-hidden bg-transparent focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
+            className="product-gallery-lightbox__image relative h-screen w-screen cursor-zoom-out overflow-hidden bg-slate-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
             onClick={(event) => {
               event.stopPropagation();
               setLightboxIndex(null);
@@ -420,7 +420,7 @@ export function ProductGallery({
               fill
               unoptimized
               sizes="100vw"
-              className="object-contain p-4 sm:p-8"
+              className="object-contain p-3 sm:p-8"
             />
           </button>
         </div>
