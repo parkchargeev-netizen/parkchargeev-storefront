@@ -169,7 +169,7 @@ function ProductGalleryStageMedia({
       unoptimized
       priority={false}
       sizes="(min-width: 1024px) 760px, 92vw"
-      className="object-contain p-4"
+      className="object-contain p-2 sm:p-3"
     />
   );
 }
@@ -198,6 +198,7 @@ export function ProductGallery({
   const thumbnailItems: ProductGalleryThumbnail[] = galleryMedia.length
     ? galleryMedia
     : items.map((item) => ({ altText: item }));
+  const galleryItemCount = thumbnailItems.length;
   const activeMedia = galleryMedia[activeIndex];
   const activeItem = activeMedia?.altText ?? items[activeIndex] ?? items[0];
   const hasRealMedia = Boolean(activeMedia);
@@ -208,6 +209,19 @@ export function ProductGallery({
   const imageIndexes = galleryMedia
     .map((media, index) => (media.mediaType === "image" ? index : null))
     .filter((index): index is number => index !== null);
+
+  const moveGallery = useCallback(
+    (direction: -1 | 1) => {
+      if (galleryItemCount <= 1) {
+        return;
+      }
+
+      setActiveIndex((currentIndex) => (
+        currentIndex + direction + galleryItemCount
+      ) % galleryItemCount);
+    },
+    [galleryItemCount]
+  );
 
   const moveLightbox = useCallback(
     (direction: -1 | 1) => {
@@ -257,7 +271,7 @@ export function ProductGallery({
 
   return (
     <div className="product-gallery-premium surface-card grid gap-4 p-3 sm:p-4 lg:grid-cols-[88px_minmax(0,1fr)] lg:p-5">
-      <div className="product-gallery-stage-card order-first overflow-hidden rounded-lg bg-white p-3 lg:order-2 lg:p-5">
+      <div className="product-gallery-stage-card order-first overflow-hidden rounded-lg bg-white p-3 lg:order-2 lg:p-4">
         <div
           className={`product-gallery-stage relative min-h-[360px] overflow-hidden rounded-lg md:min-h-[500px] ${
             hasRealMedia
@@ -318,6 +332,33 @@ export function ProductGallery({
           {activeMedia ? null : (
             <div className="absolute inset-x-0 bottom-0 h-28 bg-linear-to-t from-slate-900 to-transparent" />
           )}
+
+          {galleryItemCount > 1 ? (
+            <>
+              <button
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  moveGallery(-1);
+                }}
+                className="product-gallery-stage-nav product-gallery-stage-nav--prev"
+                aria-label="Önceki ürün görseli"
+              >
+                ‹
+              </button>
+              <button
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  moveGallery(1);
+                }}
+                className="product-gallery-stage-nav product-gallery-stage-nav--next"
+                aria-label="Sonraki ürün görseli"
+              >
+                ›
+              </button>
+            </>
+          ) : null}
         </div>
       </div>
 
@@ -329,11 +370,9 @@ export function ProductGallery({
             <button
               key={`${item.altText}-${index}`}
               type="button"
-              onClick={() => {
+              onClick={(event) => {
+                event.preventDefault();
                 setActiveIndex(index);
-                if (hasImage) {
-                  setLightboxIndex(index);
-                }
               }}
               aria-label={`${productName} ${index + 1}. görseli seç`}
               className={`product-gallery-thumbnail group w-16 shrink-0 overflow-hidden rounded-lg p-1 transition lg:w-full ${
