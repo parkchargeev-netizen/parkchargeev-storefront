@@ -1398,7 +1398,13 @@ export function ProductForm({
                     <video src={primaryMedia.url} className="h-full w-full object-contain" muted />
                   ) : (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={primaryMedia.url} alt={primaryMedia.altText || currentName || "Ürün görseli"} className="h-full w-full object-contain p-2" />
+                    <img
+                      src={primaryMedia.url}
+                      alt={primaryMedia.altText || currentName || "Ürün görseli"}
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full object-contain p-2"
+                    />
                   )
                 ) : (
                   <div className="grid place-items-center gap-2 text-center text-slate-500">
@@ -2082,7 +2088,13 @@ export function ProductForm({
                     <video src={mediaUrl} className="h-full w-full object-contain" muted />
                   ) : (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={mediaUrl} alt={mediaItem?.altText || "Ürün medyası"} className="h-full w-full object-contain p-2" />
+                    <img
+                      src={mediaUrl}
+                      alt={mediaItem?.altText || "Ürün medyası"}
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full object-contain p-2"
+                    />
                   )
                 ) : (
                   <ImagePlus className="h-6 w-6" aria-hidden />

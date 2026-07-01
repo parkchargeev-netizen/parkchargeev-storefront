@@ -14338,6 +14338,26 @@ body {
   contain-intrinsic-size: auto 620px;
 }
 
+.admin-command-menu-overlay {
+  position: fixed !important;
+  z-index: 2147483647 !important;
+  pointer-events: auto;
+}
+
+html[data-admin-command-open="true"] .admin-control-topbar,
+html[data-admin-command-open="true"] .admin-control-sidebar {
+  transform: translateZ(0);
+}
+
+.admin-control-center :where(.surface-card[data-performance-scope], .admin-control-content > div > section:not(:first-child), .admin-control-content > div > div:not(:first-child)) {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 440px;
+}
+
+.admin-control-center :where(.surface-card, .ds-surface) {
+  contain: layout paint;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .site-experience-shell :where(.ds-action, .premium-btn, .btn-primary, .btn-secondary, .btn-quiet):active {
     transform: translateY(0) scale(0.985);

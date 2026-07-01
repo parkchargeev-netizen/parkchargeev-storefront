@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import {
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from "react";
 import { createPortal } from "react-dom";
 import { ArrowRight, Command, Search, X } from "lucide-react";
 
@@ -20,6 +26,51 @@ type AdminCommandMenuProps = {
   databaseEnabled: boolean;
 };
 
+const adminSearchCache = new Map<string, AdminCommandItem[]>();
+const maxAdminSearchCacheEntries = 24;
+
+function readAdminSearchCache(query: string) {
+  return adminSearchCache.get(query);
+}
+
+function writeAdminSearchCache(query: string, items: AdminCommandItem[]) {
+  if (adminSearchCache.size >= maxAdminSearchCacheEntries) {
+    const firstKey = adminSearchCache.keys().next().value;
+
+    if (firstKey) {
+      adminSearchCache.delete(firstKey);
+    }
+  }
+
+  adminSearchCache.set(query, items);
+}
+
+function groupCommandItems(items: AdminCommandItem[]) {
+  const groups: Record<string, AdminCommandItem[]> = {};
+
+  for (const item of items) {
+    groups[item.group] ??= [];
+    groups[item.group].push(item);
+  }
+
+  return groups;
+}
+
+function dedupeCommandItems(items: AdminCommandItem[]) {
+  const seenItems = new Set<string>();
+
+  return items.filter((item) => {
+    const key = `${item.href}-${item.label}`;
+
+    if (seenItems.has(key)) {
+      return false;
+    }
+
+    seenItems.add(key);
+    return true;
+  });
+}
+
 export function AdminCommandMenu({
   items,
   roleLabel,
@@ -27,9 +78,11 @@ export function AdminCommandMenu({
 }: AdminCommandMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const deferredQuery = useDeferredValue(query);
   const [liveItems, setLiveItems] = useState<AdminCommandItem[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setIsMounted(true);
@@ -49,8 +102,24 @@ export function AdminCommandMenu({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    document.documentElement.dataset.adminCommandOpen = "true";
+    window.setTimeout(() => inputRef.current?.focus(), 0);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      delete document.documentElement.dataset.adminCommandOpen;
+    };
+  }, [isOpen]);
+
   const filteredItems = useMemo(() => {
-    const normalizedQuery = normalizeSearchText(query);
+    const normalizedQuery = normalizeSearchText(deferredQuery);
 
     if (!normalizedQuery) {
       return items;
@@ -61,14 +130,22 @@ export function AdminCommandMenu({
         normalizedQuery
       )
     );
-  }, [items, query]);
+  }, [deferredQuery, items]);
 
   useEffect(() => {
-    const normalizedQuery = normalizeSearchText(query);
-    const trimmedQuery = query.trim();
+    const normalizedQuery = normalizeSearchText(deferredQuery);
+    const trimmedQuery = deferredQuery.trim();
 
     if (!isOpen || normalizedQuery.length < 2) {
       setLiveItems([]);
+      setIsSearching(false);
+      return;
+    }
+
+    const cachedItems = readAdminSearchCache(normalizedQuery);
+
+    if (cachedItems) {
+      setLiveItems(cachedItems);
       setIsSearching(false);
       return;
     }
@@ -85,8 +162,10 @@ export function AdminCommandMenu({
           ok: boolean;
           items?: AdminCommandItem[];
         };
+        const nextItems = response.ok && data.ok ? data.items ?? [] : [];
 
-        setLiveItems(response.ok && data.ok ? data.items ?? [] : []);
+        writeAdminSearchCache(normalizedQuery, nextItems);
+        setLiveItems(nextItems);
       } catch {
         if (!controller.signal.aborted) {
           setLiveItems([]);
@@ -96,27 +175,24 @@ export function AdminCommandMenu({
           setIsSearching(false);
         }
       }
-    }, 220);
+    }, 260);
 
     return () => {
       controller.abort();
       window.clearTimeout(timeout);
     };
-  }, [isOpen, query]);
+  }, [deferredQuery, isOpen]);
 
   const groupedItems = useMemo(() => {
-    const mergedItems = [
+    const mergedItems = dedupeCommandItems([
       ...liveItems.map((item) => ({
         ...item,
         group: `Canlı sonuçlar - ${item.group}`
       })),
       ...filteredItems
-    ];
+    ]);
 
-    return mergedItems.reduce<Record<string, AdminCommandItem[]>>((groups, item) => {
-      groups[item.group] = [...(groups[item.group] ?? []), item];
-      return groups;
-    }, {});
+    return groupCommandItems(mergedItems);
   }, [filteredItems, liveItems]);
 
   const dialog = isOpen ? (
@@ -139,7 +215,7 @@ export function AdminCommandMenu({
           <div className="flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
             <Search className="h-4 w-4 text-slate-400" />
             <input
-              autoFocus
+              ref={inputRef}
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Sipariş, müşteri, teklif, ürün..."

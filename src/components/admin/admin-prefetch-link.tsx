@@ -8,6 +8,8 @@ type AdminPrefetchLinkProps = ComponentProps<typeof Link> & {
   prewarm?: boolean;
 };
 
+const prewarmedAdminRoutes = new Set<string>();
+
 function isAdminHref(href: AdminPrefetchLinkProps["href"]): href is string {
   return typeof href === "string" && href.startsWith("/admin");
 }
@@ -33,9 +35,21 @@ export function AdminPrefetchLink({
   const warmHref = routeHref(href);
 
   function prewarmRoute() {
-    if (prewarm && warmHref) {
-      router.prefetch(warmHref);
+    if (!prewarm || !warmHref || prewarmedAdminRoutes.has(warmHref)) {
+      return;
     }
+
+    prewarmedAdminRoutes.add(warmHref);
+
+    const requestIdleCallback =
+      typeof window !== "undefined" ? window.requestIdleCallback : undefined;
+
+    if (requestIdleCallback) {
+      requestIdleCallback(() => router.prefetch(warmHref), { timeout: 900 });
+      return;
+    }
+
+    globalThis.setTimeout(() => router.prefetch(warmHref), 0);
   }
 
   return (

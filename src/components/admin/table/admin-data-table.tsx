@@ -1,12 +1,19 @@
 "use client";
 
-import { Children, type ReactNode } from "react";
-import { useState } from "react";
+import {
+  Children,
+  type ReactNode,
+  useEffect,
+  useMemo,
+  useState
+} from "react";
 import {
   type ColumnDef,
+  type PaginationState,
   type SortingState,
   flexRender,
   getCoreRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
   useReactTable
 } from "@tanstack/react-table";
@@ -21,6 +28,7 @@ type AdminDataTableProps<TData> = {
   emptyDescription: string;
   caption?: string;
   footer?: ReactNode;
+  pageSize?: number;
 };
 
 export function AdminDataTable<TData>({
@@ -29,26 +37,53 @@ export function AdminDataTable<TData>({
   emptyTitle,
   emptyDescription,
   caption,
-  footer
+  footer,
+  pageSize = 25
 }: AdminDataTableProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize
+  });
+
+  useEffect(() => {
+    setPagination({
+      pageIndex: 0,
+      pageSize
+    });
+  }, [data.length, pageSize]);
+
+  const tableState = useMemo(
+    () => ({
+      sorting,
+      pagination
+    }),
+    [pagination, sorting]
+  );
 
   const table = useReactTable({
     data,
     columns,
-    state: {
-      sorting
-    },
+    state: tableState,
     onSortingChange: setSorting,
+    onPaginationChange: setPagination,
+    autoResetPageIndex: false,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel()
   });
 
   const columnCount = table.getVisibleLeafColumns().length;
   const footerItems = footer ? Children.toArray(footer) : [];
+  const visibleRows = table.getRowModel().rows;
+  const totalRows = table.getPrePaginationRowModel().rows.length;
+  const shouldPaginate = totalRows > pagination.pageSize;
 
   return (
-    <section className="surface-card overflow-hidden border border-slate-200 bg-white/95">
+    <section
+      className="surface-card overflow-hidden border border-slate-200 bg-white/95"
+      data-performance-scope
+    >
       <div className="overflow-x-auto">
         <table className="min-w-full border-separate border-spacing-0">
           <caption className="sr-only">
@@ -104,8 +139,8 @@ export function AdminDataTable<TData>({
           </thead>
 
           <tbody>
-            {table.getRowModel().rows.length > 0 ? (
-              table.getRowModel().rows.map((row) => (
+            {visibleRows.length > 0 ? (
+              visibleRows.map((row) => (
                 <tr key={row.id} className="transition hover:bg-slate-50/70">
                   {row.getVisibleCells().map((cell) => (
                     <td
@@ -139,12 +174,37 @@ export function AdminDataTable<TData>({
         </table>
       </div>
 
-      {footerItems.length > 0 ? (
-        <div className="flex items-center justify-between gap-3 border-t border-slate-200 bg-slate-50/70 px-6 py-4">
+      {footerItems.length > 0 || shouldPaginate ? (
+        <div className="flex flex-col gap-3 border-t border-slate-200 bg-slate-50/70 px-6 py-4 md:flex-row md:items-center md:justify-between">
           <p className="text-sm text-slate-500">
-            Bu görünümde {table.getRowModel().rows.length} kayıt listeleniyor.
+            Bu görünümde {visibleRows.length} / {totalRows} kayıt listeleniyor.
           </p>
-          {footerItems}
+          <div className="flex flex-wrap items-center gap-2">
+            {shouldPaginate ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => table.previousPage()}
+                  disabled={!table.getCanPreviousPage()}
+                  className="rounded-full border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Önceki
+                </button>
+                <span className="rounded-full bg-white px-3 py-2 text-xs font-semibold text-slate-600">
+                  {pagination.pageIndex + 1} / {table.getPageCount()}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => table.nextPage()}
+                  disabled={!table.getCanNextPage()}
+                  className="rounded-full border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Sonraki
+                </button>
+              </>
+            ) : null}
+            {footerItems}
+          </div>
         </div>
       ) : null}
     </section>
