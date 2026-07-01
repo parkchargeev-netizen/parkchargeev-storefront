@@ -28,6 +28,8 @@ function getScrollMotionRuntimeScript() {
       var scrollFrame = 0;
       var pointerFrame = 0;
       var pointerListenerAttached = false;
+      var scrollListenerAttached = false;
+      var mutationObserverAttached = false;
       var pointerX = window.innerWidth / 2;
       var pointerY = window.innerHeight / 2;
       var currentMotionMode = "rich";
@@ -69,6 +71,8 @@ function getScrollMotionRuntimeScript() {
       }
 
       function prepareMotionScopes(root) {
+        if (currentMotionMode === "lite") return;
+
         if (root instanceof HTMLElement && root.matches(motionSelectors.scope)) {
           prepareMotionScope(root);
         }
@@ -150,7 +154,7 @@ function getScrollMotionRuntimeScript() {
       function syncScrollProgress() {
         scrollFrame = 0;
 
-        if (mediaQuery.matches) {
+        if (mediaQuery.matches || currentMotionMode === "lite") {
           setRootStyleValue("--scroll-progress", "0");
           setRootStyleValue("--scroll-shift", "0px");
           return;
@@ -168,6 +172,7 @@ function getScrollMotionRuntimeScript() {
       }
 
       function scheduleScrollProgress() {
+        if (currentMotionMode === "lite") return;
         if (document.hidden) return;
         if (scrollFrame) return;
         scrollFrame = window.requestAnimationFrame(syncScrollProgress);
@@ -203,7 +208,7 @@ function getScrollMotionRuntimeScript() {
 
         element.style.setProperty("--motion-delay", getMotionDelay(element, index));
 
-        if (mediaQuery.matches) {
+        if (mediaQuery.matches || currentMotionMode === "lite") {
           element.dataset.motionState = "complete";
           return;
         }
@@ -216,7 +221,7 @@ function getScrollMotionRuntimeScript() {
       }
 
       function prepareLoopElement(element) {
-        if (mediaQuery.matches) {
+        if (mediaQuery.matches || currentMotionMode === "lite") {
           element.dataset.motionActive = "false";
           return;
         }
@@ -291,8 +296,12 @@ function getScrollMotionRuntimeScript() {
         scheduleScrollProgress();
         if (currentMotionMode === "lite") {
           unbindPointerListener();
+          unbindScrollListener();
+          unbindMutationObserver();
         } else {
           bindPointerListener();
+          bindScrollListener();
+          bindMutationObserver();
         }
         schedulePointerLight();
       }
@@ -317,12 +326,35 @@ function getScrollMotionRuntimeScript() {
         });
       });
 
-      mutationObserver.observe(document.body, {
-        childList: true,
-        subtree: true
-      });
+      function bindMutationObserver() {
+        if (mutationObserverAttached || currentMotionMode === "lite" || mediaQuery.matches) return;
+        mutationObserver.observe(document.body, {
+          childList: true,
+          subtree: true
+        });
+        mutationObserverAttached = true;
+      }
 
-      window.addEventListener("scroll", scheduleScrollProgress, { passive: true });
+      function unbindMutationObserver() {
+        if (!mutationObserverAttached) return;
+        mutationObserver.disconnect();
+        mutationObserverAttached = false;
+      }
+
+      function bindScrollListener() {
+        if (scrollListenerAttached || currentMotionMode === "lite" || mediaQuery.matches) return;
+        window.addEventListener("scroll", scheduleScrollProgress, { passive: true });
+        scrollListenerAttached = true;
+      }
+
+      function unbindScrollListener() {
+        if (!scrollListenerAttached) return;
+        window.removeEventListener("scroll", scheduleScrollProgress);
+        scrollListenerAttached = false;
+      }
+
+      bindMutationObserver();
+      bindScrollListener();
       window.addEventListener("resize", scheduleScrollProgress);
       window.addEventListener("resize", schedulePointerLight);
       document.addEventListener("visibilitychange", syncVisibilityState);
@@ -340,10 +372,10 @@ function getScrollMotionRuntimeScript() {
         }
         window.cancelAnimationFrame(scrollFrame);
         window.cancelAnimationFrame(pointerFrame);
-        mutationObserver.disconnect();
+        unbindMutationObserver();
         revealObserver.disconnect();
         loopObserver.disconnect();
-        window.removeEventListener("scroll", scheduleScrollProgress);
+        unbindScrollListener();
         window.removeEventListener("resize", scheduleScrollProgress);
         window.removeEventListener("resize", schedulePointerLight);
         document.removeEventListener("visibilitychange", syncVisibilityState);

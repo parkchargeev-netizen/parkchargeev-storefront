@@ -7,6 +7,7 @@ import { createPortal } from "react-dom";
 import { ProductBadgePill } from "@/components/shop/product-badges";
 import type { ProductMediaModel } from "@/lib/mock-data";
 import type { ProductBadgePlacement, ProductDetailBadge } from "@/lib/product-detail-content";
+import { shouldBypassImageOptimization } from "@/lib/product-media";
 
 type ProductGalleryProps = {
   productName: string;
@@ -123,7 +124,7 @@ function ProductGalleryMedia({
         src={media.url}
         alt={media.altText || productName}
         fill
-        unoptimized
+        unoptimized={shouldBypassImageOptimization(media.url)}
         sizes="(min-width: 1024px) 360px, 90vw"
         className="h-full w-full object-contain p-4"
       />
@@ -170,7 +171,7 @@ function ProductGalleryStageMedia({
       src={media.url}
       alt={media.altText || productName}
       fill
-      unoptimized
+      unoptimized={shouldBypassImageOptimization(media.url)}
       priority={false}
       sizes="(min-width: 1024px) 760px, 92vw"
       className="object-contain p-2 sm:p-3"
@@ -226,14 +227,14 @@ export function ProductGallery({
       mediaItems?.length
         ? mediaItems
         : imageUrl
-          ? items.map((item, index) => ({
+          ? [{
               url: imageUrl,
-              altText: item,
+              altText: items[0] ?? productName,
               mediaType: "image" as const,
-              isPrimary: index === 0
-            }))
+              isPrimary: true
+            }]
           : [],
-    [imageUrl, items, mediaItems]
+    [imageUrl, items, mediaItems, productName]
   );
   const thumbnailItems: ProductGalleryThumbnail[] = useMemo(
     () => (galleryMedia.length ? galleryMedia : items.map((item) => ({ altText: item }))),
@@ -404,7 +405,7 @@ export function ProductGallery({
                 alt={selectedLightboxMedia.altText || productName}
                 width={1600}
                 height={1200}
-                unoptimized
+                unoptimized={shouldBypassImageOptimization(selectedLightboxMedia.url)}
                 sizes="90vw"
                 className="mx-auto block max-h-[85vh] max-w-[90vw] object-contain"
               />
@@ -564,7 +565,7 @@ export function ProductGallery({
                       src={item.url}
                       alt={`${productName} ${item.altText}`}
                       fill
-                      unoptimized
+                      unoptimized={shouldBypassImageOptimization(item.url)}
                       sizes="(min-width: 1024px) 120px, 24vw"
                       className="h-full w-full object-contain p-2 transition duration-300 group-hover:scale-[1.02]"
                     />

@@ -668,6 +668,14 @@ html[data-motion-performance="lite"] :where(.global-ambient-band, .site-ambient-
   animation-duration: 60s !important;
 }
 
+html[data-motion-performance="lite"] .global-ambient-layer::after,
+html[data-motion-performance="lite"] .site-page-transition::after,
+html[data-motion-performance="lite"] .site-ambient-circuit {
+  animation: none !important;
+  transition: none !important;
+  transform: translate3d(0, 0, 0) !important;
+}
+
 html[data-motion-performance="lite"] .global-ambient-layer::before,
 html[data-motion-performance="lite"] .premium-install-section::before,
 html[data-motion-performance="lite"] .premium-install-section::after,

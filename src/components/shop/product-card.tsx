@@ -14,7 +14,10 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { formatPriceTRY } from "@/lib/format";
 import type { ProductModel } from "@/lib/mock-data";
 import { getActiveProductDetailBadges } from "@/lib/product-detail-content";
-import { getDisplayProductImageUrl } from "@/lib/product-media";
+import {
+  getDisplayProductImageUrl,
+  shouldBypassImageOptimization
+} from "@/lib/product-media";
 import { getProductStoreProfile } from "@/lib/shop-merchandising";
 
 type ProductCardProps = {
@@ -75,7 +78,7 @@ function ProductMedia({
           height={store ? 420 : 480}
           loading={imagePriority ? undefined : "lazy"}
           priority={imagePriority}
-          unoptimized
+          unoptimized={shouldBypassImageOptimization(imageUrl)}
           sizes={
             store
               ? "(min-width: 1024px) 150px, 100vw"

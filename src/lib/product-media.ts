@@ -35,3 +35,37 @@ export function getDisplayProductImageUrl(imageUrl?: string | null) {
 
   return imageUrl;
 }
+
+const optimizableRemoteHostMatchers = [
+  (hostname: string) => hostname === "parkchargeev.com",
+  (hostname: string) => hostname.endsWith(".vercel.app"),
+  (hostname: string) => hostname.endsWith(".supabase.co")
+];
+
+export function shouldBypassImageOptimization(imageUrl?: string | null) {
+  if (!imageUrl) {
+    return true;
+  }
+
+  const normalizedUrl = imageUrl.trim();
+
+  if (!normalizedUrl || normalizedUrl.startsWith("data:") || normalizedUrl.startsWith("blob:")) {
+    return true;
+  }
+
+  if (normalizedUrl.startsWith("/")) {
+    return false;
+  }
+
+  try {
+    const { hostname, protocol } = new URL(normalizedUrl);
+
+    if (protocol !== "https:") {
+      return true;
+    }
+
+    return !optimizableRemoteHostMatchers.some((matcher) => matcher(hostname));
+  } catch {
+    return true;
+  }
+}

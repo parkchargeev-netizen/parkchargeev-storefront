@@ -10,7 +10,10 @@ import { ProductDevicePreview } from "@/components/shop/product-device-preview";
 import { conversionDataAttributes } from "@/lib/conversion-events";
 import { formatPriceTRY } from "@/lib/format";
 import type { ProductModel } from "@/lib/mock-data";
-import { getDisplayProductImageUrl } from "@/lib/product-media";
+import {
+  getDisplayProductImageUrl,
+  shouldBypassImageOptimization
+} from "@/lib/product-media";
 import { getProductStoreProfile } from "@/lib/shop-merchandising";
 
 type SelectorState = {
@@ -348,7 +351,7 @@ export function StoreProductSelectorAccordion({ products }: { products: ProductM
                           width={220}
                           height={170}
                           loading="lazy"
-                          unoptimized
+                          unoptimized={shouldBypassImageOptimization(imageUrl)}
                           sizes="120px"
                         />
                       ) : (

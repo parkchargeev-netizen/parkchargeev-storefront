@@ -14329,6 +14329,15 @@ body {
   contain: layout paint;
 }
 
+.site-experience-shell :where(.store-product-grid > *, .product-commerce-content > section, .product-detail-related-track > *, .admin-data-table, .surface-card[data-performance-scope]) {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 420px;
+}
+
+.site-experience-shell :where(.product-commerce-content > section) {
+  contain-intrinsic-size: auto 620px;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .site-experience-shell :where(.ds-action, .premium-btn, .btn-primary, .btn-secondary, .btn-quiet):active {
     transform: translateY(0) scale(0.985);

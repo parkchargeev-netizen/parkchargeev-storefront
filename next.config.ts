@@ -128,7 +128,22 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   outputFileTracingRoot: process.cwd(),
   images: {
-    formats: ["image/avif", "image/webp"]
+    formats: ["image/avif", "image/webp"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "parkchargeev.com"
+      },
+      {
+        protocol: "https",
+        hostname: "*.vercel.app"
+      },
+      {
+        protocol: "https",
+        hostname: "*.supabase.co",
+        pathname: "/storage/v1/object/public/**"
+      }
+    ]
   },
   experimental: {
     optimizePackageImports: [

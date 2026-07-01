@@ -29,7 +29,10 @@ import {
 } from "@/lib/cart";
 import { formatPriceTRY } from "@/lib/format";
 import { products } from "@/lib/mock-data";
-import { getDisplayProductImageUrl } from "@/lib/product-media";
+import {
+  getDisplayProductImageUrl,
+  shouldBypassImageOptimization
+} from "@/lib/product-media";
 import { serviceCoverageSummary } from "@/lib/service-coverage";
 import { getProductStoreProfile } from "@/lib/shop-merchandising";
 import { siteConfig } from "@/lib/site";
@@ -184,7 +187,7 @@ export function CartPageClient() {
                         width={300}
                         height={240}
                         loading="lazy"
-                        unoptimized
+                        unoptimized={shouldBypassImageOptimization(getProductImageUrl(item))}
                         className="aspect-[4/3] w-full object-cover"
                       />
                     ) : (
