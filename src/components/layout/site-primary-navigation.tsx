@@ -89,6 +89,7 @@ export function SitePrimaryNavigation({ items }: SitePrimaryNavigationProps) {
           <Link
             key={item.href}
             href={item.href}
+            prefetch={false}
             target={item.opensInNewTab ? "_blank" : undefined}
             rel={item.rel ?? (item.opensInNewTab ? "noopener noreferrer" : undefined)}
             className={baseNavigationClassName}

@@ -11,6 +11,7 @@ export function SiteCartLink() {
   return (
     <Link
       href="/sepet"
+      prefetch={false}
       aria-label={`Sepetim${totalQuantity > 0 ? `, ${totalQuantity} ürün` : ""}`}
       className="relative inline-flex h-11 min-w-11 items-center justify-center gap-2 rounded-lg border border-outline-variant/40 bg-surface-container-low px-3 text-sm font-bold text-on-surface transition hover:border-primary/30 hover:text-primary"
     >

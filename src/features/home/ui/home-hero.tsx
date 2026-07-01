@@ -62,6 +62,7 @@ export function HomeHero({ whatsappHref }: HomeHeroProps) {
           >
             <Link
               href="/magaza"
+              prefetch={false}
               className="premium-btn premium-btn--primary"
               {...conversionDataAttributes("hero_cta_click", {
                 cta: "Şarj Cihazlarını İncele",
@@ -73,6 +74,7 @@ export function HomeHero({ whatsappHref }: HomeHeroProps) {
             </Link>
             <Link
               href="/urun-secici"
+              prefetch={false}
               className="premium-btn premium-btn--glass"
               {...conversionDataAttributes("hero_cta_click", {
                 cta: "Çözümünü Bul",
@@ -105,7 +107,12 @@ export function HomeHero({ whatsappHref }: HomeHeroProps) {
           data-motion-order="3"
         >
           {solutionRoutes.slice(0, 3).map((route) => (
-            <Link key={route.label} href={route.href} className="premium-hero-route group">
+            <Link
+              key={route.label}
+              href={route.href}
+              prefetch={false}
+              className="premium-hero-route group"
+            >
               <HomeIcon icon={route.icon} className="premium-hero-route__icon" />
               <span className="min-w-0">
                 <small>{route.label}</small>

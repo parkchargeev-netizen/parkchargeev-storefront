@@ -22,6 +22,7 @@ export function SiteHeaderActions({ className = "", settings }: SiteHeaderAction
     <div className={className || "flex items-center gap-2"}>
       <Link
         href="/arama"
+        prefetch={false}
         aria-label="Arama"
         className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-outline-variant/40 bg-white/86 text-on-surface transition hover:border-primary/30 hover:text-primary"
       >
@@ -43,6 +44,7 @@ export function SiteHeaderActions({ className = "", settings }: SiteHeaderAction
       <SiteCartLink />
       <Link
         href={surveyHref}
+        prefetch={false}
         className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-bold text-white shadow-[0_14px_34px_rgba(6,51,38,0.2)] transition hover:-translate-y-0.5 hover:bg-secondary hover:shadow-[0_18px_44px_rgba(6,51,38,0.25)]"
         {...conversionDataAttributes("installation_quote_click", {
           placement: "header",
@@ -54,6 +56,7 @@ export function SiteHeaderActions({ className = "", settings }: SiteHeaderAction
       </Link>
       <Link
         href="/giris"
+        prefetch={false}
         aria-label="Giriş Yap"
         className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-slate-950 text-white shadow-[0_12px_32px_rgba(15,23,42,0.2)] transition hover:-translate-y-0.5 hover:bg-primary"
       >

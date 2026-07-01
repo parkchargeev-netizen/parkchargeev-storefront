@@ -36,6 +36,7 @@ export function SiteHeader({ navigation = siteConfig.primaryNavigation, settings
           </div>
           <Link
             href={`/iletisim?reason=${encodeURIComponent("Ücretsiz keşif talebi")}`}
+            prefetch={false}
             className="inline-flex items-center gap-1 text-[#7eecc9]"
           >
             Keşif / teklif al
@@ -47,6 +48,7 @@ export function SiteHeader({ navigation = siteConfig.primaryNavigation, settings
       <div className="relative mx-auto flex min-h-[68px] w-full max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
         <Link
           href="/"
+          prefetch={false}
           className="group inline-flex shrink-0 items-center"
           aria-label={`${brandName} ana sayfa`}
         >
