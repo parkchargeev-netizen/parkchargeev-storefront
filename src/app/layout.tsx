@@ -80,16 +80,47 @@ export default function RootLayout({
   return (
     <html lang="tr">
       <body className="font-sans">
-        <Script
-          src={`https://www.googletagmanager.com/gtag/js?id=${googleTagId}`}
-          strategy="lazyOnload"
-        />
-        <Script id="google-ads-gtag" strategy="lazyOnload">
+        <Script id="google-ads-gtag" strategy="afterInteractive">
           {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '${googleTagId}');
+            (function(w,d,id){
+              if (w.__parkchargeevGoogleTagQueued) return;
+              w.__parkchargeevGoogleTagQueued = true;
+              w.dataLayer = w.dataLayer || [];
+              w.gtag = w.gtag || function(){w.dataLayer.push(arguments);};
+              w.gtag('js', new Date());
+              w.gtag('config', id);
+
+              var loaded = false;
+              var events = ["pointerdown", "keydown", "touchstart", "wheel"];
+              var load = function(){
+                if (loaded) return;
+                loaded = true;
+                events.forEach(function(eventName) {
+                  w.removeEventListener(eventName, load, { passive: true });
+                });
+                var script = d.createElement("script");
+                script.async = true;
+                script.src = "https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(id);
+                d.head.appendChild(script);
+              };
+              var schedule = function(){
+                w.setTimeout(function(){
+                  if ("requestIdleCallback" in w) {
+                    w.requestIdleCallback(load, { timeout: 3000 });
+                    return;
+                  }
+                  load();
+                }, 12000);
+              };
+              events.forEach(function(eventName) {
+                w.addEventListener(eventName, load, { once: true, passive: true });
+              });
+              if (d.readyState === "complete") {
+                schedule();
+              } else {
+                w.addEventListener("load", schedule, { once: true });
+              }
+            })(window, document, "${googleTagId}");
           `}
         </Script>
         <Script id="microsoft-clarity" strategy="lazyOnload">
@@ -106,11 +137,13 @@ export default function RootLayout({
                 })(w,d,"clarity","script",id);
               };
               var schedule = function(){
-                if ("requestIdleCallback" in w) {
-                  w.requestIdleCallback(start, { timeout: 4500 });
-                  return;
-                }
-                w.setTimeout(start, 3500);
+                w.setTimeout(function(){
+                  if ("requestIdleCallback" in w) {
+                    w.requestIdleCallback(start, { timeout: 3000 });
+                    return;
+                  }
+                  start();
+                }, 14000);
               };
               if (d.readyState === "complete") {
                 schedule();
