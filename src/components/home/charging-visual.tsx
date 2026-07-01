@@ -13,7 +13,47 @@ export function ChargingVisual() {
   return (
     <div className="real-charger-media" aria-hidden>
       <div className="real-charger-media__frame">
-        <span className="real-charger-media__photo" />
+        <picture className="real-charger-media__photo">
+          <source
+            type="image/avif"
+            media="(max-width: 767px)"
+            srcSet="/images/hero-realistic-ev-charging-mobile.avif"
+          />
+          <source
+            type="image/avif"
+            media="(max-width: 1199px)"
+            srcSet="/images/hero-realistic-ev-charging-tablet.avif"
+          />
+          <source
+            type="image/avif"
+            srcSet="/images/hero-realistic-ev-charging-desktop.avif"
+          />
+          <source
+            type="image/webp"
+            media="(max-width: 767px)"
+            srcSet="/images/hero-realistic-ev-charging-mobile.webp"
+          />
+          <source
+            type="image/webp"
+            media="(max-width: 1199px)"
+            srcSet="/images/hero-realistic-ev-charging-tablet.webp"
+          />
+          <source
+            type="image/webp"
+            srcSet="/images/hero-realistic-ev-charging-desktop.webp"
+          />
+          <img
+            src="/images/hero-realistic-ev-charging-desktop.webp"
+            width={1586}
+            height={992}
+            alt=""
+            loading="eager"
+            decoding="async"
+            fetchPriority="high"
+            sizes="100vw"
+            className="real-charger-media__photo-image"
+          />
+        </picture>
         <span className="real-charger-media__shade" />
         <span className="real-charger-media__scan" />
         <span className="real-charger-media__charger-pulse" />

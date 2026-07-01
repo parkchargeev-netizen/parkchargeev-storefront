@@ -94,11 +94,30 @@ export default function RootLayout({
         </Script>
         <Script id="microsoft-clarity" strategy="lazyOnload">
           {`
-            (function(c,l,a,r,i,t,y){
-              c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-              t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-              y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-            })(window, document, "clarity", "script", "${clarityProjectId}");
+            (function(w,d,id){
+              if (w.__parkchargeevClarityQueued) return;
+              w.__parkchargeevClarityQueued = true;
+              var start = function(){
+                if (w.clarity) return;
+                (function(c,l,a,r,i,t,y){
+                  c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+                  t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+                  y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+                })(w,d,"clarity","script",id);
+              };
+              var schedule = function(){
+                if ("requestIdleCallback" in w) {
+                  w.requestIdleCallback(start, { timeout: 4500 });
+                  return;
+                }
+                w.setTimeout(start, 3500);
+              };
+              if (d.readyState === "complete") {
+                schedule();
+              } else {
+                w.addEventListener("load", schedule, { once: true });
+              }
+            })(window, document, "${clarityProjectId}");
           `}
         </Script>
         <Script id="parkchargeev-conversion-listener" strategy="afterInteractive">

@@ -392,7 +392,7 @@ function getScrollMotionRuntimeScript() {
 export function ScrollMotion() {
   return (
     <>
-      <Script id="parkchargeev-scroll-motion" strategy="afterInteractive">
+      <Script id="parkchargeev-scroll-motion" strategy="lazyOnload">
         {getScrollMotionRuntimeScript()}
       </Script>
       <span hidden data-scroll-motion-runtime aria-hidden />

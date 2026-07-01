@@ -1159,9 +1159,12 @@ body {
 }
 
 .premium-hero > .real-charger-media .real-charger-media__photo {
-  background-position: center 58%;
   transform: scale(1.015);
   animation: premium-hero-photo 18s ease-in-out infinite alternate;
+}
+
+.premium-hero > .real-charger-media .real-charger-media__photo-image {
+  object-position: center 58%;
 }
 
 .premium-hero > .real-charger-media .real-charger-media__shade {
@@ -1272,11 +1275,17 @@ body {
   position: absolute;
   inset: 0;
   z-index: 0;
-  background-image: url("/images/hero-realistic-ev-charging.png");
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
   transform: scale(1.02);
+  overflow: hidden;
+}
+
+.real-charger-media__photo-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transform: translateZ(0);
 }
 
 .real-charger-media__shade {
@@ -1303,6 +1312,7 @@ body {
     0 0 34px rgba(126, 236, 201, 0.44),
     inset 0 0 24px rgba(126, 236, 201, 0.16);
   animation: real-photo-pulse 2.8s ease-in-out infinite;
+  will-change: transform, opacity;
 }
 
 .real-charger-media__charger-pulse::after {
@@ -1326,6 +1336,7 @@ body {
   filter: drop-shadow(0 0 16px rgba(126, 236, 201, 0.56));
   transform-origin: 50% 50%;
   animation: real-photo-cable-flow 3.6s ease-in-out infinite;
+  will-change: transform, opacity;
 }
 
 .real-charger-media__cable-flow--one {
@@ -1352,6 +1363,7 @@ body {
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.72), rgba(126, 236, 201, 0.54), transparent);
   filter: drop-shadow(0 0 18px rgba(126, 236, 201, 0.34));
   animation: real-photo-light-slide 6.2s ease-in-out infinite;
+  will-change: transform, opacity;
 }
 
 .real-charger-media__lightline--one {
@@ -1384,6 +1396,7 @@ body {
     radial-gradient(ellipse at 40% 80%, rgba(6, 51, 38, 0.28), transparent 64%);
   filter: blur(12px);
   animation: real-media-breathe 6.8s ease-in-out infinite;
+  will-change: transform, opacity;
 }
 
 .real-charger-media__video-noise,
@@ -1415,6 +1428,7 @@ body {
   filter: blur(10px);
   transform: rotate(12deg);
   animation: real-media-scan 7s ease-in-out infinite;
+  will-change: transform, opacity;
 }
 
 .real-charger-media__halo {
@@ -1739,6 +1753,7 @@ body {
   background: var(--color-secondary-container);
   box-shadow: 0 0 20px rgba(126, 236, 201, 0.78);
   animation: premium-particle-rise 5.2s ease-in-out infinite;
+  will-change: transform, opacity;
 }
 
 .premium-trust-pill {
@@ -11761,6 +11776,22 @@ body {
 .site-experience-shell > footer {
   position: relative;
   z-index: 1;
+}
+
+.site-footer {
+  contain: layout paint;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 560px;
+}
+
+.site-footer__project {
+  min-height: 12.75rem;
+}
+
+@media (min-width: 1024px) {
+  .site-footer__project {
+    min-height: 10.5rem;
+  }
 }
 
 .site-scroll-progress {

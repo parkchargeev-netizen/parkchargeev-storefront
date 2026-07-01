@@ -23,8 +23,8 @@ export function SiteFooter({
   const publicSettings = settings ?? getFallbackSiteSettings();
 
   return (
-    <footer className="border-t border-outline-variant/40 bg-white" data-motion-scope>
-      <div className="bg-[#063326] text-white">
+    <footer className="site-footer border-t border-outline-variant/40 bg-white" data-motion-scope>
+      <div className="site-footer__project bg-[#063326] text-white">
         <div className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-8 lg:flex-row lg:items-center lg:justify-between lg:px-8">
           <div className="max-w-2xl">
             <p className="text-xs font-bold uppercase text-emerald-300">Proje masası</p>

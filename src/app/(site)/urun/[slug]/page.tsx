@@ -15,7 +15,7 @@ import {
 import { ProductGallery } from "@/components/shop/product-gallery";
 import { ProductInfoCards } from "@/components/shop/product-info-cards";
 import { ProductPurchasePanel } from "@/components/shop/product-purchase-panel";
-import { ProductReviews } from "@/components/shop/product-reviews";
+import { ProductReviewsLazy } from "@/components/shop/product-reviews-lazy";
 import { JsonLd } from "@/components/seo/json-ld";
 import { ProductPlacementBadges } from "@/components/shop/product-badges";
 import { formatProductDescriptionHtml } from "@/lib/product-description-html";
@@ -225,7 +225,7 @@ export default async function ProductDetailPage({
           relatedProducts={relatedProducts}
         />
         {detailContent.reviews.isEnabled ? (
-          <ProductReviews
+          <ProductReviewsLazy
             content={detailContent.reviews}
             productName={product.name}
             productSlug={product.slug}

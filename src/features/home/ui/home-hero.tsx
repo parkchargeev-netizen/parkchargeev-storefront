@@ -15,7 +15,17 @@ type HomeHeroProps = {
 
 export function HomeHero({ whatsappHref }: HomeHeroProps) {
   return (
-    <section className="premium-hero relative isolate overflow-hidden" data-motion="fade">
+    <>
+      <link
+        rel="preload"
+        as="image"
+        href="/images/hero-realistic-ev-charging-desktop.avif"
+        imageSrcSet="/images/hero-realistic-ev-charging-mobile.avif 760w, /images/hero-realistic-ev-charging-tablet.avif 1100w, /images/hero-realistic-ev-charging-desktop.avif 1600w"
+        imageSizes="100vw"
+        fetchPriority="high"
+        type="image/avif"
+      />
+      <section className="premium-hero relative isolate overflow-hidden" data-motion="fade">
       <ChargingVisual />
       <div className="premium-hero__mesh" aria-hidden />
 
@@ -109,6 +119,7 @@ export function HomeHero({ whatsappHref }: HomeHeroProps) {
           ))}
         </div>
       </div>
-    </section>
+      </section>
+    </>
   );
 }

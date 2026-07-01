@@ -172,7 +172,8 @@ function ProductGalleryStageMedia({
       alt={media.altText || productName}
       fill
       unoptimized={shouldBypassImageOptimization(media.url)}
-      priority={false}
+      priority
+      fetchPriority="high"
       sizes="(min-width: 1024px) 760px, 92vw"
       className="object-contain p-2 sm:p-3"
     />
