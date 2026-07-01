@@ -219,7 +219,7 @@ export function ProductTechnicalSpecs({
   }
 
   return (
-    <section className="product-detail-section">
+    <section id="technical-specs" className="product-detail-section scroll-mt-28">
       <div className="product-detail-section-heading">
         <p>Teknik özellikler</p>
         <h2>Gruplandırılmış, hızlı taranabilir teknik tablo.</h2>

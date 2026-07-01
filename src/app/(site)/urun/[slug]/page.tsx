@@ -16,6 +16,7 @@ import { ProductGallery } from "@/components/shop/product-gallery";
 import { ProductPurchasePanel } from "@/components/shop/product-purchase-panel";
 import { ProductReviews } from "@/components/shop/product-reviews";
 import { JsonLd } from "@/components/seo/json-ld";
+import { getProductCommerceBadges } from "@/lib/product-commerce-tags";
 import { getDisplayProductImageUrl } from "@/lib/product-media";
 import {
   getActiveProductSmartFeatures,
@@ -144,8 +145,8 @@ export default async function ProductDetailPage({
   const technicalGroups = getActiveProductTechnicalGroups(product);
   const defaultVariant =
     product.variants?.find((variant) => variant.isDefault) ?? product.variants?.[0];
-  const productSku = defaultVariant?.sku ?? product.slug.toUpperCase();
   const storeProfile = getProductStoreProfile(product);
+  const commerceBadges = getProductCommerceBadges(product);
   const mediaItems = detailContent.galleryItems;
   const productImageUrl = getDisplayProductImageUrl(product.imageUrl);
   const descriptionHtml = formatProductDescriptionHtml(
@@ -209,8 +210,31 @@ export default async function ProductDetailPage({
             <div className="product-commerce-meta">
               <span>ParkChargeEV seçkisi</span>
               <span>{product.category}</span>
-              <span>Ürün kodu: {productSku}</span>
               {product.badge ? <span>{product.badge}</span> : null}
+            </div>
+
+            <div className="product-commerce-hero-badges" aria-label="Stok ve kargo bilgileri">
+              <span
+                className={
+                  product.stockLabel === "Stokta Yok"
+                    ? "product-commerce-hero-badge product-commerce-hero-badge--danger"
+                    : "product-commerce-hero-badge product-commerce-hero-badge--stock"
+                }
+              >
+                {product.stockLabel}
+              </span>
+              {commerceBadges.map((badge) => (
+                <span
+                  key={badge.label}
+                  className={
+                    badge.tone === "success"
+                      ? "product-commerce-hero-badge product-commerce-hero-badge--shipping"
+                      : "product-commerce-hero-badge product-commerce-hero-badge--fast"
+                  }
+                >
+                  {badge.label}
+                </span>
+              ))}
             </div>
 
             <h1>{product.name}</h1>
@@ -218,20 +242,20 @@ export default async function ProductDetailPage({
               {product.summary || storeProfile.primaryFit}
             </p>
 
-            <div className="product-commerce-keyfacts">
-              {quickFacts.map(([label, value]) => (
-                <div key={label}>
-                  <span>{label}</span>
-                  <strong>{value}</strong>
-                </div>
-              ))}
-            </div>
-
             <ProductPurchasePanel
               product={product}
               benefits={detailContent.purchaseBenefits}
             />
           </aside>
+
+          <div className="product-commerce-summary-cards" aria-label="Ürün teknik özeti">
+            {quickFacts.map(([label, value]) => (
+              <div key={label}>
+                <span>{label}</span>
+                <strong>{value}</strong>
+              </div>
+            ))}
+          </div>
         </section>
       </div>
 

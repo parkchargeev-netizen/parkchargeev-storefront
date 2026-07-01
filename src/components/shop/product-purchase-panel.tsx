@@ -2,13 +2,12 @@
 
 import Link from "next/link";
 import { useRef, useState } from "react";
-import { ShoppingCart, Truck } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 
 import { useCart } from "@/components/providers/cart-provider";
 import { trackConversionEvent } from "@/lib/conversion-events";
 import { formatPriceTRY } from "@/lib/format";
 import type { ProductModel } from "@/lib/mock-data";
-import { getProductCommerceBadges } from "@/lib/product-commerce-tags";
 import {
   getProductCableOptions,
   getProductSelectedCableOption
@@ -31,12 +30,6 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
   const isOutOfStock = product.stockLabel === "Stokta Yok";
   const isAddDisabled = isOutOfStock || !isHydrated;
   const estimatedLineTotal = selectedOption.priceKurus * quantity;
-  const commerceBadges = getProductCommerceBadges(product);
-  const selectedVariant =
-    product.variants?.find((variant) => variant.cableLength === cableOption) ??
-    product.variants?.find((variant) => variant.isDefault) ??
-    product.variants?.[0];
-  const selectedSku = selectedVariant?.sku ?? product.slug.toUpperCase();
   const discountPercent = selectedOption.compareAtKurus
     ? Math.round(
         ((selectedOption.compareAtKurus - selectedOption.priceKurus) /
@@ -71,6 +64,12 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
   function selectCableOption(nextCableOption: string) {
     cableOptionRef.current = nextCableOption;
     setCableOption(nextCableOption);
+  }
+
+  function scrollToTechnicalSpecs() {
+    document
+      .getElementById("technical-specs")
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   return (
@@ -113,46 +112,11 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
             </div>
           ) : null}
         </div>
-
-        <div className="mt-4 flex flex-wrap items-center gap-2">
-          <span
-            className={
-              isOutOfStock
-                ? "rounded-full bg-red-50 px-3 py-2 text-xs font-bold uppercase tracking-normal text-red-700"
-                : "rounded-full bg-emerald-50 px-3 py-2 text-xs font-bold uppercase tracking-normal text-emerald-800"
-            }
-          >
-            {product.stockLabel}
-          </span>
-          {commerceBadges.map((badge) => (
-            <span
-              key={badge.label}
-              className={
-                badge.tone === "success"
-                  ? "rounded-full bg-emerald-50 px-3 py-2 text-xs font-bold uppercase tracking-normal text-emerald-800"
-                  : "rounded-full bg-amber-100 px-3 py-2 text-xs font-bold uppercase tracking-normal text-amber-800"
-              }
-            >
-              {badge.label}
-            </span>
-          ))}
-        </div>
       </div>
 
       <div className="mt-5 rounded-lg bg-surface-container-low p-5">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p className="text-xs font-bold uppercase text-on-surface-variant">Ürün kodu</p>
-            <p className="mt-1 text-sm font-semibold text-on-surface">{selectedSku}</p>
-          </div>
-          <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-2 text-xs font-semibold text-on-surface-variant">
-            <Truck className="h-4 w-4 text-primary" aria-hidden />
-            Kargo bilgisi sepette netleşir
-          </div>
-        </div>
-
         {cableOptions.length > 1 ? (
-          <div className="mt-5">
+          <div>
             <p className="text-sm font-medium text-on-surface-variant">Kablo uzunluğu</p>
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
               {cableOptions.map((option) => (
@@ -178,11 +142,11 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
               ))}
             </div>
           </div>
-        ) : null}
+          ) : null}
 
-        <div className="mt-5">
+        <div className={cableOptions.length > 1 ? "mt-5" : ""}>
           <p className="text-sm font-medium text-on-surface-variant">Adet</p>
-          <div className="product-purchase-panel__action-row mt-3 flex flex-col gap-4 sm:flex-row sm:items-center">
+          <div className="product-purchase-panel__action-row mt-3 flex flex-col gap-3">
             <div className="flex items-center gap-4 rounded-lg bg-white px-4 py-3">
               <button
                 type="button"
@@ -209,10 +173,17 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
               onClick={addCurrentSelection}
               disabled={isAddDisabled}
               aria-busy={!isHydrated}
-              className="product-purchase-panel__add-button inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-linear-to-r from-primary to-secondary px-6 py-4 text-center text-base font-semibold text-white shadow-[0_18px_50px_rgba(6,51,38,0.22)] transition hover:translate-y-[-1px] disabled:cursor-not-allowed disabled:opacity-60"
+              className="product-purchase-panel__add-button inline-flex w-full items-center justify-center gap-2 rounded-lg bg-linear-to-r from-primary to-secondary px-6 py-4 text-center text-base font-semibold text-white shadow-[0_18px_50px_rgba(6,51,38,0.22)] transition hover:translate-y-[-1px] disabled:cursor-not-allowed disabled:opacity-60"
             >
               <ShoppingCart className="h-5 w-5" aria-hidden />
               {isOutOfStock ? "Stokta Yok" : "Sepete Ekle"}
+            </button>
+            <button
+              type="button"
+              onClick={scrollToTechnicalSpecs}
+              className="product-purchase-panel__spec-button inline-flex w-full items-center justify-center rounded-lg border border-primary/20 bg-white px-6 py-3.5 text-sm font-bold text-primary transition hover:border-primary/40 hover:bg-primary/5"
+            >
+              Teknik Özellikleri İncele
             </button>
           </div>
           {feedback ? (

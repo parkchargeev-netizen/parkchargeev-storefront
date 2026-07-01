@@ -329,7 +329,12 @@ export function ProductGallery({
             <button
               key={`${item.altText}-${index}`}
               type="button"
-              onClick={() => setActiveIndex(index)}
+              onClick={() => {
+                setActiveIndex(index);
+                if (hasImage) {
+                  setLightboxIndex(index);
+                }
+              }}
               aria-label={`${productName} ${index + 1}. görseli seç`}
               className={`group w-16 shrink-0 overflow-hidden rounded-lg p-1 transition lg:w-full ${
                 index === activeIndex
