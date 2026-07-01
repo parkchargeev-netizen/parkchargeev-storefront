@@ -89,7 +89,7 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
         </button>
       </div>
 
-      <div className="product-purchase-panel__price mt-7 rounded-lg border border-primary/12 bg-white p-5 shadow-[0_18px_44px_rgba(6,51,38,0.08)]">
+      <div className="product-purchase-panel__price mt-5 rounded-lg border border-primary/12 bg-white p-5 shadow-[0_18px_44px_rgba(6,51,38,0.08)]">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="text-xs font-bold uppercase tracking-normal text-on-surface-variant">
@@ -114,7 +114,7 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
         </div>
       </div>
 
-      <div className="mt-5 rounded-lg bg-surface-container-low p-5">
+      <div className="product-purchase-panel__controls mt-5 rounded-lg bg-surface-container-low p-5">
         {cableOptions.length > 1 ? (
           <div>
             <p className="text-sm font-medium text-on-surface-variant">Kablo uzunluğu</p>
@@ -196,16 +196,13 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
           ) : null}
         </div>
 
-        <div className="mt-5 rounded-lg border border-outline-variant/35 bg-white p-4">
+        <div className="product-purchase-panel__subtotal mt-5 rounded-lg border border-outline-variant/35 bg-white p-4">
           <div className="flex items-center justify-between gap-4">
             <span className="text-sm text-on-surface-variant">Tahmini ara toplam</span>
             <span className="text-lg font-bold text-on-surface">
               {formatPriceTRY(estimatedLineTotal)}
             </span>
           </div>
-          <p className="mt-3 text-xs leading-5 text-on-surface-variant">
-            KDV, teslimat ve varsa kurulum kalemi sepet/checkout adımında netleşir.
-          </p>
         </div>
       </div>
     </div>

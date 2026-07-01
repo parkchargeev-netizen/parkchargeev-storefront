@@ -13,11 +13,13 @@ import {
   ProductTrustGrid
 } from "@/components/shop/product-detail-sections";
 import { ProductGallery } from "@/components/shop/product-gallery";
+import { ProductInfoCards } from "@/components/shop/product-info-cards";
 import { ProductPurchasePanel } from "@/components/shop/product-purchase-panel";
 import { ProductReviews } from "@/components/shop/product-reviews";
 import { JsonLd } from "@/components/seo/json-ld";
 import { getProductCommerceBadges } from "@/lib/product-commerce-tags";
 import { getDisplayProductImageUrl } from "@/lib/product-media";
+import type { ProductModel } from "@/lib/mock-data";
 import {
   getActiveProductSmartFeatures,
   getActiveProductTechnicalGroups,
@@ -81,6 +83,30 @@ function formatProductDescriptionHtml(description: string, summary: string) {
   return alreadyIncludesSummary
     ? descriptionHtml
     : `${descriptionHtml}<p>${escapeHtml(normalizedSummary)}</p>`;
+}
+
+function getProductInfrastructureLabel(product: ProductModel, fallback: string) {
+  const corpus = [
+    product.name,
+    product.category,
+    product.summary,
+    product.description,
+    product.powerLabel,
+    product.specs.map((spec) => `${spec.label} ${spec.value}`).join(" ")
+  ]
+    .join(" ")
+    .toLocaleLowerCase("tr-TR");
+  const fallbackText = fallback.toLocaleLowerCase("tr-TR");
+  const explicitDc = /\bdc\b/.test(product.powerLabel.toLocaleLowerCase("tr-TR")) ||
+    /\bccs\b/.test(corpus) ||
+    product.category.toLocaleLowerCase("tr-TR").includes("dc");
+  const likelyAc = /\bac\b/.test(corpus) || /type\s*2|tip\s*2/.test(corpus);
+
+  if (!explicitDc && likelyAc && fallbackText.includes("dc")) {
+    return product.powerLabel.includes("22") ? "Trifaze AC" : "AC altyapı";
+  }
+
+  return fallback;
 }
 
 export async function generateStaticParams() {
@@ -159,15 +185,13 @@ export default async function ProductDetailPage({
     { name: product.name, path: `/urun/${product.slug}` }
   ]);
   const faqJsonLd = getFaqJsonLd(detailContent.faqs);
-  const quickFacts = [
+  const productInfoCards = [
+    ["Kategori", product.category],
+    ["Kullanım", storeProfile.primaryFit],
+    ["Altyapı", getProductInfrastructureLabel(product, storeProfile.phaseHint)],
     ["Güç", product.powerLabel || storeProfile.powerTier],
     ["Soket", defaultVariant?.connectorType || storeProfile.connectorHint],
     ["Kurulum", storeProfile.installationMode]
-  ] as const;
-  const proofItems = [
-    ["Kategori", product.category],
-    ["Kullanım", storeProfile.primaryFit],
-    ["Altyapı", storeProfile.phaseHint]
   ] as const;
 
   return (
@@ -195,15 +219,6 @@ export default async function ProductDetailPage({
               featureLabels={detailContent.galleryFeatureLabels}
               deviceCaption={detailContent.galleryDeviceCaption}
             />
-
-            <div className="product-commerce-proof-strip" aria-label="Ürün özeti">
-              {proofItems.map(([label, value]) => (
-                <div key={label}>
-                  <span>{label}</span>
-                  <strong>{value}</strong>
-                </div>
-              ))}
-            </div>
           </div>
 
           <aside className="product-commerce-buybox" aria-label="Ürün bilgisi ve sepet">
@@ -248,14 +263,9 @@ export default async function ProductDetailPage({
             />
           </aside>
 
-          <div className="product-commerce-summary-cards" aria-label="Ürün teknik özeti">
-            {quickFacts.map(([label, value]) => (
-              <div key={label}>
-                <span>{label}</span>
-                <strong>{value}</strong>
-              </div>
-            ))}
-          </div>
+          <ProductInfoCards
+            items={productInfoCards.map(([label, value]) => ({ label, value }))}
+          />
         </section>
       </div>
 

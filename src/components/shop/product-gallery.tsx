@@ -256,10 +256,10 @@ export function ProductGallery({
   }, [lightboxIndex, moveLightbox]);
 
   return (
-    <div className="product-gallery-premium surface-card grid gap-4 p-4 lg:grid-cols-[76px_minmax(0,1fr)] lg:p-5">
-      <div className="order-first overflow-hidden rounded-lg bg-white p-3 lg:order-2 lg:p-5">
+    <div className="product-gallery-premium surface-card grid gap-4 p-3 sm:p-4 lg:grid-cols-[88px_minmax(0,1fr)] lg:p-5">
+      <div className="product-gallery-stage-card order-first overflow-hidden rounded-lg bg-white p-3 lg:order-2 lg:p-5">
         <div
-          className={`relative min-h-[360px] overflow-hidden rounded-lg md:min-h-[460px] ${
+          className={`product-gallery-stage relative min-h-[360px] overflow-hidden rounded-lg md:min-h-[500px] ${
             hasRealMedia
               ? "product-gallery-stage--contain grid aspect-[4/3] place-items-center bg-white"
               : "grid aspect-[4/3] px-6 py-7 text-white md:grid-cols-[1fr_0.8fr]"
@@ -321,7 +321,7 @@ export function ProductGallery({
         </div>
       </div>
 
-      <div className="order-last flex gap-2 overflow-x-auto pb-1 lg:order-1 lg:max-h-[560px] lg:flex-col lg:overflow-x-visible lg:overflow-y-auto lg:pr-1">
+      <div className="product-gallery-thumbnails order-last flex gap-2 overflow-x-auto pb-1 lg:order-1 lg:max-h-[620px] lg:flex-col lg:overflow-x-visible lg:overflow-y-auto lg:pr-1">
         {thumbnailItems.map((item, index) => {
           const hasImage = isProductMediaItem(item) && item.mediaType === "image";
 
@@ -336,9 +336,9 @@ export function ProductGallery({
                 }
               }}
               aria-label={`${productName} ${index + 1}. görseli seç`}
-              className={`group w-16 shrink-0 overflow-hidden rounded-lg p-1 transition lg:w-full ${
+              className={`product-gallery-thumbnail group w-16 shrink-0 overflow-hidden rounded-lg p-1 transition lg:w-full ${
                 index === activeIndex
-                  ? "border-2 border-primary bg-white shadow-[0_16px_36px_rgba(6,51,38,0.12)]"
+                  ? "is-active border-2 border-primary bg-white shadow-[0_16px_36px_rgba(6,51,38,0.12)]"
                   : "border border-outline-variant/30 bg-white hover:border-primary/25"
               }`}
             >
@@ -366,13 +366,14 @@ export function ProductGallery({
           role="dialog"
           aria-modal="true"
           aria-label={`${productName} büyütülmüş ürün görseli`}
-          className="fixed inset-0 z-[2147483647] flex items-center justify-center bg-slate-950/94 backdrop-blur-md"
+          className="product-gallery-lightbox fixed inset-0 z-[2147483647] flex items-center justify-center bg-slate-950/94 backdrop-blur-md"
           onClick={() => setLightboxIndex(null)}
         >
           <button
             type="button"
             onClick={() => setLightboxIndex(null)}
-            className="absolute right-4 top-4 z-20 rounded-lg border border-white/20 bg-white/12 px-4 py-3 text-sm font-bold text-white backdrop-blur transition hover:bg-white/22 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
+            aria-label="Galeriyi kapat"
+            className="product-gallery-lightbox__close absolute right-4 top-4 z-20 rounded-lg border border-white/20 bg-white/12 px-4 py-3 text-sm font-bold text-white backdrop-blur transition hover:bg-white/22 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
           >
             Kapat
           </button>
@@ -385,7 +386,7 @@ export function ProductGallery({
                   event.stopPropagation();
                   moveLightbox(-1);
                 }}
-                className="absolute left-4 top-1/2 z-20 -translate-y-1/2 rounded-lg border border-white/20 bg-white/12 px-4 py-4 text-2xl font-bold text-white backdrop-blur transition hover:bg-white/22"
+                className="product-gallery-lightbox__nav product-gallery-lightbox__nav--prev absolute left-4 top-1/2 z-20 -translate-y-1/2 rounded-lg border border-white/20 bg-white/12 px-4 py-4 text-2xl font-bold text-white backdrop-blur transition hover:bg-white/22"
                 aria-label="Önceki görsel"
               >
                 ‹
@@ -396,7 +397,7 @@ export function ProductGallery({
                   event.stopPropagation();
                   moveLightbox(1);
                 }}
-                className="absolute right-4 top-1/2 z-20 -translate-y-1/2 rounded-lg border border-white/20 bg-white/12 px-4 py-4 text-2xl font-bold text-white backdrop-blur transition hover:bg-white/22"
+                className="product-gallery-lightbox__nav product-gallery-lightbox__nav--next absolute right-4 top-1/2 z-20 -translate-y-1/2 rounded-lg border border-white/20 bg-white/12 px-4 py-4 text-2xl font-bold text-white backdrop-blur transition hover:bg-white/22"
                 aria-label="Sonraki görsel"
               >
                 ›
@@ -406,7 +407,7 @@ export function ProductGallery({
 
           <button
             type="button"
-            className="relative h-screen w-screen cursor-zoom-out overflow-hidden bg-white shadow-[0_36px_120px_rgba(0,0,0,0.5)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
+            className="product-gallery-lightbox__image relative h-[92vh] w-[92vw] cursor-zoom-out overflow-hidden bg-transparent focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
             onClick={(event) => {
               event.stopPropagation();
               setLightboxIndex(null);
