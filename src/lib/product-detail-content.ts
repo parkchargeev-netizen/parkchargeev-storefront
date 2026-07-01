@@ -3,6 +3,18 @@ import type { ProductModel } from "@/lib/mock-data";
 export type ProductDetailTextPair = {
   label: string;
   value: string;
+  description?: string;
+  iconName?: string;
+  isActive?: boolean;
+  sortOrder?: number;
+};
+
+export type ProductDetailBadge = {
+  label: string;
+  tone?: "success" | "primary" | "warning" | "neutral" | "danger";
+  position?: "hero" | "image-left" | "image-right" | "card";
+  isActive?: boolean;
+  sortOrder?: number;
 };
 
 export type ProductPolicyDetail = {
@@ -47,11 +59,50 @@ export type ProductSupportContent = {
   href: string;
 };
 
+export type ProductTrustBlock = {
+  title: string;
+  body: string;
+  iconName?: string;
+  isActive?: boolean;
+  sortOrder?: number;
+};
+
+export type ProductActionLabels = {
+  priceEyebrow: string;
+  addToCartLabel: string;
+  outOfStockLabel: string;
+  specsButtonLabel: string;
+  cartLinkLabel: string;
+  mobileTotalLabel: string;
+  quantityLabel: string;
+  subtotalLabel: string;
+  feedbackTemplate: string;
+};
+
+export type ProductReviewContent = {
+  isEnabled: boolean;
+  eyebrow: string;
+  heading: string;
+  emptyText: string;
+  countLabel: string;
+  firstReviewLabel: string;
+  submitLabel: string;
+  submittingLabel: string;
+  successMessage: string;
+};
+
 export type ProductDetailContent = {
   adminSortOrder: number;
+  heroEyebrow: string;
+  infoCards: ProductDetailTextPair[];
+  badges: ProductDetailBadge[];
   galleryItems: string[];
   galleryFeatureLabels: string[];
   galleryDeviceCaption: string;
+  descriptionEyebrow: string;
+  descriptionHeading: string;
+  useCasesCtaLabel: string;
+  useCasesCtaHref: string;
   specsHeading: string;
   intentHeading: string;
   intentBody: string;
@@ -61,27 +112,41 @@ export type ProductDetailContent = {
   highlightsHeading: string;
   highlights: string[];
   smartFeatures: ProductSmartFeature[];
+  smartFeaturesEnabled: boolean;
+  smartFeaturesEyebrow: string;
+  smartFeaturesHeading: string;
   technicalGroups: ProductTechnicalSpecGroup[];
   purchaseBenefits: string[];
   purchaseReadiness: ProductDetailTextPair[];
   decisionChecks: string[];
   support: ProductSupportContent;
+  trustEnabled: boolean;
+  trustEyebrow: string;
+  trustHeading: string;
+  trustBlocks: ProductTrustBlock[];
+  policiesEnabled: boolean;
   policyDetails: ProductPolicyDetail[];
   faqHeading: string;
   faqs: ProductDetailFaq[];
+  relatedEnabled: boolean;
   relatedEyebrow: string;
   relatedHeading: string;
+  relatedLimit: number;
+  actionLabels: ProductActionLabels;
+  reviews: ProductReviewContent;
 };
 
 export type ProductDetailContentInput = Partial<
   Omit<
     ProductDetailContent,
-    "support" | "purchaseReadiness" | "policyDetails"
+    "support" | "purchaseReadiness" | "policyDetails" | "actionLabels" | "reviews"
   >
 > & {
   support?: Partial<ProductSupportContent>;
   purchaseReadiness?: ProductDetailTextPair[];
   policyDetails?: ProductPolicyDetail[];
+  actionLabels?: Partial<ProductActionLabels>;
+  reviews?: Partial<ProductReviewContent>;
 };
 
 export const productDetailContentSchemaKey = "_parkchargeevPageContent";
@@ -134,12 +199,44 @@ function normalizeTechnicalGroups(values?: ProductTechnicalSpecGroup[]) {
 }
 
 function normalizeTextPairs(values?: ProductDetailTextPair[]) {
-  return (values ?? [])
+  return sortByOrder(values ?? [])
     .map((item) => ({
       label: item.label?.trim() ?? "",
-      value: item.value?.trim() ?? ""
+      value: item.value?.trim() ?? "",
+      description: item.description?.trim() ?? "",
+      iconName: item.iconName?.trim() ?? "",
+      isActive: item.isActive !== false,
+      sortOrder: Number.isFinite(Number(item.sortOrder)) ? Number(item.sortOrder) : 0
     }))
-    .filter((item) => item.label && item.value);
+    .filter((item) => item.isActive && item.label && item.value)
+    .map((item, index) => ({
+      ...item,
+      sortOrder: item.sortOrder || index + 1
+    }));
+}
+
+function normalizeBadges(values?: ProductDetailBadge[]) {
+  return sortByOrder(values ?? [])
+    .map((item, index) => ({
+      label: item.label?.trim() ?? "",
+      tone: item.tone ?? "neutral",
+      position: item.position ?? "hero",
+      isActive: item.isActive !== false,
+      sortOrder: Number.isFinite(Number(item.sortOrder)) ? Number(item.sortOrder) : index + 1
+    }))
+    .filter((item) => item.isActive && item.label);
+}
+
+function normalizeTrustBlocks(values?: ProductTrustBlock[]) {
+  return sortByOrder(values ?? [])
+    .map((item, index) => ({
+      title: item.title?.trim() ?? "",
+      body: item.body?.trim() ?? "",
+      iconName: item.iconName?.trim() ?? "shield",
+      isActive: item.isActive !== false,
+      sortOrder: Number.isFinite(Number(item.sortOrder)) ? Number(item.sortOrder) : index + 1
+    }))
+    .filter((item) => item.isActive && item.title && item.body);
 }
 
 function getConnectorLabel(product?: ProductModel) {
@@ -184,6 +281,88 @@ function getSummaryCardDefaults(product?: ProductModel): ProductDetailTextPair[]
       value: primaryUseCase || (isAccessory ? "Type 2 uyumlu araçlar" : "Ev, site ve iş yeri")
     }
   ];
+}
+
+function getInfoCardDefaults(product?: ProductModel): ProductDetailTextPair[] {
+  const defaultVariant =
+    product?.variants?.find((variant) => variant.isDefault) ?? product?.variants?.[0];
+  const connector = defaultVariant?.connectorType || getConnectorLabel(product);
+  const category = product?.category || "";
+  const powerLabel = product?.powerLabel || "";
+  const useCase = product?.useCases?.[0] || "";
+  const specsCorpus = product?.specs.map((spec) => `${spec.label} ${spec.value}`).join(" ") ?? "";
+  const likelyAc =
+    /\bac\b/i.test(`${powerLabel} ${specsCorpus}`) || /type\s*2|tip\s*2/i.test(`${connector} ${specsCorpus}`);
+  const infrastructure =
+    powerLabel.toLocaleLowerCase("tr-TR").includes("dc") && !likelyAc
+      ? "DC hızlı şarj"
+      : powerLabel.includes("22")
+        ? "Trifaze AC"
+        : likelyAc
+          ? "AC altyapı"
+          : "";
+
+  return normalizeTextPairs([
+    { label: "Kategori", value: category, sortOrder: 1 },
+    { label: "Kullanım", value: useCase, sortOrder: 2 },
+    { label: "Altyapı", value: infrastructure, sortOrder: 3 },
+    { label: "Güç", value: powerLabel, sortOrder: 4 },
+    { label: "Soket", value: connector, sortOrder: 5 },
+    {
+      label: "Kurulum",
+      value: powerLabel.toLocaleLowerCase("tr-TR").includes("dc") || powerLabel.includes("22")
+        ? "Keşif gerekli"
+        : "Kurulum/keşif opsiyonel",
+      sortOrder: 6
+    }
+  ]);
+}
+
+function getBadgeDefaults(product?: ProductModel): ProductDetailBadge[] {
+  const tags = new Set(product?.tags ?? []);
+  const badges: ProductDetailBadge[] = [];
+
+  if (product?.category) {
+    badges.push({
+      label: product.category,
+      tone: "primary",
+      position: "hero",
+      isActive: true,
+      sortOrder: 1
+    });
+  }
+
+  if (product?.badge) {
+    badges.push({
+      label: product.badge,
+      tone: "success",
+      position: "hero",
+      isActive: true,
+      sortOrder: 2
+    });
+  }
+
+  if (tags.has("free_shipping")) {
+    badges.push({
+      label: "Kargo Bedava",
+      tone: "success",
+      position: "image-left",
+      isActive: true,
+      sortOrder: 10
+    });
+  }
+
+  if (tags.has("ships_tomorrow")) {
+    badges.push({
+      label: "Yarın Kargoda",
+      tone: "warning",
+      position: "image-right",
+      isActive: true,
+      sortOrder: 11
+    });
+  }
+
+  return normalizeBadges(badges);
 }
 
 function getIntentDefaults(product?: ProductModel) {
@@ -243,14 +422,81 @@ function getHighlightDefaults(product?: ProductModel) {
   ];
 }
 
+function getTrustBlockDefaults(detailContent?: Pick<ProductDetailContent, "support">): ProductTrustBlock[] {
+  return [
+    {
+      title: "Sipariş takibi",
+      body: "Sepete ekleme ve ödeme adımları kısa, açık ve izlenebilir şekilde ilerler.",
+      iconName: "shield",
+      isActive: true,
+      sortOrder: 1
+    },
+    {
+      title: "Kargo ve teslimat",
+      body: "Kargo kapsamı ürün etiketleri ve sepet adımıyla netleşir.",
+      iconName: "truck",
+      isActive: true,
+      sortOrder: 2
+    },
+    {
+      title: "Garanti ve iade",
+      body: "Garanti, iade ve destek detayları ürün politikasında açıkça gösterilir.",
+      iconName: "return",
+      isActive: true,
+      sortOrder: 3
+    },
+    {
+      title: "Teknik destek",
+      body:
+        detailContent?.support.body ||
+        "Satış öncesi uygunluk ve kurulum soruları için destek alınabilir.",
+      iconName: "support",
+      isActive: true,
+      sortOrder: 4
+    }
+  ];
+}
+
+const defaultActionLabels: ProductActionLabels = {
+  priceEyebrow: "ParkChargeEV fiyatı",
+  addToCartLabel: "Sepete Ekle",
+  outOfStockLabel: "Stokta Yok",
+  specsButtonLabel: "Teknik Özellikleri İncele",
+  cartLinkLabel: "Sepete git",
+  mobileTotalLabel: "Sepet toplamı",
+  quantityLabel: "Adet",
+  subtotalLabel: "Tahmini ara toplam",
+  feedbackTemplate: "{quantity} adet ürün sepete eklendi."
+};
+
+const defaultReviewContent: ProductReviewContent = {
+  isEnabled: true,
+  eyebrow: "Ürün yorumları",
+  heading: "{productName} için kullanıcı deneyimleri",
+  emptyText:
+    "Bu ürün için henüz onaylı yorum yok. Deneyiminizi paylaştığınızda admin onayından sonra yayınlanır.",
+  countLabel: "onaylı yorum",
+  firstReviewLabel: "İlk yorumu siz yazın",
+  submitLabel: "Yorum ekle",
+  submittingLabel: "Gönderiliyor...",
+  successMessage: "Yorumunuz onaydan sonra yayınlanacak."
+};
+
 export function getDefaultProductDetailContent(product?: ProductModel): ProductDetailContent {
   return {
     adminSortOrder: 0,
+    heroEyebrow: "ParkChargeEV seçkisi",
+    infoCards: getInfoCardDefaults(product),
+    badges: getBadgeDefaults(product),
     galleryItems: product?.galleryItems?.length
       ? product.galleryItems
       : ["Ön görünüm", "Yan profil", "Montaj görünümü", "Video"],
     galleryFeatureLabels: ["IP koruma", "Type 2", "Kurulum"],
     galleryDeviceCaption: "Ölçekli cihaz temsili",
+    descriptionEyebrow: "Ürün açıklaması",
+    descriptionHeading: product?.name ? `${product.name} kimler için uygun?` : "Ürün kimler için uygun?",
+    useCasesCtaLabel: "Akıllı seçiciye git",
+    useCasesCtaHref: "/urun-secici",
     specsHeading: "Teknik Özellikler",
     intentHeading: "Bu ürün kimin için?",
     intentBody:
@@ -261,6 +507,9 @@ export function getDefaultProductDetailContent(product?: ProductModel): ProductD
     highlightsHeading: "Satış ve kurulum avantajları",
     highlights: product?.highlights?.length ? product.highlights : getHighlightDefaults(product),
     smartFeatures: [],
+    smartFeaturesEnabled: true,
+    smartFeaturesEyebrow: "Bağlantı ve kontrol",
+    smartFeaturesHeading: "Üründe aktif olan erişim ve kontrol yetenekleri.",
     technicalGroups: [],
     purchaseBenefits: [
       "Tek sayfa güvenli ödeme ve net sipariş takibi",
@@ -276,6 +525,11 @@ export function getDefaultProductDetailContent(product?: ProductModel): ProductD
       ctaLabel: "Uygunluğu Kontrol Et",
       href: "/iletisim"
     },
+    trustEnabled: true,
+    trustEyebrow: "Güven ve satın alma",
+    trustHeading: "Teknik üründe karar riskini azaltan net bilgiler.",
+    trustBlocks: getTrustBlockDefaults(),
+    policiesEnabled: true,
     policyDetails: [
       {
         title: "Teslimat ve kurulum planı",
@@ -295,8 +549,12 @@ export function getDefaultProductDetailContent(product?: ProductModel): ProductD
     ],
     faqHeading: "Karar öncesi sık sorulanlar",
     faqs: product?.faqs?.length ? product.faqs : [],
+    relatedEnabled: true,
     relatedEyebrow: "İlgili ürünler",
-    relatedHeading: "Aynı ihtiyaca uygun alternatifler"
+    relatedHeading: "Aynı ihtiyaca uygun alternatifler",
+    relatedLimit: 4,
+    actionLabels: defaultActionLabels,
+    reviews: defaultReviewContent
   };
 }
 
@@ -320,6 +578,12 @@ export function mergeProductDetailContent(
     galleryFeatureLabels: hasItems(input.galleryFeatureLabels)
       ? compactList(input.galleryFeatureLabels)
       : base.galleryFeatureLabels,
+    infoCards: hasItems(input.infoCards)
+      ? normalizeTextPairs(input.infoCards)
+      : base.infoCards,
+    badges: hasItems(input.badges)
+      ? normalizeBadges(input.badges)
+      : base.badges,
     purchaseBenefits: hasItems(input.purchaseBenefits)
       ? compactList(input.purchaseBenefits)
       : base.purchaseBenefits,
@@ -348,10 +612,24 @@ export function mergeProductDetailContent(
       ...base.support,
       ...input.support
     },
+    trustBlocks: hasItems(input.trustBlocks)
+      ? normalizeTrustBlocks(input.trustBlocks)
+      : base.trustBlocks,
     policyDetails: hasItems(input.policyDetails)
       ? input.policyDetails
       : base.policyDetails,
-    faqs: hasItems(input.faqs) ? input.faqs : base.faqs
+    faqs: hasItems(input.faqs) ? input.faqs : base.faqs,
+    relatedLimit: Number.isFinite(Number(input.relatedLimit))
+      ? Number(input.relatedLimit)
+      : base.relatedLimit,
+    actionLabels: {
+      ...base.actionLabels,
+      ...input.actionLabels
+    },
+    reviews: {
+      ...base.reviews,
+      ...input.reviews
+    }
   };
 }
 
@@ -362,8 +640,17 @@ export function getProductDetailContent(product: ProductModel): ProductDetailCon
   );
 }
 
+export function getActiveProductDetailBadges(product: ProductModel) {
+  return normalizeBadges(getProductDetailContent(product).badges);
+}
+
 export function getActiveProductSmartFeatures(product: ProductModel) {
   const detailContent = getProductDetailContent(product);
+
+  if (detailContent.smartFeaturesEnabled === false) {
+    return [];
+  }
+
   const configuredFeatures = normalizeSmartFeatures(detailContent.smartFeatures)
     .filter((item) => item.isActive !== false);
 

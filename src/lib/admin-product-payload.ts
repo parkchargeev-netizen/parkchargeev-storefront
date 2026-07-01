@@ -52,6 +52,61 @@ function normalizeSmartFeatures(value: unknown) {
     });
 }
 
+function normalizeTextPairs(value: unknown) {
+  return filterRows(value, (row) => hasAnyText(row, ["label", "value", "description", "iconName"]))
+    .filter((row) => hasCompleteText(row, ["label", "value"]))
+    .map((row, index) => {
+      const item = row as Record<string, unknown>;
+
+      return {
+        label: getText(item, "label"),
+        value: getText(item, "value"),
+        description: getText(item, "description"),
+        iconName: getText(item, "iconName"),
+        isActive: getBoolean(item.isActive),
+        sortOrder: normalizeNumber(item.sortOrder, index + 1)
+      };
+    });
+}
+
+function normalizeBadges(value: unknown) {
+  return filterRows(value, (row) => hasAnyText(row, ["label", "tone", "position"]))
+    .filter((row) => hasCompleteText(row, ["label"]))
+    .map((row, index) => {
+      const badge = row as Record<string, unknown>;
+      const tone = getText(badge, "tone");
+      const position = getText(badge, "position");
+
+      return {
+        label: getText(badge, "label"),
+        tone: ["success", "primary", "warning", "neutral", "danger"].includes(tone)
+          ? tone
+          : "neutral",
+        position: ["hero", "image-left", "image-right", "card"].includes(position)
+          ? position
+          : "hero",
+        isActive: getBoolean(badge.isActive),
+        sortOrder: normalizeNumber(badge.sortOrder, index + 1)
+      };
+    });
+}
+
+function normalizeTrustBlocks(value: unknown) {
+  return filterRows(value, (row) => hasAnyText(row, ["title", "body", "iconName"]))
+    .filter((row) => hasCompleteText(row, ["title", "body"]))
+    .map((row, index) => {
+      const block = row as Record<string, unknown>;
+
+      return {
+        title: getText(block, "title"),
+        body: getText(block, "body"),
+        iconName: getText(block, "iconName") || "shield",
+        isActive: getBoolean(block.isActive),
+        sortOrder: normalizeNumber(block.sortOrder, index + 1)
+      };
+    });
+}
+
 function normalizeTechnicalGroups(value: unknown) {
   const groups = filterRows(value, (row) => hasAnyText(row, ["title", "description"]) || Array.isArray((row as Record<string, unknown> | null)?.items))
     .map((row, groupIndex) => {
@@ -136,10 +191,10 @@ function normalizeDetailContent(detailContent: unknown) {
     ...detail,
     smartFeatures: normalizeSmartFeatures(detail.smartFeatures),
     technicalGroups,
-    purchaseReadiness: filterRows(
-      detail.purchaseReadiness,
-      (row) => hasAnyText(row, ["label", "value"])
-    ),
+    infoCards: normalizeTextPairs(detail.infoCards),
+    badges: normalizeBadges(detail.badges),
+    purchaseReadiness: normalizeTextPairs(detail.purchaseReadiness),
+    trustBlocks: normalizeTrustBlocks(detail.trustBlocks),
     policyDetails: filterRows(
       detail.policyDetails,
       (row) => hasAnyText(row, ["title", "body"])

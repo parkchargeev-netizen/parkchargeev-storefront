@@ -62,7 +62,19 @@ const productDetailStringListSchema = z.array(z.string().trim().min(1).max(240))
 
 const productDetailTextPairSchema = z.object({
   label: z.string().trim().min(2).max(120),
-  value: z.string().trim().min(2).max(320)
+  value: z.string().trim().min(2).max(320),
+  description: z.string().trim().max(500).optional().or(z.literal("")),
+  iconName: z.string().trim().max(80).optional().or(z.literal("")),
+  isActive: z.boolean().default(true),
+  sortOrder: z.coerce.number().int().min(0).max(999).default(0)
+});
+
+const productDetailBadgeSchema = z.object({
+  label: z.string().trim().min(1).max(80),
+  tone: z.enum(["success", "primary", "warning", "neutral", "danger"]).default("neutral"),
+  position: z.enum(["hero", "image-left", "image-right", "card"]).default("hero"),
+  isActive: z.boolean().default(true),
+  sortOrder: z.coerce.number().int().min(0).max(999).default(0)
 });
 
 const productPolicyDetailSchema = z.object({
@@ -82,6 +94,38 @@ const productSmartFeatureSchema = z.object({
   isActive: z.boolean().default(true),
   sortOrder: z.coerce.number().int().min(0).max(999).default(0)
 });
+
+const productTrustBlockSchema = z.object({
+  title: z.string().trim().min(2).max(140),
+  body: z.string().trim().min(3).max(1000),
+  iconName: z.string().trim().max(80).optional().or(z.literal("")),
+  isActive: z.boolean().default(true),
+  sortOrder: z.coerce.number().int().min(0).max(999).default(0)
+});
+
+const productActionLabelsSchema = z.object({
+  priceEyebrow: z.string().trim().max(80).optional().or(z.literal("")),
+  addToCartLabel: z.string().trim().max(80).optional().or(z.literal("")),
+  outOfStockLabel: z.string().trim().max(80).optional().or(z.literal("")),
+  specsButtonLabel: z.string().trim().max(100).optional().or(z.literal("")),
+  cartLinkLabel: z.string().trim().max(80).optional().or(z.literal("")),
+  mobileTotalLabel: z.string().trim().max(80).optional().or(z.literal("")),
+  quantityLabel: z.string().trim().max(80).optional().or(z.literal("")),
+  subtotalLabel: z.string().trim().max(80).optional().or(z.literal("")),
+  feedbackTemplate: z.string().trim().max(160).optional().or(z.literal(""))
+}).default({});
+
+const productReviewContentSchema = z.object({
+  isEnabled: z.boolean().default(true),
+  eyebrow: z.string().trim().max(80).optional().or(z.literal("")),
+  heading: z.string().trim().max(160).optional().or(z.literal("")),
+  emptyText: z.string().trim().max(500).optional().or(z.literal("")),
+  countLabel: z.string().trim().max(80).optional().or(z.literal("")),
+  firstReviewLabel: z.string().trim().max(100).optional().or(z.literal("")),
+  submitLabel: z.string().trim().max(80).optional().or(z.literal("")),
+  submittingLabel: z.string().trim().max(80).optional().or(z.literal("")),
+  successMessage: z.string().trim().max(200).optional().or(z.literal(""))
+}).default({});
 
 const productTechnicalSpecItemSchema = z.object({
   name: z.string().trim().min(1).max(120),
@@ -103,9 +147,25 @@ const productTechnicalSpecGroupSchema = z.object({
 export const productDetailContentSchema = z
   .object({
     adminSortOrder: z.coerce.number().int().min(0).max(9999).default(0),
+    heroEyebrow: z.string().trim().max(80).optional().or(z.literal("")),
+    infoCards: z.array(productDetailTextPairSchema).default([]),
+    badges: z.array(productDetailBadgeSchema).default([]),
     galleryItems: productDetailStringListSchema,
     galleryFeatureLabels: productDetailStringListSchema,
     galleryDeviceCaption: z.string().trim().max(120).optional().or(z.literal("")),
+    descriptionEyebrow: z.string().trim().max(100).optional().or(z.literal("")),
+    descriptionHeading: z.string().trim().max(180).optional().or(z.literal("")),
+    useCasesCtaLabel: z.string().trim().max(80).optional().or(z.literal("")),
+    useCasesCtaHref: z
+      .string()
+      .trim()
+      .max(500)
+      .refine(
+        (value) => value === "" || value.startsWith("/") || value.startsWith("https://"),
+        "Link / ile veya https:// ile başlamalıdır."
+      )
+      .optional()
+      .or(z.literal("")),
     specsHeading: z.string().trim().max(120).optional().or(z.literal("")),
     intentHeading: z.string().trim().max(120).optional().or(z.literal("")),
     intentBody: z.string().trim().max(500).optional().or(z.literal("")),
@@ -115,6 +175,9 @@ export const productDetailContentSchema = z
     highlightsHeading: z.string().trim().max(120).optional().or(z.literal("")),
     highlights: productDetailStringListSchema,
     smartFeatures: z.array(productSmartFeatureSchema).default([]),
+    smartFeaturesEnabled: z.boolean().default(true),
+    smartFeaturesEyebrow: z.string().trim().max(100).optional().or(z.literal("")),
+    smartFeaturesHeading: z.string().trim().max(180).optional().or(z.literal("")),
     technicalGroups: z.array(productTechnicalSpecGroupSchema).default([]),
     purchaseBenefits: productDetailStringListSchema,
     purchaseReadiness: z.array(productDetailTextPairSchema).default([]),
@@ -136,11 +199,20 @@ export const productDetailContentSchema = z
           .or(z.literal(""))
       })
       .default({}),
+    trustEnabled: z.boolean().default(true),
+    trustEyebrow: z.string().trim().max(100).optional().or(z.literal("")),
+    trustHeading: z.string().trim().max(180).optional().or(z.literal("")),
+    trustBlocks: z.array(productTrustBlockSchema).default([]),
+    policiesEnabled: z.boolean().default(true),
     policyDetails: z.array(productPolicyDetailSchema).default([]),
     faqHeading: z.string().trim().max(120).optional().or(z.literal("")),
     faqs: z.array(productDetailFaqSchema).default([]),
+    relatedEnabled: z.boolean().default(true),
     relatedEyebrow: z.string().trim().max(120).optional().or(z.literal("")),
-    relatedHeading: z.string().trim().max(160).optional().or(z.literal(""))
+    relatedHeading: z.string().trim().max(160).optional().or(z.literal("")),
+    relatedLimit: z.coerce.number().int().min(0).max(12).default(4),
+    actionLabels: productActionLabelsSchema,
+    reviews: productReviewContentSchema
   })
   .default({});
 

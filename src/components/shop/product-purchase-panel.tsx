@@ -8,6 +8,7 @@ import { useCart } from "@/components/providers/cart-provider";
 import { trackConversionEvent } from "@/lib/conversion-events";
 import { formatPriceTRY } from "@/lib/format";
 import type { ProductModel } from "@/lib/mock-data";
+import type { ProductActionLabels } from "@/lib/product-detail-content";
 import {
   getProductCableOptions,
   getProductSelectedCableOption
@@ -15,10 +16,10 @@ import {
 
 type ProductPurchasePanelProps = {
   product: ProductModel;
-  benefits?: string[];
+  labels: ProductActionLabels;
 };
 
-export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
+export function ProductPurchasePanel({ product, labels }: ProductPurchasePanelProps) {
   const { addItem, isHydrated } = useCart();
   const cableOptions = getProductCableOptions(product);
   const [cableOption, setCableOption] = useState(cableOptions[0]?.label ?? "");
@@ -58,7 +59,11 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
       purchaseMode: "cart",
       cableOption: cableOptionRef.current
     });
-    setFeedback(`${quantity} adet ürün sepete eklendi.`);
+    setFeedback(
+      labels.feedbackTemplate
+        .replace("{quantity}", String(quantity))
+        .replace("{productName}", product.name)
+    );
   }
 
   function selectCableOption(nextCableOption: string) {
@@ -76,7 +81,7 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
     <div className="product-purchase-panel product-purchase-panel--focused">
       <div className="product-mobile-inline-atc" aria-label="Mobil hızlı sepete ekle">
         <div>
-          <span>Sepet toplamı</span>
+          <span>{labels.mobileTotalLabel}</span>
           <strong>{formatPriceTRY(estimatedLineTotal)}</strong>
         </div>
         <button
@@ -85,7 +90,7 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
           disabled={isAddDisabled}
           aria-busy={!isHydrated}
         >
-          {isOutOfStock ? "Stokta Yok" : "Sepete Ekle"}
+          {isOutOfStock ? labels.outOfStockLabel : labels.addToCartLabel}
         </button>
       </div>
 
@@ -93,7 +98,7 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="text-xs font-bold uppercase tracking-normal text-on-surface-variant">
-              ParkChargeEV fiyatı
+              {labels.priceEyebrow}
             </p>
             <p className="mt-2 text-4xl font-bold text-primary md:text-5xl">
               {formatPriceTRY(selectedOption.priceKurus)}
@@ -147,7 +152,7 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
         <div className={cableOptions.length > 1 ? "mt-5" : ""}>
           <div className="product-purchase-panel__quantity-total">
             <div className="product-purchase-panel__quantity-box">
-              <p className="text-sm font-medium text-on-surface-variant">Adet</p>
+              <p className="text-sm font-medium text-on-surface-variant">{labels.quantityLabel}</p>
               <div className="mt-3 flex items-center justify-between gap-4 rounded-lg bg-white px-4 py-3">
                 <button
                   type="button"
@@ -172,7 +177,7 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
             </div>
 
             <div className="product-purchase-panel__subtotal rounded-lg border border-outline-variant/35 bg-white p-4">
-              <span className="text-sm text-on-surface-variant">Tahmini ara toplam</span>
+              <span className="text-sm text-on-surface-variant">{labels.subtotalLabel}</span>
               <strong className="mt-3 block text-xl font-bold text-on-surface">
                 {formatPriceTRY(estimatedLineTotal)}
               </strong>
@@ -188,21 +193,21 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
               className="product-purchase-panel__add-button inline-flex w-full items-center justify-center gap-2 rounded-lg bg-linear-to-r from-primary to-secondary px-6 py-4 text-center text-base font-semibold text-white shadow-[0_18px_50px_rgba(6,51,38,0.22)] transition hover:translate-y-[-1px] disabled:cursor-not-allowed disabled:opacity-60"
             >
               <ShoppingCart className="h-5 w-5" aria-hidden />
-              {isOutOfStock ? "Stokta Yok" : "Sepete Ekle"}
+              {isOutOfStock ? labels.outOfStockLabel : labels.addToCartLabel}
             </button>
             <button
               type="button"
               onClick={scrollToTechnicalSpecs}
               className="product-purchase-panel__spec-button inline-flex w-full items-center justify-center rounded-lg border border-primary/20 bg-white px-6 py-3.5 text-sm font-bold text-primary transition hover:border-primary/40 hover:bg-primary/5"
             >
-              Teknik Özellikleri İncele
+              {labels.specsButtonLabel}
             </button>
           </div>
           {feedback ? (
             <p className="mt-4 text-sm font-medium text-secondary" aria-live="polite">
               {feedback}{" "}
               <Link href="/sepet" className="text-primary underline underline-offset-4">
-                Sepete git
+                {labels.cartLinkLabel}
               </Link>
             </p>
           ) : null}

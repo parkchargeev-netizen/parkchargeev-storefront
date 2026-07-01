@@ -2,6 +2,8 @@
 
 import { type FormEvent, useEffect, useState } from "react";
 
+import type { ProductReviewContent } from "@/lib/product-detail-content";
+
 type ProductReview = {
   id: string;
   authorName: string;
@@ -23,6 +25,7 @@ type ProductReviewResponse = {
 type ProductReviewsProps = {
   productName: string;
   productSlug: string;
+  content: ProductReviewContent;
 };
 
 function formatReviewDate(value: string) {
@@ -39,7 +42,7 @@ function formatReviewDate(value: string) {
   }).format(date);
 }
 
-export function ProductReviews({ productName, productSlug }: ProductReviewsProps) {
+export function ProductReviews({ content, productName, productSlug }: ProductReviewsProps) {
   const [reviews, setReviews] = useState<ProductReview[]>([]);
   const [summary, setSummary] = useState({ count: 0, average: 0 });
   const [status, setStatus] = useState<"idle" | "loading" | "submitting">("loading");
@@ -107,7 +110,7 @@ export function ProductReviews({ productName, productSlug }: ProductReviewsProps
       }
 
       form.reset();
-      setMessage(data.message ?? "Yorumunuz onaydan sonra yayınlanacak.");
+      setMessage(data.message ?? content.successMessage);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Yorum kaydedilemedi.");
     } finally {
@@ -121,15 +124,15 @@ export function ProductReviews({ productName, productSlug }: ProductReviewsProps
         <div className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
           <div>
             <p className="text-sm font-semibold uppercase tracking-normal text-primary">
-              Ürün yorumları
+              {content.eyebrow}
             </p>
             <h2 className="mt-3 text-3xl font-bold tracking-normal text-on-surface">
-              {productName} için kullanıcı deneyimleri
+              {content.heading.replace("{productName}", productName)}
             </h2>
             <div className="mt-5 inline-flex items-center gap-3 rounded-lg border border-outline-variant/35 bg-white px-4 py-3">
               <strong className="text-lg text-on-surface">{summary.count}</strong>
               <span className="text-sm text-on-surface-variant">
-                {summary.count > 0 ? "onaylı yorum" : "İlk yorumu siz yazın"}
+                {summary.count > 0 ? content.countLabel : content.firstReviewLabel}
               </span>
             </div>
 
@@ -171,7 +174,7 @@ export function ProductReviews({ productName, productSlug }: ProductReviewsProps
                 disabled={status === "submitting"}
                 className="inline-flex min-h-12 items-center justify-center rounded-lg bg-primary px-5 py-3 text-sm font-bold text-white transition hover:bg-primary-container disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {status === "submitting" ? "Gönderiliyor..." : "Yorum ekle"}
+                {status === "submitting" ? content.submittingLabel : content.submitLabel}
               </button>
               {message ? (
                 <p className="rounded-lg bg-surface-container-low px-4 py-3 text-sm font-semibold text-on-surface-variant" aria-live="polite">
@@ -202,7 +205,7 @@ export function ProductReviews({ productName, productSlug }: ProductReviewsProps
               ))
             ) : (
               <div className="rounded-lg border border-dashed border-outline-variant/50 bg-surface-container-low p-6 text-sm leading-7 text-on-surface-variant">
-                Bu ürün için henüz onaylı yorum yok. Deneyiminizi paylaştığınızda admin onayından sonra yayınlanır.
+                {content.emptyText}
               </div>
             )}
           </div>

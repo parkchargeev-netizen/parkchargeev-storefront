@@ -59,6 +59,23 @@ function SmartFeatureIcon({ iconName }: { iconName?: string }) {
   return <Icon className="h-5 w-5" aria-hidden />;
 }
 
+function TrustBlockIcon({ iconName }: { iconName?: string }) {
+  const normalizedIconName = iconName?.toLocaleLowerCase("tr-TR") ?? "";
+  const Icon =
+    normalizedIconName.includes("truck") || normalizedIconName.includes("kargo")
+      ? Truck
+      : normalizedIconName.includes("return") ||
+          normalizedIconName.includes("iade") ||
+          normalizedIconName.includes("garanti")
+        ? RotateCcw
+        : normalizedIconName.includes("support") ||
+            normalizedIconName.includes("destek")
+          ? Headphones
+          : ShieldCheck;
+
+  return <Icon className="h-5 w-5" aria-hidden />;
+}
+
 function getTechnicalRows(groups: ProductTechnicalSpecGroup[]) {
   const seen = new Set<string>();
 
@@ -116,7 +133,7 @@ export function ProductHighlightGrid({
     .map((item, index) => ({
       label: item.label?.trim() ?? "",
       value: item.value?.trim() ?? "",
-      description: detailContent.highlights[index] ?? detailContent.decisionChecks[index] ?? "",
+      description: detailContent.decisionChecks[index] ?? "",
       icon: getSummaryIcon(item.label ?? "")
     }))
     .filter((item) => item.label && item.value)
@@ -164,64 +181,49 @@ export function ProductHighlightGrid({
 export function ProductTrustGrid({
   detailContent
 }: Pick<ProductDetailSectionsProps, "detailContent">) {
-  const trustItems = [
-    {
-      title: "Sipariş takibi",
-      body: "Sepete ekleme ve ödeme adımları kısa, açık ve izlenebilir şekilde ilerler.",
-      icon: ShieldCheck
-    },
-    {
-      title: "Kargo ve teslimat",
-      body: "Kargo kapsamı ürün etiketleri ve sepet adımıyla netleşir.",
-      icon: Truck
-    },
-    {
-      title: "Garanti ve iade",
-      body: "Garanti, iade ve destek detayları ürün politikasında açıkça gösterilir.",
-      icon: RotateCcw
-    },
-    {
-      title: "Teknik destek",
-      body:
-        detailContent.support.body ||
-        "Satış öncesi uygunluk ve kurulum soruları için destek alınabilir.",
-      icon: Headphones
-    }
-  ];
+  const trustItems = detailContent.trustBlocks
+    .filter((item) => item.isActive !== false && item.title && item.body)
+    .slice(0, 8);
 
-  return (
-    <section className="product-detail-section">
-      <div className="product-detail-section-heading">
-        <p>Güven ve satın alma</p>
-        <h2>Teknik üründe karar riskini azaltan net bilgiler.</h2>
-      </div>
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {trustItems.map((item) => {
-          const Icon = item.icon;
-
-          return (
-            <article key={item.title} className="product-detail-trust-card">
-              <Icon className="h-5 w-5" aria-hidden />
-              <h3>{item.title}</h3>
-              <p>{item.body}</p>
-            </article>
-          );
-        })}
-      </div>
-    </section>
-  );
-}
-
-export function ProductSmartFeatures({ features }: { features: ProductSmartFeature[] }) {
-  if (features.length === 0) {
+  if (detailContent.trustEnabled === false || trustItems.length === 0) {
     return null;
   }
 
   return (
     <section className="product-detail-section">
       <div className="product-detail-section-heading">
-        <p>Bağlantı ve kontrol</p>
-        <h2>Üründe aktif olan erişim ve kontrol yetenekleri.</h2>
+        <p>{detailContent.trustEyebrow}</p>
+        <h2>{detailContent.trustHeading}</h2>
+      </div>
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        {trustItems.map((item) => (
+          <article key={item.title} className="product-detail-trust-card">
+            <TrustBlockIcon iconName={item.iconName} />
+            <h3>{item.title}</h3>
+            <p>{item.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+export function ProductSmartFeatures({
+  detailContent,
+  features
+}: {
+  detailContent: ProductDetailContent;
+  features: ProductSmartFeature[];
+}) {
+  if (detailContent.smartFeaturesEnabled === false || features.length === 0) {
+    return null;
+  }
+
+  return (
+    <section className="product-detail-section">
+      <div className="product-detail-section-heading">
+        <p>{detailContent.smartFeaturesEyebrow}</p>
+        <h2>{detailContent.smartFeaturesHeading}</h2>
       </div>
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {features.map((feature) => (
@@ -242,8 +244,10 @@ export function ProductSmartFeatures({ features }: { features: ProductSmartFeatu
 }
 
 export function ProductTechnicalSpecs({
+  detailContent,
   groups
 }: {
+  detailContent: ProductDetailContent;
   groups: ProductTechnicalSpecGroup[];
 }) {
   const rows = getTechnicalRows(groups);
@@ -256,7 +260,7 @@ export function ProductTechnicalSpecs({
     <section id="technical-specs" className="product-detail-section scroll-mt-28">
       <div className="product-detail-section-heading">
         <p>Teknik özellikler</p>
-        <h2>Sade, hızlı taranabilir teknik tablo.</h2>
+        <h2>{detailContent.specsHeading}</h2>
       </div>
       <div className="product-detail-spec-list">
         {rows.map((spec) => (
@@ -288,8 +292,8 @@ export function ProductDescriptionBlock({
     <section className="product-detail-section product-detail-description-grid">
       <div>
         <div className="product-detail-section-heading">
-          <p>Ürün açıklaması</p>
-          <h2>{product.name} kimler için uygun?</h2>
+          <p>{detailContent.descriptionEyebrow}</p>
+          <h2>{detailContent.descriptionHeading}</h2>
         </div>
         <div
           className="managed-richtext mt-5 text-base leading-8 text-on-surface-variant"
@@ -298,13 +302,17 @@ export function ProductDescriptionBlock({
       </div>
       {detailContent.useCases.length > 0 ? (
         <aside className="product-detail-fit-card">
-          <h3>Uygun kullanım senaryoları</h3>
+          <h3>{detailContent.useCasesHeading}</h3>
           <div className="mt-4 grid gap-2">
             {detailContent.useCases.slice(0, 8).map((useCase) => (
               <span key={useCase}>{useCase}</span>
             ))}
           </div>
-          <Link href="/urun-secici">Akıllı seçiciye git</Link>
+          {detailContent.useCasesCtaLabel && detailContent.useCasesCtaHref ? (
+            <Link href={detailContent.useCasesCtaHref}>
+              {detailContent.useCasesCtaLabel}
+            </Link>
+          ) : null}
         </aside>
       ) : null}
     </section>
@@ -314,7 +322,7 @@ export function ProductDescriptionBlock({
 export function ProductPolicies({
   detailContent
 }: Pick<ProductDetailSectionsProps, "detailContent">) {
-  if (detailContent.policyDetails.length === 0) {
+  if (detailContent.policiesEnabled === false || detailContent.policyDetails.length === 0) {
     return null;
   }
 
@@ -359,7 +367,7 @@ export function ProductRelatedProducts({
   detailContent,
   relatedProducts
 }: Pick<ProductDetailSectionsProps, "detailContent" | "relatedProducts">) {
-  if (relatedProducts.length === 0) {
+  if (detailContent.relatedEnabled === false || relatedProducts.length === 0) {
     return null;
   }
 
@@ -370,7 +378,7 @@ export function ProductRelatedProducts({
         <h2>{detailContent.relatedHeading}</h2>
       </div>
       <div className="product-detail-related-track mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {relatedProducts.map((relatedProduct) => (
+        {relatedProducts.slice(0, detailContent.relatedLimit || 4).map((relatedProduct) => (
           <ProductCard key={relatedProduct.id} product={relatedProduct} />
         ))}
       </div>

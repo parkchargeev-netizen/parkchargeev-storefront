@@ -15,7 +15,8 @@ type ProductGalleryProps = {
   deviceCaption?: string;
   commerceBadges?: Array<{
     label: string;
-    tone: "success" | "primary";
+    tone?: "success" | "primary" | "warning" | "neutral" | "danger";
+    position?: "hero" | "image-left" | "image-right" | "card";
   }>;
 };
 
@@ -225,8 +226,8 @@ export function ProductGallery({
     galleryMedia[selectedImageIndex]?.mediaType === "image"
       ? galleryMedia[selectedImageIndex]
       : undefined;
-  const freeShippingBadge = commerceBadges.find((badge) => badge.tone === "success");
-  const fastShippingBadge = commerceBadges.find((badge) => badge.tone === "primary");
+  const leftImageBadge = commerceBadges.find((badge) => badge.position === "image-left");
+  const rightImageBadge = commerceBadges.find((badge) => badge.position === "image-right");
 
   useEffect(() => {
     setIsMounted(true);
@@ -414,14 +415,14 @@ export function ProductGallery({
               )
             ) : null}
 
-            {freeShippingBadge ? (
+            {leftImageBadge ? (
               <span className="product-gallery-commerce-badge product-gallery-commerce-badge--free">
-                {freeShippingBadge.label}
+                {leftImageBadge.label}
               </span>
             ) : null}
-            {fastShippingBadge ? (
+            {rightImageBadge ? (
               <span className="product-gallery-commerce-badge product-gallery-commerce-badge--fast">
-                {fastShippingBadge.label}
+                {rightImageBadge.label}
               </span>
             ) : null}
 

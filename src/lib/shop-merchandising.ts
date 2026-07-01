@@ -1,7 +1,7 @@
 import type { ProductModel } from "@/lib/mock-data";
 
 export type ProductStoreProfile = {
-  powerTier: "7.4 kW" | "11 kW" | "22 kW" | "DC" | "Aksesuar";
+  powerTier: string;
   phaseHint: string;
   connectorHint: string;
   installationHint: string;
@@ -40,6 +40,11 @@ export function getProductStoreProfile(product: ProductModel): ProductStoreProfi
     productName.includes("adapter");
   const isDc = /\bdc\b/i.test(corpus) || /\b60\s*kw\b/i.test(corpus);
   const is22Kw = corpus.includes("22") || product.powerLabel.includes("22");
+  const is37Kw =
+    product.powerLabel.includes("3.7") ||
+    product.powerLabel.includes("3,7") ||
+    corpus.includes("3.7") ||
+    corpus.includes("3,7");
   const is74Kw =
     product.powerLabel.includes("7.4") ||
     product.powerLabel.includes("7,4") ||
@@ -54,7 +59,18 @@ export function getProductStoreProfile(product: ProductModel): ProductStoreProfi
     corpus.includes("wifi") ||
     corpus.includes("wi-fi");
 
-  const powerTier = isAccessory ? "Aksesuar" : isDc ? "DC" : is22Kw ? "22 kW" : is74Kw ? "7.4 kW" : "11 kW";
+  const explicitPowerLabel = product.powerLabel.trim();
+  const powerTier = isAccessory
+    ? "Aksesuar"
+    : isDc
+      ? "DC"
+      : is22Kw
+        ? "22 kW"
+        : is74Kw
+          ? "7.4 kW"
+          : is37Kw
+            ? "3.7 kW"
+            : explicitPowerLabel || "11 kW";
   const installationMode = isAccessory
     ? "Kurulum gerekmez"
     : isDc

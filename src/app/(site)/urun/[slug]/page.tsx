@@ -17,12 +17,11 @@ import { ProductInfoCards } from "@/components/shop/product-info-cards";
 import { ProductPurchasePanel } from "@/components/shop/product-purchase-panel";
 import { ProductReviews } from "@/components/shop/product-reviews";
 import { JsonLd } from "@/components/seo/json-ld";
-import { getProductCommerceBadges } from "@/lib/product-commerce-tags";
 import { getDisplayProductImageUrl } from "@/lib/product-media";
-import type { ProductModel } from "@/lib/mock-data";
 import {
   getActiveProductSmartFeatures,
   getActiveProductTechnicalGroups,
+  getActiveProductDetailBadges,
   getProductDetailContent
 } from "@/lib/product-detail-content";
 import { getProductStoreProfile } from "@/lib/shop-merchandising";
@@ -85,30 +84,6 @@ function formatProductDescriptionHtml(description: string, summary: string) {
     : `${descriptionHtml}<p>${escapeHtml(normalizedSummary)}</p>`;
 }
 
-function getProductInfrastructureLabel(product: ProductModel, fallback: string) {
-  const corpus = [
-    product.name,
-    product.category,
-    product.summary,
-    product.description,
-    product.powerLabel,
-    product.specs.map((spec) => `${spec.label} ${spec.value}`).join(" ")
-  ]
-    .join(" ")
-    .toLocaleLowerCase("tr-TR");
-  const fallbackText = fallback.toLocaleLowerCase("tr-TR");
-  const explicitDc = /\bdc\b/.test(product.powerLabel.toLocaleLowerCase("tr-TR")) ||
-    /\bccs\b/.test(corpus) ||
-    product.category.toLocaleLowerCase("tr-TR").includes("dc");
-  const likelyAc = /\bac\b/.test(corpus) || /type\s*2|tip\s*2/.test(corpus);
-
-  if (!explicitDc && likelyAc && fallbackText.includes("dc")) {
-    return product.powerLabel.includes("22") ? "Trifaze AC" : "AC altyapı";
-  }
-
-  return fallback;
-}
-
 export async function generateStaticParams() {
   const productSlugs = await listPublicProductSlugs();
   return productSlugs.map((slug) => ({ slug }));
@@ -167,12 +142,14 @@ export default async function ProductDetailPage({
   const relatedProducts = await getPublicRelatedProducts(product);
   const productJsonLd = getProductJsonLd(product);
   const detailContent = getProductDetailContent(product);
+  const productBadges = getActiveProductDetailBadges(product);
+  const heroBadges = productBadges.filter((badge) => badge.position === "hero");
+  const imageBadges = productBadges.filter((badge) =>
+    badge.position === "image-left" || badge.position === "image-right"
+  );
   const smartFeatures = getActiveProductSmartFeatures(product);
   const technicalGroups = getActiveProductTechnicalGroups(product);
-  const defaultVariant =
-    product.variants?.find((variant) => variant.isDefault) ?? product.variants?.[0];
   const storeProfile = getProductStoreProfile(product);
-  const commerceBadges = getProductCommerceBadges(product);
   const mediaItems = detailContent.galleryItems;
   const productImageUrl = getDisplayProductImageUrl(product.imageUrl);
   const descriptionHtml = formatProductDescriptionHtml(
@@ -185,14 +162,6 @@ export default async function ProductDetailPage({
     { name: product.name, path: `/urun/${product.slug}` }
   ]);
   const faqJsonLd = getFaqJsonLd(detailContent.faqs);
-  const productInfoCards = [
-    ["Kategori", product.category],
-    ["Kullanım", storeProfile.primaryFit],
-    ["Altyapı", getProductInfrastructureLabel(product, storeProfile.phaseHint)],
-    ["Güç", product.powerLabel || storeProfile.powerTier],
-    ["Soket", defaultVariant?.connectorType || storeProfile.connectorHint],
-    ["Kurulum", storeProfile.installationMode]
-  ] as const;
 
   return (
     <main className="product-detail-commerce-page">
@@ -218,15 +187,17 @@ export default async function ProductDetailPage({
               mediaItems={product.media}
               featureLabels={detailContent.galleryFeatureLabels}
               deviceCaption={detailContent.galleryDeviceCaption}
-              commerceBadges={commerceBadges}
+              commerceBadges={imageBadges}
             />
           </div>
 
           <aside className="product-commerce-buybox" aria-label="Ürün bilgisi ve sepet">
             <div className="product-commerce-meta">
-              <span>ParkChargeEV seçkisi</span>
-              <span>{product.category}</span>
-              {product.badge ? <span>{product.badge}</span> : null}
+              {[detailContent.heroEyebrow, ...heroBadges.map((badge) => badge.label)]
+                .filter(Boolean)
+                .map((label) => (
+                  <span key={label}>{label}</span>
+                ))}
             </div>
 
             <div className="product-commerce-hero-badges" aria-label="Stok ve kargo bilgileri">
@@ -248,12 +219,15 @@ export default async function ProductDetailPage({
 
             <ProductPurchasePanel
               product={product}
-              benefits={detailContent.purchaseBenefits}
+              labels={detailContent.actionLabels}
             />
           </aside>
 
           <ProductInfoCards
-            items={productInfoCards.map(([label, value]) => ({ label, value }))}
+            items={detailContent.infoCards.map((item) => ({
+              label: item.label,
+              value: item.value
+            }))}
           />
         </section>
       </div>
@@ -265,8 +239,8 @@ export default async function ProductDetailPage({
           detailContent={detailContent}
           descriptionHtml={descriptionHtml}
         />
-        <ProductTechnicalSpecs groups={technicalGroups} />
-        <ProductSmartFeatures features={smartFeatures} />
+        <ProductTechnicalSpecs detailContent={detailContent} groups={technicalGroups} />
+        <ProductSmartFeatures detailContent={detailContent} features={smartFeatures} />
         <ProductTrustGrid detailContent={detailContent} />
         <ProductPolicies detailContent={detailContent} />
         <ProductFaqs detailContent={detailContent} />
@@ -274,7 +248,13 @@ export default async function ProductDetailPage({
           detailContent={detailContent}
           relatedProducts={relatedProducts}
         />
-        <ProductReviews productName={product.name} productSlug={product.slug} />
+        {detailContent.reviews.isEnabled ? (
+          <ProductReviews
+            content={detailContent.reviews}
+            productName={product.name}
+            productSlug={product.slug}
+          />
+        ) : null}
       </div>
     </main>
   );

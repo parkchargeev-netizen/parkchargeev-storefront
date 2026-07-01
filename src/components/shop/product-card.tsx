@@ -7,8 +7,8 @@ import { ProductCompareMarker } from "@/components/shop/product-compare-marker";
 import { ProductDevicePreview } from "@/components/shop/product-device-preview";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { formatPriceTRY } from "@/lib/format";
-import { getProductCommerceBadges } from "@/lib/product-commerce-tags";
 import type { ProductModel } from "@/lib/mock-data";
+import { getActiveProductDetailBadges } from "@/lib/product-detail-content";
 import { getDisplayProductImageUrl } from "@/lib/product-media";
 import { getProductStoreProfile } from "@/lib/shop-merchandising";
 
@@ -113,7 +113,7 @@ function ProductStatusRow({
 }: {
   category: string;
   decisionBadge?: string;
-  logisticsBadges?: ReturnType<typeof getProductCommerceBadges>;
+  logisticsBadges?: ReturnType<typeof getActiveProductDetailBadges>;
   stockLabel: string;
 }) {
   const isOutOfStock = stockLabel === "Stokta Yok";
@@ -190,16 +190,18 @@ export function ProductCard({
 }: ProductCardProps) {
   const profile = getProductStoreProfile(product);
   const imageUrl = getDisplayProductImageUrl(product.imageUrl) ?? null;
-  const logisticsBadges = getProductCommerceBadges(product);
+  const logisticsBadges = getActiveProductDetailBadges(product).filter((badge) =>
+    badge.position === "card" || badge.position === "image-left" || badge.position === "image-right"
+  );
   const compactSpecs = [
-    ["Güç", profile.powerTier],
+    ["Güç", product.powerLabel || profile.powerTier],
     ["Saha", profile.installationMode],
     ["Soket", profile.connectorHint]
   ] as const;
 
   if (layout === "store") {
     const storeSpecs = [
-      ["Güç", product.powerLabel],
+      ["Güç", product.powerLabel || profile.powerTier],
       ["Kullanım", profile.primaryFit],
       ["Soket", profile.connectorHint]
     ] as const;
