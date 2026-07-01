@@ -4,7 +4,9 @@ import Image from "next/image";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 
+import { ProductBadgePill } from "@/components/shop/product-badges";
 import type { ProductMediaModel } from "@/lib/mock-data";
+import type { ProductBadgePlacement, ProductDetailBadge } from "@/lib/product-detail-content";
 
 type ProductGalleryProps = {
   productName: string;
@@ -13,11 +15,7 @@ type ProductGalleryProps = {
   mediaItems?: ProductMediaModel[];
   featureLabels?: string[];
   deviceCaption?: string;
-  commerceBadges?: Array<{
-    label: string;
-    tone?: "success" | "primary" | "warning" | "neutral" | "danger";
-    position?: "hero" | "image-left" | "image-right" | "card";
-  }>;
+  commerceBadges?: ProductDetailBadge[];
 };
 
 type ProductGalleryThumbnail = ProductMediaModel | { altText: string };
@@ -180,6 +178,36 @@ function ProductGalleryStageMedia({
   );
 }
 
+function ProductGalleryBadgeStack({
+  badges,
+  className,
+  placement
+}: {
+  badges: ProductDetailBadge[];
+  className: string;
+  placement: ProductBadgePlacement;
+}) {
+  const placementBadges = badges.filter(
+    (badge) => badge.isActive !== false && badge.label && badge.position === placement
+  );
+
+  if (placementBadges.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className={`pointer-events-none absolute z-30 flex max-w-[70%] flex-col gap-2 ${className}`}>
+      {placementBadges.map((badge) => (
+        <ProductBadgePill
+          key={`${placement}-${badge.label}-${badge.sortOrder ?? 0}`}
+          badge={badge}
+          className="pointer-events-auto bg-white/94 backdrop-blur"
+        />
+      ))}
+    </div>
+  );
+}
+
 export function ProductGallery({
   productName,
   items,
@@ -226,9 +254,6 @@ export function ProductGallery({
     galleryMedia[selectedImageIndex]?.mediaType === "image"
       ? galleryMedia[selectedImageIndex]
       : undefined;
-  const leftImageBadge = commerceBadges.find((badge) => badge.position === "image-left");
-  const rightImageBadge = commerceBadges.find((badge) => badge.position === "image-right");
-
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -415,16 +440,36 @@ export function ProductGallery({
               )
             ) : null}
 
-            {leftImageBadge ? (
-              <span className="product-gallery-commerce-badge product-gallery-commerce-badge--free">
-                {leftImageBadge.label}
-              </span>
-            ) : null}
-            {rightImageBadge ? (
-              <span className="product-gallery-commerce-badge product-gallery-commerce-badge--fast">
-                {rightImageBadge.label}
-              </span>
-            ) : null}
+            <ProductGalleryBadgeStack
+              badges={commerceBadges}
+              placement="detail_image_top_left"
+              className="left-3 top-3 items-start"
+            />
+            <ProductGalleryBadgeStack
+              badges={commerceBadges}
+              placement="detail_image_top_right"
+              className="right-3 top-3 items-end"
+            />
+            <ProductGalleryBadgeStack
+              badges={commerceBadges}
+              placement="detail_image_bottom_left"
+              className="bottom-3 left-3 items-start"
+            />
+            <ProductGalleryBadgeStack
+              badges={commerceBadges}
+              placement="detail_image_bottom_right"
+              className="bottom-3 right-3 items-end"
+            />
+            <ProductGalleryBadgeStack
+              badges={commerceBadges}
+              placement="detail_image_top_center"
+              className="left-1/2 top-3 -translate-x-1/2 items-center"
+            />
+            <ProductGalleryBadgeStack
+              badges={commerceBadges}
+              placement="detail_image_bottom_center"
+              className="bottom-3 left-1/2 -translate-x-1/2 items-center"
+            />
 
             {activeMedia ? null : (
               <div className="relative z-10 flex min-h-[286px] flex-1 flex-col justify-between">

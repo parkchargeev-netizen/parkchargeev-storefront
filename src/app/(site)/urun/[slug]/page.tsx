@@ -17,6 +17,7 @@ import { ProductInfoCards } from "@/components/shop/product-info-cards";
 import { ProductPurchasePanel } from "@/components/shop/product-purchase-panel";
 import { ProductReviews } from "@/components/shop/product-reviews";
 import { JsonLd } from "@/components/seo/json-ld";
+import { ProductPlacementBadges } from "@/components/shop/product-badges";
 import { getDisplayProductImageUrl } from "@/lib/product-media";
 import {
   getActiveProductSmartFeatures,
@@ -143,10 +144,6 @@ export default async function ProductDetailPage({
   const productJsonLd = getProductJsonLd(product);
   const detailContent = getProductDetailContent(product);
   const productBadges = getActiveProductDetailBadges(product);
-  const heroBadges = productBadges.filter((badge) => badge.position === "hero");
-  const imageBadges = productBadges.filter((badge) =>
-    badge.position === "image-left" || badge.position === "image-right"
-  );
   const smartFeatures = getActiveProductSmartFeatures(product);
   const technicalGroups = getActiveProductTechnicalGroups(product);
   const storeProfile = getProductStoreProfile(product);
@@ -187,18 +184,23 @@ export default async function ProductDetailPage({
               mediaItems={product.media}
               featureLabels={detailContent.galleryFeatureLabels}
               deviceCaption={detailContent.galleryDeviceCaption}
-              commerceBadges={imageBadges}
+              commerceBadges={productBadges}
             />
           </div>
 
           <aside className="product-commerce-buybox" aria-label="Ürün bilgisi ve sepet">
             <div className="product-commerce-meta">
-              {[detailContent.heroEyebrow, ...heroBadges.map((badge) => badge.label)]
+              {[detailContent.heroEyebrow]
                 .filter(Boolean)
                 .map((label) => (
                   <span key={label}>{label}</span>
                 ))}
             </div>
+            <ProductPlacementBadges
+              badges={productBadges}
+              placement="detail_title_top"
+              className="mt-3"
+            />
 
             <div className="product-commerce-hero-badges" aria-label="Stok ve kargo bilgileri">
               <span
@@ -213,13 +215,29 @@ export default async function ProductDetailPage({
             </div>
 
             <h1>{product.name}</h1>
+            <ProductPlacementBadges
+              badges={productBadges}
+              placement="detail_title_bottom"
+              className="mt-3"
+            />
+            <ProductPlacementBadges
+              badges={productBadges}
+              placement="detail_short_description_top"
+              className="mt-4"
+            />
             <p className="product-commerce-summary">
               {product.summary || storeProfile.primaryFit}
             </p>
+            <ProductPlacementBadges
+              badges={productBadges}
+              placement="detail_short_description_bottom"
+              className="mt-3"
+            />
 
             <ProductPurchasePanel
               product={product}
               labels={detailContent.actionLabels}
+              badges={productBadges}
             />
           </aside>
 

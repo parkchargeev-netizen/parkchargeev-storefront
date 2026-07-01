@@ -1,4 +1,8 @@
 import { inferProductMediaType } from "@/lib/product-media";
+import {
+  normalizeProductBadgePlacement,
+  productBadgePlacementValues
+} from "@/lib/product-detail-content";
 
 function getText(value: unknown, field: string) {
   if (!value || typeof value !== "object") {
@@ -82,9 +86,9 @@ function normalizeBadges(value: unknown) {
         tone: ["success", "primary", "warning", "neutral", "danger"].includes(tone)
           ? tone
           : "neutral",
-        position: ["hero", "image-left", "image-right", "card"].includes(position)
+        position: (productBadgePlacementValues as readonly string[]).includes(position)
           ? position
-          : "hero",
+          : normalizeProductBadgePlacement(position),
         isActive: getBoolean(badge.isActive),
         sortOrder: normalizeNumber(badge.sortOrder, index + 1)
       };

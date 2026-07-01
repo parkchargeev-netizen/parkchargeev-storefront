@@ -30,7 +30,10 @@ import {
   productTagOptions,
   vehicleBrandOptions
 } from "@/server/admin/constants";
-import { defaultProductDetailContent } from "@/lib/product-detail-content";
+import {
+  defaultProductDetailContent,
+  productBadgePlacementGroups
+} from "@/lib/product-detail-content";
 import { slugify } from "@/lib/slug";
 import { adminProductSchema } from "@/server/admin/validators";
 
@@ -2632,7 +2635,7 @@ export function ProductForm({
                 badgeFields.append({
                   label: "",
                   tone: "neutral",
-                  position: "hero",
+                  position: "detail_title_top",
                   isActive: true,
                   sortOrder: badgeFields.fields.length + 1
                 })
@@ -2646,7 +2649,7 @@ export function ProductForm({
             {badgeFields.fields.map((field, index) => (
               <div
                 key={field.fieldId}
-                className="grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4 md:grid-cols-[1fr_160px_180px_110px_auto]"
+                className="grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4 md:grid-cols-[1fr_160px_280px_110px_auto]"
               >
                 <input
                   className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
@@ -2667,10 +2670,15 @@ export function ProductForm({
                   className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
                   {...register(`detailContent.badges.${index}.position`)}
                 >
-                  <option value="hero">Ürün adı üstü</option>
-                  <option value="image-left">Görsel sol üst</option>
-                  <option value="image-right">Görsel sağ üst</option>
-                  <option value="card">Ürün kartı</option>
+                  {productBadgePlacementGroups.map((group) => (
+                    <optgroup key={group.label} label={group.label}>
+                      {group.options.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label} - {option.description}
+                        </option>
+                      ))}
+                    </optgroup>
+                  ))}
                 </select>
                 <input
                   className="rounded-lg border border-slate-300 px-4 py-3 text-sm"

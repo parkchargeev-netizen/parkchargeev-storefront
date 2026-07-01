@@ -3,6 +3,11 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { ArrowUpRight } from "lucide-react";
 
+import {
+  ProductBadgePill,
+  ProductPlacementBadges,
+  getBadgesByPlacement
+} from "@/components/shop/product-badges";
 import { ProductCompareMarker } from "@/components/shop/product-compare-marker";
 import { ProductDevicePreview } from "@/components/shop/product-device-preview";
 import { StatusBadge } from "@/components/ui/status-badge";
@@ -108,12 +113,10 @@ function ProductFixedBadge({ badge }: { badge?: string }) {
 function ProductStatusRow({
   category,
   decisionBadge,
-  logisticsBadges = [],
   stockLabel
 }: {
   category: string;
   decisionBadge?: string;
-  logisticsBadges?: ReturnType<typeof getActiveProductDetailBadges>;
   stockLabel: string;
 }) {
   const isOutOfStock = stockLabel === "Stokta Yok";
@@ -125,12 +128,50 @@ function ProductStatusRow({
         {stockLabel}
       </StatusBadge>
       {decisionBadge ? <StatusBadge>{decisionBadge}</StatusBadge> : null}
-      {logisticsBadges.map((badge) => (
-        <StatusBadge key={badge.label} tone={badge.tone}>
-          {badge.label}
-        </StatusBadge>
-      ))}
     </div>
+  );
+}
+
+function ProductCardImageBadges({
+  badges
+}: {
+  badges: ReturnType<typeof getActiveProductDetailBadges>;
+}) {
+  const placementClassNames = {
+    card_image_bottom_left: "bottom-3 left-3 items-start",
+    card_image_bottom_right: "bottom-3 right-3 items-end",
+    card_image_top_left: "left-3 top-3 items-start",
+    card_image_top_right: "right-3 top-3 items-end"
+  } as const;
+
+  return (
+    <>
+      {Object.entries(placementClassNames).map(([placement, className]) => {
+        const placementBadges = getBadgesByPlacement(
+          badges,
+          placement as keyof typeof placementClassNames
+        );
+
+        if (placementBadges.length === 0) {
+          return null;
+        }
+
+        return (
+          <div
+            key={placement}
+            className={`pointer-events-none absolute z-20 flex max-w-[72%] flex-col gap-1.5 ${className}`}
+          >
+            {placementBadges.map((badge) => (
+              <ProductBadgePill
+                key={`${badge.position}-${badge.label}-${badge.sortOrder ?? 0}`}
+                badge={badge}
+                className="bg-white/94 backdrop-blur"
+              />
+            ))}
+          </div>
+        );
+      })}
+    </>
   );
 }
 
@@ -190,9 +231,7 @@ export function ProductCard({
 }: ProductCardProps) {
   const profile = getProductStoreProfile(product);
   const imageUrl = getDisplayProductImageUrl(product.imageUrl) ?? null;
-  const logisticsBadges = getActiveProductDetailBadges(product).filter((badge) =>
-    badge.position === "card" || badge.position === "image-left" || badge.position === "image-right"
-  );
+  const productBadges = getActiveProductDetailBadges(product);
   const compactSpecs = [
     ["Güç", product.powerLabel || profile.powerTier],
     ["Saha", profile.installationMode],
@@ -217,6 +256,7 @@ export function ProductCard({
               product={product}
               store
             />
+            <ProductCardImageBadges badges={productBadges} />
             <div className="premium-product-card__compare absolute right-3 top-3 z-10">
               <ProductCompareMarker productId={product.id} />
             </div>
@@ -227,17 +267,31 @@ export function ProductCard({
               <ProductStatusRow
                 category={product.category}
                 decisionBadge={profile.decisionBadge}
-                logisticsBadges={logisticsBadges}
                 stockLabel={product.stockLabel}
               />
 
+              <ProductPlacementBadges
+                badges={productBadges}
+                placement="card_title_top"
+                className="mt-3"
+              />
               <h3 className="ds-card-title mt-3 transition-colors group-hover:text-primary">
                 {product.name}
               </h3>
+              <ProductPlacementBadges
+                badges={productBadges}
+                placement="card_title_bottom"
+                className="mt-2"
+              />
               <p className="ds-text-supporting mt-2 line-clamp-2 text-on-surface-variant">
                 {profile.primaryFit}
               </p>
 
+              <ProductPlacementBadges
+                badges={productBadges}
+                placement="card_features"
+                className="mt-3"
+              />
               <ProductSpecs
                 className="mt-4 grid gap-2 sm:grid-cols-3"
                 specs={storeSpecs}
@@ -252,6 +306,11 @@ export function ProductCard({
 
             <div className="flex flex-col justify-between gap-4 rounded-lg border border-outline-variant/35 bg-white/76 p-3">
               <div>
+                <ProductPlacementBadges
+                  badges={productBadges}
+                  placement="card_price_top"
+                  className="mb-2"
+                />
                 <p className="ds-text-meta font-bold uppercase text-on-surface-variant">
                   Fiyat
                 </p>
@@ -261,7 +320,16 @@ export function ProductCard({
                 <p className="ds-text-meta mt-2 font-bold uppercase text-on-surface-variant">
                   {profile.installationHint}
                 </p>
+                <ProductPlacementBadges
+                  badges={productBadges}
+                  placement="card_price_bottom"
+                  className="mt-2"
+                />
               </div>
+              <ProductPlacementBadges
+                badges={productBadges}
+                placement="card_button_top"
+              />
               <ProductInspectLabel>Ürünü incele</ProductInspectLabel>
             </div>
           </div>
@@ -280,6 +348,7 @@ export function ProductCard({
             imageUrl={imageUrl}
             product={product}
           />
+          <ProductCardImageBadges badges={productBadges} />
           <div className="premium-product-card__compare absolute right-3 top-3 z-10">
             <ProductCompareMarker productId={product.id} />
           </div>
@@ -287,17 +356,31 @@ export function ProductCard({
 
         <ProductStatusRow
           category={product.category}
-          logisticsBadges={logisticsBadges}
           stockLabel={product.stockLabel}
         />
 
+        <ProductPlacementBadges
+          badges={productBadges}
+          placement="card_title_top"
+          className="mt-3"
+        />
         <h3 className="ds-card-title mt-3 transition-colors group-hover:text-primary">
           {product.name}
         </h3>
+        <ProductPlacementBadges
+          badges={productBadges}
+          placement="card_title_bottom"
+          className="mt-2"
+        />
         <p className="ds-text-supporting mt-2 line-clamp-2 flex-1 text-on-surface-variant">
           {profile.primaryFit}
         </p>
 
+        <ProductPlacementBadges
+          badges={productBadges}
+          placement="card_features"
+          className="mt-3"
+        />
         <ProductSpecs
           className="premium-product-card__specs mt-4 grid grid-cols-3 gap-2"
           specs={compactSpecs}
@@ -306,14 +389,31 @@ export function ProductCard({
 
         <div className="premium-product-card__price-row mt-4 flex items-end justify-between gap-3">
           <div className="premium-product-card__price">
+            <ProductPlacementBadges
+              badges={productBadges}
+              placement="card_price_top"
+              className="mb-2"
+            />
             <p className="text-2xl font-bold text-primary">
               {formatPriceTRY(product.priceKurus)}
             </p>
             <p className="ds-text-meta mt-1 font-bold uppercase text-on-surface-variant">
               {product.powerLabel}
             </p>
+            <ProductPlacementBadges
+              badges={productBadges}
+              placement="card_price_bottom"
+              className="mt-2"
+            />
           </div>
-          <ProductInspectLabel compact>İncele</ProductInspectLabel>
+          <div className="flex shrink-0 flex-col gap-2">
+            <ProductPlacementBadges
+              badges={productBadges}
+              placement="card_button_top"
+              className="justify-end"
+            />
+            <ProductInspectLabel compact>İncele</ProductInspectLabel>
+          </div>
         </div>
       </article>
     </ProductCardLink>

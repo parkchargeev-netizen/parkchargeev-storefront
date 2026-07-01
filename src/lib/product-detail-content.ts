@@ -9,10 +9,186 @@ export type ProductDetailTextPair = {
   sortOrder?: number;
 };
 
+export const productBadgePlacementGroups = [
+  {
+    label: "Ürün Detay Sayfası",
+    options: [
+      {
+        value: "detail_title_top",
+        label: "Ürün adı üstü",
+        description: "Ürün detay sayfasında ürün adının üzerinde görünür."
+      },
+      {
+        value: "detail_title_bottom",
+        label: "Ürün adı altı",
+        description: "Ürün detay sayfasında ürün adının hemen altında görünür."
+      },
+      {
+        value: "detail_short_description_top",
+        label: "Kısa açıklama üstü",
+        description: "Kısa açıklamanın üzerinde görünür."
+      },
+      {
+        value: "detail_short_description_bottom",
+        label: "Kısa açıklama altı",
+        description: "Kısa açıklamanın altında görünür."
+      }
+    ]
+  },
+  {
+    label: "Ürün Görseli Üzeri",
+    options: [
+      {
+        value: "detail_image_top_left",
+        label: "Ürün görseli sol üst",
+        description: "Ürün detay sayfasındaki ana görselin sol üst köşesinde görünür."
+      },
+      {
+        value: "detail_image_top_right",
+        label: "Ürün görseli sağ üst",
+        description: "Ürün detay sayfasındaki ana görselin sağ üst köşesinde görünür."
+      },
+      {
+        value: "detail_image_bottom_left",
+        label: "Ürün görseli sol alt",
+        description: "Ürün detay sayfasındaki ana görselin sol alt köşesinde görünür."
+      },
+      {
+        value: "detail_image_bottom_right",
+        label: "Ürün görseli sağ alt",
+        description: "Ürün detay sayfasındaki ana görselin sağ alt köşesinde görünür."
+      },
+      {
+        value: "detail_image_top_center",
+        label: "Ürün görseli merkez üst",
+        description: "Ürün detay sayfasındaki ana görselin üst orta alanında görünür."
+      },
+      {
+        value: "detail_image_bottom_center",
+        label: "Ürün görseli merkez alt",
+        description: "Ürün detay sayfasındaki ana görselin alt orta alanında görünür."
+      }
+    ]
+  },
+  {
+    label: "Satın Alma Alanı",
+    options: [
+      {
+        value: "detail_price_top",
+        label: "Fiyat üstü",
+        description: "Satın alma kartındaki fiyat alanının üzerinde görünür."
+      },
+      {
+        value: "detail_price_bottom",
+        label: "Fiyat altı",
+        description: "Satın alma kartındaki fiyat alanının altında görünür."
+      },
+      {
+        value: "detail_add_to_cart_top",
+        label: "Sepete ekle butonu üstü",
+        description: "Sepete ekle butonunun hemen üzerinde görünür."
+      },
+      {
+        value: "detail_add_to_cart_bottom",
+        label: "Sepete ekle butonu altı",
+        description: "Sepete ekle ve teknik özellikler butonlarının altında görünür."
+      }
+    ]
+  },
+  {
+    label: "Ürün Açıklaması / Teknik Alan",
+    options: [
+      {
+        value: "detail_specs_top",
+        label: "Teknik özellikler üstü",
+        description: "Teknik özellikler bölüm başlığının üzerinde görünür."
+      },
+      {
+        value: "detail_description_top",
+        label: "Ürün açıklaması üstü",
+        description: "Ürün açıklaması bölümünün üzerinde görünür."
+      },
+      {
+        value: "detail_description_bottom",
+        label: "Ürün açıklaması altı",
+        description: "Ürün açıklaması bölümünün altında görünür."
+      },
+      {
+        value: "detail_trust_section_top",
+        label: "Güven / satın alma bölümü üstü",
+        description: "Güven ve satın alma bölümünün üzerinde görünür."
+      }
+    ]
+  },
+  {
+    label: "Ürün Listeleme Kartı",
+    options: [
+      {
+        value: "card_image_top_left",
+        label: "Ürün kartı görsel sol üst",
+        description: "Listeleme sayfasındaki ürün kartı görselinin sol üst köşesinde görünür."
+      },
+      {
+        value: "card_image_top_right",
+        label: "Ürün kartı görsel sağ üst",
+        description: "Listeleme sayfasındaki ürün kartı görselinin sağ üst köşesinde görünür."
+      },
+      {
+        value: "card_image_bottom_left",
+        label: "Ürün kartı görsel sol alt",
+        description: "Listeleme sayfasındaki ürün kartı görselinin sol alt köşesinde görünür."
+      },
+      {
+        value: "card_image_bottom_right",
+        label: "Ürün kartı görsel sağ alt",
+        description: "Listeleme sayfasındaki ürün kartı görselinin sağ alt köşesinde görünür."
+      },
+      {
+        value: "card_title_top",
+        label: "Ürün kartı başlık üstü",
+        description: "Listeleme sayfasındaki ürün kartında başlığın üzerinde görünür."
+      },
+      {
+        value: "card_title_bottom",
+        label: "Ürün kartı başlık altı",
+        description: "Listeleme sayfasındaki ürün kartında başlığın altında görünür."
+      },
+      {
+        value: "card_price_top",
+        label: "Ürün kartı fiyat üstü",
+        description: "Listeleme sayfasındaki ürün kartında fiyatın üzerinde görünür."
+      },
+      {
+        value: "card_price_bottom",
+        label: "Ürün kartı fiyat altı",
+        description: "Listeleme sayfasındaki ürün kartında fiyatın altında görünür."
+      },
+      {
+        value: "card_features",
+        label: "Ürün kartı özellikleri",
+        description: "Listeleme sayfasındaki ürün kartı teknik özellik alanında görünür."
+      },
+      {
+        value: "card_button_top",
+        label: "Ürün kartı buton üstü",
+        description: "Listeleme sayfasındaki ürün kartında inceleme butonunun üzerinde görünür."
+      }
+    ]
+  }
+] as const;
+
+export const productBadgePlacementValues = productBadgePlacementGroups.flatMap((group) =>
+  group.options.map((option) => option.value)
+);
+
+export type ProductBadgePlacement = (typeof productBadgePlacementValues)[number];
+
+type LegacyProductBadgePlacement = "hero" | "image-left" | "image-right" | "card";
+
 export type ProductDetailBadge = {
   label: string;
   tone?: "success" | "primary" | "warning" | "neutral" | "danger";
-  position?: "hero" | "image-left" | "image-right" | "card";
+  position?: ProductBadgePlacement | LegacyProductBadgePlacement | string;
   isActive?: boolean;
   sortOrder?: number;
 };
@@ -215,12 +391,34 @@ function normalizeTextPairs(values?: ProductDetailTextPair[]) {
     }));
 }
 
+export function normalizeProductBadgePlacement(
+  value?: string | null
+): ProductBadgePlacement {
+  if (value && (productBadgePlacementValues as readonly string[]).includes(value)) {
+    return value as ProductBadgePlacement;
+  }
+
+  if (value === "image-left") {
+    return "detail_image_top_left";
+  }
+
+  if (value === "image-right") {
+    return "detail_image_top_right";
+  }
+
+  if (value === "card") {
+    return "card_title_top";
+  }
+
+  return "detail_title_top";
+}
+
 function normalizeBadges(values?: ProductDetailBadge[]) {
   return sortByOrder(values ?? [])
     .map((item, index) => ({
       label: item.label?.trim() ?? "",
       tone: item.tone ?? "neutral",
-      position: item.position ?? "hero",
+      position: normalizeProductBadgePlacement(item.position),
       isActive: item.isActive !== false,
       sortOrder: Number.isFinite(Number(item.sortOrder)) ? Number(item.sortOrder) : index + 1
     }))
@@ -326,7 +524,7 @@ function getBadgeDefaults(product?: ProductModel): ProductDetailBadge[] {
     badges.push({
       label: product.category,
       tone: "primary",
-      position: "hero",
+      position: "detail_title_top",
       isActive: true,
       sortOrder: 1
     });
@@ -336,7 +534,7 @@ function getBadgeDefaults(product?: ProductModel): ProductDetailBadge[] {
     badges.push({
       label: product.badge,
       tone: "success",
-      position: "hero",
+      position: "detail_title_top",
       isActive: true,
       sortOrder: 2
     });
@@ -346,7 +544,7 @@ function getBadgeDefaults(product?: ProductModel): ProductDetailBadge[] {
     badges.push({
       label: "Kargo Bedava",
       tone: "success",
-      position: "image-left",
+      position: "detail_image_top_left",
       isActive: true,
       sortOrder: 10
     });
@@ -356,7 +554,7 @@ function getBadgeDefaults(product?: ProductModel): ProductDetailBadge[] {
     badges.push({
       label: "Yarın Kargoda",
       tone: "warning",
-      position: "image-right",
+      position: "detail_image_top_right",
       isActive: true,
       sortOrder: 11
     });

@@ -16,6 +16,7 @@ import {
   Zap
 } from "lucide-react";
 
+import { ProductPlacementBadges } from "@/components/shop/product-badges";
 import { ProductCard } from "@/components/shop/product-card";
 import type { ProductModel } from "@/lib/mock-data";
 import type {
@@ -191,6 +192,11 @@ export function ProductTrustGrid({
 
   return (
     <section className="product-detail-section">
+      <ProductPlacementBadges
+        badges={detailContent.badges}
+        placement="detail_trust_section_top"
+        className="mb-4"
+      />
       <div className="product-detail-section-heading">
         <p>{detailContent.trustEyebrow}</p>
         <h2>{detailContent.trustHeading}</h2>
@@ -258,6 +264,11 @@ export function ProductTechnicalSpecs({
 
   return (
     <section id="technical-specs" className="product-detail-section scroll-mt-28">
+      <ProductPlacementBadges
+        badges={detailContent.badges}
+        placement="detail_specs_top"
+        className="mb-4"
+      />
       <div className="product-detail-section-heading">
         <p>Teknik özellikler</p>
         <h2>{detailContent.specsHeading}</h2>
@@ -290,6 +301,11 @@ export function ProductDescriptionBlock({
 >) {
   return (
     <section className="product-detail-section product-detail-description-grid">
+      <ProductPlacementBadges
+        badges={detailContent.badges}
+        placement="detail_description_top"
+        className="mb-4 md:col-span-2"
+      />
       <div>
         <div className="product-detail-section-heading">
           <p>{detailContent.descriptionEyebrow}</p>
@@ -315,6 +331,11 @@ export function ProductDescriptionBlock({
           ) : null}
         </aside>
       ) : null}
+      <ProductPlacementBadges
+        badges={detailContent.badges}
+        placement="detail_description_bottom"
+        className="mt-4 md:col-span-2"
+      />
     </section>
   );
 }

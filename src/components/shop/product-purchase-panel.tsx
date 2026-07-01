@@ -4,11 +4,12 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 import { ShoppingCart } from "lucide-react";
 
+import { ProductPlacementBadges } from "@/components/shop/product-badges";
 import { useCart } from "@/components/providers/cart-provider";
 import { trackConversionEvent } from "@/lib/conversion-events";
 import { formatPriceTRY } from "@/lib/format";
 import type { ProductModel } from "@/lib/mock-data";
-import type { ProductActionLabels } from "@/lib/product-detail-content";
+import type { ProductActionLabels, ProductDetailBadge } from "@/lib/product-detail-content";
 import {
   getProductCableOptions,
   getProductSelectedCableOption
@@ -17,9 +18,14 @@ import {
 type ProductPurchasePanelProps = {
   product: ProductModel;
   labels: ProductActionLabels;
+  badges?: ProductDetailBadge[];
 };
 
-export function ProductPurchasePanel({ product, labels }: ProductPurchasePanelProps) {
+export function ProductPurchasePanel({
+  product,
+  labels,
+  badges = []
+}: ProductPurchasePanelProps) {
   const { addItem, isHydrated } = useCart();
   const cableOptions = getProductCableOptions(product);
   const [cableOption, setCableOption] = useState(cableOptions[0]?.label ?? "");
@@ -94,6 +100,12 @@ export function ProductPurchasePanel({ product, labels }: ProductPurchasePanelPr
         </button>
       </div>
 
+      <ProductPlacementBadges
+        badges={badges}
+        placement="detail_price_top"
+        className="mt-5"
+      />
+
       <div className="product-purchase-panel__price mt-5 rounded-lg border border-primary/12 bg-white p-5 shadow-[0_18px_44px_rgba(6,51,38,0.08)]">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -118,6 +130,11 @@ export function ProductPurchasePanel({ product, labels }: ProductPurchasePanelPr
           ) : null}
         </div>
       </div>
+      <ProductPlacementBadges
+        badges={badges}
+        placement="detail_price_bottom"
+        className="mt-3"
+      />
 
       <div className="product-purchase-panel__controls mt-5 rounded-lg bg-surface-container-low p-5">
         {cableOptions.length > 1 ? (
@@ -184,6 +201,12 @@ export function ProductPurchasePanel({ product, labels }: ProductPurchasePanelPr
             </div>
           </div>
 
+          <ProductPlacementBadges
+            badges={badges}
+            placement="detail_add_to_cart_top"
+            className="mt-4"
+          />
+
           <div className="product-purchase-panel__action-row mt-4 flex flex-col gap-3">
             <button
               type="button"
@@ -203,6 +226,11 @@ export function ProductPurchasePanel({ product, labels }: ProductPurchasePanelPr
               {labels.specsButtonLabel}
             </button>
           </div>
+          <ProductPlacementBadges
+            badges={badges}
+            placement="detail_add_to_cart_bottom"
+            className="mt-3"
+          />
           {feedback ? (
             <p className="mt-4 text-sm font-medium text-secondary" aria-live="polite">
               {feedback}{" "}

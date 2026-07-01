@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { productBadgePlacementValues } from "@/lib/product-detail-content";
 import {
   adminRoleEnum,
   adminUserStatusEnum,
@@ -72,7 +73,15 @@ const productDetailTextPairSchema = z.object({
 const productDetailBadgeSchema = z.object({
   label: z.string().trim().min(1).max(80),
   tone: z.enum(["success", "primary", "warning", "neutral", "danger"]).default("neutral"),
-  position: z.enum(["hero", "image-left", "image-right", "card"]).default("hero"),
+  position: z
+    .string()
+    .refine(
+      (value) =>
+        ([...productBadgePlacementValues, "hero", "image-left", "image-right", "card"] as string[])
+          .includes(value),
+      "Etiket konumu geçersiz."
+    )
+    .default("detail_title_top"),
   isActive: z.boolean().default(true),
   sortOrder: z.coerce.number().int().min(0).max(999).default(0)
 });
