@@ -1,5 +1,20 @@
 import Link from "next/link";
-import { BatteryCharging, Bluetooth, CheckCircle2, Cpu, Headphones, Home, Radio, RotateCcw, Settings, ShieldCheck, Sparkles, Truck, Wifi, Zap } from "lucide-react";
+import {
+  BatteryCharging,
+  Bluetooth,
+  CheckCircle2,
+  Cpu,
+  Headphones,
+  Home,
+  Radio,
+  RotateCcw,
+  Settings,
+  ShieldCheck,
+  Sparkles,
+  Truck,
+  Wifi,
+  Zap
+} from "lucide-react";
 
 import { ProductCard } from "@/components/shop/product-card";
 import type { ProductModel } from "@/lib/mock-data";
@@ -8,7 +23,6 @@ import type {
   ProductSmartFeature,
   ProductTechnicalSpecGroup
 } from "@/lib/product-detail-content";
-import type { ProductCommerceBadge } from "@/lib/product-commerce-tags";
 import { getProductStoreProfile } from "@/lib/shop-merchandising";
 
 type ProductDetailSectionsProps = {
@@ -27,55 +41,53 @@ function SmartFeatureIcon({ iconName }: { iconName?: string }) {
       ? Wifi
       : normalizedIconName.includes("bluetooth")
         ? Bluetooth
-      : normalizedIconName.includes("shield") || normalizedIconName.includes("güven")
-        ? ShieldCheck
-        : normalizedIconName.includes("zap") || normalizedIconName.includes("power")
-          ? Zap
-          : normalizedIconName.includes("radio") || normalizedIconName.includes("rfid")
-            ? Radio
-            : normalizedIconName.includes("cpu") || normalizedIconName.includes("ocpp")
-              ? Cpu
-              : normalizedIconName.includes("setting")
-                ? Settings
-                : Sparkles;
+        : normalizedIconName.includes("shield") ||
+            normalizedIconName.includes("güven")
+          ? ShieldCheck
+          : normalizedIconName.includes("zap") ||
+              normalizedIconName.includes("power")
+            ? Zap
+            : normalizedIconName.includes("radio") ||
+                normalizedIconName.includes("rfid")
+              ? Radio
+              : normalizedIconName.includes("cpu") ||
+                  normalizedIconName.includes("ocpp")
+                ? Cpu
+                : normalizedIconName.includes("setting")
+                  ? Settings
+                  : Sparkles;
 
   return <Icon className="h-5 w-5" aria-hidden />;
 }
 
 function getTechnicalRows(groups: ProductTechnicalSpecGroup[]) {
+  const seen = new Set<string>();
+
   return groups.flatMap((group) =>
-    group.items.map((spec) => ({
-      groupName: group.title,
-      label: spec.name,
-      value: [spec.value, spec.unit].filter(Boolean).join(" "),
-      description: spec.description
-    }))
+    group.items.flatMap((spec) => {
+      const value = [spec.value, spec.unit].filter(Boolean).join(" ").trim();
+      const key = `${group.title}-${spec.name}-${value}`.toLocaleLowerCase("tr-TR");
+
+      if (!spec.name || !value || seen.has(key)) {
+        return [];
+      }
+
+      seen.add(key);
+
+      return {
+        groupName: group.title,
+        label: spec.name,
+        value,
+        description: spec.description
+      };
+    })
   );
 }
 
-export function ProductCommerceBadges({ badges, stockLabel }: { badges: ProductCommerceBadge[]; stockLabel: string }) {
-  return (
-    <div className="flex flex-wrap items-center gap-2">
-      <span className="product-detail-commerce-pill product-detail-commerce-pill--stock">
-        {stockLabel}
-      </span>
-      {badges.map((badge) => (
-        <span
-          key={badge.label}
-          className={
-            badge.tone === "success"
-              ? "product-detail-commerce-pill product-detail-commerce-pill--success"
-              : "product-detail-commerce-pill product-detail-commerce-pill--warning"
-          }
-        >
-          {badge.label}
-        </span>
-      ))}
-    </div>
-  );
-}
-
-export function ProductHighlightGrid({ product, detailContent }: Pick<ProductDetailSectionsProps, "product" | "detailContent">) {
+export function ProductHighlightGrid({
+  product,
+  detailContent
+}: Pick<ProductDetailSectionsProps, "product" | "detailContent">) {
   const profile = getProductStoreProfile(product);
   const highlights = [
     { label: "Güç", value: profile.powerTier, icon: BatteryCharging },
@@ -104,8 +116,9 @@ export function ProductHighlightGrid({ product, detailContent }: Pick<ProductDet
       {detailContent.highlights.length > 0 ? (
         <div className="mt-5 grid gap-3 md:grid-cols-2">
           {detailContent.highlights.slice(0, 4).map((highlight) => (
-            <div key={highlight} className="rounded-lg border border-outline-variant/35 bg-white px-4 py-3 text-sm font-semibold leading-6 text-on-surface">
-              {highlight}
+            <div key={highlight} className="product-detail-benefit-line">
+              <CheckCircle2 className="h-4 w-4 shrink-0 text-primary" aria-hidden />
+              <span>{highlight}</span>
             </div>
           ))}
         </div>
@@ -114,19 +127,39 @@ export function ProductHighlightGrid({ product, detailContent }: Pick<ProductDet
   );
 }
 
-export function ProductTrustGrid({ detailContent }: Pick<ProductDetailSectionsProps, "detailContent">) {
+export function ProductTrustGrid({
+  detailContent
+}: Pick<ProductDetailSectionsProps, "detailContent">) {
   const trustItems = [
-    { title: "Sipariş takibi", body: "Sepete ekleme ve ödeme adımları kısa, açık ve izlenebilir şekilde ilerler.", icon: ShieldCheck },
-    { title: "Kargo ve teslimat", body: "Kargo kapsamı ürün etiketleri ve sepet adımıyla netleşir.", icon: Truck },
-    { title: "Garanti ve iade", body: "Garanti, iade ve destek detayları ürün politikasında açıkça gösterilir.", icon: RotateCcw },
-    { title: "Teknik destek", body: detailContent.support.body || "Satış öncesi uygunluk ve kurulum soruları için destek alınabilir.", icon: Headphones }
+    {
+      title: "Sipariş takibi",
+      body: "Sepete ekleme ve ödeme adımları kısa, açık ve izlenebilir şekilde ilerler.",
+      icon: ShieldCheck
+    },
+    {
+      title: "Kargo ve teslimat",
+      body: "Kargo kapsamı ürün etiketleri ve sepet adımıyla netleşir.",
+      icon: Truck
+    },
+    {
+      title: "Garanti ve iade",
+      body: "Garanti, iade ve destek detayları ürün politikasında açıkça gösterilir.",
+      icon: RotateCcw
+    },
+    {
+      title: "Teknik destek",
+      body:
+        detailContent.support.body ||
+        "Satış öncesi uygunluk ve kurulum soruları için destek alınabilir.",
+      icon: Headphones
+    }
   ];
 
   return (
     <section className="product-detail-section">
       <div className="product-detail-section-heading">
         <p>Güven ve satın alma</p>
-        <h2>Teknik üründe karar riskini azaltan bilgiler tek ekranda.</h2>
+        <h2>Teknik üründe karar riskini azaltan net bilgiler.</h2>
       </div>
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {trustItems.map((item) => {
@@ -154,11 +187,14 @@ export function ProductSmartFeatures({ features }: { features: ProductSmartFeatu
     <section className="product-detail-section">
       <div className="product-detail-section-heading">
         <p>Akıllı özellikler</p>
-        <h2>Admin panelden yönetilen dinamik özellik kartları.</h2>
+        <h2>Bağlantı, erişim ve kontrol özellikleri.</h2>
       </div>
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {features.map((feature) => (
-          <article key={`${feature.title}-${feature.description}`} className="product-detail-smart-card">
+          <article
+            key={`${feature.title}-${feature.description}`}
+            className="product-detail-smart-card"
+          >
             <span>
               <SmartFeatureIcon iconName={feature.iconName} />
             </span>
@@ -171,7 +207,11 @@ export function ProductSmartFeatures({ features }: { features: ProductSmartFeatu
   );
 }
 
-export function ProductTechnicalSpecs({ groups }: { groups: ProductTechnicalSpecGroup[] }) {
+export function ProductTechnicalSpecs({
+  groups
+}: {
+  groups: ProductTechnicalSpecGroup[];
+}) {
   const rows = getTechnicalRows(groups);
 
   if (rows.length === 0) {
@@ -182,11 +222,14 @@ export function ProductTechnicalSpecs({ groups }: { groups: ProductTechnicalSpec
     <section className="product-detail-section">
       <div className="product-detail-section-heading">
         <p>Teknik özellikler</p>
-        <h2>Tek uzun listede, hızlı taranabilir ürün teknik tablosu.</h2>
+        <h2>Gruplandırılmış, hızlı taranabilir teknik tablo.</h2>
       </div>
       <div className="product-detail-spec-list">
         {rows.map((spec) => (
-          <div key={`${spec.groupName}-${spec.label}-${spec.value}`} className="product-detail-spec-row">
+          <div
+            key={`${spec.groupName}-${spec.label}-${spec.value}`}
+            className="product-detail-spec-row"
+          >
             <div>
               <span>{spec.groupName}</span>
               <strong>{spec.label}</strong>
@@ -204,7 +247,10 @@ export function ProductDescriptionBlock({
   product,
   detailContent,
   descriptionHtml
-}: Pick<ProductDetailSectionsProps, "product" | "detailContent" | "descriptionHtml">) {
+}: Pick<
+  ProductDetailSectionsProps,
+  "product" | "detailContent" | "descriptionHtml"
+>) {
   return (
     <section className="product-detail-section product-detail-description-grid">
       <div>
@@ -217,20 +263,24 @@ export function ProductDescriptionBlock({
           dangerouslySetInnerHTML={{ __html: descriptionHtml }}
         />
       </div>
-      <aside className="product-detail-fit-card">
-        <h3>Uygun kullanım senaryoları</h3>
-        <div className="mt-4 grid gap-2">
-          {detailContent.useCases.slice(0, 8).map((useCase) => (
-            <span key={useCase}>{useCase}</span>
-          ))}
-        </div>
-        <Link href="/urun-secici">Akıllı seçiciye git</Link>
-      </aside>
+      {detailContent.useCases.length > 0 ? (
+        <aside className="product-detail-fit-card">
+          <h3>Uygun kullanım senaryoları</h3>
+          <div className="mt-4 grid gap-2">
+            {detailContent.useCases.slice(0, 8).map((useCase) => (
+              <span key={useCase}>{useCase}</span>
+            ))}
+          </div>
+          <Link href="/urun-secici">Akıllı seçiciye git</Link>
+        </aside>
+      ) : null}
     </section>
   );
 }
 
-export function ProductPolicies({ detailContent }: Pick<ProductDetailSectionsProps, "detailContent">) {
+export function ProductPolicies({
+  detailContent
+}: Pick<ProductDetailSectionsProps, "detailContent">) {
   if (detailContent.policyDetails.length === 0) {
     return null;
   }
@@ -247,7 +297,9 @@ export function ProductPolicies({ detailContent }: Pick<ProductDetailSectionsPro
   );
 }
 
-export function ProductFaqs({ detailContent }: Pick<ProductDetailSectionsProps, "detailContent">) {
+export function ProductFaqs({
+  detailContent
+}: Pick<ProductDetailSectionsProps, "detailContent">) {
   if (detailContent.faqs.length === 0) {
     return null;
   }
@@ -255,7 +307,7 @@ export function ProductFaqs({ detailContent }: Pick<ProductDetailSectionsProps, 
   return (
     <section className="product-detail-section">
       <div className="product-detail-section-heading">
-        <p>Karar soruları</p>
+        <p>Sık sorulan sorular</p>
         <h2>{detailContent.faqHeading}</h2>
       </div>
       <div className="grid gap-4 md:grid-cols-2">
@@ -284,7 +336,7 @@ export function ProductRelatedProducts({
         <p>{detailContent.relatedEyebrow}</p>
         <h2>{detailContent.relatedHeading}</h2>
       </div>
-      <div className="product-detail-related-track mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      <div className="product-detail-related-track mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {relatedProducts.map((relatedProduct) => (
           <ProductCard key={relatedProduct.id} product={relatedProduct} />
         ))}

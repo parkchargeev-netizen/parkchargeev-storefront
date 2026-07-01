@@ -38,7 +38,7 @@ export function getProductStoreProfile(product: ProductModel): ProductStoreProfi
     productName.includes("kablo") ||
     productName.includes("adaptör") ||
     productName.includes("adapter");
-  const isDc = corpus.includes("dc") || corpus.includes("60kw");
+  const isDc = /\bdc\b/i.test(corpus) || /\b60\s*kw\b/i.test(corpus);
   const is22Kw = corpus.includes("22") || product.powerLabel.includes("22");
   const is74Kw =
     product.powerLabel.includes("7.4") ||

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import type { ProductMediaModel } from "@/lib/mock-data";
 
@@ -209,6 +209,20 @@ export function ProductGallery({
     .map((media, index) => (media.mediaType === "image" ? index : null))
     .filter((index): index is number => index !== null);
 
+  const moveLightbox = useCallback(
+    (direction: -1 | 1) => {
+      if (lightboxIndex === null || imageIndexes.length <= 1) {
+        return;
+      }
+
+      const currentImagePosition = imageIndexes.indexOf(lightboxIndex);
+      const nextPosition =
+        (currentImagePosition + direction + imageIndexes.length) % imageIndexes.length;
+      setLightboxIndex(imageIndexes[nextPosition]);
+    },
+    [imageIndexes, lightboxIndex]
+  );
+
   useEffect(() => {
     if (lightboxIndex === null) {
       return;
@@ -221,6 +235,16 @@ export function ProductGallery({
       if (event.key === "Escape") {
         setLightboxIndex(null);
       }
+
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        moveLightbox(-1);
+      }
+
+      if (event.key === "ArrowRight") {
+        event.preventDefault();
+        moveLightbox(1);
+      }
     }
 
     window.addEventListener("keydown", handleKeyDown);
@@ -229,24 +253,13 @@ export function ProductGallery({
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [lightboxIndex]);
-
-  function moveLightbox(direction: -1 | 1) {
-    if (lightboxIndex === null || imageIndexes.length <= 1) {
-      return;
-    }
-
-    const currentImagePosition = imageIndexes.indexOf(lightboxIndex);
-    const nextPosition =
-      (currentImagePosition + direction + imageIndexes.length) % imageIndexes.length;
-    setLightboxIndex(imageIndexes[nextPosition]);
-  }
+  }, [lightboxIndex, moveLightbox]);
 
   return (
-    <div className="product-gallery-premium surface-card grid gap-4 p-5 lg:grid-cols-[88px_minmax(0,1fr)]">
-      <div className="order-first overflow-hidden rounded-lg bg-linear-to-br from-secondary-container/20 via-white to-primary/12 p-4 lg:order-2 lg:p-6">
+    <div className="product-gallery-premium surface-card grid gap-4 p-4 lg:grid-cols-[76px_minmax(0,1fr)] lg:p-5">
+      <div className="order-first overflow-hidden rounded-lg bg-white p-3 lg:order-2 lg:p-5">
         <div
-          className={`relative min-h-[340px] overflow-hidden rounded-lg ${
+          className={`relative min-h-[360px] overflow-hidden rounded-lg md:min-h-[460px] ${
             hasRealMedia
               ? "product-gallery-stage--contain grid aspect-[4/3] place-items-center bg-white"
               : "grid aspect-[4/3] px-6 py-7 text-white md:grid-cols-[1fr_0.8fr]"
@@ -308,7 +321,7 @@ export function ProductGallery({
         </div>
       </div>
 
-      <div className="order-last flex gap-3 overflow-x-auto pb-1 lg:order-1 lg:max-h-[520px] lg:flex-col lg:overflow-x-visible lg:overflow-y-auto lg:pr-1">
+      <div className="order-last flex gap-2 overflow-x-auto pb-1 lg:order-1 lg:max-h-[560px] lg:flex-col lg:overflow-x-visible lg:overflow-y-auto lg:pr-1">
         {thumbnailItems.map((item, index) => {
           const hasImage = isProductMediaItem(item) && item.mediaType === "image";
 
@@ -317,7 +330,8 @@ export function ProductGallery({
               key={`${item.altText}-${index}`}
               type="button"
               onClick={() => setActiveIndex(index)}
-              className={`group w-20 shrink-0 overflow-hidden rounded-lg p-1.5 text-left transition lg:w-full ${
+              aria-label={`${productName} ${index + 1}. görseli seç`}
+              className={`group w-16 shrink-0 overflow-hidden rounded-lg p-1 transition lg:w-full ${
                 index === activeIndex
                   ? "border-2 border-primary bg-white shadow-[0_16px_36px_rgba(6,51,38,0.12)]"
                   : "border border-outline-variant/30 bg-white hover:border-primary/25"
@@ -336,9 +350,6 @@ export function ProductGallery({
                 ) : (
                   <ProductThumbnailFallback label={item.altText} />
                 )}
-                <span className="absolute inset-x-1 bottom-1 rounded-full bg-white/90 px-1.5 py-0.5 text-center text-xs font-bold leading-4 text-on-surface shadow-[0_8px_18px_rgba(15,23,42,0.12)] backdrop-blur">
-                  {item.altText}
-                </span>
               </div>
             </button>
           );

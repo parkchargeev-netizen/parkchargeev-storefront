@@ -236,7 +236,7 @@ export function getDefaultProductDetailContent(product?: ProductModel): ProductD
       : ["Ön görünüm", "Yan profil", "Montaj görünümü", "Video"],
     galleryFeatureLabels: ["IP koruma", "Type 2", "Kurulum"],
     galleryDeviceCaption: "Ölçekli cihaz temsili",
-    specsHeading: "Teknik karar bilgileri",
+    specsHeading: "Teknik Özellikler",
     intentHeading: "Bu ürün kimin için?",
     intentBody:
       "Ürün, aşağıdaki satın alma senaryolarında hızlı ve güvenli karar vermenize yardımcı olur.",
