@@ -12226,8 +12226,8 @@ body {
 }
 
 .product-detail-mini-card {
-  min-height: 8.25rem;
-  padding: 1rem;
+  min-height: 8rem;
+  padding: 1rem 1.05rem;
 }
 
 .product-detail-mini-card__icon,
@@ -12243,10 +12243,10 @@ body {
 }
 
 .product-detail-mini-card > p {
-  margin-top: 0.9rem;
+  margin-top: 0.82rem;
   color: var(--color-on-surface-variant);
-  font-size: 0.76rem;
-  font-weight: 800;
+  font-size: 0.72rem;
+  font-weight: 700;
   text-transform: uppercase;
 }
 
@@ -12254,8 +12254,17 @@ body {
   display: block;
   margin-top: 0.35rem;
   color: var(--color-on-surface);
-  font-size: 1rem;
+  font-size: 0.96rem;
+  font-weight: 650;
   line-height: 1.35;
+}
+
+.product-detail-mini-card > small {
+  display: block;
+  margin-top: 0.45rem;
+  color: var(--color-on-surface-variant);
+  font-size: 0.78rem;
+  line-height: 1.45;
 }
 
 .product-detail-trust-card,
@@ -12323,9 +12332,10 @@ body {
 
 .product-detail-spec-row strong {
   display: block;
-  margin-top: 0.25rem;
   color: var(--color-on-surface);
-  font-size: 0.98rem;
+  font-size: 0.94rem;
+  font-weight: 650;
+  line-height: 1.35;
 }
 
 .product-detail-spec-row small {
@@ -12338,8 +12348,8 @@ body {
 
 .product-detail-spec-row > p {
   color: var(--color-on-surface);
-  font-size: 1rem;
-  font-weight: 800;
+  font-size: 0.96rem;
+  font-weight: 650;
   line-height: 1.45;
 }
 
@@ -12710,6 +12720,39 @@ body {
 
 .product-gallery-stage img {
   filter: drop-shadow(0 18px 34px rgba(15, 23, 42, 0.12));
+}
+
+.product-gallery-commerce-badge {
+  position: absolute;
+  top: clamp(0.65rem, 1.8vw, 1rem);
+  z-index: 30;
+  display: inline-flex;
+  min-height: 2rem;
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 0.44rem 0.72rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  pointer-events: none;
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.12);
+  backdrop-filter: blur(14px);
+}
+
+.product-gallery-commerce-badge--free {
+  left: clamp(0.65rem, 1.8vw, 1rem);
+  border-color: rgba(20, 184, 166, 0.28);
+  background: rgba(204, 251, 241, 0.94);
+  color: #0f766e;
+}
+
+.product-gallery-commerce-badge--fast {
+  right: clamp(0.65rem, 1.8vw, 1rem);
+  border-color: rgba(245, 158, 11, 0.32);
+  background: rgba(254, 243, 199, 0.95);
+  color: #92400e;
 }
 
 .product-gallery-stage-nav {

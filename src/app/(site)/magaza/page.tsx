@@ -8,7 +8,6 @@ import Link from "next/link";
 
 import { JsonLd } from "@/components/seo/json-ld";
 import { ProductCard } from "@/components/shop/product-card";
-import { StoreProductSelectorAccordion } from "@/components/shop/store-product-selector-accordion";
 import { MotionGroup } from "@/components/ui/premium-section";
 import { conversionDataAttributes } from "@/lib/conversion-events";
 import { storeSearchFaqs } from "@/features/store/domain/store-search-content";
@@ -296,8 +295,6 @@ export default async function StorePage({ searchParams }: StorePageProps) {
             <button type="submit">Ara</button>
           </form>
         </div>
-
-        <StoreProductSelectorAccordion products={products} />
       </section>
 
       {activeFilterCount === 0 && featuredProducts.length > 0 ? (

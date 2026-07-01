@@ -2531,13 +2531,21 @@ export function ProductForm({
 
         <div className="mt-8">
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-base font-semibold text-slate-900">Satın alma hazırlığı</h3>
+            <div>
+              <h3 className="text-base font-semibold text-slate-900">
+                Ürün özeti kartları
+              </h3>
+              <p className="mt-1 text-sm text-slate-500">
+                Ürün açıklamasının üstünde görünen Güç, Bağlantı, Kurulum ve Kullanım gibi
+                kısa karar kartlarını buradan yönetin.
+              </p>
+            </div>
             <button
               type="button"
               onClick={() => readinessFields.append({ label: "", value: "" })}
               className="rounded-full border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700"
             >
-              Kart ekle
+              Özet kart ekle
             </button>
           </div>
           <div className="space-y-3">

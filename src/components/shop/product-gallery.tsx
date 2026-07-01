@@ -13,6 +13,10 @@ type ProductGalleryProps = {
   mediaItems?: ProductMediaModel[];
   featureLabels?: string[];
   deviceCaption?: string;
+  commerceBadges?: Array<{
+    label: string;
+    tone: "success" | "primary";
+  }>;
 };
 
 type ProductGalleryThumbnail = ProductMediaModel | { altText: string };
@@ -181,7 +185,8 @@ export function ProductGallery({
   imageUrl,
   mediaItems,
   featureLabels = ["IP koruma", "Type 2", "Kurulum"],
-  deviceCaption = "Ölçekli cihaz temsili"
+  deviceCaption = "Ölçekli cihaz temsili",
+  commerceBadges = []
 }: ProductGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isMounted, setIsMounted] = useState(false);
@@ -220,6 +225,8 @@ export function ProductGallery({
     galleryMedia[selectedImageIndex]?.mediaType === "image"
       ? galleryMedia[selectedImageIndex]
       : undefined;
+  const freeShippingBadge = commerceBadges.find((badge) => badge.tone === "success");
+  const fastShippingBadge = commerceBadges.find((badge) => badge.tone === "primary");
 
   useEffect(() => {
     setIsMounted(true);
@@ -405,6 +412,17 @@ export function ProductGallery({
               ) : (
                 <ProductGalleryStageMedia media={activeMedia} productName={productName} />
               )
+            ) : null}
+
+            {freeShippingBadge ? (
+              <span className="product-gallery-commerce-badge product-gallery-commerce-badge--free">
+                {freeShippingBadge.label}
+              </span>
+            ) : null}
+            {fastShippingBadge ? (
+              <span className="product-gallery-commerce-badge product-gallery-commerce-badge--fast">
+                {fastShippingBadge.label}
+              </span>
             ) : null}
 
             {activeMedia ? null : (

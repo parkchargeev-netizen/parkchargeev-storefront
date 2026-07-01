@@ -218,6 +218,7 @@ export default async function ProductDetailPage({
               mediaItems={product.media}
               featureLabels={detailContent.galleryFeatureLabels}
               deviceCaption={detailContent.galleryDeviceCaption}
+              commerceBadges={commerceBadges}
             />
           </div>
 
@@ -238,18 +239,6 @@ export default async function ProductDetailPage({
               >
                 {product.stockLabel}
               </span>
-              {commerceBadges.map((badge) => (
-                <span
-                  key={badge.label}
-                  className={
-                    badge.tone === "success"
-                      ? "product-commerce-hero-badge product-commerce-hero-badge--shipping"
-                      : "product-commerce-hero-badge product-commerce-hero-badge--fast"
-                  }
-                >
-                  {badge.label}
-                </span>
-              ))}
             </div>
 
             <h1>{product.name}</h1>
@@ -270,7 +259,7 @@ export default async function ProductDetailPage({
       </div>
 
       <div className="product-commerce-content">
-        <ProductHighlightGrid product={product} detailContent={detailContent} />
+        <ProductHighlightGrid detailContent={detailContent} />
         <ProductDescriptionBlock
           product={product}
           detailContent={detailContent}

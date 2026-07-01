@@ -133,31 +133,13 @@ function normalizeTechnicalGroups(values?: ProductTechnicalSpecGroup[]) {
     .filter((group) => group.title && group.items.length > 0);
 }
 
-function getReadinessDefaults(product?: ProductModel): ProductDetailTextPair[] {
-  const category = product?.category ?? "";
-  const powerLabel = product?.powerLabel ?? "";
-  const isAccessory = category === "Aksesuar";
-  const isHighPower =
-    powerLabel.toLocaleLowerCase("tr-TR").includes("dc") || powerLabel.includes("22");
-
-  return [
-    {
-      label: "Kurulum dahil mi?",
-      value: isAccessory
-        ? "Kurulum gerektirmez"
-        : "Cihaz fiyatından ayrı değerlendirilir; keşif sonrası netleşir"
-    },
-    {
-      label: "Keşif gerekiyor mu?",
-      value: isHighPower ? "Önerilir" : "Pano/faz bilgisi net değilse önerilir"
-    },
-    {
-      label: "Uyumlu araçlar",
-      value: isAccessory
-        ? "Type 2 AC soketli araçlar"
-        : "Type 2 AC veya CCS2 desteğine göre seçilir"
-    }
-  ];
+function normalizeTextPairs(values?: ProductDetailTextPair[]) {
+  return (values ?? [])
+    .map((item) => ({
+      label: item.label?.trim() ?? "",
+      value: item.value?.trim() ?? ""
+    }))
+    .filter((item) => item.label && item.value);
 }
 
 function getConnectorLabel(product?: ProductModel) {
@@ -169,6 +151,39 @@ function getConnectorLabel(product?: ProductModel) {
   )?.value;
 
   return variantConnector || specConnector || "Type 2 uyumlu";
+}
+
+function getSummaryCardDefaults(product?: ProductModel): ProductDetailTextPair[] {
+  const category = product?.category ?? "";
+  const powerLabel = product?.powerLabel || "Net güç sınıfı";
+  const connector = getConnectorLabel(product);
+  const primaryUseCase = product?.useCases?.find(Boolean);
+  const isAccessory = category === "Aksesuar";
+  const isHighPower =
+    powerLabel.toLocaleLowerCase("tr-TR").includes("dc") || powerLabel.includes("22");
+
+  return [
+    {
+      label: "Güç",
+      value: powerLabel
+    },
+    {
+      label: "Bağlantı",
+      value: connector
+    },
+    {
+      label: "Kurulum",
+      value: isAccessory
+        ? "Kurulum gerektirmez"
+        : isHighPower
+          ? "Keşif önerilir"
+          : "Pano/faz bilgisiyle netleşir"
+    },
+    {
+      label: "Kullanım",
+      value: primaryUseCase || (isAccessory ? "Type 2 uyumlu araçlar" : "Ev, site ve iş yeri")
+    }
+  ];
 }
 
 function getIntentDefaults(product?: ProductModel) {
@@ -252,12 +267,8 @@ export function getDefaultProductDetailContent(product?: ProductModel): ProductD
       "Garanti, servis ve kurulum desteği",
       "Keşif talebiyle yanlış ürün riskini azaltma"
     ],
-    purchaseReadiness: getReadinessDefaults(product),
-    decisionChecks: [
-      "Araç uyumu, güç ihtiyacı ve kurulum kapsamı ürün seçimi sırasında netleştirilir.",
-      "Keşif talebiyle pano kapasitesi, faz yapısı ve kablo hattı netleştirilebilir.",
-      "Sepet ve checkout akışı kullanıcıyı gereksiz ara adımlarla yormadan ilerler."
-    ],
+    purchaseReadiness: getSummaryCardDefaults(product),
+    decisionChecks: getHighlightDefaults(product),
     support: {
       title: "Uygunluğu birlikte kontrol edelim",
       body:
@@ -328,7 +339,7 @@ export function mergeProductDetailContent(
       ? normalizeTechnicalGroups(input.technicalGroups)
       : base.technicalGroups,
     purchaseReadiness: hasItems(input.purchaseReadiness)
-      ? input.purchaseReadiness
+      ? normalizeTextPairs(input.purchaseReadiness)
       : base.purchaseReadiness,
     decisionChecks: hasItems(input.decisionChecks)
       ? compactList(input.decisionChecks)

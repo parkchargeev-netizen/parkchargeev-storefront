@@ -5,10 +5,11 @@ import { ArticleCard } from "@/components/content/article-card";
 import { ProductCard } from "@/components/shop/product-card";
 import { SolutionCard } from "@/components/solutions/solution-card";
 import { PageHeader } from "@/components/ui/page-header";
-import { products, solutionPages } from "@/lib/mock-data";
+import { solutionPages } from "@/lib/mock-data";
 import { matchesSearchQuery } from "@/lib/search-normalization";
 import { stripHtml } from "@/lib/blog-content";
 import { listPublicBlogArticles } from "@/server/blog/repository";
+import { listPublicProducts } from "@/server/admin/repository";
 
 export const metadata: Metadata = {
   title: "Arama",
@@ -27,10 +28,13 @@ type SearchPageProps = {
 export default async function SearchPage({ searchParams }: SearchPageProps) {
   const { q = "" } = await searchParams;
   const query = q.trim();
-  const publicArticles = await listPublicBlogArticles();
+  const [publicArticles, publicProducts] = await Promise.all([
+    listPublicBlogArticles(),
+    listPublicProducts()
+  ]);
 
   const matchedProducts = query
-    ? products.filter((product) =>
+    ? publicProducts.filter((product) =>
         matchesSearchQuery(
           [
             product.name,

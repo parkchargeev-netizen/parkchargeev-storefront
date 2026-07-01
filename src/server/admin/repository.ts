@@ -757,7 +757,7 @@ async function loadPublicProducts() {
       .orderBy(asc(productAdminSortOrderSql()), desc(products.updatedAt), desc(products.id));
 
     if (rows.length === 0) {
-      return marketingProducts;
+      return [];
     }
 
     const collections = await hydrateProductCollections(rows.map((row) => row.id), {
@@ -881,12 +881,7 @@ async function loadPublicProducts() {
         );
       });
     }
-    const mappedSlugs = new Set(mappedProducts.map((product) => product.slug));
-
-    return [
-      ...campaignAdjustedProducts,
-      ...marketingProducts.filter((product) => !mappedSlugs.has(product.slug))
-    ];
+    return campaignAdjustedProducts;
   } catch {
     console.warn("Public products could not be loaded. Falling back to marketing products.");
     return marketingProducts;
@@ -916,13 +911,8 @@ async function loadPublicProductSlugs() {
       .from(products)
       .where(eq(products.status, "active"))
       .orderBy(desc(products.updatedAt), desc(products.id));
-    const slugs = new Set(rows.map((row) => row.slug));
 
-    for (const slug of fallbackSlugs) {
-      slugs.add(slug);
-    }
-
-    return [...slugs];
+    return rows.map((row) => row.slug);
   } catch {
     console.warn("Public product slugs could not be loaded. Falling back to marketing slugs.");
     return fallbackSlugs;
@@ -954,7 +944,7 @@ async function loadPublicProductBySlug(slug: string) {
       .limit(1);
 
     if (!row) {
-      return fallbackProduct;
+      return undefined;
     }
 
     const collections = await hydrateProductCollections([row.id]);

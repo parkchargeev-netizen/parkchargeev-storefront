@@ -23,7 +23,6 @@ import type {
   ProductSmartFeature,
   ProductTechnicalSpecGroup
 } from "@/lib/product-detail-content";
-import { getProductStoreProfile } from "@/lib/shop-merchandising";
 
 type ProductDetailSectionsProps = {
   product: ProductModel;
@@ -84,38 +83,73 @@ function getTechnicalRows(groups: ProductTechnicalSpecGroup[]) {
   );
 }
 
+function getSummaryIcon(label: string) {
+  const normalizedLabel = label.toLocaleLowerCase("tr-TR");
+
+  if (normalizedLabel.includes("güç") || normalizedLabel.includes("kw")) {
+    return BatteryCharging;
+  }
+
+  if (
+    normalizedLabel.includes("bağlant") ||
+    normalizedLabel.includes("soket") ||
+    normalizedLabel.includes("type")
+  ) {
+    return Zap;
+  }
+
+  if (
+    normalizedLabel.includes("kurulum") ||
+    normalizedLabel.includes("montaj") ||
+    normalizedLabel.includes("keşif")
+  ) {
+    return Home;
+  }
+
+  return CheckCircle2;
+}
+
 export function ProductHighlightGrid({
-  product,
   detailContent
-}: Pick<ProductDetailSectionsProps, "product" | "detailContent">) {
-  const profile = getProductStoreProfile(product);
-  const highlights = [
-    { label: "Güç", value: profile.powerTier, icon: BatteryCharging },
-    { label: "Bağlantı", value: profile.connectorHint, icon: Zap },
-    { label: "Kurulum", value: profile.installationMode, icon: Home },
-    { label: "Kullanım", value: profile.primaryFit, icon: CheckCircle2 }
-  ];
+}: Pick<ProductDetailSectionsProps, "detailContent">) {
+  const highlights = detailContent.purchaseReadiness
+    .map((item, index) => ({
+      label: item.label?.trim() ?? "",
+      value: item.value?.trim() ?? "",
+      description: detailContent.highlights[index] ?? detailContent.decisionChecks[index] ?? "",
+      icon: getSummaryIcon(item.label ?? "")
+    }))
+    .filter((item) => item.label && item.value)
+    .slice(0, 6);
+  const benefitHighlights = detailContent.highlights.slice(0, 4);
+
+  if (highlights.length === 0 && benefitHighlights.length === 0) {
+    return null;
+  }
 
   return (
     <section className="product-detail-section product-detail-section--compact">
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        {highlights.map((item) => {
-          const Icon = item.icon;
+      {highlights.length > 0 ? (
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          {highlights.map((item) => {
+            const Icon = item.icon;
 
-          return (
-            <article key={item.label} className="product-detail-mini-card">
-              <span className="product-detail-mini-card__icon">
-                <Icon className="h-5 w-5" aria-hidden />
-              </span>
-              <p>{item.label}</p>
-              <strong>{item.value}</strong>
-            </article>
-          );
-        })}
-      </div>
-      {detailContent.highlights.length > 0 ? (
+            return (
+              <article key={item.label} className="product-detail-mini-card">
+                <span className="product-detail-mini-card__icon">
+                  <Icon className="h-5 w-5" aria-hidden />
+                </span>
+                <p>{item.label}</p>
+                <strong>{item.value}</strong>
+                {item.description ? <small>{item.description}</small> : null}
+              </article>
+            );
+          })}
+        </div>
+      ) : null}
+      {benefitHighlights.length > 0 ? (
         <div className="mt-5 grid gap-3 md:grid-cols-2">
-          {detailContent.highlights.slice(0, 4).map((highlight) => (
+          {benefitHighlights.map((highlight) => (
             <div key={highlight} className="product-detail-benefit-line">
               <CheckCircle2 className="h-4 w-4 shrink-0 text-primary" aria-hidden />
               <span>{highlight}</span>
@@ -186,8 +220,8 @@ export function ProductSmartFeatures({ features }: { features: ProductSmartFeatu
   return (
     <section className="product-detail-section">
       <div className="product-detail-section-heading">
-        <p>Akıllı özellikler</p>
-        <h2>Bağlantı, erişim ve kontrol özellikleri.</h2>
+        <p>Bağlantı ve kontrol</p>
+        <h2>Üründe aktif olan erişim ve kontrol yetenekleri.</h2>
       </div>
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {features.map((feature) => (
@@ -222,7 +256,7 @@ export function ProductTechnicalSpecs({
     <section id="technical-specs" className="product-detail-section scroll-mt-28">
       <div className="product-detail-section-heading">
         <p>Teknik özellikler</p>
-        <h2>Gruplandırılmış, hızlı taranabilir teknik tablo.</h2>
+        <h2>Sade, hızlı taranabilir teknik tablo.</h2>
       </div>
       <div className="product-detail-spec-list">
         {rows.map((spec) => (
@@ -231,7 +265,6 @@ export function ProductTechnicalSpecs({
             className="product-detail-spec-row"
           >
             <div>
-              <span>{spec.groupName}</span>
               <strong>{spec.label}</strong>
               {spec.description ? <small>{spec.description}</small> : null}
             </div>
