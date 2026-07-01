@@ -1793,8 +1793,8 @@ export function ProductForm({
           </div>
 
           <div>
-            <p className="mb-3 text-sm font-semibold text-slate-800">Vitrin ve kargo etiketleri</p>
-            <ExampleHint>Örnek: Çok Satan ana rozet olarak; Kargo bedava ve Yarın kargoda ürün kartı/detay etiketi olarak görünür.</ExampleHint>
+            <p className="mb-3 text-sm font-semibold text-slate-800">Vitrin etiketleri</p>
+            <ExampleHint>Örnek: Çok Satan, Yeni, Kurumsal veya İndirimli etiketlerini ürün kartı ve detay görünümünde kullanın.</ExampleHint>
             <div className="space-y-2">
               {productTagOptions.map((option) => (
                 <label key={option.value} className="flex items-center gap-3 rounded-lg bg-slate-50 px-4 py-3 text-sm text-slate-700">

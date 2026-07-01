@@ -118,9 +118,7 @@ export const productTagOptions = [
   { value: "best_seller", label: "Çok Satan" },
   { value: "new", label: "Yeni" },
   { value: "corporate", label: "Kurumsal" },
-  { value: "discounted", label: "İndirimli" },
-  { value: "free_shipping", label: "Kargo bedava" },
-  { value: "ships_tomorrow", label: "Yarın kargoda" }
+  { value: "discounted", label: "İndirimli" }
 ] as const;
 
 export const vehicleBrandOptions = [
