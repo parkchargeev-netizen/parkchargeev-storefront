@@ -41,6 +41,16 @@ function splitAnnouncementMessages(value: string) {
     .slice(0, 8);
 }
 
+function normalizeOptionalUrl(value: string) {
+  const trimmed = value.trim();
+
+  if (!trimmed) {
+    return "";
+  }
+
+  return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+}
+
 function parseOptionalLiraToKurus(value: string) {
   const trimmed = value.trim().replace(",", ".");
 
@@ -218,10 +228,10 @@ export function SiteSettingsForm({ settings }: SiteSettingsFormProps) {
       },
       serviceAreas: splitAreas(serviceAreas),
       socials: {
-        instagram,
-        facebook,
-        linkedin,
-        youtube
+        instagram: normalizeOptionalUrl(instagram),
+        facebook: normalizeOptionalUrl(facebook),
+        linkedin: normalizeOptionalUrl(linkedin),
+        youtube: normalizeOptionalUrl(youtube)
       }
     };
 
@@ -442,6 +452,10 @@ export function SiteSettingsForm({ settings }: SiteSettingsFormProps) {
         <section className="rounded-lg border border-slate-200 bg-white p-4">
           <p className="text-xs font-semibold uppercase tracking-normal text-emerald-700">
             Sosyal medya
+          </p>
+          <p className="mt-2 text-xs leading-5 text-slate-500">
+            Footer alanında görünür. Linkleri tam URL olarak veya instagram.com/hesap gibi
+            yazabilirsiniz; kayıtta güvenli URL formatına çevrilir.
           </p>
           <div className="mt-4 grid gap-3 md:grid-cols-2">
             <input

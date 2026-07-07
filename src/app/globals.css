@@ -3643,38 +3643,39 @@ body {
 .corporate-page,
 .corporate-detail-page {
   position: relative;
+  color: var(--color-on-surface);
 }
 
 .corporate-hero {
   display: grid;
-  grid-template-columns: minmax(0, 1.04fr) minmax(22rem, 0.96fr);
-  gap: clamp(1.5rem, 4vw, 3.5rem);
+  grid-template-columns: minmax(0, 1.02fr) minmax(22rem, 0.98fr);
+  gap: clamp(1.25rem, 3.2vw, 2.75rem);
   align-items: center;
   overflow: hidden;
   border: 1px solid rgba(6, 51, 38, 0.1);
-  border-radius: 1.6rem;
+  border-radius: 1.35rem;
   background:
-    radial-gradient(circle at 82% 10%, rgba(126, 236, 201, 0.28), transparent 18rem),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.99), rgba(237, 250, 245, 0.94));
-  padding: clamp(1.5rem, 4vw, 3.25rem);
-  box-shadow: 0 22px 64px rgba(6, 51, 38, 0.08);
+    radial-gradient(circle at 86% 8%, rgba(126, 236, 201, 0.22), transparent 17rem),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.99), rgba(243, 251, 248, 0.96));
+  padding: clamp(1.25rem, 3.2vw, 2.55rem);
+  box-shadow: 0 18px 48px rgba(6, 51, 38, 0.07);
 }
 
 .corporate-hero__copy h1 {
-  margin-top: 0.75rem;
-  max-width: 44rem;
+  margin-top: 0.65rem;
+  max-width: 40rem;
   color: var(--color-on-surface);
-  font-size: clamp(2.15rem, 4vw, 3.72rem);
-  font-weight: 820;
-  line-height: 1.04;
+  font-size: clamp(1.95rem, 3.15vw, 3.08rem);
+  font-weight: 780;
+  line-height: 1.08;
 }
 
 .corporate-hero__copy > p:not(.premium-eyebrow) {
   margin-top: 1rem;
-  max-width: 38rem;
+  max-width: 36rem;
   color: var(--color-on-surface-variant);
-  font-size: 1rem;
-  line-height: 1.7;
+  font-size: 0.96rem;
+  line-height: 1.68;
 }
 
 .corporate-hero__actions {
@@ -3691,11 +3692,11 @@ body {
 
 .corporate-panel-card {
   border: 1px solid rgba(126, 236, 201, 0.22);
-  border-radius: 1.25rem;
+  border-radius: 1.05rem;
   background:
     radial-gradient(circle at 88% 0%, rgba(126, 236, 201, 0.26), transparent 13rem),
     linear-gradient(135deg, rgba(6, 51, 38, 0.98), rgba(6, 26, 21, 0.96));
-  padding: 1.1rem;
+  padding: 1rem;
   color: #ffffff;
   box-shadow: 0 18px 44px rgba(6, 51, 38, 0.18);
 }
@@ -3712,9 +3713,9 @@ body {
 .corporate-panel-card strong {
   display: block;
   margin-top: 0.45rem;
-  font-size: 1.25rem;
-  font-weight: 820;
-  line-height: 1.25;
+  font-size: 1.08rem;
+  font-weight: 760;
+  line-height: 1.3;
 }
 
 .corporate-panel-card p {
@@ -3735,10 +3736,10 @@ body {
   gap: 0.85rem;
   align-items: start;
   border: 1px solid rgba(6, 51, 38, 0.09);
-  border-radius: 1.1rem;
+  border-radius: 0.95rem;
   background: rgba(255, 255, 255, 0.78);
-  padding: 1rem;
-  box-shadow: 0 12px 30px rgba(6, 51, 38, 0.055);
+  padding: 0.9rem;
+  box-shadow: 0 10px 24px rgba(6, 51, 38, 0.05);
 }
 
 .corporate-benefit > span {
@@ -3754,8 +3755,8 @@ body {
 
 .corporate-benefit h2 {
   color: var(--color-on-surface);
-  font-size: 0.92rem;
-  font-weight: 780;
+  font-size: 0.9rem;
+  font-weight: 720;
 }
 
 .corporate-benefit p {
@@ -3774,17 +3775,17 @@ body {
 
 .corporate-metric-card {
   border: 1px solid rgba(6, 51, 38, 0.09);
-  border-radius: 1rem;
+  border-radius: 0.95rem;
   background: rgba(255, 255, 255, 0.86);
-  padding: 1rem;
-  box-shadow: 0 14px 36px rgba(6, 51, 38, 0.055);
+  padding: 0.95rem;
+  box-shadow: 0 10px 28px rgba(6, 51, 38, 0.05);
 }
 
 .corporate-metric-card strong {
   display: block;
   color: var(--color-primary);
-  font-size: clamp(1.35rem, 2vw, 2rem);
-  font-weight: 820;
+  font-size: clamp(1.22rem, 1.72vw, 1.7rem);
+  font-weight: 760;
   line-height: 1;
 }
 
@@ -3798,7 +3799,7 @@ body {
 }
 
 .corporate-section {
-  margin-top: 3.5rem;
+  margin-top: 3rem;
 }
 
 .corporate-section__heading {
@@ -3813,9 +3814,9 @@ body {
 .corporate-lead-section__copy h2 {
   margin-top: 0.65rem;
   color: var(--color-on-surface);
-  font-size: clamp(1.7rem, 3vw, 2.65rem);
-  font-weight: 820;
-  line-height: 1.08;
+  font-size: clamp(1.5rem, 2.35vw, 2.15rem);
+  font-weight: 760;
+  line-height: 1.14;
 }
 
 .corporate-section__heading > p {
@@ -3835,13 +3836,13 @@ body {
 .corporate-process {
   display: grid;
   grid-template-columns: minmax(15rem, 0.72fr) minmax(0, 1.28fr);
-  gap: clamp(1.5rem, 4vw, 3rem);
-  margin-top: 3.5rem;
-  border-radius: 1.5rem;
+  gap: clamp(1.25rem, 3vw, 2.3rem);
+  margin-top: 3rem;
+  border-radius: 1.25rem;
   background:
     radial-gradient(circle at 88% 12%, rgba(126, 236, 201, 0.2), transparent 18rem),
     #061a15;
-  padding: clamp(1.4rem, 3vw, 2.4rem);
+  padding: clamp(1.25rem, 2.6vw, 2.05rem);
   color: white;
 }
 
@@ -3914,13 +3915,13 @@ body {
 .corporate-lead-section {
   display: grid;
   grid-template-columns: minmax(16rem, 0.68fr) minmax(0, 1.32fr);
-  gap: clamp(1.5rem, 4vw, 3rem);
+  gap: clamp(1.25rem, 3vw, 2.35rem);
   align-items: start;
-  margin-top: 3.5rem;
+  margin-top: 3rem;
   border: 1px solid rgba(6, 51, 38, 0.1);
-  border-radius: 1.5rem;
+  border-radius: 1.25rem;
   background: rgba(248, 253, 250, 0.86);
-  padding: clamp(1.25rem, 3vw, 2.2rem);
+  padding: clamp(1.15rem, 2.7vw, 1.95rem);
 }
 
 .corporate-lead-section__copy > p:not(.premium-eyebrow) {
@@ -6489,12 +6490,12 @@ body {
   }
 
   .corporate-hero__copy h1 {
-    font-size: 2rem;
-    line-height: 1.06;
+    font-size: 1.72rem;
+    line-height: 1.12;
   }
 
   .corporate-hero__copy > p:not(.premium-eyebrow) {
-    font-size: 0.88rem;
+    font-size: 0.86rem;
     line-height: 1.6;
   }
 
@@ -6533,7 +6534,8 @@ body {
   .corporate-section__heading h2,
   .corporate-process h2,
   .corporate-lead-section__copy h2 {
-    font-size: 1.65rem;
+    font-size: 1.42rem;
+    line-height: 1.18;
   }
 
   .corporate-process li {

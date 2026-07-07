@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Headphones, MapPin, Phone } from "lucide-react";
+import { ArrowRight, ExternalLink, Headphones, MapPin, Phone } from "lucide-react";
 
 import { BrandLogo } from "@/components/layout/brand-logo";
 import type { PublicSiteNavigation } from "@/features/navigation/domain/public-navigation";
@@ -13,6 +13,16 @@ type SiteFooterProps = {
   settings?: PublicSiteSettings;
 };
 
+function normalizeExternalHref(value?: string) {
+  const trimmed = value?.trim();
+
+  if (!trimmed) {
+    return "";
+  }
+
+  return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+}
+
 export function SiteFooter({
   navigation = {
     footer: siteConfig.footerNavigation,
@@ -21,6 +31,12 @@ export function SiteFooter({
   settings
 }: SiteFooterProps) {
   const publicSettings = settings ?? getFallbackSiteSettings();
+  const socialLinks = [
+    { key: "instagram", label: "Instagram", href: normalizeExternalHref(publicSettings.socials.instagram) },
+    { key: "facebook", label: "Facebook", href: normalizeExternalHref(publicSettings.socials.facebook) },
+    { key: "linkedin", label: "LinkedIn", href: normalizeExternalHref(publicSettings.socials.linkedin) },
+    { key: "youtube", label: "YouTube", href: normalizeExternalHref(publicSettings.socials.youtube) }
+  ].filter((item) => item.href);
 
   return (
     <footer className="site-footer border-t border-outline-variant/40 bg-white" data-motion-scope>
@@ -81,6 +97,29 @@ export function SiteFooter({
                 </span>
               </p>
             </div>
+
+            {socialLinks.length > 0 ? (
+              <div className="mt-6">
+                <p className="text-xs font-semibold uppercase tracking-normal text-primary">
+                  Sosyal medya
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {socialLinks.map((item) => (
+                    <a
+                      key={item.key}
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${publicSettings.brandName} ${item.label} hesabını aç`}
+                      className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-900 transition hover:-translate-y-0.5 hover:border-emerald-300 hover:bg-white hover:text-primary hover:shadow-sm"
+                    >
+                      {item.label}
+                      <ExternalLink className="h-3.5 w-3.5" aria-hidden />
+                    </a>
+                  ))}
+                </div>
+              </div>
+            ) : null}
           </div>
 
           <div>
