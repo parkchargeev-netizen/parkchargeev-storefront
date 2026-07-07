@@ -30,13 +30,14 @@ export function CorporateSolutionsView({
     <main className="corporate-page mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <section className="corporate-hero">
         <div className="corporate-hero__copy">
-          <p className="premium-eyebrow">Kurumsal şarj altyapısı</p>
-          <h1>Lokasyonunuzu ölçeklenebilir bir şarj operasyonuna dönüştürün.</h1>
+          <p className="premium-eyebrow">Site & işletme şarj altyapısı</p>
+          <h1>Lokasyonunuzu güvenilir, ölçülebilir ve büyüyebilir bir şarj operasyonuna dönüştürün.</h1>
           <p>
-            Site, ofis, otel, filo ve ticari otopark projelerinde cihazdan önce
-            kapasiteyi, işletim modelini ve büyüme planını tasarlayın.
+            Apartman, site, ofis, otel, filo ve ticari otopark projelerinde cihaz seçiminden önce
+            kapasiteyi, kullanıcı yönetimini, servis modelini ve yatırım geri dönüşünü birlikte
+            planlıyoruz.
           </p>
-          <div className="flex flex-col gap-3 sm:flex-row">
+          <div className="corporate-hero__actions">
             <a href="#kurumsal-teklif" className="premium-btn premium-btn--primary">
               Projeyi değerlendirin
               <ArrowRight className="h-4 w-4" aria-hidden />
@@ -47,36 +48,37 @@ export function CorporateSolutionsView({
           </div>
         </div>
 
-        <div className="corporate-benefits" aria-label="Kurumsal proje yetkinlikleri">
-          {benefits.map((item) => {
-            const Icon = benefitIcons[item.icon] ?? ShieldCheck;
+        <div className="corporate-hero__panel" aria-label="Kurumsal proje yetkinlikleri">
+          <div className="corporate-panel-card corporate-panel-card--featured">
+            <span>Planlama standardı</span>
+            <strong>Keşif + kapasite + cihaz + servis</strong>
+            <p>Teklif öncesinde saha gereksinimleri ve işletim modeli aynı çerçevede netleşir.</p>
+          </div>
+          <div className="corporate-benefits">
+            {benefits.map((item) => {
+              const Icon = benefitIcons[item.icon] ?? ShieldCheck;
 
-            return (
-              <article key={item.title} className="corporate-benefit">
-                <span>
-                  <Icon className="h-5 w-5" aria-hidden />
-                </span>
-                <div>
-                  <h2>{item.title}</h2>
-                  <p>{item.body}</p>
-                </div>
-              </article>
-            );
-          })}
+              return (
+                <article key={item.title} className="corporate-benefit">
+                  <span>
+                    <Icon className="h-5 w-5" aria-hidden />
+                  </span>
+                  <div>
+                    <h2>{item.title}</h2>
+                    <p>{item.body}</p>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
         </div>
       </section>
 
-      <section
-        className="mt-6 grid overflow-hidden rounded-lg border border-outline-variant/35 bg-white shadow-[0_18px_55px_rgba(6,51,38,0.08)] sm:grid-cols-2 lg:grid-cols-4"
-        aria-label="Kurumsal çözüm standartları"
-      >
+      <section className="corporate-metrics" aria-label="Kurumsal çözüm standartları">
         {metrics.map((metric) => (
-          <div
-            key={metric.label}
-            className="border-b border-outline-variant/30 p-5 last:border-b-0 sm:border-r sm:odd:border-r sm:[&:nth-child(n+3)]:border-b-0 lg:border-b-0"
-          >
-            <strong className="block text-2xl font-bold text-primary">{metric.value}</strong>
-            <span className="mt-1 block text-sm text-on-surface-variant">{metric.label}</span>
+          <div key={metric.label} className="corporate-metric-card">
+            <strong>{metric.value}</strong>
+            <span>{metric.label}</span>
           </div>
         ))}
       </section>
@@ -84,12 +86,12 @@ export function CorporateSolutionsView({
       <section className="corporate-section">
         <div className="corporate-section__heading">
           <div>
-            <p className="premium-eyebrow">Sektörel çözümler</p>
-            <h2>İşletim modelinize uygun proje yolunu seçin.</h2>
+            <p className="premium-eyebrow">Çözüm alanları</p>
+            <h2>İşletim modelinize uygun şarj altyapısını seçin.</h2>
           </div>
           <p>
-            Her senaryo kapasite, kullanıcı yönetimi, raporlama ve servis
-            gereksinimleriyle ayrı ele alınır.
+            Her senaryo; kapasite, kullanıcı yönetimi, raporlama, ödeme akışı ve servis
+            gereksinimleriyle ayrı değerlendirilir.
           </p>
         </div>
 
@@ -103,14 +105,14 @@ export function CorporateSolutionsView({
       <section className="corporate-process">
         <div>
           <p className="premium-eyebrow text-emerald-300">Proje yaşam döngüsü</p>
-          <h2>Karardan operasyona dört kontrollü aşama.</h2>
+          <h2>Karardan devreye almaya kadar dört kontrollü aşama.</h2>
           <p>
-            Teknik belirsizliği azaltan, sorumlulukları görünür tutan ve büyümeyi
-            baştan hesaba katan çalışma modeli.
+            Teknik belirsizliği azaltan, sorumlulukları görünür tutan ve büyümeyi baştan hesaba
+            katan bir çalışma modeli.
           </p>
-          <div className="mt-6 grid gap-2">
+          <div className="corporate-standard-list">
             {standards.map((standard) => (
-              <span key={standard} className="flex items-center gap-2 text-sm text-white/78">
+              <span key={standard}>
                 <CheckCircle2 className="h-4 w-4 text-emerald-300" aria-hidden />
                 {standard}
               </span>
@@ -123,7 +125,7 @@ export function CorporateSolutionsView({
             <li key={item.title}>
               <span>{index + 1}</span>
               <div>
-                <strong className="text-sm font-bold text-white">{item.title}</strong>
+                <strong>{item.title}</strong>
                 <p>{item.body}</p>
               </div>
               <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-300" aria-hidden />
@@ -137,8 +139,8 @@ export function CorporateSolutionsView({
           <p className="premium-eyebrow">Proje değerlendirmesi</p>
           <h2>İlk teknik çerçeve için temel bilgiler yeterli.</h2>
           <p>
-            Lokasyon, araç sayısı ve kullanım modelini paylaşın. Ekibimiz uygun
-            mimari, cihaz ve devreye alma planıyla dönüş yapsın.
+            Lokasyon, araç sayısı ve kullanım modelini paylaşın. Ekibimiz uygun mimari, cihaz ve
+            devreye alma planıyla dönüş yapsın.
           </p>
           <ul>
             <li>Kapasite ve güç sınıfı önerisi</li>

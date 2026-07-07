@@ -2,17 +2,17 @@ export const corporateBenefits = [
   {
     icon: "gauge",
     title: "Kapasite mühendisliği",
-    body: "Mevcut güç, eş zamanlı kullanım ve büyüme senaryosu birlikte modellenir."
+    body: "Mevcut güç, eş zamanlı kullanım ve büyüme senaryosu aynı teknik model içinde değerlendirilir."
   },
   {
     icon: "clipboard",
     title: "Şeffaf proje kapsamı",
-    body: "Cihaz, altyapı, kurulum, devreye alma ve servis kalemleri ayrıştırılır."
+    body: "Cihaz, altyapı, kurulum, devreye alma ve servis kalemleri net sorumluluklarla ayrıştırılır."
   },
   {
     icon: "wrench",
-    title: "Teknik yaşam döngüsü",
-    body: "Keşiften bakıma kadar sorumluluklar ve teslim kriterleri görünür kalır."
+    title: "Operasyon desteği",
+    body: "Keşiften bakıma kadar izlenebilir süreç, teslim kriterleri ve destek planı görünür kalır."
   }
 ] as const;
 
@@ -26,19 +26,19 @@ export const corporateMetrics = [
 export const corporateProjectSteps = [
   {
     title: "İhtiyaç analizi",
-    body: "Lokasyon, kullanıcı profili, araç sayısı ve işletim hedefi belirlenir."
+    body: "Lokasyon, kullanıcı profili, araç sayısı ve işletim hedefi birlikte netleştirilir."
   },
   {
     title: "Teknik keşif",
-    body: "Pano, trafo, hat, park düzeni ve haberleşme koşulları doğrulanır."
+    body: "Pano, trafo, hat, park düzeni ve haberleşme koşulları yerinde doğrulanır."
   },
   {
     title: "Çözüm tasarımı",
-    body: "Cihaz, yük yönetimi, yetkilendirme ve servis modeli birlikte tekliflenir."
+    body: "Cihaz, yük yönetimi, yetkilendirme ve servis modeli tek proje planında tekliflenir."
   },
   {
     title: "Devreye alma",
-    body: "Kurulum, test, eğitim ve sürdürülebilir destek planı tamamlanır."
+    body: "Kurulum, test, kullanıcı bilgilendirmesi ve sürdürülebilir destek planı tamamlanır."
   }
 ] as const;
 

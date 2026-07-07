@@ -4,6 +4,7 @@ import {
   corporateProjectSteps,
   corporateStandards
 } from "@/features/corporate/domain/corporate-content";
+import { withCleanCorporateSolutionCopy } from "@/features/corporate/domain/corporate-solution-copy";
 import { solutionPages } from "@/lib/mock-data";
 
 export function getCorporateSolutionsPageData() {
@@ -12,7 +13,7 @@ export function getCorporateSolutionsPageData() {
     metrics: corporateMetrics,
     projectSteps: corporateProjectSteps,
     standards: corporateStandards,
-    solutions: solutionPages
+    solutions: solutionPages.map(withCleanCorporateSolutionCopy)
   };
 }
 

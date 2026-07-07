@@ -14,9 +14,7 @@ export function SolutionCard({ solution }: SolutionCardProps) {
 
       <div className="relative z-10">
         <div className="min-w-0">
-          <p className="text-xs font-bold uppercase text-secondary">
-            {solution.segment}
-          </p>
+          <p className="text-xs font-bold uppercase text-secondary">{solution.segment}</p>
 
           <h3 className="mt-3 text-xl font-extrabold leading-tight text-on-surface md:text-2xl">
             {solution.title}
@@ -24,9 +22,7 @@ export function SolutionCard({ solution }: SolutionCardProps) {
         </div>
 
         <div className="mt-4 rounded-lg bg-[#EEF5F1] px-4 py-3">
-          <p className="text-xs leading-5 text-on-surface-variant">
-            {solution.heroLabel}
-          </p>
+          <p className="text-xs leading-5 text-on-surface-variant">{solution.heroLabel}</p>
 
           <p className="mt-1 text-lg font-extrabold leading-tight text-primary">
             {solution.heroMetric}
@@ -53,7 +49,7 @@ export function SolutionCard({ solution }: SolutionCardProps) {
         href={`/kurumsal-cozumler/${solution.slug}`}
         className="relative z-10 mt-5 inline-flex w-fit items-center gap-2 text-sm font-bold text-primary transition-all duration-300 group-hover:gap-3"
       >
-        Çözümü İncele
+        Çözümü incele
         <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
       </Link>
     </article>

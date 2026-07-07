@@ -67,11 +67,6 @@ export const adminNavigation: Array<{
     roles: ["superadmin", "admin", "product_manager", "order_manager", "readonly"]
   },
   {
-    href: "/admin/kampanyalar",
-    label: "Kampanyalar",
-    roles: ["superadmin", "admin", "product_manager", "readonly"]
-  },
-  {
     href: "/admin/yorumlar",
     label: "Yorumlar",
     roles: ["superadmin", "admin", "product_manager", "readonly"]

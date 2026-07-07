@@ -412,7 +412,29 @@ export const adminSiteSettingsSchema = z.object({
     .object({
       freeShippingThresholdKurus: z.coerce.number().int().min(0).optional(),
       defaultShippingKurus: z.coerce.number().int().min(0).optional(),
-      carrierName: z.string().trim().max(120).optional().or(z.literal(""))
+      carrierName: z.string().trim().max(120).optional().or(z.literal("")),
+      announcement: z
+        .object({
+          isActive: z.boolean().optional().default(false),
+          messages: z
+            .array(z.string().trim().min(1).max(180))
+            .max(8)
+            .optional()
+            .default([]),
+          href: z
+            .string()
+            .trim()
+            .max(500)
+            .refine(
+              (value) => value === "" || value.startsWith("/") || value.startsWith("https://"),
+              "Duyuru linki / veya https:// ile başlamalıdır."
+            )
+            .optional()
+            .or(z.literal("")),
+          tone: z.enum(["emerald", "amber", "slate"]).optional().default("emerald")
+        })
+        .optional()
+        .default({})
     })
     .optional()
     .default({}),
@@ -440,45 +462,6 @@ export const adminSiteSettingsSchema = z.object({
       youtube: optionalAdminUrlSchema
     })
     .default({})
-});
-
-export const adminBannerSchema = z.object({
-  id: z.string().uuid().optional(),
-  placement: z.string().trim().min(2).max(80).default("home"),
-  title: z.string().trim().min(3).max(180),
-  subtitle: z.string().trim().max(1200).optional().or(z.literal("")),
-  imageUrl: publicOrRemoteUrlSchema.optional().or(z.literal("")),
-  ctaLabel: z.string().trim().max(80).optional().or(z.literal("")),
-  ctaHref: publicOrRemoteUrlSchema.optional().or(z.literal("")),
-  status: z.enum(["draft", "active", "archived"]).default("draft"),
-  sortOrder: z.coerce.number().int().min(0).default(0),
-  startsAt: z.string().nullable().optional(),
-  endsAt: z.string().nullable().optional()
-});
-
-export const adminCampaignSchema = z.object({
-  id: z.string().uuid().optional(),
-  name: z.string().trim().min(3).max(180),
-  slug: z.string().trim().max(220).optional().or(z.literal("")),
-  description: z.string().trim().max(2000).optional().or(z.literal("")),
-  status: z.enum(["draft", "active", "archived"]).default("draft"),
-  discountType: z.enum(["percent", "amount"]).default("percent"),
-  discountValue: z.coerce.number().int().min(0),
-  startsAt: z.string().nullable().optional(),
-  endsAt: z.string().nullable().optional(),
-  productIds: z.array(z.string().uuid()).default([]),
-  categoryIds: z.array(z.string().uuid()).default([])
-});
-
-export const adminMerchandisingSlotSchema = z.object({
-  id: z.string().uuid().optional(),
-  slotKey: z.string().trim().min(2).max(80).default("home_featured"),
-  title: z.string().trim().max(180).optional().or(z.literal("")),
-  productId: z.string().uuid().nullable().optional().or(z.literal("")),
-  sortOrder: z.coerce.number().int().min(0).default(0),
-  isActive: z.boolean().default(true),
-  startsAt: z.string().nullable().optional(),
-  endsAt: z.string().nullable().optional()
 });
 
 export const adminNotificationPatchSchema = z.object({

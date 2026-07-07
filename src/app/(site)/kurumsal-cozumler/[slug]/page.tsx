@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { ArticleCard } from "@/components/content/article-card";
 import { LeadForm } from "@/components/forms/lead-form";
 import { JsonLd } from "@/components/seo/json-ld";
+import { withCleanCorporateSolutionCopy } from "@/features/corporate/domain/corporate-solution-copy";
 import {
   getArticlesForSolution,
   getSolutionBySlug,
@@ -28,11 +29,13 @@ export async function generateMetadata({
   params
 }: SolutionPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const solution = getSolutionBySlug(slug);
+  const rawSolution = getSolutionBySlug(slug);
 
-  if (!solution) {
+  if (!rawSolution) {
     return { title: "Çözüm bulunamadı" };
   }
+
+  const solution = withCleanCorporateSolutionCopy(rawSolution);
 
   return {
     title: solution.title,
@@ -47,12 +50,13 @@ export default async function SolutionDetailPage({
   params
 }: SolutionPageProps) {
   const { slug } = await params;
-  const solution = getSolutionBySlug(slug);
+  const rawSolution = getSolutionBySlug(slug);
 
-  if (!solution) {
+  if (!rawSolution) {
     notFound();
   }
 
+  const solution = withCleanCorporateSolutionCopy(rawSolution);
   const relatedArticles = getArticlesForSolution(solution.slug);
   const breadcrumbJsonLd = getBreadcrumbJsonLd([
     { name: "Ana Sayfa", path: "/" },
@@ -85,9 +89,7 @@ export default async function SolutionDetailPage({
 
       <section className="grid gap-6 lg:grid-cols-[1fr_300px] lg:items-start">
         <div>
-          <p className="text-xs font-semibold uppercase text-primary">
-            {solution.segment}
-          </p>
+          <p className="text-xs font-semibold uppercase text-primary">{solution.segment}</p>
           <h1 className="mt-3 max-w-4xl text-3xl font-bold leading-tight text-on-surface md:text-5xl">
             {solution.title}
           </h1>
@@ -97,12 +99,8 @@ export default async function SolutionDetailPage({
         </div>
 
         <aside className="surface-card h-fit p-5">
-          <p className="text-xs font-semibold uppercase text-secondary">
-            Ana metrik
-          </p>
-          <p className="mt-3 text-3xl font-bold text-primary">
-            {solution.heroMetric}
-          </p>
+          <p className="text-xs font-semibold uppercase text-secondary">Ana metrik</p>
+          <p className="mt-3 text-3xl font-bold text-primary">{solution.heroMetric}</p>
           <p className="mt-2 text-sm leading-6 text-on-surface-variant">
             {solution.heroLabel}
           </p>
@@ -110,19 +108,20 @@ export default async function SolutionDetailPage({
             href="/iletisim"
             className="mt-5 inline-flex min-h-11 items-center rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-white"
           >
-            Projeyi Değerlendir
+            Projeyi değerlendir
           </Link>
         </aside>
       </section>
 
       <section className="mt-9 grid gap-5 lg:grid-cols-2">
         <div className="surface-card p-5">
-          <h2 className="text-2xl font-bold text-on-surface">
-            Çözüm kapsamı
-          </h2>
+          <h2 className="text-2xl font-bold text-on-surface">Çözüm kapsamı</h2>
           <div className="mt-4 grid gap-3">
             {solution.features.map((feature) => (
-              <div key={feature} className="rounded-lg bg-surface-container-low px-4 py-3 text-sm leading-6 text-on-surface-variant">
+              <div
+                key={feature}
+                className="rounded-lg bg-surface-container-low px-4 py-3 text-sm leading-6 text-on-surface-variant"
+              >
                 {feature}
               </div>
             ))}
@@ -130,12 +129,13 @@ export default async function SolutionDetailPage({
         </div>
 
         <div className="surface-card p-5">
-          <h2 className="text-2xl font-bold text-on-surface">
-            Beklenen çıktılar
-          </h2>
+          <h2 className="text-2xl font-bold text-on-surface">Beklenen çıktılar</h2>
           <div className="mt-4 grid gap-3">
             {solution.outcomes.map((outcome) => (
-              <div key={outcome} className="rounded-lg bg-surface-container-low px-4 py-3 text-sm leading-6 text-on-surface-variant">
+              <div
+                key={outcome}
+                className="rounded-lg bg-surface-container-low px-4 py-3 text-sm leading-6 text-on-surface-variant"
+              >
                 {outcome}
               </div>
             ))}
@@ -144,9 +144,7 @@ export default async function SolutionDetailPage({
       </section>
 
       <section className="mt-9 overflow-hidden rounded-lg bg-linear-to-br from-primary to-primary-container p-5 text-white shadow-[0_20px_60px_rgba(6,51,38,0.2)] sm:p-7">
-        <p className="text-xs font-semibold uppercase text-white/82">
-          Kullanım senaryoları
-        </p>
+        <p className="text-xs font-semibold uppercase text-white/82">Kullanım senaryoları</p>
         <div className="mt-4 grid gap-3 md:grid-cols-3">
           {solution.useCases.map((item) => (
             <div key={item} className="rounded-lg bg-white/[0.12] p-4">
@@ -158,16 +156,12 @@ export default async function SolutionDetailPage({
 
       <section className="mt-9 grid gap-5 lg:grid-cols-[1fr_0.9fr] lg:items-start">
         <div className="surface-card p-5">
-          <h2 className="text-2xl font-bold text-on-surface">
-            Sık sorulan sorular
-          </h2>
+          <h2 className="text-2xl font-bold text-on-surface">Sık sorulan sorular</h2>
           <div className="mt-4 grid gap-3">
             {solution.faq.map((item) => (
               <article key={item.question} className="rounded-lg bg-surface-container-low p-4">
                 <h3 className="text-base font-semibold text-on-surface">{item.question}</h3>
-                <p className="mt-2 text-sm leading-6 text-on-surface-variant">
-                  {item.answer}
-                </p>
+                <p className="mt-2 text-sm leading-6 text-on-surface-variant">{item.answer}</p>
               </article>
             ))}
           </div>
@@ -185,9 +179,7 @@ export default async function SolutionDetailPage({
         <section className="mt-10">
           <div className="flex items-end justify-between gap-4">
             <div>
-              <p className="text-xs font-semibold uppercase text-secondary">
-                İçerik kümeleri
-              </p>
+              <p className="text-xs font-semibold uppercase text-secondary">İçerik kümeleri</p>
               <h2 className="mt-3 text-2xl font-bold text-on-surface md:text-3xl">
                 Bu çözüme bağlı rehber içerikler
               </h2>

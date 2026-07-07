@@ -16,7 +16,6 @@ import {
   Search,
   ShieldCheck,
   ShoppingCart,
-  Sparkles,
   UserCog
 } from "lucide-react";
 
@@ -52,7 +51,6 @@ const navigationIconMap = {
   "/admin/blog": BookOpen,
   "/admin/katalog": ListTree,
   "/admin/envanter": Boxes,
-  "/admin/kampanyalar": Sparkles,
   "/admin/yorumlar": MessageSquare,
   "/admin/bildirimler": Activity,
   "/admin/paytr": CreditCard,
@@ -71,7 +69,6 @@ const navigationDetailMap: Record<string, string> = {
   "/admin/blog": "Blog, rehber ve içerik operasyonu",
   "/admin/katalog": "Kategori ve marka sözlükleri",
   "/admin/envanter": "Stok hareketleri ve kritik stok uyarıları",
-  "/admin/kampanyalar": "Banner, kampanya ve vitrin yönetimi",
   "/admin/yorumlar": "Ürün yorum onayı ve moderasyonu",
   "/admin/bildirimler": "Okunmamış operasyon bildirimleri",
   "/admin/paytr": "Ödeme hareketleri ve callback kayıtları",
@@ -87,7 +84,7 @@ const moduleGroups = [
   },
   {
     label: "Ticaret",
-    items: ["/admin/urunler", "/admin/katalog", "/admin/envanter", "/admin/kampanyalar", "/admin/yorumlar", "/admin/paytr"],
+    items: ["/admin/urunler", "/admin/katalog", "/admin/envanter", "/admin/yorumlar", "/admin/paytr"],
     icon: Boxes
   },
   {
@@ -255,11 +252,10 @@ export function AdminShell({ admin, databaseEnabled = true, children }: AdminShe
 
           <div className="admin-control-quick">
             <p>
-              <Sparkles className="h-4 w-4" aria-hidden />
+              <Package className="h-4 w-4" aria-hidden />
               Hızlı işlemler
             </p>
             <AdminPrefetchLink href="/admin/urunler/yeni">Yeni ürün oluştur</AdminPrefetchLink>
-            <AdminPrefetchLink href="/admin/kampanyalar">Kampanya ve vitrin</AdminPrefetchLink>
             <AdminPrefetchLink href="/admin/site">Site ayarlarını yönet</AdminPrefetchLink>
             <AdminLogoutButton />
           </div>

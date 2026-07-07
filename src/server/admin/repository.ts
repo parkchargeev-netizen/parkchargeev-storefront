@@ -9,7 +9,6 @@ import {
   inArray,
   isNull,
   lt,
-  lte,
   or,
   sql
 } from "drizzle-orm";
@@ -66,9 +65,7 @@ import {
   blogPosts,
   brands,
   cartItems,
-  campaignCategories,
   campaignProducts,
-  campaigns,
   categories,
   customers,
   inventoryMovements,
@@ -695,54 +692,6 @@ function mapAdminProductToPublicProduct(
   };
 }
 
-type ActiveCampaignRow = typeof campaigns.$inferSelect;
-
-function applyCampaignPrice(priceKurus: number, campaign: ActiveCampaignRow) {
-  if (priceKurus <= 0) {
-    return priceKurus;
-  }
-
-  if (campaign.discountType === "percent") {
-    const percent = Math.min(Math.max(campaign.discountValue, 0), 100);
-    return Math.max(0, Math.round(priceKurus * ((100 - percent) / 100)));
-  }
-
-  return Math.max(0, priceKurus - Math.max(campaign.discountValue, 0));
-}
-
-function applyBestCampaignPrice(priceKurus: number, activeCampaigns: ActiveCampaignRow[]) {
-  return activeCampaigns.reduce(
-    (bestPrice, campaign) => Math.min(bestPrice, applyCampaignPrice(priceKurus, campaign)),
-    priceKurus
-  );
-}
-
-function applyCampaignsToProduct(product: ProductModel, activeCampaigns: ActiveCampaignRow[]) {
-  if (activeCampaigns.length === 0) {
-    return product;
-  }
-
-  const productPriceKurus = applyBestCampaignPrice(product.priceKurus, activeCampaigns);
-  const variants = product.variants?.map((variant) => {
-    const variantPriceKurus = applyBestCampaignPrice(variant.priceKurus, activeCampaigns);
-
-    return {
-      ...variant,
-      priceKurus: variantPriceKurus,
-      compareAtKurus:
-        variantPriceKurus < variant.priceKurus ? variant.priceKurus : variant.compareAtKurus
-    };
-  });
-
-  return {
-    ...product,
-    priceKurus: productPriceKurus,
-    compareAtKurus:
-      productPriceKurus < product.priceKurus ? product.priceKurus : product.compareAtKurus,
-    variants
-  };
-}
-
 async function loadPublicProducts() {
   if (!hasDatabaseConfig()) {
     return marketingProducts;
@@ -763,125 +712,7 @@ async function loadPublicProducts() {
     const collections = await hydrateProductCollections(rows.map((row) => row.id), {
       includeSpecs: false
     });
-    const mappedProducts = rows.map((row) => mapAdminProductToPublicProduct(row, collections));
-    const productIdBySlug = new Map(rows.map((row) => [row.slug, row.id]));
-    const now = new Date();
-    const activeCampaignRows = await db
-      .select()
-      .from(campaigns)
-      .where(
-        and(
-          eq(campaigns.status, "active"),
-          isNull(campaigns.deletedAt),
-          or(isNull(campaigns.startsAt), lte(campaigns.startsAt, now)),
-          or(isNull(campaigns.endsAt), gte(campaigns.endsAt, now))
-        )
-      );
-    let campaignAdjustedProducts = mappedProducts;
-
-    if (activeCampaignRows.length > 0) {
-      const activeCampaignIds = activeCampaignRows.map((campaign) => campaign.id);
-      const [productCampaignLinks, categoryCampaignLinks, productCategoryLinks] =
-        await Promise.all([
-          db
-            .select({
-              campaignId: campaignProducts.campaignId,
-              productId: campaignProducts.productId
-            })
-            .from(campaignProducts)
-            .where(inArray(campaignProducts.campaignId, activeCampaignIds)),
-          db
-            .select({
-              campaignId: campaignCategories.campaignId,
-              categoryId: campaignCategories.categoryId
-            })
-            .from(campaignCategories)
-            .where(inArray(campaignCategories.campaignId, activeCampaignIds)),
-          db
-            .select({
-              productId: productCategoryAssignments.productId,
-              categoryId: productCategoryAssignments.categoryId
-            })
-            .from(productCategoryAssignments)
-            .where(
-              inArray(
-                productCategoryAssignments.productId,
-                rows.map((row) => row.id)
-              )
-            )
-        ]);
-      const scopedCampaignIds = new Set([
-        ...productCampaignLinks.map((link) => link.campaignId),
-        ...categoryCampaignLinks.map((link) => link.campaignId)
-      ]);
-      const campaignById = new Map(
-        activeCampaignRows.map((campaign) => [campaign.id, campaign])
-      );
-      const sitewideCampaigns = activeCampaignRows.filter(
-        (campaign) => !scopedCampaignIds.has(campaign.id)
-      );
-      const campaignsByProductId = new Map<string, ActiveCampaignRow[]>();
-      const campaignsByCategoryId = new Map<string, ActiveCampaignRow[]>();
-      const categoryIdsByProductId = new Map<string, string[]>();
-
-      for (const link of productCampaignLinks) {
-        const campaign = campaignById.get(link.campaignId);
-
-        if (!campaign) {
-          continue;
-        }
-
-        campaignsByProductId.set(link.productId, [
-          ...(campaignsByProductId.get(link.productId) ?? []),
-          campaign
-        ]);
-      }
-
-      for (const link of categoryCampaignLinks) {
-        const campaign = campaignById.get(link.campaignId);
-
-        if (!campaign) {
-          continue;
-        }
-
-        campaignsByCategoryId.set(link.categoryId, [
-          ...(campaignsByCategoryId.get(link.categoryId) ?? []),
-          campaign
-        ]);
-      }
-
-      for (const link of productCategoryLinks) {
-        categoryIdsByProductId.set(link.productId, [
-          ...(categoryIdsByProductId.get(link.productId) ?? []),
-          link.categoryId
-        ]);
-      }
-
-      campaignAdjustedProducts = mappedProducts.map((product) => {
-        const dbProductId = productIdBySlug.get(product.slug);
-
-        if (!dbProductId) {
-          return product;
-        }
-
-        const categoryCampaigns = (categoryIdsByProductId.get(dbProductId) ?? []).flatMap(
-          (categoryId) => campaignsByCategoryId.get(categoryId) ?? []
-        );
-        const applicableCampaigns = [
-          ...sitewideCampaigns,
-          ...(campaignsByProductId.get(dbProductId) ?? []),
-          ...categoryCampaigns
-        ];
-
-        return applyCampaignsToProduct(
-          product,
-          Array.from(
-            new Map(applicableCampaigns.map((campaign) => [campaign.id, campaign])).values()
-          )
-        );
-      });
-    }
-    return campaignAdjustedProducts;
+    return rows.map((row) => mapAdminProductToPublicProduct(row, collections));
   } catch {
     console.warn("Public products could not be loaded. Falling back to marketing products.");
     return marketingProducts;

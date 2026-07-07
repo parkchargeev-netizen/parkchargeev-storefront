@@ -27,6 +27,14 @@ function splitAreas(value: string) {
     .filter(Boolean);
 }
 
+function splitAnnouncementMessages(value: string) {
+  return value
+    .split(/\r?\n/)
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .slice(0, 8);
+}
+
 function parseOptionalLiraToKurus(value: string) {
   const trimmed = value.trim().replace(",", ".");
 
@@ -81,6 +89,18 @@ export function SiteSettingsForm({ settings }: SiteSettingsFormProps) {
     formatKurusAsLira(settings.shippingSettings.defaultShippingKurus)
   );
   const [carrierName, setCarrierName] = useState(settings.shippingSettings.carrierName ?? "");
+  const [announcementActive, setAnnouncementActive] = useState(
+    settings.shippingSettings.announcement?.isActive ?? false
+  );
+  const [announcementMessages, setAnnouncementMessages] = useState(
+    joinAreas(settings.shippingSettings.announcement?.messages ?? [])
+  );
+  const [announcementHref, setAnnouncementHref] = useState(
+    settings.shippingSettings.announcement?.href ?? ""
+  );
+  const [announcementTone, setAnnouncementTone] = useState(
+    settings.shippingSettings.announcement?.tone ?? "emerald"
+  );
   const [vatRate, setVatRate] = useState(
     typeof settings.taxSettings.vatRate === "number"
       ? String(settings.taxSettings.vatRate * 100)
@@ -127,7 +147,13 @@ export function SiteSettingsForm({ settings }: SiteSettingsFormProps) {
       shippingSettings: {
         freeShippingThresholdKurus: parseOptionalLiraToKurus(freeShippingThreshold),
         defaultShippingKurus: parseOptionalLiraToKurus(defaultShipping),
-        carrierName
+        carrierName,
+        announcement: {
+          isActive: announcementActive,
+          messages: splitAnnouncementMessages(announcementMessages),
+          href: announcementHref,
+          tone: announcementTone
+        }
       },
       taxSettings: {
         vatRate: vatRate.trim() ? Number(vatRate.replace(",", ".")) / 100 : undefined,
@@ -426,6 +452,52 @@ export function SiteSettingsForm({ settings }: SiteSettingsFormProps) {
               />
               <span className="text-sm font-medium text-slate-700">Fiyatlara KDV dahil</span>
             </label>
+          </div>
+        </section>
+
+        <section className="rounded-lg border border-slate-200 bg-white p-4">
+          <p className="text-xs font-semibold uppercase tracking-normal text-emerald-700">
+            Kampanya duyuru şeridi
+          </p>
+          <div className="mt-4 grid gap-3">
+            <label className="flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
+              <input
+                type="checkbox"
+                checked={announcementActive}
+                onChange={(event) => setAnnouncementActive(event.target.checked)}
+                className="h-4 w-4 rounded border-slate-300 text-emerald-700"
+              />
+              <span className="text-sm font-medium text-slate-700">
+                Navbar üstünde duyuru göster
+              </span>
+            </label>
+            <textarea
+              rows={4}
+              value={announcementMessages}
+              onChange={(event) => setAnnouncementMessages(event.target.value)}
+              className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
+              placeholder="Her satıra bir kampanya duyurusu yazın"
+            />
+            <input
+              value={announcementHref}
+              onChange={(event) => setAnnouncementHref(event.target.value)}
+              placeholder="/magaza veya https://..."
+              className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
+            />
+            <select
+              value={announcementTone}
+              onChange={(event) =>
+                setAnnouncementTone(event.target.value as "emerald" | "amber" | "slate")
+              }
+              className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
+            >
+              <option value="emerald">Yeşil / kurumsal</option>
+              <option value="amber">Sarı / kampanya</option>
+              <option value="slate">Koyu / premium</option>
+            </select>
+            <p className="text-xs leading-5 text-slate-500">
+              Kampanya pasifse veya mesaj yoksa üst şerit otomatik gizlenir.
+            </p>
           </div>
         </section>
 

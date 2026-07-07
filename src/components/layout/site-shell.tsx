@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
-import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteAmbientLayer } from "@/components/layout/site-ambient-layer";
+import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import type { PublicSiteNavigation } from "@/features/navigation/domain/public-navigation";
 import type { PublicSiteSettings } from "@/lib/site-settings";

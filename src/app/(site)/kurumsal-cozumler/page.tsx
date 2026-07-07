@@ -4,7 +4,7 @@ import { getCorporateSolutionsPageData } from "@/features/corporate/application/
 import { CorporateSolutionsView } from "@/features/corporate/ui/corporate-solutions-view";
 
 export const metadata: Metadata = {
-  title: "Kurumsal Çözümler",
+  title: "Site ve İşletme Şarj Çözümleri",
   description:
     "Site, apartman, iş yeri, ofis, filo ve otopark projeleri için kurumsal EV şarj altyapısı çözümleri.",
   alternates: {

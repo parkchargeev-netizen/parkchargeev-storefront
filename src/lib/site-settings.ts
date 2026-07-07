@@ -7,6 +7,15 @@ export type SiteSettingsSocials = {
   youtube?: string;
 };
 
+export type SiteAnnouncementTone = "emerald" | "amber" | "slate";
+
+export type SiteAnnouncementSettings = {
+  isActive?: boolean;
+  messages?: string[];
+  href?: string;
+  tone?: SiteAnnouncementTone;
+};
+
 export type PublicSiteSettings = {
   id?: string;
   brandName: string;
@@ -31,6 +40,7 @@ export type PublicSiteSettings = {
     freeShippingThresholdKurus?: number;
     defaultShippingKurus?: number;
     carrierName?: string;
+    announcement?: SiteAnnouncementSettings;
   };
   taxSettings: {
     vatRate?: number;
@@ -66,7 +76,14 @@ export function getFallbackSiteSettings(): PublicSiteSettings {
     mapEmbedUrl: "",
     maintenanceMode: false,
     maintenanceMessage: "",
-    shippingSettings: {},
+    shippingSettings: {
+      announcement: {
+        isActive: false,
+        messages: [],
+        href: "",
+        tone: "emerald"
+      }
+    },
     taxSettings: {},
     paymentSettings: {},
     serviceAreas: [...siteConfig.serviceAreas],
@@ -93,7 +110,16 @@ export function normalizePublicSiteSettings(
     },
     shippingSettings: {
       ...fallback.shippingSettings,
-      ...(value.shippingSettings ?? {})
+      ...(value.shippingSettings ?? {}),
+      announcement: {
+        ...fallback.shippingSettings.announcement,
+        ...(value.shippingSettings?.announcement ?? {}),
+        messages: Array.isArray(value.shippingSettings?.announcement?.messages)
+          ? value.shippingSettings.announcement.messages
+              .map((message) => message.trim())
+              .filter(Boolean)
+          : []
+      }
     },
     taxSettings: {
       ...fallback.taxSettings,

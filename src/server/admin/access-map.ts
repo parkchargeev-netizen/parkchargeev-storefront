@@ -73,13 +73,6 @@ export const adminAccessLinks: AdminAccessLink[] = [
     roles: ["superadmin", "admin", "product_manager", "readonly"]
   },
   {
-    href: "/admin/kampanyalar",
-    label: "Kampanya ve vitrin",
-    description: "Banner, indirim kampanyasi ve magazacilik slotlarini yonet.",
-    group: "Katalog",
-    roles: ["superadmin", "admin", "product_manager", "readonly"]
-  },
-  {
     href: "/admin/siparisler",
     label: "Siparişler",
     description: "Sipariş liste, detay, kargo ve durum yönetimi.",

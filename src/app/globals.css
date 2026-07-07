@@ -142,6 +142,102 @@ body {
   }
 }
 
+.site-announcement-bar {
+  position: relative;
+  overflow: hidden;
+  min-height: 2.35rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.26);
+  color: #ffffff;
+  isolation: isolate;
+}
+
+.site-announcement-bar::before {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  content: "";
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.14), transparent 18%, transparent 82%, rgba(255, 255, 255, 0.14)),
+    radial-gradient(circle at 12% 50%, rgba(255, 255, 255, 0.22), transparent 18rem);
+  pointer-events: none;
+}
+
+.site-announcement-bar--emerald {
+  background: linear-gradient(90deg, #063326, #087056 45%, #063326);
+}
+
+.site-announcement-bar--amber {
+  background: linear-gradient(90deg, #4a2f05, #b45309 48%, #5f3606);
+}
+
+.site-announcement-bar--slate {
+  background: linear-gradient(90deg, #07111c, #12312a 52%, #07111c);
+}
+
+.site-announcement-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.site-announcement-track {
+  display: flex;
+  width: max-content;
+  min-width: 100%;
+  align-items: center;
+  gap: 2rem;
+  padding-block: 0.55rem;
+  white-space: nowrap;
+  will-change: transform;
+  animation: site-announcement-marquee 26s linear infinite;
+}
+
+.site-announcement-bar:hover .site-announcement-track {
+  animation-play-state: paused;
+}
+
+.site-announcement-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding-inline: 0.2rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
+}
+
+.site-announcement-dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: #7eecc9;
+  box-shadow: 0 0 18px rgba(126, 236, 201, 0.74);
+}
+
+@keyframes site-announcement-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@media (max-width: 640px) {
+  .site-announcement-track {
+    gap: 1.4rem;
+    animation-duration: 22s;
+  }
+
+  .site-announcement-item {
+    font-size: 0.68rem;
+  }
+}
+
 :where(a, button, input, textarea, select, summary, [role="button"], label) {
   cursor: var(--cursor-ev-action);
 }
@@ -3551,7 +3647,7 @@ body {
 
 .corporate-hero {
   display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(20rem, 0.95fr);
+  grid-template-columns: minmax(0, 1.04fr) minmax(22rem, 0.96fr);
   gap: clamp(1.5rem, 4vw, 3.5rem);
   align-items: center;
   overflow: hidden;
@@ -3559,7 +3655,7 @@ body {
   border-radius: 1.6rem;
   background:
     radial-gradient(circle at 82% 10%, rgba(126, 236, 201, 0.28), transparent 18rem),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(237, 250, 245, 0.94));
+    linear-gradient(135deg, rgba(255, 255, 255, 0.99), rgba(237, 250, 245, 0.94));
   padding: clamp(1.5rem, 4vw, 3.25rem);
   box-shadow: 0 22px 64px rgba(6, 51, 38, 0.08);
 }
@@ -3568,9 +3664,9 @@ body {
   margin-top: 0.75rem;
   max-width: 44rem;
   color: var(--color-on-surface);
-  font-size: clamp(2.15rem, 4.5vw, 4rem);
-  font-weight: 900;
-  line-height: 1.02;
+  font-size: clamp(2.15rem, 4vw, 3.72rem);
+  font-weight: 820;
+  line-height: 1.04;
 }
 
 .corporate-hero__copy > p:not(.premium-eyebrow) {
@@ -3581,8 +3677,51 @@ body {
   line-height: 1.7;
 }
 
-.corporate-hero__copy .premium-btn {
+.corporate-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
   margin-top: 1.4rem;
+}
+
+.corporate-hero__panel {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.corporate-panel-card {
+  border: 1px solid rgba(126, 236, 201, 0.22);
+  border-radius: 1.25rem;
+  background:
+    radial-gradient(circle at 88% 0%, rgba(126, 236, 201, 0.26), transparent 13rem),
+    linear-gradient(135deg, rgba(6, 51, 38, 0.98), rgba(6, 26, 21, 0.96));
+  padding: 1.1rem;
+  color: #ffffff;
+  box-shadow: 0 18px 44px rgba(6, 51, 38, 0.18);
+}
+
+.corporate-panel-card span {
+  display: block;
+  color: #7eecc9;
+  font-size: 0.72rem;
+  font-weight: 850;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.corporate-panel-card strong {
+  display: block;
+  margin-top: 0.45rem;
+  font-size: 1.25rem;
+  font-weight: 820;
+  line-height: 1.25;
+}
+
+.corporate-panel-card p {
+  margin-top: 0.55rem;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.86rem;
+  line-height: 1.58;
 }
 
 .corporate-benefits {
@@ -3598,7 +3737,8 @@ body {
   border: 1px solid rgba(6, 51, 38, 0.09);
   border-radius: 1.1rem;
   background: rgba(255, 255, 255, 0.78);
-  padding: 0.9rem;
+  padding: 1rem;
+  box-shadow: 0 12px 30px rgba(6, 51, 38, 0.055);
 }
 
 .corporate-benefit > span {
@@ -3615,7 +3755,7 @@ body {
 .corporate-benefit h2 {
   color: var(--color-on-surface);
   font-size: 0.92rem;
-  font-weight: 900;
+  font-weight: 780;
 }
 
 .corporate-benefit p {
@@ -3623,6 +3763,38 @@ body {
   color: var(--color-on-surface-variant);
   font-size: 0.78rem;
   line-height: 1.5;
+}
+
+.corporate-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.corporate-metric-card {
+  border: 1px solid rgba(6, 51, 38, 0.09);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.86);
+  padding: 1rem;
+  box-shadow: 0 14px 36px rgba(6, 51, 38, 0.055);
+}
+
+.corporate-metric-card strong {
+  display: block;
+  color: var(--color-primary);
+  font-size: clamp(1.35rem, 2vw, 2rem);
+  font-weight: 820;
+  line-height: 1;
+}
+
+.corporate-metric-card span {
+  display: block;
+  margin-top: 0.45rem;
+  color: var(--color-on-surface-variant);
+  font-size: 0.82rem;
+  font-weight: 650;
+  line-height: 1.42;
 }
 
 .corporate-section {
@@ -3642,7 +3814,7 @@ body {
   margin-top: 0.65rem;
   color: var(--color-on-surface);
   font-size: clamp(1.7rem, 3vw, 2.65rem);
-  font-weight: 900;
+  font-weight: 820;
   line-height: 1.08;
 }
 
@@ -3715,7 +3887,28 @@ body {
 
 .corporate-process li p {
   font-size: 0.86rem;
-  font-weight: 800;
+  font-weight: 560;
+}
+
+.corporate-process li strong {
+  color: #ffffff;
+  font-size: 0.92rem;
+  font-weight: 780;
+}
+
+.corporate-standard-list {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 1.35rem;
+}
+
+.corporate-standard-list span {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.88rem;
+  font-weight: 650;
 }
 
 .corporate-lead-section {
@@ -6010,6 +6203,10 @@ body {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
+  .corporate-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .corporate-solution-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -6305,8 +6502,13 @@ body {
     width: 100%;
   }
 
+  .corporate-hero__actions {
+    flex-direction: column;
+  }
+
   .corporate-benefits,
-  .corporate-solution-grid {
+  .corporate-solution-grid,
+  .corporate-metrics {
     grid-template-columns: 1fr;
   }
 
@@ -12948,21 +13150,15 @@ body {
 }
 
 .product-badge-pill--free-shipping {
-  border-color: rgba(16, 185, 129, 0.34) !important;
-  background: linear-gradient(135deg, #d1fae5, #ecfdf5 52%, #bbf7d0) !important;
-  color: #047857 !important;
   box-shadow:
-    0 12px 28px rgba(16, 185, 129, 0.18),
-    0 0 0 1px rgba(255, 255, 255, 0.68) inset !important;
+    0 12px 28px rgba(16, 185, 129, 0.14),
+    0 0 0 1px rgba(255, 255, 255, 0.54) inset;
 }
 
 .product-badge-pill--ships-tomorrow {
-  border-color: rgba(245, 158, 11, 0.42) !important;
-  background: linear-gradient(135deg, #ffedd5, #fef3c7 55%, #fde68a) !important;
-  color: #92400e !important;
   box-shadow:
-    0 12px 28px rgba(245, 158, 11, 0.2),
-    0 0 0 1px rgba(255, 255, 255, 0.72) inset !important;
+    0 12px 28px rgba(245, 158, 11, 0.16),
+    0 0 0 1px rgba(255, 255, 255, 0.56) inset;
   animation-delay: -0.8s;
 }
 
@@ -14552,7 +14748,8 @@ html[data-admin-command-open="true"] .admin-control-sidebar {
   .product-badge-pill--free-shipping,
   .product-badge-pill--ships-tomorrow,
   .product-badge-pill--free-shipping::after,
-  .product-badge-pill--ships-tomorrow::after {
+  .product-badge-pill--ships-tomorrow::after,
+  .site-announcement-track {
     animation: none !important;
     transform: none !important;
   }

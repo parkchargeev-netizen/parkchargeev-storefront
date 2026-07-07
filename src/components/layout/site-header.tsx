@@ -2,6 +2,7 @@ import Link from "next/link";
 import { BadgeCheck, ChevronRight } from "lucide-react";
 
 import { BrandLogo } from "@/components/layout/brand-logo";
+import { SiteAnnouncementBar } from "@/components/layout/site-announcement-bar";
 import { SiteHeaderActions } from "@/components/layout/site-header-actions";
 import { SiteMobileMenu } from "@/components/layout/site-mobile-menu";
 import { SitePrimaryNavigation } from "@/components/layout/site-primary-navigation";
@@ -23,12 +24,14 @@ export function SiteHeader({ navigation = siteConfig.primaryNavigation, settings
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/50 bg-white/78 shadow-[0_10px_38px_rgba(6,51,38,0.07)] backdrop-blur-2xl">
+      <SiteAnnouncementBar settings={settings} />
+
       <div className="hidden border-b border-outline-variant/20 bg-[#063326]/95 text-white/86 md:block">
         <div className="mx-auto flex min-h-8 max-w-7xl flex-wrap items-center justify-between gap-x-4 gap-y-1 px-4 py-1 text-xs font-bold sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
             <span className="inline-flex items-center gap-1.5">
               <BadgeCheck className="h-3.5 w-3.5 text-[#7eecc9]" aria-hidden />
-              Güvenli ödeme
+              Güvenli alışveriş
             </span>
             <span>{serviceCoverageSummary.shipping}</span>
             <span>{serviceCoverageSummary.freeSurvey}</span>
