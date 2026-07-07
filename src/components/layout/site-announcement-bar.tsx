@@ -18,6 +18,14 @@ function normalizeMessages(settings?: PublicSiteSettings) {
     .filter(Boolean);
 }
 
+function createLoopMessages(messages: string[]) {
+  if (messages.length >= 4) {
+    return messages;
+  }
+
+  return Array.from({ length: Math.ceil(4 / messages.length) }, () => messages).flat();
+}
+
 export function SiteAnnouncementBar({ settings }: SiteAnnouncementBarProps) {
   const announcement = settings?.shippingSettings.announcement;
   const messages = normalizeMessages(settings);
@@ -29,15 +37,25 @@ export function SiteAnnouncementBar({ settings }: SiteAnnouncementBarProps) {
   const toneKey =
     announcement.tone && announcement.tone in toneClassNames ? announcement.tone : "emerald";
   const tone = toneClassNames[toneKey];
-  const duplicatedMessages = [...messages, ...messages];
+  const loopMessages = createLoopMessages(messages);
   const content = (
-    <div className="site-announcement-track" aria-hidden={false}>
-      {duplicatedMessages.map((message, index) => (
-        <span key={`${message}-${index}`} className="site-announcement-item">
-          <span className="site-announcement-dot" aria-hidden />
-          {message}
-        </span>
-      ))}
+    <div className="site-announcement-viewport">
+      <div className="site-announcement-marquee">
+        {[0, 1].map((groupIndex) => (
+          <div
+            key={groupIndex}
+            className="site-announcement-track"
+            aria-hidden={groupIndex === 1}
+          >
+            {loopMessages.map((message, index) => (
+              <span key={`${groupIndex}-${message}-${index}`} className="site-announcement-item">
+                <span className="site-announcement-dot" aria-hidden />
+                {message}
+              </span>
+            ))}
+          </div>
+        ))}
+      </div>
     </div>
   );
 

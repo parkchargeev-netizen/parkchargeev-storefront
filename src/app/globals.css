@@ -180,19 +180,32 @@ body {
   text-decoration: none;
 }
 
-.site-announcement-track {
+.site-announcement-viewport {
+  overflow: hidden;
+}
+
+.site-announcement-marquee {
   display: flex;
   width: max-content;
   min-width: 100%;
   align-items: center;
-  gap: 2rem;
-  padding-block: 0.55rem;
   white-space: nowrap;
   will-change: transform;
   animation: site-announcement-marquee 26s linear infinite;
 }
 
-.site-announcement-bar:hover .site-announcement-track {
+.site-announcement-track {
+  display: flex;
+  min-width: 100vw;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-around;
+  gap: 2rem;
+  padding-block: 0.55rem;
+  padding-inline: 1rem;
+}
+
+.site-announcement-bar:hover .site-announcement-marquee {
   animation-play-state: paused;
 }
 
@@ -228,13 +241,89 @@ body {
 }
 
 @media (max-width: 640px) {
+  .site-announcement-marquee {
+    animation-duration: 22s;
+  }
+
   .site-announcement-track {
     gap: 1.4rem;
-    animation-duration: 22s;
+    min-width: 130vw;
+    padding-inline: 0.7rem;
   }
 
   .site-announcement-item {
     font-size: 0.68rem;
+  }
+}
+
+.site-social-quick-links {
+  position: fixed;
+  top: 50%;
+  left: clamp(0.45rem, 1.1vw, 1rem);
+  z-index: 45;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.site-social-quick-links__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  pointer-events: auto;
+}
+
+.site-social-quick-links__item {
+  display: inline-flex;
+  width: 2.35rem;
+  height: 2.35rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(126, 236, 201, 0.45);
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 28% 18%, rgba(126, 236, 201, 0.42), transparent 1.15rem),
+    rgba(6, 51, 38, 0.92);
+  color: #ffffff;
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  box-shadow: 0 12px 30px rgba(6, 51, 38, 0.18);
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.site-social-quick-links__item:hover,
+.site-social-quick-links__item:focus-visible {
+  border-color: rgba(126, 236, 201, 0.86);
+  background-color: rgba(8, 112, 86, 0.98);
+  box-shadow: 0 16px 36px rgba(6, 51, 38, 0.24);
+  transform: translate3d(0.18rem, 0, 0);
+}
+
+.site-social-quick-links__item:focus-visible {
+  outline: 3px solid rgba(126, 236, 201, 0.42);
+  outline-offset: 3px;
+}
+
+@media (max-width: 768px) {
+  .site-social-quick-links {
+    top: auto;
+    bottom: 0.9rem;
+    left: 0.75rem;
+    transform: none;
+  }
+
+  .site-social-quick-links__list {
+    flex-direction: row;
+  }
+
+  .site-social-quick-links__item {
+    width: 2.15rem;
+    height: 2.15rem;
+    font-size: 0.64rem;
   }
 }
 
@@ -14751,7 +14840,7 @@ html[data-admin-command-open="true"] .admin-control-sidebar {
   .product-badge-pill--ships-tomorrow,
   .product-badge-pill--free-shipping::after,
   .product-badge-pill--ships-tomorrow::after,
-  .site-announcement-track {
+  .site-announcement-marquee {
     animation: none !important;
     transform: none !important;
   }
