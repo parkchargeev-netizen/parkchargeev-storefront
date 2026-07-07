@@ -29,9 +29,16 @@ export function ProductBadgePill({
   badge: ProductDetailBadge;
   className?: string;
 }) {
+  const normalizedLabel = badge.label.toLocaleLowerCase("tr-TR");
+  const motionClassName = normalizedLabel.includes("kargo bedava")
+    ? "product-badge-pill--free-shipping"
+    : normalizedLabel.includes("yarın kargoda") || normalizedLabel.includes("yarin kargoda")
+      ? "product-badge-pill--ships-tomorrow"
+      : "";
+
   return (
     <span
-      className={`inline-flex max-w-full items-center rounded-full border px-2.5 py-1 text-xs font-bold uppercase leading-none tracking-normal shadow-[0_10px_24px_rgba(15,23,42,0.08)] ${toneClassNames[badge.tone ?? "neutral"]} ${className}`}
+      className={`product-badge-pill inline-flex max-w-full items-center rounded-full border px-2.5 py-1 text-xs font-bold uppercase leading-none tracking-normal shadow-[0_10px_24px_rgba(15,23,42,0.08)] ${toneClassNames[badge.tone ?? "neutral"]} ${motionClassName} ${className}`}
       title={badge.label}
     >
       <span className="truncate">{badge.label}</span>

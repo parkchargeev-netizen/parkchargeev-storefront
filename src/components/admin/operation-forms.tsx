@@ -53,6 +53,24 @@ function getOptionalNumber(form: HTMLFormElement, name: string) {
   return value ? Number(value) : undefined;
 }
 
+function fillFormExample(form: HTMLFormElement | null, values: Record<string, string>) {
+  if (!form) return;
+
+  Object.entries(values).forEach(([name, value]) => {
+    const field = form.elements.namedItem(name);
+
+    if (
+      field instanceof HTMLInputElement ||
+      field instanceof HTMLTextAreaElement ||
+      field instanceof HTMLSelectElement
+    ) {
+      field.value = value;
+      field.dispatchEvent(new Event("input", { bubbles: true }));
+      field.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+  });
+}
+
 function SubmitButton({ isSubmitting, label }: { isSubmitting: boolean; label: string }) {
   return (
     <button
@@ -100,6 +118,24 @@ export function BannerForm() {
         Başlık: Ev ve işletmeler için akıllı şarj çözümleri | Yerleşim: home_hero |
         Görsel URL: /images/home/hero-charger.jpg | Buton: Mağazayı incele -&gt; /magaza
       </ExampleNote>
+      <button
+        type="button"
+        onClick={(event) =>
+          fillFormExample(event.currentTarget.form, {
+            title: "Ev ve işletmeler için akıllı şarj çözümleri",
+            subtitle: "AC şarj cihazları, keşif, kurulum ve teknik destek tek merkezde.",
+            placement: "home_hero",
+            status: "draft",
+            imageUrl: "/images/hero-realistic-ev-charging-desktop.webp",
+            sortOrder: "0",
+            ctaLabel: "Mağazayı incele",
+            ctaHref: "/magaza"
+          })
+        }
+        className="justify-self-start rounded-full border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-800 transition hover:bg-emerald-100"
+      >
+        Örnek bannerı forma doldur
+      </button>
       <input name="title" required placeholder="Ev ve işletmeler için akıllı şarj çözümleri" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
       <textarea name="subtitle" placeholder="AC/DC şarj cihazları, kurulum ve teknik destek tek merkezde." className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
       <div className="grid gap-3 md:grid-cols-2">
@@ -146,6 +182,24 @@ export function CampaignForm() {
         Yüzde: Yaz fırsatı, slug: yaz-firsati, indirim: %10 | Tutar: Kablo indirimi,
         slug: kablo-indirimi, indirim: 1500 TL. Ürün/kategori ID alanları virgül ile ayrılır.
       </ExampleNote>
+      <button
+        type="button"
+        onClick={(event) =>
+          fillFormExample(event.currentTarget.form, {
+            name: "Wallbox yaz fırsatı",
+            slug: "wallbox-yaz-firsati",
+            description: "Seçili ev ve iş yeri tipi şarj cihazlarında dönemsel fiyat avantajı.",
+            status: "draft",
+            discountType: "percent",
+            discountValue: "10",
+            productIds: "",
+            categoryIds: ""
+          })
+        }
+        className="justify-self-start rounded-full border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-800 transition hover:bg-emerald-100"
+      >
+        Örnek kampanyayı forma doldur
+      </button>
       <input name="name" required placeholder="Yaz fırsatı" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
       <textarea name="description" placeholder="Seçili şarj cihazlarında yaz dönemine özel indirim." className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
       <div className="grid gap-3 md:grid-cols-2">
@@ -192,6 +246,21 @@ export function MerchandisingSlotForm() {
         Slot: home_featured veya store_featured | Başlık: En çok tercih edilenler |
         Ürün ID: vitrinde gösterilecek ürün | Sıra: küçük sayı önce gelir.
       </ExampleNote>
+      <button
+        type="button"
+        onClick={(event) =>
+          fillFormExample(event.currentTarget.form, {
+            slotKey: "store_featured",
+            title: "Mağaza vitrini: öne çıkan şarj cihazları",
+            productId: "",
+            sortOrder: "0",
+            isActive: "true"
+          })
+        }
+        className="justify-self-start rounded-full border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-800 transition hover:bg-emerald-100"
+      >
+        Örnek vitrin slotunu forma doldur
+      </button>
       <div className="grid gap-3 md:grid-cols-2">
         <input name="slotKey" defaultValue="home_featured" placeholder="home_featured, store_featured" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
         <input name="title" placeholder="En çok tercih edilenler" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />

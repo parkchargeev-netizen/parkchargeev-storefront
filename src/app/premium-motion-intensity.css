@@ -435,6 +435,17 @@ body {
   transform: translate3d(0, 0, 0);
 }
 
+.site-experience-shell .premium-product-card::before,
+.site-experience-shell .premium-product-card::after,
+.site-experience-shell .premium-product-card__media::before,
+.site-experience-shell .premium-product-card__energy {
+  display: none !important;
+  animation: none !important;
+  content: none !important;
+  opacity: 0 !important;
+  transform: none !important;
+}
+
 .premium-install-section::before,
 .premium-install-section::after,
 .premium-product-card__energy,
