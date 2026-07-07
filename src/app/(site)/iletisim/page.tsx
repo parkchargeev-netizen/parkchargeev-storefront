@@ -25,6 +25,12 @@ const fallbackMetadata: Metadata = {
 
 const parkChargeEvMapEmbedSrc =
   "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d24183.475012350627!2d30.300722122192383!3d40.74146948542449!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14ccadf3b93b47db%3A0xaa82c42f614e5ca1!2sSakarya%20Teknokent%20A.%C5%9E.!5e0!3m2!1str!2str!4v1779100960628!5m2!1str!2str";
+const parkChargeEvMapLink =
+  "https://www.google.com/maps/search/?api=1&query=40.74146948542449,30.300722122192383";
+
+function isEmbeddableMapUrl(value: string) {
+  return value.includes("/maps/embed") || value.includes("output=embed");
+}
 
 function officeAddress(settings: PublicSiteSettings) {
   return `${settings.address.streetAddress}, ${settings.address.addressLocality} / ${settings.address.addressRegion}`;
@@ -50,7 +56,12 @@ function ContactJsonLd({ settings }: { settings: PublicSiteSettings }) {
 
 function OfficeMapCard({ settings }: { settings: PublicSiteSettings }) {
   const address = officeAddress(settings);
-  const mapSrc = settings.mapEmbedUrl || parkChargeEvMapEmbedSrc;
+  const configuredMapUrl = settings.mapEmbedUrl.trim();
+  const mapSrc =
+    configuredMapUrl && isEmbeddableMapUrl(configuredMapUrl)
+      ? configuredMapUrl
+      : parkChargeEvMapEmbedSrc;
+  const mapLink = configuredMapUrl || parkChargeEvMapLink;
 
   return (
     <div className="contact-map-card surface-card overflow-hidden p-0">
@@ -60,6 +71,14 @@ function OfficeMapCard({ settings }: { settings: PublicSiteSettings }) {
         </p>
         <h2 className="mt-2 text-xl font-bold text-on-surface">Merkez ofis konumu</h2>
         <p className="mt-2 text-sm leading-6 text-on-surface-variant">{address}</p>
+        <a
+          href={mapLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-3 inline-flex rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-white"
+        >
+          Google Maps’te aç
+        </a>
       </div>
       <iframe
         title="ParkChargeEV Sakarya Teknokent adres haritası"

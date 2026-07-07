@@ -1,8 +1,8 @@
 "use client";
 
-import { Save } from "lucide-react";
+import { Loader2, Save, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
-import type { FormEvent } from "react";
+import type { ChangeEvent, FormEvent } from "react";
 import { useState } from "react";
 
 import type { PublicSiteSettings } from "@/lib/site-settings";
@@ -13,6 +13,12 @@ type SiteSettingsFormProps = {
 
 type SiteSettingsResponse = {
   ok: boolean;
+  message?: string;
+};
+
+type MediaUploadResponse = {
+  ok: boolean;
+  url?: string;
   message?: string;
 };
 
@@ -120,6 +126,52 @@ export function SiteSettingsForm({ settings }: SiteSettingsFormProps) {
   );
   const [feedback, setFeedback] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+  const [logoUploadMessage, setLogoUploadMessage] = useState<string | null>(null);
+
+  async function handleLogoUpload(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+
+    if (!file) {
+      return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+      setLogoUploadMessage("Logo için yalnızca görsel dosyası yükleyin.");
+      return;
+    }
+
+    setIsUploadingLogo(true);
+    setLogoUploadMessage(null);
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await fetch("/api/admin/media/upload", {
+        method: "POST",
+        body: formData
+      });
+      const data = (await response.json().catch(() => ({ ok: false }))) as MediaUploadResponse;
+
+      if (!response.ok || !data.ok || !data.url) {
+        setLogoUploadMessage(data.message ?? "Logo yüklenemedi.");
+        return;
+      }
+
+      setLogoUrl(data.url);
+      setLogoUploadMessage("Logo yüklendi. Kaydettiğinizde site ayarlarına işlenecek.");
+
+      if (!logoAlt.trim()) {
+        setLogoAlt(`${brandName} logosu`);
+      }
+    } catch {
+      setLogoUploadMessage("Logo yüklenirken bağlantı hatası oluştu.");
+    } finally {
+      setIsUploadingLogo(false);
+    }
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -224,6 +276,34 @@ export function SiteSettingsForm({ settings }: SiteSettingsFormProps) {
                 className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
               />
             </label>
+            <label className="grid gap-2 rounded-lg border border-dashed border-emerald-300 bg-white px-4 py-3">
+              <span className="text-xs font-semibold uppercase text-emerald-700">
+                Logo görseli yükle
+              </span>
+              <span className="text-xs leading-5 text-slate-500">
+                PNG, JPG, SVG veya WebP logo yükleyin. Yükleme sonrası URL alanı otomatik güncellenir.
+              </span>
+              <span className="inline-flex w-fit items-center gap-2 rounded-lg bg-emerald-700 px-4 py-2 text-sm font-semibold text-white">
+                {isUploadingLogo ? (
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                ) : (
+                  <Upload className="h-4 w-4" aria-hidden />
+                )}
+                {isUploadingLogo ? "Yükleniyor..." : "Logo seç ve yükle"}
+              </span>
+              <input
+                type="file"
+                accept="image/*"
+                disabled={isUploadingLogo}
+                onChange={handleLogoUpload}
+                className="sr-only"
+              />
+            </label>
+            {logoUploadMessage ? (
+              <p className="rounded-lg bg-slate-100 px-3 py-2 text-xs font-medium text-slate-700">
+                {logoUploadMessage}
+              </p>
+            ) : null}
             <label className="grid gap-1.5">
               <span className="text-xs font-semibold uppercase text-slate-500">Logo alt metni</span>
               <input
@@ -331,9 +411,13 @@ export function SiteSettingsForm({ settings }: SiteSettingsFormProps) {
             <input
               value={mapEmbedUrl}
               onChange={(event) => setMapEmbedUrl(event.target.value)}
-              placeholder="Google Maps embed URL"
+              placeholder="Google Maps linki veya embed URL"
               className="rounded-lg border border-slate-300 px-4 py-3 text-sm md:col-span-2"
             />
+            <p className="text-xs leading-5 text-slate-500 md:col-span-2">
+              Embed URL harita görüntüsünü değiştirir. Normal Google Maps paylaşım linki girerseniz
+              iletişim sayfasındaki “Google Maps’te aç” bağlantısı güncellenir.
+            </p>
           </div>
         </section>
       </div>

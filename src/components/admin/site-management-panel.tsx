@@ -200,15 +200,18 @@ export async function SiteManagementPanel({
           </div>
         </section>
 
-        <aside className="surface-card border border-slate-200 bg-slate-950 p-5 text-white lg:p-6">
-          <p className="text-xs font-semibold uppercase tracking-normal text-emerald-200">
+        <aside className="surface-card border border-emerald-200 bg-gradient-to-br from-white via-emerald-50/80 to-amber-50/70 p-5 text-slate-950 shadow-[0_18px_44px_rgba(6,51,38,0.09)] lg:p-6">
+          <p className="inline-flex rounded-full border border-emerald-200 bg-emerald-100 px-3 py-1 text-xs font-bold uppercase tracking-normal text-emerald-900">
             Yazım rehberi
           </p>
-          <h2 className="mt-2 text-xl font-semibold">Nereye, ne, nasıl yazılır?</h2>
-          <ul className="mt-4 space-y-3 text-sm leading-6 text-white/78">
+          <h2 className="mt-3 text-xl font-bold text-slate-950">Nereye, ne, nasıl yazılır?</h2>
+          <ul className="mt-4 space-y-3 text-sm font-medium leading-6 text-slate-700">
             {adminWritingGuide.map((item) => (
-              <li key={item} className="flex gap-2">
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-300" />
+              <li
+                key={item}
+                className="flex gap-3 rounded-lg border border-white/80 bg-white/78 px-3 py-2 shadow-[0_8px_22px_rgba(15,23,42,0.05)]"
+              >
+                <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-emerald-600 shadow-[0_0_0_4px_rgba(16,185,129,0.12)]" />
                 <span>{item}</span>
               </li>
             ))}
