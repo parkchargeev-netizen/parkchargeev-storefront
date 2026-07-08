@@ -116,7 +116,8 @@ export function SiteFooter({
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={`${publicSettings.brandName} ${item.label} hesabını aç`}
-                      className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-900 transition hover:-translate-y-0.5 hover:border-emerald-300 hover:bg-white hover:text-primary hover:shadow-sm"
+                      data-platform={item.key}
+                      className="site-footer-social-link"
                     >
                       <SocialBrandIcon platform={item.key} className="h-4 w-4" />
                       {item.label}

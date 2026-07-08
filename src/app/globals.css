@@ -14855,3 +14855,255 @@ html[data-admin-command-open="true"] .admin-control-sidebar {
     will-change: auto;
   }
 }
+
+/* Refined home hero */
+.premium-hero--refined {
+  min-height: clamp(620px, calc(100svh - 92px), 820px);
+  background:
+    radial-gradient(circle at 78% 28%, rgba(126, 236, 201, 0.18), transparent 22rem),
+    radial-gradient(circle at 18% 82%, rgba(15, 143, 111, 0.18), transparent 24rem),
+    linear-gradient(135deg, #020806 0%, #05130f 48%, #08241c 100%);
+}
+
+.premium-hero--refined::before {
+  background:
+    linear-gradient(90deg, rgba(2, 14, 12, 0.96) 0%, rgba(2, 14, 12, 0.76) 38%, rgba(2, 14, 12, 0.2) 68%, rgba(2, 14, 12, 0.06) 100%),
+    linear-gradient(0deg, rgba(2, 14, 12, 0.88), transparent 46%);
+}
+
+.premium-hero--refined::after {
+  background-size: 96px 96px;
+  opacity: 0.16;
+}
+
+.premium-hero--refined .premium-hero__inner {
+  min-height: inherit;
+  justify-content: center;
+  padding-block: clamp(4rem, 7vw, 6rem);
+}
+
+.premium-hero--refined .premium-hero__copy {
+  position: relative;
+  max-width: min(100%, 39rem);
+  border-left: 3px solid rgba(126, 236, 201, 0.78);
+  border-radius: 1.35rem;
+  background:
+    radial-gradient(circle at 8% 10%, rgba(126, 236, 201, 0.12), transparent 12rem),
+    linear-gradient(100deg, rgba(2, 14, 12, 0.78), rgba(2, 14, 12, 0.42));
+  padding: clamp(1.25rem, 2.2vw, 1.9rem);
+  box-shadow: 0 22px 70px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(14px);
+}
+
+.premium-hero--refined .premium-hero__copy::before {
+  display: none;
+}
+
+.premium-hero--refined .premium-hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(126, 236, 201, 0.28);
+  border-radius: 999px;
+  background: rgba(126, 236, 201, 0.1);
+  padding: 0.42rem 0.7rem;
+  color: #8ff7d8;
+  font-size: 0.68rem;
+}
+
+.premium-hero--refined .premium-hero__copy h1 {
+  max-width: 35.5rem;
+  font-size: clamp(2.35rem, 4.1vw, 4.2rem);
+  font-weight: 860;
+  line-height: 1.02;
+}
+
+.premium-hero--refined .premium-hero__copy :where(.premium-btn) {
+  min-height: 3.25rem;
+  border-radius: 0.9rem;
+  padding-inline: 1.15rem;
+}
+
+.premium-hero--refined .premium-hero__routes {
+  width: min(100%, 50rem);
+  gap: 0.55rem;
+  margin-top: 1rem;
+}
+
+.premium-hero--refined .premium-hero-route {
+  min-height: 4.05rem;
+  align-items: center;
+  border-color: rgba(126, 236, 201, 0.18);
+  border-radius: 1rem;
+  background: rgba(2, 20, 16, 0.7);
+  padding: 0.68rem 0.72rem;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 14px 34px rgba(0, 0, 0, 0.14);
+}
+
+.premium-hero--refined .premium-hero-route__icon {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.78rem;
+}
+
+.premium-hero-route__meta {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.45rem;
+}
+
+.premium-hero-route__meta em {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: rgba(126, 236, 201, 0.12);
+  padding: 0.16rem 0.42rem;
+  color: #8ff7d8;
+  font-size: 0.58rem;
+  font-style: normal;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.premium-hero--refined .premium-hero-route strong {
+  display: -webkit-box;
+  margin-top: 0.3rem;
+  font-size: 0.78rem;
+  line-height: 1.22;
+  white-space: normal;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+.site-social-quick-links__item[data-platform="instagram"] {
+  border-color: rgba(221, 42, 123, 0.46);
+  background:
+    radial-gradient(circle at 28% 100%, #feda75 0 20%, transparent 35%),
+    linear-gradient(135deg, #405de6 0%, #833ab4 34%, #c13584 62%, #fd1d1d 82%, #f77737 100%);
+  color: #ffffff;
+}
+
+.site-social-quick-links__item[data-platform="facebook"] {
+  border-color: rgba(24, 119, 242, 0.5);
+  background: #1877f2;
+  color: #ffffff;
+}
+
+.site-social-quick-links__item[data-platform="linkedin"] {
+  border-color: rgba(10, 102, 194, 0.48);
+  background: #0a66c2;
+  color: #ffffff;
+}
+
+.site-social-quick-links__item[data-platform="youtube"] {
+  border-color: rgba(255, 0, 51, 0.46);
+  background: #ff0033;
+  color: #ffffff;
+}
+
+.site-footer-social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid rgba(6, 51, 38, 0.1);
+  border-radius: 999px;
+  background: rgba(248, 253, 250, 0.9);
+  padding: 0.5rem 0.75rem;
+  color: #063326;
+  font-size: 0.75rem;
+  font-weight: 800;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.site-footer-social-link:hover,
+.site-footer-social-link:focus-visible {
+  border-color: rgba(6, 51, 38, 0.18);
+  background: #ffffff;
+  box-shadow: 0 10px 24px rgba(6, 51, 38, 0.08);
+  transform: translateY(-1px);
+}
+
+.site-footer-social-link[data-platform="instagram"] {
+  color: #c13584;
+}
+
+.site-footer-social-link[data-platform="facebook"] {
+  color: #1877f2;
+}
+
+.site-footer-social-link[data-platform="linkedin"] {
+  color: #0a66c2;
+}
+
+.site-footer-social-link[data-platform="youtube"] {
+  color: #ff0033;
+}
+
+@media (max-width: 1024px) {
+  .premium-hero--refined {
+    min-height: clamp(600px, calc(100svh - 84px), 760px);
+  }
+
+  .premium-hero--refined .premium-hero__copy {
+    max-width: min(100%, 37rem);
+  }
+
+  .premium-hero--refined .premium-hero__copy h1 {
+    font-size: clamp(2.15rem, 5vw, 3.4rem);
+  }
+}
+
+@media (max-width: 767px) {
+  .premium-hero--refined {
+    min-height: auto;
+  }
+
+  .premium-hero--refined > .real-charger-media {
+    display: block;
+  }
+
+  .premium-hero--refined > .real-charger-media .real-charger-media__photo {
+    transform: scale(1.08);
+  }
+
+  .premium-hero--refined .premium-hero__inner {
+    min-height: auto;
+    padding-block: 2.25rem 3rem;
+  }
+
+  .premium-hero--refined .premium-hero__copy {
+    max-width: 100%;
+    border-left-width: 2px;
+    border-radius: 1.15rem;
+    padding: 1rem;
+  }
+
+  .premium-hero--refined .premium-hero__copy h1 {
+    margin-top: 0.9rem;
+    font-size: clamp(2rem, 10vw, 2.65rem);
+    line-height: 1.06;
+  }
+
+  .premium-hero--refined .premium-hero__copy :where(.premium-btn) {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .premium-hero--refined .premium-hero__routes {
+    grid-template-columns: 1fr;
+    gap: 0.45rem;
+    margin-top: 0.9rem;
+  }
+
+  .premium-hero--refined .premium-hero-route {
+    min-height: 3.65rem;
+    padding: 0.62rem;
+  }
+}

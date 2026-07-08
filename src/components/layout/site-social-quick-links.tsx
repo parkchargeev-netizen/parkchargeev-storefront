@@ -59,6 +59,7 @@ export function SiteSocialQuickLinks({ settings }: SiteSocialQuickLinksProps) {
             rel="noopener noreferrer"
             title={`${brandName} ${item.label}`}
             aria-label={`${brandName} ${item.label} hesabını aç`}
+            data-platform={item.key}
             className="site-social-quick-links__item"
           >
             <SocialBrandIcon platform={item.key} className="site-social-quick-links__icon" />

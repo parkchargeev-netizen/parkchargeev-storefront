@@ -25,7 +25,7 @@ export function HomeHero({ whatsappHref }: HomeHeroProps) {
         fetchPriority="high"
         type="image/avif"
       />
-      <section className="premium-hero relative isolate overflow-hidden" data-motion="fade">
+      <section className="premium-hero premium-hero--refined relative isolate overflow-hidden" data-motion="fade">
       <ChargingVisual />
       <div className="premium-hero__mesh" aria-hidden />
 
@@ -110,7 +110,10 @@ export function HomeHero({ whatsappHref }: HomeHeroProps) {
             >
               <HomeIcon icon={route.icon} className="premium-hero-route__icon" />
               <span className="min-w-0">
-                <small>{route.label}</small>
+                <span className="premium-hero-route__meta">
+                  <small>{route.label}</small>
+                  <em>{route.accent}</em>
+                </span>
                 <strong>{route.title}</strong>
               </span>
               <ArrowRight
