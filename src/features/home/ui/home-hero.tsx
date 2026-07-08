@@ -2,11 +2,8 @@ import { ArrowRight, ClipboardCheck, MessageCircle, ShoppingBag } from "lucide-r
 import Link from "next/link";
 
 import { ChargingVisual } from "@/components/home/charging-visual";
-import {
-  heroTrustSignals,
-  solutionRoutes
-} from "@/features/home/domain/home-content";
-import { getHomeIcon, HomeIcon } from "@/features/home/ui/home-icon";
+import { solutionRoutes } from "@/features/home/domain/home-content";
+import { HomeIcon } from "@/features/home/ui/home-icon";
 import { conversionDataAttributes } from "@/lib/conversion-events";
 
 type HomeHeroProps = {
@@ -32,19 +29,6 @@ export function HomeHero({ whatsappHref }: HomeHeroProps) {
       <div className="premium-hero__inner relative z-10 mx-auto flex max-w-7xl flex-col justify-center px-4 py-12 sm:px-6 lg:px-8">
         <div className="premium-hero__copy max-w-[43rem]" data-motion="reveal">
           <p className="premium-hero__eyebrow">Elektrikli araç şarj cihazları</p>
-
-          <div className="premium-hero__mobile-trust">
-            {heroTrustSignals.map((item) => {
-              const Icon = getHomeIcon(item.icon);
-
-              return (
-                <span key={item.label} className="premium-trust-pill">
-                  <Icon className="h-4 w-4 text-emerald-300" aria-hidden />
-                  {item.label}
-                </span>
-              );
-            })}
-          </div>
 
           <h1 className="mt-5 max-w-[43rem] text-4xl font-bold leading-tight tracking-normal text-white sm:text-5xl">
             Elektrikli araç şarj cihazınızı doğru güç ve kurulumla seçin.

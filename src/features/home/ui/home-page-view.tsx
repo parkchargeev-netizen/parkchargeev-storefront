@@ -17,9 +17,9 @@ export function HomePageView({
   return (
     <MotionGroup as="main" className="premium-home-page">
       <HomeHero whatsappHref={whatsappHref} />
+      <ProductShowcase products={featuredProducts} />
       <SolutionRoutesSection />
       <DecisionSystemSection />
-      <ProductShowcase products={featuredProducts} />
       <InstallationSection />
       <ProofResourcesSection
         articles={featuredArticles}
