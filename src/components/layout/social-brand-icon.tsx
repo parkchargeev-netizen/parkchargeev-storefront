@@ -1,4 +1,4 @@
-export type SocialBrandKey = "instagram" | "facebook" | "linkedin" | "youtube";
+export type SocialBrandKey = "instagram" | "facebook" | "linkedin" | "youtube" | "whatsapp";
 
 type SocialBrandIconProps = {
   platform: SocialBrandKey;
@@ -42,6 +42,17 @@ export function SocialBrandIcon({ platform, className = "" }: SocialBrandIconPro
         <path
           fill="currentColor"
           d="M6.7 8.8H3V21h3.7V8.8ZM4.9 3C3.7 3 2.8 3.9 2.8 5s.9 2 2.1 2C6 7 7 6.1 7 5s-1-2-2.1-2Zm16.2 11.3c0-3.3-1.8-5.8-5-5.8-1.6 0-2.7.9-3.2 1.7h-.1V8.8H9.3V21H13v-6c0-1.6.3-3.2 2.3-3.2 1.9 0 2 1.8 2 3.3V21H21v-6.7Z"
+        />
+      </svg>
+    );
+  }
+
+  if (platform === "whatsapp") {
+    return (
+      <svg viewBox="0 0 24 24" className={className} aria-hidden="true" focusable="false">
+        <path
+          fill="currentColor"
+          d="M12 2.4A9.4 9.4 0 0 0 3.9 16.5L3 21l4.6-1.2A9.4 9.4 0 1 0 12 2.4Zm0 17.1a7.7 7.7 0 0 1-3.9-1l-.3-.2-2.7.7.7-2.6-.2-.3A7.7 7.7 0 1 1 12 19.5Zm4.3-5.7c-.2-.1-1.4-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.2-.7.8-.8 1-.1.1-.3.2-.5.1a6.3 6.3 0 0 1-1.9-1.2 7.1 7.1 0 0 1-1.3-1.7c-.1-.2 0-.4.1-.5l.4-.5c.1-.2.2-.3.2-.5.1-.1 0-.3 0-.5l-.7-1.6c-.2-.4-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-.9.9-.9 2.1s1 2.4 1.1 2.6c.1.2 1.9 3 4.7 4.2.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.6-.1 1.4-.6 1.6-1.1.2-.5.2-1 .2-1.1-.1-.2-.2-.3-.4-.4Z"
         />
       </svg>
     );

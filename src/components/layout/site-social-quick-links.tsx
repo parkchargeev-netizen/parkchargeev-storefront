@@ -1,5 +1,6 @@
 import type { PublicSiteSettings } from "@/lib/site-settings";
 import { SocialBrandIcon, type SocialBrandKey } from "@/components/layout/social-brand-icon";
+import { siteConfig } from "@/lib/site";
 
 type SiteSocialQuickLinksProps = {
   settings?: PublicSiteSettings;
@@ -13,6 +14,20 @@ function normalizeExternalHref(value?: string) {
   }
 
   return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+}
+
+function normalizeWhatsAppHref(value?: string) {
+  const rawPhone = value?.trim() || siteConfig.whatsappPhone;
+  const digits = rawPhone.replace(/\D/g, "");
+  const phone = digits.startsWith("0") ? `90${digits.slice(1)}` : digits;
+
+  if (!phone) {
+    return "";
+  }
+
+  return `https://wa.me/${phone}?text=${encodeURIComponent(
+    "Merhaba, ParkChargeEV ürünleri hakkında bilgi almak istiyorum."
+  )}`;
 }
 
 export function SiteSocialQuickLinks({ settings }: SiteSocialQuickLinksProps) {
@@ -41,6 +56,11 @@ export function SiteSocialQuickLinks({ settings }: SiteSocialQuickLinksProps) {
       key: "youtube" as const,
       label: "YouTube",
       href: normalizeExternalHref(settings?.socials.youtube)
+    },
+    {
+      key: "whatsapp" as const,
+      label: "WhatsApp",
+      href: normalizeWhatsAppHref(settings?.whatsappPhone)
     }
   ].filter((item) => item.href);
 
