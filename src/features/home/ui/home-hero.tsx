@@ -49,14 +49,9 @@ export function HomeHero({ whatsappHref }: HomeHeroProps) {
           <h1 className="mt-5 max-w-[43rem] text-4xl font-bold leading-tight tracking-normal text-white sm:text-5xl">
             Elektrikli araç şarj cihazınızı doğru güç ve kurulumla seçin.
           </h1>
-          <p className="mt-5 max-w-xl text-base leading-7 text-white/82 sm:text-lg">
-            Ev tipi 7.4 kW, 11 kW ve 22 kW wallbox seçeneklerini karşılaştırın;
-            aracınıza ve elektrik altyapınıza uygun ürünü keşif, kurulum ve servis
-            desteğiyle alın.
-          </p>
 
           <div
-            className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap"
+            className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap"
             data-motion="reveal"
             data-motion-order="2"
           >

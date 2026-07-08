@@ -1,4 +1,5 @@
 import type { PublicSiteSettings } from "@/lib/site-settings";
+import { SocialBrandIcon, type SocialBrandKey } from "@/components/layout/social-brand-icon";
 
 type SiteSocialQuickLinksProps = {
   settings?: PublicSiteSettings;
@@ -16,29 +17,29 @@ function normalizeExternalHref(value?: string) {
 
 export function SiteSocialQuickLinks({ settings }: SiteSocialQuickLinksProps) {
   const brandName = settings?.brandName ?? "ParkChargeEV";
-  const socialLinks = [
+  const socialLinks: Array<{
+    key: SocialBrandKey;
+    label: string;
+    href: string;
+  }> = [
     {
-      key: "instagram",
+      key: "instagram" as const,
       label: "Instagram",
-      shortLabel: "IG",
       href: normalizeExternalHref(settings?.socials.instagram)
     },
     {
-      key: "facebook",
+      key: "facebook" as const,
       label: "Facebook",
-      shortLabel: "FB",
       href: normalizeExternalHref(settings?.socials.facebook)
     },
     {
-      key: "linkedin",
+      key: "linkedin" as const,
       label: "LinkedIn",
-      shortLabel: "IN",
       href: normalizeExternalHref(settings?.socials.linkedin)
     },
     {
-      key: "youtube",
+      key: "youtube" as const,
       label: "YouTube",
-      shortLabel: "YT",
       href: normalizeExternalHref(settings?.socials.youtube)
     }
   ].filter((item) => item.href);
@@ -60,7 +61,7 @@ export function SiteSocialQuickLinks({ settings }: SiteSocialQuickLinksProps) {
             aria-label={`${brandName} ${item.label} hesabını aç`}
             className="site-social-quick-links__item"
           >
-            <span aria-hidden>{item.shortLabel}</span>
+            <SocialBrandIcon platform={item.key} className="site-social-quick-links__icon" />
           </a>
         ))}
       </div>

@@ -295,6 +295,12 @@ body {
     box-shadow 180ms ease;
 }
 
+.site-social-quick-links__icon {
+  width: 1.12rem;
+  height: 1.12rem;
+  flex: 0 0 auto;
+}
+
 .site-social-quick-links__item:hover,
 .site-social-quick-links__item:focus-visible {
   border-color: rgba(126, 236, 201, 0.86);

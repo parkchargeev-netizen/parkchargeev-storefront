@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { ArrowRight, ExternalLink, Headphones, MapPin, Phone } from "lucide-react";
+import { ArrowRight, Headphones, MapPin, Phone } from "lucide-react";
 
 import { BrandLogo } from "@/components/layout/brand-logo";
+import { SocialBrandIcon, type SocialBrandKey } from "@/components/layout/social-brand-icon";
 import type { PublicSiteNavigation } from "@/features/navigation/domain/public-navigation";
 import { formatPublicNavigationLabel } from "@/lib/public-navigation-labels";
 import { serviceCoverageSummary } from "@/lib/service-coverage";
@@ -31,11 +32,15 @@ export function SiteFooter({
   settings
 }: SiteFooterProps) {
   const publicSettings = settings ?? getFallbackSiteSettings();
-  const socialLinks = [
-    { key: "instagram", label: "Instagram", href: normalizeExternalHref(publicSettings.socials.instagram) },
-    { key: "facebook", label: "Facebook", href: normalizeExternalHref(publicSettings.socials.facebook) },
-    { key: "linkedin", label: "LinkedIn", href: normalizeExternalHref(publicSettings.socials.linkedin) },
-    { key: "youtube", label: "YouTube", href: normalizeExternalHref(publicSettings.socials.youtube) }
+  const socialLinks: Array<{
+    key: SocialBrandKey;
+    label: string;
+    href: string;
+  }> = [
+    { key: "instagram" as const, label: "Instagram", href: normalizeExternalHref(publicSettings.socials.instagram) },
+    { key: "facebook" as const, label: "Facebook", href: normalizeExternalHref(publicSettings.socials.facebook) },
+    { key: "linkedin" as const, label: "LinkedIn", href: normalizeExternalHref(publicSettings.socials.linkedin) },
+    { key: "youtube" as const, label: "YouTube", href: normalizeExternalHref(publicSettings.socials.youtube) }
   ].filter((item) => item.href);
 
   return (
@@ -113,8 +118,8 @@ export function SiteFooter({
                       aria-label={`${publicSettings.brandName} ${item.label} hesabını aç`}
                       className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-900 transition hover:-translate-y-0.5 hover:border-emerald-300 hover:bg-white hover:text-primary hover:shadow-sm"
                     >
+                      <SocialBrandIcon platform={item.key} className="h-4 w-4" />
                       {item.label}
-                      <ExternalLink className="h-3.5 w-3.5" aria-hidden />
                     </a>
                   ))}
                 </div>

@@ -280,10 +280,6 @@ export default async function StorePage({ searchParams }: StorePageProps) {
           <div className="store-commerce-header__lead">
             <p className="premium-eyebrow">Elektrikli araç şarj mağazası</p>
             <h1>Elektrikli araç şarj cihazları ve fiyatları</h1>
-            <p>
-              Ev tipi wallbox, 7.4 kW, 11 kW, 22 kW ve Type 2 ürünleri güç,
-              araç uyumu, stok ve kurulum ihtiyacına göre karşılaştırın.
-            </p>
           </div>
           <form action="/magaza" className="store-hero-search">
             <Search className="h-5 w-5 shrink-0 text-primary" aria-hidden />
