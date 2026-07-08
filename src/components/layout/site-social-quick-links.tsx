@@ -15,6 +15,12 @@ function normalizeExternalHref(value?: string) {
   return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
 }
 
+function normalizeWhatsAppHref(value?: string) {
+  const digits = value?.replace(/\D/g, "");
+
+  return digits ? `https://wa.me/${digits}` : "";
+}
+
 export function SiteSocialQuickLinks({ settings }: SiteSocialQuickLinksProps) {
   const brandName = settings?.brandName ?? "ParkChargeEV";
   const socialLinks: Array<{
@@ -31,6 +37,11 @@ export function SiteSocialQuickLinks({ settings }: SiteSocialQuickLinksProps) {
       key: "facebook" as const,
       label: "Facebook",
       href: normalizeExternalHref(settings?.socials.facebook)
+    },
+    {
+      key: "whatsapp" as const,
+      label: "WhatsApp",
+      href: normalizeWhatsAppHref(settings?.whatsappPhone)
     },
     {
       key: "linkedin" as const,

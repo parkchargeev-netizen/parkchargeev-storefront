@@ -10,6 +10,7 @@ type PremiumSectionProps<T extends ElementType = "section"> = {
   className?: string;
   containerClassName?: string;
   container?: boolean;
+  id?: string;
   motion?: MotionKind | "none";
   tone?: "default" | "dark" | "light";
 };
@@ -50,6 +51,7 @@ export function PremiumSection<T extends ElementType = "section">({
   className,
   container = true,
   containerClassName,
+  id,
   motion = "reveal",
   tone = "default"
 }: PremiumSectionProps<T>) {
@@ -64,6 +66,7 @@ export function PremiumSection<T extends ElementType = "section">({
 
   return (
     <Component
+      id={id}
       className={clsx("premium-section premium-section-composed", toneClasses[tone], className)}
       data-motion={motion === "none" ? undefined : motion}
       data-motion-loop={ambient ? "ambient" : undefined}

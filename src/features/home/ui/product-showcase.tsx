@@ -13,7 +13,7 @@ type ProductShowcaseProps = {
 
 export function ProductShowcase({ products }: ProductShowcaseProps) {
   return (
-    <PremiumSection className="premium-product-spotlight">
+    <PremiumSection id="one-cikan-urunler" className="premium-product-spotlight">
         <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <SectionHeading
             eyebrow="Ürün portföyü"
