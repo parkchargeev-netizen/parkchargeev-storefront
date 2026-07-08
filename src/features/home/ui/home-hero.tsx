@@ -11,12 +11,6 @@ type HomeHeroProps = {
 };
 
 export function HomeHero({ whatsappHref }: HomeHeroProps) {
-  const heroMetrics = [
-    { label: "Güç aralığı", value: "7.4 - 22 kW" },
-    { label: "Soket uyumu", value: "Type 2" },
-    { label: "Karar akışı", value: "Ürün + kurulum" }
-  ] as const;
-
   return (
     <>
       <link
@@ -28,114 +22,92 @@ export function HomeHero({ whatsappHref }: HomeHeroProps) {
         fetchPriority="high"
         type="image/avif"
       />
-      <section className="home-landing-hero" data-motion="fade">
-        <div className="home-landing-hero__ambient" aria-hidden />
+      <section className="premium-hero premium-hero--refined relative isolate overflow-hidden" data-motion="fade">
+      <ChargingVisual />
+      <div className="premium-hero__mesh" aria-hidden />
 
-        <div className="home-landing-hero__inner">
-          <div className="home-landing-hero__copy" data-motion="reveal">
-            <p className="home-landing-hero__eyebrow">ParkChargeEV şarj mağazası</p>
-            <h1>EV şarj cihazını, kullanım alanına ve altyapına göre seç.</h1>
-            <p className="home-landing-hero__lead">
-              Ev, site, işletme ve ticari sahalar için AC wallbox, Type 2 aksesuar ve
-              kurulum ihtiyacını tek akışta karşılaştırın.
-            </p>
+      <div className="premium-hero__inner relative z-10 mx-auto flex max-w-7xl flex-col justify-center px-4 py-12 sm:px-6 lg:px-8">
+        <div className="premium-hero__copy max-w-[43rem]" data-motion="reveal">
+          <p className="premium-hero__eyebrow">Elektrikli araç şarj cihazları</p>
 
-            <div
-              className="home-landing-hero__actions"
-              data-motion="reveal"
-              data-motion-order="2"
-            >
-              <Link
-                href="/magaza"
-                prefetch={false}
-                className="home-landing-hero__button home-landing-hero__button--primary"
-                {...conversionDataAttributes("hero_cta_click", {
-                  cta: "Şarj cihazlarını incele",
-                  href: "/magaza"
-                })}
-              >
-                <ShoppingBag className="h-5 w-5" aria-hidden />
-                Şarj cihazlarını incele
-              </Link>
-              <Link
-                href="/urun-secici"
-                prefetch={false}
-                className="home-landing-hero__button home-landing-hero__button--secondary"
-                {...conversionDataAttributes("hero_cta_click", {
-                  cta: "Çözümünü bul",
-                  href: "/urun-secici"
-                })}
-              >
-                <ClipboardCheck className="h-5 w-5" aria-hidden />
-                Çözümünü bul
-              </Link>
-              <a
-                href={whatsappHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="home-landing-hero__button home-landing-hero__button--ghost"
-                {...conversionDataAttributes("whatsapp_click", {
-                  placement: "hero",
-                  href: whatsappHref
-                })}
-              >
-                <MessageCircle className="h-5 w-5" aria-hidden />
-                WhatsApp danışmanlığı
-              </a>
-            </div>
-
-            <div className="home-landing-hero__metrics" aria-label="Hızlı karar bilgileri">
-              {heroMetrics.map((item) => (
-                <span key={item.label}>
-                  <small>{item.label}</small>
-                  <strong>{item.value}</strong>
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <div className="home-landing-hero__stage" data-motion="slide" data-motion-order="2">
-            <div className="home-landing-hero__visual">
-              <ChargingVisual />
-            </div>
-            <div className="home-landing-hero__panel" aria-label="Satın alma karar özeti">
-              <span>Bugün en hızlı başlangıç</span>
-              <strong>Ürünü seç, altyapıyı doğrula, sepetten ilerle.</strong>
-              <p>Hazır ürünlerde mağaza akışı; keşif gereken projelerde danışmanlık.</p>
-            </div>
-          </div>
+          <h1 className="mt-5 max-w-[43rem] text-4xl font-bold leading-tight tracking-normal text-white sm:text-5xl">
+            Elektrikli araç şarj cihazınızı doğru güç ve kurulumla seçin.
+          </h1>
 
           <div
-            className="home-landing-hero__routes"
-            aria-label="Şarj çözümü kullanım alanları"
-            data-motion="slide"
-            data-motion-order="3"
+            className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap"
+            data-motion="reveal"
+            data-motion-order="2"
           >
-            {solutionRoutes.map((route) => (
-              <Link
-                key={route.label}
-                href={route.href}
-                prefetch={false}
-                className="home-landing-hero__route group"
-                {...conversionDataAttributes("persona_route_click", {
-                  route: route.label,
-                  href: route.href
-                })}
-              >
-                <HomeIcon icon={route.icon} className="home-landing-hero__route-icon" />
-                <span>
-                  <small>{route.label}</small>
-                  <strong>{route.title}</strong>
-                </span>
-                <em>{route.accent}</em>
-                <ArrowRight
-                  className="home-landing-hero__route-arrow transition group-hover:translate-x-1"
-                  aria-hidden
-                />
-              </Link>
-            ))}
+            <Link
+              href="/magaza"
+              prefetch={false}
+              className="premium-btn premium-btn--primary"
+              {...conversionDataAttributes("hero_cta_click", {
+                cta: "Şarj Cihazlarını İncele",
+                href: "/magaza"
+              })}
+            >
+              <ShoppingBag className="h-5 w-5" aria-hidden />
+              Şarj Cihazlarını İncele
+            </Link>
+            <Link
+              href="/urun-secici"
+              prefetch={false}
+              className="premium-btn premium-btn--glass"
+              {...conversionDataAttributes("hero_cta_click", {
+                cta: "Çözümünü Bul",
+                href: "/urun-secici"
+              })}
+            >
+              <ClipboardCheck className="h-5 w-5" aria-hidden />
+              Çözümünü Bul
+            </Link>
+            <a
+              href={whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="premium-btn premium-btn--ghost"
+              {...conversionDataAttributes("whatsapp_click", {
+                placement: "hero",
+                href: whatsappHref
+              })}
+            >
+              <MessageCircle className="h-5 w-5" aria-hidden />
+              Uzmanla Görüş
+            </a>
           </div>
         </div>
+
+        <div
+          className="premium-hero__routes"
+          aria-label="Şarj çözümü kullanım alanları"
+          data-motion="slide"
+          data-motion-order="3"
+        >
+          {solutionRoutes.slice(0, 3).map((route) => (
+            <Link
+              key={route.label}
+              href={route.href}
+              prefetch={false}
+              className="premium-hero-route group"
+            >
+              <HomeIcon icon={route.icon} className="premium-hero-route__icon" />
+              <span className="min-w-0">
+                <span className="premium-hero-route__meta">
+                  <small>{route.label}</small>
+                  <em>{route.accent}</em>
+                </span>
+                <strong>{route.title}</strong>
+              </span>
+              <ArrowRight
+                className="ml-auto h-4 w-4 shrink-0 transition group-hover:translate-x-1"
+                aria-hidden
+              />
+            </Link>
+          ))}
+        </div>
+      </div>
       </section>
     </>
   );
