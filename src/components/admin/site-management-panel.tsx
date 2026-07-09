@@ -1,5 +1,6 @@
 import { AdminPrefetchLink } from "@/components/admin/admin-prefetch-link";
 import { NavigationItemDeleteButton } from "@/components/admin/navigation-item-delete-button";
+import { ProductMerchandisingForm } from "@/components/admin/product-merchandising-form";
 import { SitePageDeleteButton } from "@/components/admin/site-page-delete-button";
 import { SiteManagementFormSlot } from "@/components/admin/site-management-form-slot";
 import { SiteSettingsForm } from "@/components/admin/site-settings-form";
@@ -16,6 +17,7 @@ import {
   getAdminSiteSettings,
   getAdminSitePageById,
   listAdminNavigationItems,
+  listAdminProductMerchandising,
   listAdminSitePages
 } from "@/server/admin/site-management";
 
@@ -83,12 +85,13 @@ export async function SiteManagementPanel({
   query = {},
   basePath = "/admin"
 }: SiteManagementPanelProps) {
-  const [navigation, pages, selectedNavigationItem, selectedPage, settings] = await Promise.all([
+  const [navigation, pages, selectedNavigationItem, selectedPage, settings, productMerchandising] = await Promise.all([
     listAdminNavigationItems({ q: query.q, status: query.status, limit: 50 }),
     listAdminSitePages({ q: query.q, status: query.status, limit: 50 }),
     query.editNav ? getAdminNavigationItemById(query.editNav) : Promise.resolve(null),
     query.editPage ? getAdminSitePageById(query.editPage) : Promise.resolve(null),
-    getAdminSiteSettings()
+    getAdminSiteSettings(),
+    listAdminProductMerchandising()
   ]);
   const activeNavigationCount = navigation.items.filter((item) => item.isActive).length;
   const publishedPageCount = pages.items.filter((page) => page.status === "published").length;
@@ -115,10 +118,10 @@ export async function SiteManagementPanel({
       action: "Sayfa yönet"
     },
     {
-      href: "/admin/urunler",
-      title: "Ürün vitrini",
-      body: "Ürün adı, fiyat, stok, teknik özellik, görsel, video, araç uyumu ve detay sayfası içeriklerini güncelleyin.",
-      action: "Ürünlere git"
+      href: "#product-merchandising",
+      title: "Ürün vitrinleri",
+      body: "Anasayfa ürün portföyü ile mağaza öne çıkan ürünlerini seçin, sıralayın ve canlıya alın.",
+      action: "Vitrinleri yönet"
     },
     {
       href: "/admin/blog",
@@ -241,6 +244,17 @@ export async function SiteManagementPanel({
           </span>
         </div>
         <SiteSettingsForm settings={settings} />
+      </section>
+
+      <section
+        id="product-merchandising"
+        className="surface-card scroll-mt-6 border border-emerald-100 bg-white/95 p-5 lg:p-6"
+      >
+        <ProductMerchandisingForm
+          sections={productMerchandising.sections}
+          products={productMerchandising.products}
+          slots={productMerchandising.slots}
+        />
       </section>
 
       <section className="surface-card border border-emerald-100 bg-white/95 p-5 lg:p-6">

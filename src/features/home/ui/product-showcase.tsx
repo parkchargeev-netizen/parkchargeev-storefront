@@ -33,9 +33,9 @@ export function ProductShowcase({ products }: ProductShowcaseProps) {
           </Link>
         </div>
 
-        <div className="premium-product-spotlight__grid mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+        <div className="premium-product-spotlight__grid mx-auto mt-8 grid max-w-6xl gap-4 md:grid-cols-2 xl:grid-cols-4">
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard key={product.id} product={product} layout="compact" />
           ))}
         </div>
     </PremiumSection>

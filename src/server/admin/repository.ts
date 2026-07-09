@@ -94,6 +94,30 @@ type ServiceLeadUpdateInput = z.infer<typeof adminServiceLeadUpdateSchema>;
 type BrandInput = z.infer<typeof adminBrandSchema>;
 type CategoryInput = z.infer<typeof adminCategorySchema>;
 
+export const publicMerchandisingSlotKeys = {
+  homeProductPortfolio: "home_product_portfolio",
+  storeFeaturedProducts: "store_featured_products"
+} as const;
+
+export type PublicMerchandisingSlotKey =
+  (typeof publicMerchandisingSlotKeys)[keyof typeof publicMerchandisingSlotKeys];
+
+export const publicProductMerchandisingSections = [
+  {
+    slotKey: publicMerchandisingSlotKeys.homeProductPortfolio,
+    title: "Anasayfa ürün portföyü",
+    description: "Anasayfadaki Ürün portföyü bölümünde gösterilecek ürünleri ve sıralamayı yönetir.",
+    maxItems: 4
+  },
+  {
+    slotKey: publicMerchandisingSlotKeys.storeFeaturedProducts,
+    title: "Mağaza öne çıkan ürünler",
+    description: "Mağaza sayfasındaki Öne çıkanlar / Popüler şarj ürünleri alanını yönetir.",
+    maxItems: 6
+  }
+] as const;
+
+
 type CursorPayload = {
   updatedAt: string;
   id: string;
@@ -727,6 +751,40 @@ export const listPublicProducts = unstable_cache(
     tags: ["public-products"]
   }
 );
+
+export async function listPublicMerchandisingProducts(
+  slotKey: PublicMerchandisingSlotKey,
+  fallbackProducts: ProductModel[],
+  limit: number
+) {
+  const fallback = fallbackProducts.slice(0, limit);
+
+  if (!hasDatabaseConfig()) {
+    return fallback;
+  }
+
+  try {
+    const db = getDb();
+    const rows = await db
+      .select({
+        productId: merchandisingSlots.productId
+      })
+      .from(merchandisingSlots)
+      .where(and(eq(merchandisingSlots.slotKey, slotKey), eq(merchandisingSlots.isActive, true)))
+      .orderBy(asc(merchandisingSlots.sortOrder), asc(merchandisingSlots.createdAt));
+
+    const productMap = new Map(fallbackProducts.map((product) => [product.id, product]));
+    const selectedProducts = rows
+      .map((row) => (row.productId ? productMap.get(row.productId) : undefined))
+      .filter((product): product is ProductModel => Boolean(product))
+      .slice(0, limit);
+
+    return selectedProducts.length > 0 ? selectedProducts : fallback;
+  } catch {
+    console.warn('Public merchandising slot "' + slotKey + '" could not be loaded. Falling back to product order.');
+    return fallback;
+  }
+}
 
 async function loadPublicProductSlugs() {
   const fallbackSlugs = marketingProducts.map((product) => product.slug);

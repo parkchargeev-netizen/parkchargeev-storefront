@@ -15248,3 +15248,50 @@ html[data-admin-command-open="true"] .admin-control-sidebar {
   }
 }
 
+/* Compact product cards for managed merchandising surfaces */
+.premium-product-card--compact {
+  gap: 0.7rem;
+  padding: 0.7rem !important;
+}
+
+.premium-product-card--compact .premium-product-card__media {
+  margin-bottom: 0.6rem !important;
+  min-height: 0;
+}
+
+.premium-product-card--compact .premium-product-card__media img,
+.premium-product-card--compact .premium-product-card__media > div {
+  padding: 0.55rem !important;
+}
+
+.premium-product-card--compact h3 {
+  font-size: clamp(0.92rem, 0.88rem + 0.18vw, 1.05rem) !important;
+  line-height: 1.22 !important;
+}
+
+.premium-product-card--compact .premium-product-card__specs {
+  margin-top: 0.75rem !important;
+  gap: 0.4rem !important;
+}
+
+.premium-product-card--compact .premium-product-card__price-row {
+  margin-top: 0.85rem !important;
+}
+
+.premium-product-card--compact .premium-product-card__price > p:first-child {
+  font-size: clamp(1.05rem, 1rem + 0.25vw, 1.32rem) !important;
+}
+
+.store-featured .store-product-rail {
+  grid-auto-columns: clamp(10.5rem, 17vw, 13.4rem);
+}
+
+.store-featured .store-product-slide {
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  .store-featured .store-product-rail {
+    grid-auto-columns: minmax(10.5rem, 72vw);
+  }
+}

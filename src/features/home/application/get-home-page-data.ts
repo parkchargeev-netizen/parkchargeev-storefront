@@ -1,4 +1,5 @@
 import type { HomePageDataSource } from "@/features/home/application/home-page-data-source";
+import { publicMerchandisingSlotKeys } from "@/server/admin/repository";
 import type {
   ArticleModel,
   ProductModel,
@@ -22,8 +23,16 @@ export async function getHomePageData(
     dataSource.listTestimonials()
   ]);
 
+  const featuredProducts = dataSource.listProductsForSlot
+    ? await dataSource.listProductsForSlot(
+        publicMerchandisingSlotKeys.homeProductPortfolio,
+        products,
+        4
+      )
+    : products.slice(0, 4);
+
   return {
-    featuredProducts: products.slice(0, 4),
+    featuredProducts,
     featuredArticles: articles.slice(0, 3),
     testimonials: testimonials.slice(0, 3),
     whatsappHref: `https://wa.me/${siteConfig.whatsappPhone}?text=${encodeURIComponent(

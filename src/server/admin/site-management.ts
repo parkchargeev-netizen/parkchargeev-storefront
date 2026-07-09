@@ -1,24 +1,28 @@
 import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
-import { and, desc, eq, ilike, lt, or } from "drizzle-orm";
+import { and, asc, desc, eq, ilike, inArray, lt, or } from "drizzle-orm";
 import { z } from "zod";
 
 import { hasDatabaseConfig } from "@/lib/runtime-config";
 import { logWarn } from "@/lib/server-logger";
+import type { ProductModel } from "@/lib/mock-data";
 import { slugify } from "@/lib/slug";
 import { recordAuditLog } from "@/server/admin/audit";
 import type {
   adminListQuerySchema,
+  adminMerchandisingSlotsSchema,
   adminNavigationItemSchema,
   adminSiteSettingsSchema,
   adminSitePageSchema
 } from "@/server/admin/validators";
 import type { AdminSessionPayload } from "@/server/auth/session";
 import { getDb } from "@/server/db/client";
-import { navigationItems, sitePages, siteSettings } from "@/server/db/schema";
+import { merchandisingSlots, navigationItems, products as productRows, sitePages, siteSettings } from "@/server/db/schema";
 import { normalizePublicSiteSettings } from "@/lib/site-settings";
+import { listPublicProducts, publicProductMerchandisingSections } from "@/server/admin/repository";
 import { SITE_SETTINGS_KEY, rowToPublicSiteSettings } from "@/server/site/settings";
 
 type ListQueryInput = z.infer<typeof adminListQuerySchema>;
+type MerchandisingSlotsInput = z.infer<typeof adminMerchandisingSlotsSchema>;
 type NavigationItemInput = z.infer<typeof adminNavigationItemSchema>;
 type SitePageInput = z.infer<typeof adminSitePageSchema>;
 type SiteSettingsInput = z.infer<typeof adminSiteSettingsSchema>;
@@ -531,4 +535,179 @@ export async function deleteAdminSitePage(
   }
 
   return before;
+}
+
+type AdminProductMerchandisingProduct = {
+  id: string;
+  name: string;
+  slug: string;
+  category: string;
+  powerLabel: string;
+  stockLabel: string;
+  imageUrl: string | null;
+};
+
+type AdminProductMerchandisingSlot = {
+  id: string;
+  slotKey: string;
+  productId: string | null;
+  sortOrder: number;
+  isActive: boolean;
+};
+
+function getManagedMerchandisingSlotKeys() {
+  return publicProductMerchandisingSections.map((section) => section.slotKey);
+}
+
+function mapPublicProductToMerchandisingOption(
+  product: ProductModel
+): AdminProductMerchandisingProduct {
+  return {
+    id: product.id,
+    name: product.name,
+    slug: product.slug,
+    category: product.category,
+    powerLabel: product.powerLabel,
+    stockLabel: product.stockLabel,
+    imageUrl: product.imageUrl ?? null
+  };
+}
+
+function revalidateProductMerchandisingCaches() {
+  revalidateTag("public-products");
+  revalidatePath("/");
+  revalidatePath("/magaza");
+  revalidatePath("/admin");
+  revalidatePath("/admin/site");
+}
+
+export async function listAdminProductMerchandising(): Promise<{
+  sections: typeof publicProductMerchandisingSections;
+  products: AdminProductMerchandisingProduct[];
+  slots: AdminProductMerchandisingSlot[];
+}> {
+  const productOptions = (await listPublicProducts()).map(mapPublicProductToMerchandisingOption);
+
+  if (!hasDatabaseConfig()) {
+    return {
+      sections: publicProductMerchandisingSections,
+      products: productOptions,
+      slots: []
+    };
+  }
+
+  try {
+    const db = getDb();
+    const rows = await db
+      .select({
+        id: merchandisingSlots.id,
+        slotKey: merchandisingSlots.slotKey,
+        productId: merchandisingSlots.productId,
+        sortOrder: merchandisingSlots.sortOrder,
+        isActive: merchandisingSlots.isActive
+      })
+      .from(merchandisingSlots)
+      .where(inArray(merchandisingSlots.slotKey, getManagedMerchandisingSlotKeys()))
+      .orderBy(asc(merchandisingSlots.slotKey), asc(merchandisingSlots.sortOrder));
+
+    return {
+      sections: publicProductMerchandisingSections,
+      products: productOptions,
+      slots: rows
+    };
+  } catch (error) {
+    logWarn("admin.product_merchandising.load_failed", {
+      message: error instanceof Error ? error.message : "unknown"
+    });
+
+    return {
+      sections: publicProductMerchandisingSections,
+      products: productOptions,
+      slots: []
+    };
+  }
+}
+
+function normalizeMerchandisingInput(input: MerchandisingSlotsInput, validProductIds: Set<string>) {
+  const managedSlotKeys = new Set(getManagedMerchandisingSlotKeys());
+  const seen = new Set<string>();
+
+  return input.slots
+    .filter((slot) => managedSlotKeys.has(slot.slotKey) && validProductIds.has(slot.productId))
+    .sort((left, right) => left.slotKey.localeCompare(right.slotKey) || left.sortOrder - right.sortOrder)
+    .filter((slot) => {
+      const key = slot.slotKey + ":" + slot.productId;
+
+      if (seen.has(key)) {
+        return false;
+      }
+
+      seen.add(key);
+      return true;
+    })
+    .map((slot, index) => ({
+      slotKey: slot.slotKey,
+      productId: slot.productId,
+      title:
+        publicProductMerchandisingSections.find((section) => section.slotKey === slot.slotKey)?.title ??
+        null,
+      sortOrder: Number.isFinite(slot.sortOrder) ? slot.sortOrder : index,
+      isActive: slot.isActive,
+      updatedAt: new Date()
+    }));
+}
+
+export async function updateAdminProductMerchandising(
+  input: MerchandisingSlotsInput,
+  actor: AdminSessionPayload | null,
+  requestMeta?: { ipAddress?: string | null; userAgent?: string | null }
+) {
+  if (!hasDatabaseConfig()) {
+    return listAdminProductMerchandising();
+  }
+
+  const db = getDb();
+  const managedSlotKeys = getManagedMerchandisingSlotKeys();
+  const requestedProductIds = [...new Set(input.slots.map((slot) => slot.productId))];
+  const activeProductRowsPromise = requestedProductIds.length > 0
+    ? db
+        .select({ id: productRows.id })
+        .from(productRows)
+        .where(and(eq(productRows.status, "active"), inArray(productRows.id, requestedProductIds)))
+    : Promise.resolve([] as Array<{ id: string }>);
+  const [activeProductRows, beforeRows] = await Promise.all([
+    activeProductRowsPromise,
+    db.select().from(merchandisingSlots).where(inArray(merchandisingSlots.slotKey, managedSlotKeys))
+  ]);
+  const validProductIds = new Set(activeProductRows.map((product) => product.id));
+  const values = normalizeMerchandisingInput(input, validProductIds);
+
+  await db.transaction(async (tx) => {
+    await tx.delete(merchandisingSlots).where(inArray(merchandisingSlots.slotKey, managedSlotKeys));
+
+    if (values.length > 0) {
+      await tx.insert(merchandisingSlots).values(values);
+    }
+  });
+
+  const afterRows = await db
+    .select()
+    .from(merchandisingSlots)
+    .where(inArray(merchandisingSlots.slotKey, managedSlotKeys));
+
+  await recordAuditLog({
+    db,
+    actor,
+    entityType: "product_merchandising",
+    entityId: "public-product-slots",
+    action: "update",
+    summary: "Anasayfa ve mağaza ürün vitrinleri güncellendi.",
+    beforePayload: beforeRows,
+    afterPayload: afterRows,
+    ipAddress: requestMeta?.ipAddress,
+    userAgent: requestMeta?.userAgent
+  });
+
+  revalidateProductMerchandisingCaches();
+  return listAdminProductMerchandising();
 }

@@ -469,6 +469,19 @@ export const adminNotificationPatchSchema = z.object({
   isRead: z.boolean()
 });
 
+export const adminMerchandisingSlotsSchema = z.object({
+  slots: z
+    .array(
+      z.object({
+        slotKey: z.enum(["home_product_portfolio", "store_featured_products"]),
+        productId: z.string().uuid(),
+        sortOrder: z.coerce.number().int().min(0).max(999).default(0),
+        isActive: z.boolean().default(true)
+      })
+    )
+    .max(24)
+});
+
 export const adminSitePageSchema = z.object({
   id: z.string().uuid().optional(),
   slug: z

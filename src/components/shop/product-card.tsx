@@ -23,7 +23,7 @@ import { getProductStoreProfile } from "@/lib/shop-merchandising";
 type ProductCardProps = {
   imagePriority?: boolean;
   product: ProductModel;
-  layout?: "standard" | "store";
+  layout?: "standard" | "store" | "compact";
 };
 
 const productCardLinkClassName =
@@ -241,6 +241,8 @@ export function ProductCard({
     ["Soket", profile.connectorHint]
   ] as const;
 
+  const isCompact = layout === "compact";
+
   if (layout === "store") {
     const storeSpecs = [
       ["Güç", product.powerLabel || profile.powerTier],
@@ -343,7 +345,7 @@ export function ProductCard({
 
   return (
     <ProductCardLink product={product}>
-      <article className="premium-product-card surface-card flex h-full flex-col rounded-lg p-3 transition-transform duration-200 group-hover:-translate-y-1 group-hover:border-primary/30">
+      <article className={`premium-product-card surface-card flex h-full flex-col rounded-lg p-3 transition-transform duration-200 group-hover:-translate-y-1 group-hover:border-primary/30 ${isCompact ? "premium-product-card--compact" : ""}`}>
         <ProductFixedBadge badge={product.badge} />
         <div className="premium-product-card__media relative mb-4 overflow-hidden rounded-lg bg-surface-container">
           <ProductMedia
