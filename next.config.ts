@@ -116,10 +116,13 @@ const checkoutContentSecurityPolicy = [
 
 const discoveryLinkHeader = [
   '<https://parkchargeev.com/sitemap.xml>; rel="sitemap"; type="application/xml"',
+  '<https://parkchargeev.com/image-sitemap.xml>; rel="sitemap"; type="application/xml"',
   '<https://parkchargeev.com/feed.xml>; rel="alternate"; type="application/rss+xml"; title="ParkChargeEV EV Charging Guides"',
   '<https://parkchargeev.com/llms.txt>; rel="alternate"; type="text/plain"',
+  '<https://parkchargeev.com/llms-full.txt>; rel="alternate"; type="text/plain"',
   '<https://parkchargeev.com/.well-known/llms.txt>; rel="alternate"; type="text/plain"',
   '<https://parkchargeev.com/.well-known/api-catalog>; rel="api-catalog"',
+  '<https://parkchargeev.com/.well-known/openapi.json>; rel="service-desc"; type="application/openapi+json"',
   '</docs/api>; rel="service-doc"'
 ].join(", ");
 

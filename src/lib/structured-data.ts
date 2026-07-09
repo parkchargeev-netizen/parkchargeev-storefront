@@ -53,6 +53,8 @@ export function getOrganizationJsonLd(settingsInput?: PublicSiteSettings) {
     "@id": organizationId,
     name: settings.brandName,
     alternateName: "Park Charge EV",
+    legalName: settings.brandName,
+    slogan: "Elektrikli araç şarj cihazı, keşif, kurulum ve teknik destek çözümleri",
     url: siteConfig.url,
     description: settings.description,
     email: settings.email,
@@ -74,6 +76,24 @@ export function getOrganizationJsonLd(settingsInput?: PublicSiteSettings) {
       areaServed: "TR",
       availableLanguage: ["tr-TR"]
     },
+    makesOffer: [
+      {
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Product",
+          name: "Elektrikli araç şarj cihazları",
+          category: "EV charging equipment"
+        }
+      },
+      {
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: "Elektrikli araç şarj cihazı keşif ve kurulum hizmeti",
+          serviceType: "EV charger installation"
+        }
+      }
+    ],
     hasMerchantReturnPolicy: {
       "@type": "MerchantReturnPolicy",
       "@id": merchantReturnPolicyId,
@@ -94,6 +114,7 @@ export function getOrganizationJsonLd(settingsInput?: PublicSiteSettings) {
       }
     },
     areaServed: settings.serviceAreas,
+    knowsLanguage: ["tr-TR", "tr"],
     knowsAbout: [
       "Elektrikli araç şarj cihazları",
       "EV şarj istasyonu kurulumu",
@@ -286,12 +307,15 @@ function getProductOffer({
   inStock: boolean;
 }) {
   const offerId = encodeURIComponent(id);
+  const priceValidUntil = new Date();
+  priceValidUntil.setUTCFullYear(priceValidUntil.getUTCFullYear() + 1);
 
   return {
     "@type": "Offer",
     "@id": `${productUrl}#offer-${offerId}`,
     priceCurrency: "TRY",
     price: (priceKurus / 100).toFixed(2),
+    priceValidUntil: priceValidUntil.toISOString().slice(0, 10),
     itemCondition: "https://schema.org/NewCondition",
     availability: inStock
       ? "https://schema.org/InStock"
@@ -361,6 +385,8 @@ function getProductCommonProperties(product: ProductModel, productUrl: string) {
     name: product.name,
     description: product.description,
     image: [getProductImageUrl(product)],
+    productID: product.id,
+    model: product.powerLabel,
     brand: {
       "@type": "Brand",
       name: siteConfig.name
@@ -371,6 +397,21 @@ function getProductCommonProperties(product: ProductModel, productUrl: string) {
     category: product.category,
     keywords: product.seoIntent.join(", "),
     url: productUrl,
+    inLanguage: "tr-TR",
+    audience: {
+      "@type": "Audience",
+      audienceType: product.useCases.join(", ") || product.category
+    },
+    positiveNotes: product.highlights.length
+      ? {
+          "@type": "ItemList",
+          itemListElement: product.highlights.map((highlight, index) => ({
+            "@type": "ListItem",
+            position: index + 1,
+            name: highlight
+          }))
+        }
+      : undefined,
     mainEntityOfPage: {
       "@type": "WebPage",
       "@id": productUrl

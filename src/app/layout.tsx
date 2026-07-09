@@ -5,6 +5,7 @@ import Script from "next/script";
 import { GlobalAmbientLayer } from "@/components/layout/global-ambient-layer";
 import { ScrollMotion } from "@/components/layout/scroll-motion";
 import { getConversionEventListenerScript } from "@/lib/conversion-listener-script";
+import { getEvSeoKeywords } from "@/lib/seo";
 import { absoluteUrl, siteConfig } from "@/lib/site";
 
 import "@/app/globals.css";
@@ -23,19 +24,26 @@ export const metadata: Metadata = {
   },
   description: siteConfig.description,
   applicationName: siteConfig.name,
-  keywords: [
-    "elektrikli araç şarj cihazı",
-    "elektrikli araç şarj aleti",
-    "elektrikli araç şarj cihazı fiyatları",
-    "ev tipi elektrikli araç şarj cihazı",
-    "EV şarj cihazı",
-    "wallbox",
-    "şarj cihazı kurulumu",
-    "PayTR güvenli ödeme",
-    "ParkChargeEV"
-  ],
+  authors: [{ name: siteConfig.name, url: siteConfig.url }],
+  creator: siteConfig.name,
+  publisher: siteConfig.name,
+  category: "Elektrikli araç şarj cihazları",
+  keywords: getEvSeoKeywords(["PayTR güvenli ödeme"]),
+  manifest: "/manifest.webmanifest",
   alternates: {
-    canonical: "/"
+    canonical: "/",
+    languages: {
+      "tr-TR": "/",
+      "x-default": "/"
+    }
+  },
+  verification: {
+    ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+      ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION }
+      : {}),
+    ...(process.env.NEXT_PUBLIC_YANDEX_VERIFICATION
+      ? { yandex: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION }
+      : {})
   },
   robots: {
     index: true,
@@ -69,6 +77,21 @@ export const metadata: Metadata = {
     title: defaultTitle,
     description: siteConfig.description,
     images: [defaultOgImage]
+  },
+  appleWebApp: {
+    capable: true,
+    title: siteConfig.name,
+    statusBarStyle: "black-translucent"
+  },
+  formatDetection: {
+    telephone: true,
+    address: true,
+    email: true
+  },
+  other: {
+    "content-language": "tr-TR",
+    "ai-site-purpose":
+      "EV charging equipment ecommerce, installation discovery, technical support and local EV charging consultation in Turkey"
   }
 };
 

@@ -11,6 +11,11 @@ User-agent: Claude-SearchBot
 User-agent: Claude-User
 User-agent: PerplexityBot
 User-agent: Perplexity-User
+User-agent: Applebot
+User-agent: Applebot-Extended
+User-agent: CCBot
+User-agent: YouBot
+User-agent: Amazonbot
 Allow: /
 Disallow: /admin
 Disallow: /api/admin
@@ -64,3 +69,4 @@ Disallow: /api/sentry-example-api
 
 Content-Signal: ai-train=yes, search=yes, ai-input=yes
 Sitemap: https://parkchargeev.com/sitemap.xml
+Sitemap: https://parkchargeev.com/image-sitemap.xml

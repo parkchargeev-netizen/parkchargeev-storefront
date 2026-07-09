@@ -31,6 +31,18 @@ export default function ApiDocsPage() {
               `/.well-known/openapi.json`
             </p>
           </article>
+          <article className="rounded-lg bg-surface-container-low p-5">
+            <h2 className="text-lg font-semibold text-on-surface">AI Summary</h2>
+            <p className="mt-3 text-sm text-on-surface-variant">`/llms.txt`</p>
+          </article>
+          <article className="rounded-lg bg-surface-container-low p-5">
+            <h2 className="text-lg font-semibold text-on-surface">AI Full</h2>
+            <p className="mt-3 text-sm text-on-surface-variant">`/llms-full.txt`</p>
+          </article>
+          <article className="rounded-lg bg-surface-container-low p-5">
+            <h2 className="text-lg font-semibold text-on-surface">Image Sitemap</h2>
+            <p className="mt-3 text-sm text-on-surface-variant">`/image-sitemap.xml`</p>
+          </article>
         </div>
       </section>
     </div>

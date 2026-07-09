@@ -30,6 +30,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "/elektrikli-arac-sarj-sozlugu", changeFrequency: "monthly", priority: 0.78 },
     { path: "/sarj-cihazi-kurulumu/sakarya", changeFrequency: "monthly", priority: 0.82 },
     { path: "/sarj-cihazi-kurulumu/kocaeli", changeFrequency: "monthly", priority: 0.82 },
+    { path: "/docs/api", changeFrequency: "yearly", priority: 0.4 },
     { path: "/hakkimizda", changeFrequency: "yearly", priority: 0.72 },
     { path: "/iletisim", changeFrequency: "yearly", priority: 0.78 },
     { path: "/blog", changeFrequency: "weekly", priority: 0.84 }

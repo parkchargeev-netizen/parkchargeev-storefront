@@ -13,6 +13,7 @@ import { MotionGroup } from "@/components/ui/premium-section";
 import { conversionDataAttributes } from "@/lib/conversion-events";
 import { storeSearchFaqs } from "@/features/store/domain/store-search-content";
 import { StoreSearchGuide } from "@/features/store/ui/store-search-guide";
+import { getEvSeoKeywords } from "@/lib/seo";
 import { absoluteUrl } from "@/lib/site";
 import { getProductStoreProfile, getStoreFilterOptions } from "@/lib/shop-merchandising";
 import {
@@ -26,6 +27,12 @@ export const metadata: Metadata = {
   title: "Elektrikli Araç Şarj Cihazları ve Fiyatları",
   description:
     "Elektrikli araç şarj cihazı fiyatlarını karşılaştırın. Ev tipi 7.4 kW, 11 kW, 22 kW wallbox, DC hızlı şarj ve Type 2 ürünleri inceleyin.",
+  keywords: getEvSeoKeywords([
+    "elektrikli araç şarj cihazı fiyatları",
+    "EV şarj cihazı mağaza",
+    "Type 2 şarj kablosu",
+    "DC hızlı şarj cihazı"
+  ]),
   alternates: {
     canonical: "/magaza"
   },
@@ -35,6 +42,13 @@ export const metadata: Metadata = {
       "Ev tipi ve kurumsal elektrikli araç şarj cihazlarını güç, fiyat, araç uyumu ve kurulum ihtiyacına göre karşılaştırın.",
     url: "/magaza",
     type: "website"
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Elektrikli Araç Şarj Cihazları ve Fiyatları | ParkChargeEV",
+    description:
+      "Ev tipi ve kurumsal elektrikli araç şarj cihazlarını güç, fiyat, araç uyumu ve kurulum ihtiyacına göre karşılaştırın.",
+    images: [absoluteUrl("/api/og/product/homecharge-pro-11kw")]
   }
 };
 

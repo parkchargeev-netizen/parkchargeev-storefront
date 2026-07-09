@@ -21,6 +21,11 @@ import { ProductPlacementBadges } from "@/components/shop/product-badges";
 import { formatProductDescriptionHtml } from "@/lib/product-description-html";
 import { getDisplayProductImageUrl } from "@/lib/product-media";
 import {
+  getProductSeoDescription,
+  getProductSeoKeywords,
+  getProductSeoTitle
+} from "@/lib/seo";
+import {
   getActiveProductSmartFeatures,
   getActiveProductTechnicalGroups,
   getActiveProductDetailBadges,
@@ -56,23 +61,42 @@ export async function generateMetadata({
 
   if (!product) {
     return {
-      title: "Ürün bulunamadı"
+      title: "Ürün bulunamadı",
+      robots: {
+        index: false,
+        follow: false
+      }
     };
   }
+  const seoTitle = getProductSeoTitle(product);
+  const seoDescription = getProductSeoDescription(product);
+  const productImage = getProductImageUrl(product);
 
   return {
-    title: product.name,
-    description: product.summary,
+    title: seoTitle,
+    description: seoDescription,
+    keywords: getProductSeoKeywords(product),
     alternates: {
       canonical: `/urun/${product.slug}`
     },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large",
+        "max-snippet": -1
+      }
+    },
     openGraph: {
-      title: product.name,
-      description: product.summary,
+      title: seoTitle,
+      description: seoDescription,
       type: "website",
+      url: `/urun/${product.slug}`,
       images: [
         {
-          url: getProductImageUrl(product),
+          url: productImage,
           width: 1200,
           height: 630,
           alt: product.name
@@ -81,9 +105,9 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      title: product.name,
-      description: product.summary,
-      images: [getProductImageUrl(product)]
+      title: seoTitle,
+      description: seoDescription,
+      images: [productImage]
     }
   };
 }
