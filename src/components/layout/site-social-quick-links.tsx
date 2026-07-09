@@ -1,5 +1,6 @@
 import type { PublicSiteSettings } from "@/lib/site-settings";
 import { SocialBrandIcon, type SocialBrandKey } from "@/components/layout/social-brand-icon";
+import { siteConfig } from "@/lib/site";
 
 type SiteSocialQuickLinksProps = {
   settings?: PublicSiteSettings;
@@ -41,7 +42,7 @@ export function SiteSocialQuickLinks({ settings }: SiteSocialQuickLinksProps) {
     {
       key: "whatsapp" as const,
       label: "WhatsApp",
-      href: normalizeWhatsAppHref(settings?.whatsappPhone)
+      href: normalizeWhatsAppHref(settings?.whatsappPhone || siteConfig.whatsappPhone)
     },
     {
       key: "linkedin" as const,
