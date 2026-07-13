@@ -234,7 +234,7 @@ export function ProductMerchandisingForm({
           const rows = rowsBySection[section.slotKey] ?? [];
 
           return (
-            <section key={section.slotKey} className="rounded-lg border border-slate-200 bg-slate-50/80 p-4">
+            <section key={section.slotKey} className="min-w-0 overflow-hidden rounded-lg border border-slate-200 bg-slate-50/80 p-4">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <h3 className="text-base font-semibold text-slate-950">{section.title}</h3>
@@ -247,7 +247,7 @@ export function ProductMerchandisingForm({
                   type="button"
                   onClick={() => addRow(section)}
                   disabled={rows.length >= section.maxItems || products.length === 0}
-                  className="rounded-lg border border-emerald-200 bg-white px-3 py-2 text-xs font-semibold text-emerald-800 transition hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="w-full rounded-lg border border-emerald-200 bg-white px-3 py-2 text-xs font-semibold text-emerald-800 transition hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
                 >
                   Ürün ekle
                 </button>
@@ -258,9 +258,9 @@ export function ProductMerchandisingForm({
                   const selectedProduct = productById.get(row.productId);
 
                   return (
-                    <div key={row.clientId} className="rounded-lg border border-white bg-white p-3 shadow-sm">
-                      <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_88px_120px]">
-                        <label className="grid gap-1 text-xs font-semibold text-slate-600">
+                    <div key={row.clientId} className="min-w-0 overflow-hidden rounded-lg border border-white bg-white p-3 shadow-sm">
+                      <div className="grid min-w-0 gap-3 md:grid-cols-[minmax(0,1fr)_5.5rem]">
+                        <label className="grid min-w-0 gap-1 text-xs font-semibold text-slate-600">
                           Ürün
                           <select
                             value={row.productId}
@@ -273,7 +273,7 @@ export function ProductMerchandisingForm({
                                 )
                               )
                             }
-                            className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900"
+                            className="min-w-0 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900"
                           >
                             <option value="">Ürün seçin</option>
                             {products.map((product) => (
@@ -283,7 +283,7 @@ export function ProductMerchandisingForm({
                             ))}
                           </select>
                         </label>
-                        <label className="grid gap-1 text-xs font-semibold text-slate-600">
+                        <label className="grid min-w-0 gap-1 text-xs font-semibold text-slate-600">
                           Sıra
                           <input
                             type="number"
@@ -298,10 +298,10 @@ export function ProductMerchandisingForm({
                                 )
                               )
                             }
-                            className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900"
+                            className="min-w-0 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900"
                           />
                         </label>
-                        <label className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700">
+                        <label className="flex w-fit items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700">
                           <input
                             type="checkbox"
                             checked={row.isActive}
@@ -319,13 +319,13 @@ export function ProductMerchandisingForm({
                         </label>
                       </div>
 
-                      <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500">
-                        <span>
+                      <div className="mt-3 grid min-w-0 gap-3 text-xs text-slate-500 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+                        <span className="block min-w-0 truncate">
                           {selectedProduct
                             ? `${selectedProduct.category} • ${selectedProduct.powerLabel || "Güç bilgisi yok"} • ${selectedProduct.stockLabel}`
                             : "Bu satır kaydedilmez."}
                         </span>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap justify-end gap-2">
                           <button
                             type="button"
                             onClick={() => moveRow(section.slotKey, row.clientId, -1)}
