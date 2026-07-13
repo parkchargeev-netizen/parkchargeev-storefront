@@ -15494,3 +15494,148 @@ html[data-admin-command-open="true"] .admin-control-sidebar {
     scroll-snap-align: start;
   }
 }
+
+/* Homepage minimal proof strip + mobile product media hardening */
+.premium-hero__proof {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: 1rem;
+}
+
+.premium-hero__proof span {
+  position: relative;
+  display: inline-flex;
+  min-height: 2.25rem;
+  align-items: center;
+  gap: 0.45rem;
+  overflow: hidden;
+  border: 1px solid rgba(126, 236, 201, 0.2);
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(126, 236, 201, 0.08));
+  padding: 0.45rem 0.72rem;
+  color: rgba(248, 255, 252, 0.9);
+  font-size: 0.76rem;
+  font-weight: 850;
+  line-height: 1;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transform: translateZ(0);
+}
+
+.premium-hero__proof span::after {
+  position: absolute;
+  inset: 0 auto 0 -40%;
+  width: 38%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.24), transparent);
+  content: "";
+  opacity: 0.75;
+  transform: skewX(-18deg) translate3d(-120%, 0, 0);
+  animation: premium-hero-proof-sheen 5.5s ease-in-out infinite;
+}
+
+.premium-hero__proof span:nth-child(2)::after {
+  animation-delay: 0.8s;
+}
+
+.premium-hero__proof span:nth-child(3)::after {
+  animation-delay: 1.6s;
+}
+
+.premium-hero__proof svg {
+  color: #8ff7d8;
+  filter: drop-shadow(0 0 12px rgba(126, 236, 201, 0.32));
+}
+
+@keyframes premium-hero-proof-sheen {
+  0%, 58%, 100% {
+    transform: skewX(-18deg) translate3d(-140%, 0, 0);
+  }
+
+  72% {
+    transform: skewX(-18deg) translate3d(370%, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .premium-hero__proof span::after {
+    animation: none !important;
+    opacity: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .premium-hero__proof {
+    gap: 0.42rem;
+    margin-top: 0.78rem;
+  }
+
+  .premium-hero__proof span {
+    min-height: 2.05rem;
+    padding: 0.38rem 0.58rem;
+    font-size: 0.68rem;
+  }
+
+  .premium-product-card .premium-product-card__media,
+  .premium-product-card--store .premium-product-card__media,
+  .premium-product-card--compact .premium-product-card__media,
+  .store-product-grid--commerce .premium-product-card__media,
+  .premium-product-spotlight .premium-product-card__media,
+  .store-featured .premium-product-card__media,
+  .product-detail-related-track .premium-product-card__media {
+    display: grid !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    aspect-ratio: 4 / 3 !important;
+    place-items: center !important;
+    overflow: hidden !important;
+    contain: layout paint;
+  }
+
+  .premium-product-card--compact .premium-product-card__media,
+  .store-featured .premium-product-card--compact .premium-product-card__media {
+    height: clamp(6.9rem, 32vw, 8.4rem) !important;
+    aspect-ratio: auto !important;
+  }
+
+  .premium-product-card .premium-product-card__media > img,
+  .premium-product-card .premium-product-card__media > .product-device-preview,
+  .premium-product-card--store .premium-product-card__media > img,
+  .premium-product-card--store .premium-product-card__media > .product-device-preview,
+  .premium-product-card--compact .premium-product-card__media > img,
+  .premium-product-card--compact .premium-product-card__media > .product-device-preview,
+  .store-product-grid--commerce .premium-product-card__media > img,
+  .premium-product-spotlight .premium-product-card__media > img,
+  .store-featured .premium-product-card__media > img,
+  .product-detail-related-track .premium-product-card__media > img {
+    position: relative !important;
+    inset: auto !important;
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: none !important;
+    object-fit: contain !important;
+    padding: clamp(0.42rem, 2.8vw, 0.72rem) !important;
+  }
+
+  .premium-product-card .premium-product-card__media > .premium-product-card__energy {
+    position: absolute !important;
+    inset: 0 !important;
+    pointer-events: none;
+  }
+
+  .premium-product-card__compare {
+    top: 0.45rem !important;
+    right: 0.45rem !important;
+  }
+
+  .product-commerce-media .product-gallery-stage-card {
+    overflow: hidden !important;
+  }
+
+  .product-commerce-media .product-gallery-stage--contain > button {
+    display: grid !important;
+    place-items: center !important;
+  }
+}

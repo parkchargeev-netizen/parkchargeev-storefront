@@ -1,4 +1,4 @@
-import { ClipboardCheck, MessageCircle, ShoppingBag } from "lucide-react";
+import { ClipboardCheck, Gauge, MessageCircle, PlugZap, ShieldCheck, ShoppingBag } from "lucide-react";
 import Link from "next/link";
 
 import { ChargingVisual } from "@/components/home/charging-visual";
@@ -74,6 +74,21 @@ export function HomeHero({ whatsappHref }: HomeHeroProps) {
                 <MessageCircle className="h-5 w-5" aria-hidden />
                 Uzmanla Görüş
               </a>
+            </div>
+
+            <div className="premium-hero__proof" aria-label="ParkChargeEV hızlı seçim göstergeleri">
+              <span>
+                <Gauge className="h-4 w-4" aria-hidden />
+                7.4 - 22 kW
+              </span>
+              <span>
+                <PlugZap className="h-4 w-4" aria-hidden />
+                Type 2 uyum
+              </span>
+              <span>
+                <ShieldCheck className="h-4 w-4" aria-hidden />
+                Kurulum planı
+              </span>
             </div>
           </div>
         </div>
