@@ -6,7 +6,6 @@ import { HomeHero } from "@/features/home/ui/home-hero";
 import { InstallationSection } from "@/features/home/ui/installation-section";
 import { ProductShowcase } from "@/features/home/ui/product-showcase";
 import { ProofResourcesSection } from "@/features/home/ui/proof-resources-section";
-import { SolutionRoutesSection } from "@/features/home/ui/solution-routes-section";
 
 export function HomePageView({
   featuredProducts,
@@ -18,7 +17,6 @@ export function HomePageView({
     <MotionGroup as="main" className="premium-home-page">
       <HomeHero whatsappHref={whatsappHref} />
       <ProductShowcase products={featuredProducts} />
-      <SolutionRoutesSection />
       <DecisionSystemSection />
       <InstallationSection />
       <ProofResourcesSection
