@@ -107,13 +107,13 @@ export const publicProductMerchandisingSections = [
     slotKey: publicMerchandisingSlotKeys.homeProductPortfolio,
     title: "Anasayfa ürün portföyü",
     description: "Anasayfadaki Ürün portföyü bölümünde gösterilecek ürünleri ve sıralamayı yönetir.",
-    maxItems: 4
+    maxItems: 12
   },
   {
     slotKey: publicMerchandisingSlotKeys.storeFeaturedProducts,
     title: "Mağaza öne çıkan ürünler",
     description: "Mağaza sayfasındaki Öne çıkanlar / Popüler şarj ürünleri alanını yönetir.",
-    maxItems: 6
+    maxItems: 24
   }
 ] as const;
 

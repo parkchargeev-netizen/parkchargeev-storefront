@@ -479,7 +479,7 @@ export const adminMerchandisingSlotsSchema = z.object({
         isActive: z.boolean().default(true)
       })
     )
-    .max(24)
+    .max(80)
 });
 
 export const adminSitePageSchema = z.object({

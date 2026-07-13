@@ -1,5 +1,5 @@
 import type { HomePageDataSource } from "@/features/home/application/home-page-data-source";
-import { publicMerchandisingSlotKeys } from "@/server/admin/repository";
+import { publicMerchandisingSlotKeys, publicProductMerchandisingSections } from "@/server/admin/repository";
 import type {
   ArticleModel,
   ProductModel,
@@ -23,13 +23,18 @@ export async function getHomePageData(
     dataSource.listTestimonials()
   ]);
 
+  const homeProductPortfolioLimit =
+    publicProductMerchandisingSections.find(
+      (section) => section.slotKey === publicMerchandisingSlotKeys.homeProductPortfolio
+    )?.maxItems ?? 12;
+
   const featuredProducts = dataSource.listProductsForSlot
     ? await dataSource.listProductsForSlot(
         publicMerchandisingSlotKeys.homeProductPortfolio,
         products,
-        4
+        homeProductPortfolioLimit
       )
-    : products.slice(0, 4);
+    : products.slice(0, homeProductPortfolioLimit);
 
   return {
     featuredProducts,

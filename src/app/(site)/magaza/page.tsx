@@ -21,7 +21,7 @@ import {
   getFaqJsonLd,
   getProductImageUrl
 } from "@/lib/structured-data";
-import { listPublicMerchandisingProducts, listPublicProducts, publicMerchandisingSlotKeys } from "@/server/admin/repository";
+import { listPublicMerchandisingProducts, listPublicProducts, publicMerchandisingSlotKeys, publicProductMerchandisingSections } from "@/server/admin/repository";
 
 export const metadata: Metadata = {
   title: "Elektrikli Araç Şarj Cihazları ve Fiyatları",
@@ -172,10 +172,14 @@ export default async function StorePage({ searchParams }: StorePageProps) {
     selectedView !== "grid" ? selectedView : "",
     selectedSort !== "recommended" ? selectedSort : ""
   ].filter(Boolean).length;
+  const storeFeaturedProductsLimit =
+    publicProductMerchandisingSections.find(
+      (section) => section.slotKey === publicMerchandisingSlotKeys.storeFeaturedProducts
+    )?.maxItems ?? 24;
   const featuredProducts = await listPublicMerchandisingProducts(
     publicMerchandisingSlotKeys.storeFeaturedProducts,
     products,
-    6
+    storeFeaturedProductsLimit
   );
   const prioritizeFeaturedImage = activeFilterCount === 0 && featuredProducts.length > 0;
   const prioritizeCatalogImage = !prioritizeFeaturedImage;

@@ -101,18 +101,24 @@ export function ProductMerchandisingForm({
 
   function addRow(section: MerchandisingSection) {
     updateRows(section.slotKey, (rows) => {
-      if (rows.length >= section.maxItems) {
+      const effectiveMaxItems = Math.min(section.maxItems, products.length);
+
+      if (rows.length >= effectiveMaxItems) {
         return rows;
       }
 
       const selectedIds = new Set(rows.map((row) => row.productId));
       const firstAvailableProduct = products.find((product) => !selectedIds.has(product.id));
 
+      if (!firstAvailableProduct) {
+        return rows;
+      }
+
       return [
         ...rows,
         {
           clientId: createClientId(),
-          productId: firstAvailableProduct?.id ?? "",
+          productId: firstAvailableProduct.id,
           sortOrder: rows.length,
           isActive: true
         }
@@ -240,13 +246,13 @@ export function ProductMerchandisingForm({
                   <h3 className="text-base font-semibold text-slate-950">{section.title}</h3>
                   <p className="mt-1 text-xs leading-5 text-slate-600">{section.description}</p>
                   <p className="mt-2 text-xs font-semibold text-emerald-800">
-                    En fazla {section.maxItems} ürün gösterilir.
+                    En fazla {section.maxItems} ürün gösterilir. Aktif ürün sayısı: {products.length}.
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => addRow(section)}
-                  disabled={rows.length >= section.maxItems || products.length === 0}
+                  disabled={rows.length >= Math.min(section.maxItems, products.length) || products.length === 0}
                   className="w-full rounded-lg border border-emerald-200 bg-white px-3 py-2 text-xs font-semibold text-emerald-800 transition hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
                 >
                   Ürün ekle
