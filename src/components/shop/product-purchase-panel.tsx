@@ -85,21 +85,6 @@ export function ProductPurchasePanel({
 
   return (
     <div className="product-purchase-panel product-purchase-panel--focused">
-      <div className="product-mobile-inline-atc" aria-label="Mobil hızlı sepete ekle">
-        <div>
-          <span>{labels.mobileTotalLabel}</span>
-          <strong>{formatPriceTRY(estimatedLineTotal)}</strong>
-        </div>
-        <button
-          type="button"
-          onClick={addCurrentSelection}
-          disabled={isAddDisabled}
-          aria-busy={!isHydrated}
-        >
-          {isOutOfStock ? labels.outOfStockLabel : labels.addToCartLabel}
-        </button>
-      </div>
-
       <ProductPlacementBadges
         badges={badges}
         placement="detail_price_top"

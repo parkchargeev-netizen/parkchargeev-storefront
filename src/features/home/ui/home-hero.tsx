@@ -1,9 +1,7 @@
-import { ArrowRight, ClipboardCheck, MessageCircle, ShoppingBag } from "lucide-react";
+import { ClipboardCheck, MessageCircle, ShoppingBag } from "lucide-react";
 import Link from "next/link";
 
 import { ChargingVisual } from "@/components/home/charging-visual";
-import { solutionRoutes } from "@/features/home/domain/home-content";
-import { HomeIcon } from "@/features/home/ui/home-icon";
 import { conversionDataAttributes } from "@/lib/conversion-events";
 
 type HomeHeroProps = {
@@ -30,7 +28,7 @@ export function HomeHero({ whatsappHref }: HomeHeroProps) {
           <div className="premium-hero__copy max-w-[43rem]" data-motion="reveal">
             <p className="premium-hero__eyebrow">Elektrikli araç şarj cihazları</p>
 
-            <h1 className="mt-5 max-w-[43rem] text-4xl font-bold leading-tight tracking-normal text-white sm:text-5xl">
+            <h1 className="premium-hero__animated-title mt-5 max-w-[43rem] text-4xl font-bold leading-tight tracking-normal text-white sm:text-5xl">
               Elektrikli araç şarj cihazınızı doğru güç ve kurulumla seçin.
             </h1>
 
@@ -77,27 +75,6 @@ export function HomeHero({ whatsappHref }: HomeHeroProps) {
                 Uzmanla Görüş
               </a>
             </div>
-          </div>
-
-          <div
-            className="premium-hero__routes"
-            aria-label="Şarj çözümü kullanım alanları"
-            data-motion="slide"
-            data-motion-order="3"
-          >
-            {solutionRoutes.slice(0, 3).map((route) => (
-              <Link key={route.label} href={route.href} prefetch={false} className="premium-hero-route group">
-                <HomeIcon icon={route.icon} className="premium-hero-route__icon" />
-                <span className="min-w-0">
-                  <span className="premium-hero-route__meta">
-                    <small>{route.label}</small>
-                    <em>{route.accent}</em>
-                  </span>
-                  <strong>{route.title}</strong>
-                </span>
-                <ArrowRight className="ml-auto h-4 w-4 shrink-0 transition group-hover:translate-x-1" aria-hidden />
-              </Link>
-            ))}
           </div>
         </div>
       </section>
