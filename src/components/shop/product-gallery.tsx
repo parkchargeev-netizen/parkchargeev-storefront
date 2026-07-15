@@ -376,7 +376,7 @@ export function ProductGallery({
                     event.stopPropagation();
                     prevImage();
                   }}
-                  className="absolute left-3 top-1/2 z-20 inline-flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-white/14 text-3xl font-bold text-white shadow-[0_18px_48px_rgba(0,0,0,0.35)] backdrop-blur transition hover:bg-white/24 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white sm:left-6 sm:h-14 sm:w-14"
+                  className="product-gallery-lightbox-nav absolute left-3 top-1/2 z-20 inline-flex h-9 w-9 min-h-0 min-w-0 -translate-y-1/2 items-center justify-center p-0 rounded-full border border-white/25 bg-white/16 text-xl font-bold text-white shadow-[0_14px_34px_rgba(0,0,0,0.28)] backdrop-blur transition hover:bg-white/26 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white sm:left-5 sm:h-10 sm:w-10"
                   aria-label="Önceki görsel"
                 >
                   ‹
@@ -387,7 +387,7 @@ export function ProductGallery({
                     event.stopPropagation();
                     nextImage();
                   }}
-                  className="absolute right-3 top-1/2 z-20 inline-flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-white/14 text-3xl font-bold text-white shadow-[0_18px_48px_rgba(0,0,0,0.35)] backdrop-blur transition hover:bg-white/24 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white sm:right-6 sm:h-14 sm:w-14"
+                  className="product-gallery-lightbox-nav absolute right-3 top-1/2 z-20 inline-flex h-9 w-9 min-h-0 min-w-0 -translate-y-1/2 items-center justify-center p-0 rounded-full border border-white/25 bg-white/16 text-xl font-bold text-white shadow-[0_14px_34px_rgba(0,0,0,0.28)] backdrop-blur transition hover:bg-white/26 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white sm:right-5 sm:h-10 sm:w-10"
                   aria-label="Sonraki görsel"
                 >
                   ›
