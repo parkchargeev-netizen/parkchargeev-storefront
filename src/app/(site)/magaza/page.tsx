@@ -6,7 +6,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-import { EnterpriseCommerceSection } from "@/components/commerce/enterprise-commerce-section";
 import { JsonLd } from "@/components/seo/json-ld";
 import { ProductCard } from "@/components/shop/product-card";
 import { StoreProductSelectorAccordion } from "@/components/shop/store-product-selector-accordion";
@@ -320,8 +319,6 @@ export default async function StorePage({ searchParams }: StorePageProps) {
       <section className="mt-6" aria-label="Ürün seçici">
         <StoreProductSelectorAccordion products={products} />
       </section>
-
-      <EnterpriseCommerceSection compact />
 
       {activeFilterCount === 0 && featuredProducts.length > 0 ? (
         <section className="store-featured mt-6" aria-labelledby="store-featured-title">
