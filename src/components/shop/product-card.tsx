@@ -280,8 +280,8 @@ export function ProductCard({
     return (
       <ProductCardLink product={product}>
         <article className="premium-product-card premium-product-card--store surface-card grid h-full gap-4 rounded-lg p-3 transition-transform duration-200 group-hover:-translate-y-1 group-hover:border-primary/30 md:grid-cols-[150px_1fr]">
-          <ProductFixedBadge badge={product.badge} />
           <div className="premium-product-card__media relative min-h-36 overflow-hidden rounded-lg bg-surface-container">
+            <ProductFixedBadge badge={product.badge} />
             <ProductMedia
               imagePriority={imagePriority}
               imageUrl={imageUrl}
@@ -374,8 +374,8 @@ export function ProductCard({
   return (
     <ProductCardLink product={product}>
       <article className={`premium-product-card surface-card flex h-full flex-col rounded-lg p-3 transition-transform duration-200 group-hover:-translate-y-1 group-hover:border-primary/30 ${isCompact ? "premium-product-card--compact" : ""}`}>
-        <ProductFixedBadge badge={product.badge} />
         <div className="premium-product-card__media relative mb-4 overflow-hidden rounded-lg bg-surface-container">
+          <ProductFixedBadge badge={product.badge} />
           <ProductMedia
             imagePriority={imagePriority}
             imageUrl={imageUrl}
