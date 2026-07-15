@@ -188,7 +188,7 @@ export function CartPageClient() {
                         height={240}
                         loading="lazy"
                         unoptimized={shouldBypassImageOptimization(getProductImageUrl(item))}
-                        className="aspect-[4/3] w-full object-cover"
+                        className="aspect-[4/3] w-full bg-white object-contain p-2"
                       />
                     ) : (
                       <ProductDevicePreview

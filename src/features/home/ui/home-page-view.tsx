@@ -1,3 +1,4 @@
+import { EnterpriseCommerceSection } from "@/components/commerce/enterprise-commerce-section";
 import { MotionGroup } from "@/components/ui/premium-section";
 import type { HomePageData } from "@/features/home/application/get-home-page-data";
 import { DecisionSystemSection } from "@/features/home/ui/decision-system-section";
@@ -17,6 +18,7 @@ export function HomePageView({
     <MotionGroup as="main" className="premium-home-page">
       <HomeHero whatsappHref={whatsappHref} />
       <ProductShowcase products={featuredProducts} />
+      <EnterpriseCommerceSection />
       <DecisionSystemSection />
       <InstallationSection />
       <ProofResourcesSection

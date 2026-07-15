@@ -48,56 +48,82 @@ function ProductCardLink({
   );
 }
 
+function getSecondaryProductImageUrl(product: ProductModel, primaryImageUrl: string | null) {
+  const mediaImages =
+    product.media
+      ?.filter((item) => item.mediaType === "image")
+      .map((item) => getDisplayProductImageUrl(item.url))
+      .filter((url): url is string => Boolean(url)) ?? [];
+
+  return mediaImages.find((url) => url !== primaryImageUrl) ?? null;
+}
+
 function ProductMedia({
   imagePriority = false,
   imageUrl,
   product,
+  secondaryImageUrl,
   store
 }: {
   imagePriority?: boolean;
   imageUrl: string | null;
   product: ProductModel;
+  secondaryImageUrl?: string | null;
   store?: boolean;
 }) {
-  const mediaClassName = store
-    ? "h-full min-h-36 w-full object-contain p-3 transition-transform duration-300 group-hover:scale-[1.03]"
-    : "aspect-[5/4] w-full object-contain p-3 transition-transform duration-300 group-hover:scale-[1.02]";
+  const mediaClassName = `product-card-media-image transition-transform duration-300 ${
+    store ? "group-hover:scale-[1.015]" : "group-hover:scale-[1.012]"
+  }`;
 
   return (
-    <>
-      <span
-        className="premium-product-card__energy"
-        data-motion-loop="energy"
-        aria-hidden
-      />
+    <span className={secondaryImageUrl ? "product-card-media-frame product-card-media-frame--has-secondary" : "product-card-media-frame"}>
       {imageUrl ? (
-        <Image
-          src={imageUrl}
-          alt={product.name}
-          width={store ? 520 : 640}
-          height={store ? 420 : 480}
-          loading={imagePriority ? undefined : "lazy"}
-          priority={imagePriority}
-          unoptimized={shouldBypassImageOptimization(imageUrl)}
-          sizes={
-            store
-              ? "(min-width: 1024px) 150px, 100vw"
-              : "(min-width: 1280px) 25vw, (min-width: 768px) 50vw, 100vw"
-          }
-          className={mediaClassName}
-        />
+        <>
+          <Image
+            src={imageUrl}
+            alt={product.name}
+            width={store ? 620 : 720}
+            height={store ? 620 : 720}
+            loading={imagePriority ? undefined : "lazy"}
+            priority={imagePriority}
+            unoptimized={shouldBypassImageOptimization(imageUrl)}
+            sizes={
+              store
+                ? "(min-width: 1024px) 150px, 44vw"
+                : "(min-width: 1280px) 260px, (min-width: 768px) 32vw, 44vw"
+            }
+            className={mediaClassName}
+          />
+          {secondaryImageUrl ? (
+            <Image
+              src={secondaryImageUrl}
+              alt=""
+              aria-hidden
+              width={store ? 620 : 720}
+              height={store ? 620 : 720}
+              loading="lazy"
+              unoptimized={shouldBypassImageOptimization(secondaryImageUrl)}
+              sizes={
+                store
+                  ? "(min-width: 1024px) 150px, 44vw"
+                  : "(min-width: 1280px) 260px, (min-width: 768px) 32vw, 44vw"
+              }
+              className="product-card-media-image product-card-media-image--secondary"
+            />
+          ) : null}
+        </>
       ) : (
         <ProductDevicePreview
           productName={product.name}
           powerLabel={product.powerLabel}
           className={
             store
-              ? "h-full min-h-36 transition-transform duration-300 group-hover:scale-[1.03]"
-              : "transition-transform duration-300 group-hover:scale-[1.02]"
+              ? "product-card-media-preview h-full w-full transition-transform duration-300 group-hover:scale-[1.015]"
+              : "product-card-media-preview h-full w-full transition-transform duration-300 group-hover:scale-[1.012]"
           }
         />
       )}
-    </>
+    </span>
   );
 }
 
@@ -125,7 +151,7 @@ function ProductStatusRow({
   const isOutOfStock = stockLabel === "Stokta Yok";
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="premium-product-card__status-row flex flex-wrap items-center gap-2">
       <StatusBadge tone="primary">{category}</StatusBadge>
       <StatusBadge tone={isOutOfStock ? "danger" : "success"}>
         {stockLabel}
@@ -234,6 +260,7 @@ export function ProductCard({
 }: ProductCardProps) {
   const profile = getProductStoreProfile(product);
   const imageUrl = getDisplayProductImageUrl(product.imageUrl) ?? null;
+  const secondaryImageUrl = getSecondaryProductImageUrl(product, imageUrl);
   const productBadges = getActiveProductDetailBadges(product);
   const compactSpecs = [
     ["Güç", product.powerLabel || profile.powerTier],
@@ -259,6 +286,7 @@ export function ProductCard({
               imagePriority={imagePriority}
               imageUrl={imageUrl}
               product={product}
+              secondaryImageUrl={secondaryImageUrl}
               store
             />
             <ProductCardImageBadges badges={productBadges} />
@@ -352,6 +380,7 @@ export function ProductCard({
             imagePriority={imagePriority}
             imageUrl={imageUrl}
             product={product}
+            secondaryImageUrl={secondaryImageUrl}
           />
           <ProductCardImageBadges badges={productBadges} />
           <div className="premium-product-card__compare absolute right-3 top-3 z-10">
