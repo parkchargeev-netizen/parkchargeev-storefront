@@ -58,6 +58,11 @@ function getSecondaryProductImageUrl(product: ProductModel, primaryImageUrl: str
   return mediaImages.find((url) => url !== primaryImageUrl) ?? null;
 }
 
+const productCardImageSizes = {
+  standard: "(max-width: 767px) 50vw, (max-width: 1279px) 30vw, 240px",
+  store: "(max-width: 767px) 44vw, (max-width: 1023px) 28vw, 150px"
+} as const;
+
 function ProductMedia({
   imagePriority = false,
   imageUrl,
@@ -82,16 +87,12 @@ function ProductMedia({
           <Image
             src={imageUrl}
             alt={product.name}
-            width={store ? 620 : 720}
-            height={store ? 620 : 720}
+            width={store ? 360 : 420}
+            height={store ? 360 : 420}
             loading={imagePriority ? undefined : "lazy"}
             priority={imagePriority}
             unoptimized={shouldBypassImageOptimization(imageUrl)}
-            sizes={
-              store
-                ? "(min-width: 1024px) 150px, 44vw"
-                : "(min-width: 1280px) 260px, (min-width: 768px) 32vw, 44vw"
-            }
+            sizes={store ? productCardImageSizes.store : productCardImageSizes.standard}
             className={mediaClassName}
           />
           {secondaryImageUrl ? (
@@ -99,15 +100,11 @@ function ProductMedia({
               src={secondaryImageUrl}
               alt=""
               aria-hidden
-              width={store ? 620 : 720}
-              height={store ? 620 : 720}
+              width={store ? 360 : 420}
+              height={store ? 360 : 420}
               loading="lazy"
               unoptimized={shouldBypassImageOptimization(secondaryImageUrl)}
-              sizes={
-                store
-                  ? "(min-width: 1024px) 150px, 44vw"
-                  : "(min-width: 1280px) 260px, (min-width: 768px) 32vw, 44vw"
-              }
+              sizes={store ? productCardImageSizes.store : productCardImageSizes.standard}
               className="product-card-media-image product-card-media-image--secondary"
             />
           ) : null}

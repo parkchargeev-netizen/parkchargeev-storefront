@@ -34,13 +34,26 @@ function getScrollMotionRuntimeScript() {
       var pointerY = window.innerHeight / 2;
       var currentMotionMode = "rich";
 
+      function isAndroidRuntime() {
+        var userAgent = String(navigator.userAgent || "");
+        var platform = String((navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || "");
+        return /Android/i.test(userAgent) || /Android/i.test(platform);
+      }
+
       function getMotionPerformanceMode() {
         var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
         var saveData = Boolean(connection && connection.saveData);
         var lowCoreCount = Boolean(navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4);
         var lowMemory = Boolean(navigator.deviceMemory && navigator.deviceMemory <= 4);
+        var isAndroid = isAndroidRuntime();
 
-        if (mediaQuery.matches || coarsePointerQuery.matches || saveData || lowCoreCount || lowMemory) {
+        if (isAndroid) {
+          document.documentElement.dataset.deviceOs = "android";
+        } else if (document.documentElement.dataset.deviceOs === "android") {
+          delete document.documentElement.dataset.deviceOs;
+        }
+
+        if (mediaQuery.matches || isAndroid || coarsePointerQuery.matches || saveData || lowCoreCount || lowMemory) {
           return "lite";
         }
 

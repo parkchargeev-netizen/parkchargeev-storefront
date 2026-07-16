@@ -17463,3 +17463,129 @@ html[data-admin-command-open="true"] .admin-control-sidebar {
   box-sizing: border-box !important;
   line-height: 1 !important;
 }
+
+
+/* Android performance profile: preserve visual language while removing expensive mobile paint work. */
+html[data-device-os="android"] {
+  --scroll-shift: 0px !important;
+  --ambient-x: 0px !important;
+  --ambient-y: 0px !important;
+}
+
+html[data-device-os="android"] .global-ambient-layer,
+html[data-device-os="android"] .site-ambient-circuit,
+html[data-device-os="android"] .premium-section__atmosphere {
+  display: none !important;
+}
+
+html[data-device-os="android"] .site-page-transition {
+  background:
+    radial-gradient(ellipse at 12% 8rem, rgba(126, 236, 201, 0.1), transparent 22rem),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.74), rgba(239, 251, 246, 0.62)) !important;
+}
+
+html[data-device-os="android"] .site-page-transition::before {
+  opacity: 0.18 !important;
+  background-size: 112px 112px !important;
+  animation: none !important;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.72), transparent 88%) !important;
+}
+
+html[data-device-os="android"] .site-page-transition::after,
+html[data-device-os="android"] .premium-hero--refined::before,
+html[data-device-os="android"] .premium-hero--refined::after,
+html[data-device-os="android"] .premium-hero__mesh,
+html[data-device-os="android"] .premium-hero__mesh::before,
+html[data-device-os="android"] .premium-hero__mesh::after,
+html[data-device-os="android"] .premium-section__rail,
+html[data-device-os="android"] .premium-section__spark,
+html[data-device-os="android"] .premium-section__flare,
+html[data-device-os="android"] .real-charger-media__scan,
+html[data-device-os="android"] .real-charger-media__charger-pulse,
+html[data-device-os="android"] .real-charger-media__cable-flow,
+html[data-device-os="android"] .real-charger-media__lightline,
+html[data-device-os="android"] .real-charger-media__floor-glow,
+html[data-device-os="android"] .real-charger-media__dot,
+html[data-device-os="android"] .premium-product-card__energy,
+html[data-device-os="android"] .premium-product-card__media::before,
+html[data-device-os="android"] .premium-hero__proof span::after {
+  display: none !important;
+  animation: none !important;
+}
+
+html[data-device-os="android"] :where(.premium-hero__animated-title, .premium-hero__proof span, .site-announcement-marquee, .product-card-media-image, .premium-product-card, .surface-card, .ds-surface) {
+  will-change: auto !important;
+}
+
+html[data-device-os="android"] .premium-hero__animated-title {
+  animation: none !important;
+  filter: none !important;
+  text-shadow: 0 12px 34px rgba(0, 0, 0, 0.26) !important;
+}
+
+html[data-device-os="android"] .real-charger-media__photo,
+html[data-device-os="android"] .real-charger-media__photo-image,
+html[data-device-os="android"] .real-charger-media__shade {
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+  filter: none !important;
+}
+
+html[data-device-os="android"] .site-header,
+html[data-device-os="android"] .premium-install-card,
+html[data-device-os="android"] .product-mobile-inline-atc,
+html[data-device-os="android"] .site-experience-shell :where(.surface-card, .ds-surface, .premium-product-card, .selector-option, .store-selector-window-card, .lead-form-card, .contact-info-card, .contact-map-card, [class*="backdrop-blur"]) {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+html[data-device-os="android"] .premium-product-card,
+html[data-device-os="android"] .surface-card,
+html[data-device-os="android"] .ds-surface {
+  box-shadow: 0 10px 24px rgba(6, 51, 38, 0.075) !important;
+}
+
+html[data-device-os="android"] .premium-product-card-link:hover .premium-product-card,
+html[data-device-os="android"] .premium-product-card-link:focus-visible .premium-product-card,
+html[data-device-os="android"] .premium-route-card:hover,
+html[data-device-os="android"] .premium-route-mini:hover,
+html[data-device-os="android"] .enterprise-commerce-card:hover {
+  transform: none !important;
+}
+
+html[data-device-os="android"] [data-motion] {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+html[data-device-os="android"] .site-announcement-marquee {
+  animation-duration: 42s !important;
+}
+
+html[data-device-os="android"] .premium-product-card__fixed-badge::before,
+html[data-device-os="android"] .premium-product-card__fixed-badge::after,
+html[data-device-os="android"] .product-badge::before,
+html[data-device-os="android"] .product-badge::after {
+  display: none !important;
+}
+
+@media (max-width: 767px) and (pointer: coarse) {
+  .global-ambient-layer,
+  .site-ambient-circuit {
+    display: none !important;
+  }
+
+  .site-page-transition::after,
+  .premium-section__atmosphere,
+  .premium-hero__mesh,
+  .real-charger-media__scan,
+  .real-charger-media__charger-pulse,
+  .real-charger-media__cable-flow,
+  .real-charger-media__lightline,
+  .real-charger-media__floor-glow,
+  .real-charger-media__dot {
+    display: none !important;
+  }
+}

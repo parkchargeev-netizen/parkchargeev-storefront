@@ -103,6 +103,36 @@ export default function RootLayout({
   return (
     <html lang="tr">
       <body className="font-sans">
+        <Script id="parkchargeev-device-performance" strategy="beforeInteractive">
+          {`
+            (function(){
+              var root = document.documentElement;
+              var nav = window.navigator || {};
+              var ua = String(nav.userAgent || "");
+              var platform = String((nav.userAgentData && nav.userAgentData.platform) || nav.platform || "");
+              var isAndroid = /Android/i.test(ua) || /Android/i.test(platform);
+              var connection = nav.connection || nav.mozConnection || nav.webkitConnection;
+              var saveData = Boolean(connection && connection.saveData);
+              var lowCoreCount = Boolean(nav.hardwareConcurrency && nav.hardwareConcurrency <= 4);
+              var lowMemory = Boolean(nav.deviceMemory && nav.deviceMemory <= 4);
+              var coarsePointer = false;
+
+              try {
+                coarsePointer = window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
+              } catch (error) {
+                coarsePointer = false;
+              }
+
+              if (isAndroid) {
+                root.dataset.deviceOs = "android";
+              }
+
+              if (isAndroid || saveData || lowCoreCount || lowMemory || coarsePointer) {
+                root.dataset.motionPerformance = "lite";
+              }
+            })();
+          `}
+        </Script>
         <Script id="google-ads-gtag" strategy="afterInteractive">
           {`
             (function(w,d,id){
