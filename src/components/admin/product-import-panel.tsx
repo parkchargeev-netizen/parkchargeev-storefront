@@ -1,0 +1,438 @@
+"use client";
+
+import { useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+
+import type {
+  ProductImportConfirmResponse,
+  ProductImportField,
+  ProductImportHistoryItem,
+  ProductImportPreviewResponse,
+  ProductImportPreviewRow
+} from "@/lib/admin-product-import-contract";
+import { productImportFieldLabels, productImportFieldValues } from "@/lib/admin-product-import-contract";
+
+type ProductImportPanelProps = {
+  exportHref: string;
+  history: ProductImportHistoryItem[];
+};
+
+type ApiErrorPayload = {
+  ok?: false;
+  message?: string;
+  details?: string[];
+};
+
+const statusLabels: Record<ProductImportPreviewRow["status"], string> = {
+  ready: "Hazir",
+  unchanged: "Degismedi",
+  unmatched: "Eslesmedi",
+  duplicate: "Tekrar",
+  error: "Hata"
+};
+
+const statusClasses: Record<ProductImportPreviewRow["status"], string> = {
+  ready: "border-emerald-200 bg-emerald-50 text-emerald-800",
+  unchanged: "border-slate-200 bg-slate-50 text-slate-700",
+  unmatched: "border-amber-200 bg-amber-50 text-amber-800",
+  duplicate: "border-orange-200 bg-orange-50 text-orange-800",
+  error: "border-rose-200 bg-rose-50 text-rose-700"
+};
+
+function formatKurus(value: number | null) {
+  if (value === null || value === undefined) {
+    return "-";
+  }
+
+  if (value === 0) {
+    return "Temizle";
+  }
+
+  return new Intl.NumberFormat("tr-TR", {
+    style: "currency",
+    currency: "TRY",
+    maximumFractionDigits: 2
+  }).format(value / 100);
+}
+
+function escapeCsvValue(value: unknown) {
+  const text = value === null || value === undefined ? "" : String(value);
+  return `"${text.replace(/"/g, '""')}"`;
+}
+
+function downloadCsv(filename: string, rows: ProductImportPreviewRow[]) {
+  const columns = [
+    "rowNumber",
+    "status",
+    "matchedBy",
+    "productId",
+    "variantId",
+    "sku",
+    "slug",
+    "name",
+    "messages",
+    "changedFields",
+    "oldPrice",
+    "newPrice",
+    "oldSalePrice",
+    "newSalePrice",
+    "oldStock",
+    "newStock"
+  ];
+  const csv = [
+    columns.map(escapeCsvValue).join(","),
+    ...rows.map((row) =>
+      [
+        row.rowNumber,
+        row.status,
+        row.matchedBy,
+        row.productId,
+        row.variantId,
+        row.sku,
+        row.slug,
+        row.name,
+        row.messages.join(" | "),
+        row.changedFields.join(" | "),
+        row.oldPriceKurus,
+        row.newPriceKurus,
+        row.oldSalePriceKurus,
+        row.newSalePriceKurus,
+        row.oldStock,
+        row.newStock
+      ]
+        .map(escapeCsvValue)
+        .join(",")
+    )
+  ].join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+function getRowChangeSummary(row: ProductImportPreviewRow) {
+  const changes: string[] = [];
+
+  if (row.changedFields.includes("price")) {
+    changes.push(`Fiyat: ${formatKurus(row.oldPriceKurus)} -> ${formatKurus(row.newPriceKurus)}`);
+  }
+
+  if (row.changedFields.includes("sale_price")) {
+    changes.push(`Indirim: ${formatKurus(row.oldSalePriceKurus)} -> ${formatKurus(row.newSalePriceKurus)}`);
+  }
+
+  if (row.changedFields.includes("stock")) {
+    changes.push(`Stok: ${row.oldStock ?? "-"} -> ${row.newStock ?? "-"}`);
+  }
+
+  return changes.length > 0 ? changes.join("; ") : "Degisiklik yok";
+}
+
+export function ProductImportPanel({ exportHref, history }: ProductImportPanelProps) {
+  const router = useRouter();
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [selectedFields, setSelectedFields] = useState<ProductImportField[]>(["price", "sale_price", "stock"]);
+  const [preview, setPreview] = useState<ProductImportPreviewResponse | null>(null);
+  const [result, setResult] = useState<ProductImportConfirmResponse | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
+  const [isPreviewing, setIsPreviewing] = useState(false);
+  const [isConfirming, setIsConfirming] = useState(false);
+  const problematicRows = useMemo(
+    () => preview?.rows.filter((row) => ["error", "unmatched", "duplicate"].includes(row.status)) ?? [],
+    [preview]
+  );
+  const previewRows = preview?.rows.slice(0, 80) ?? [];
+
+  const toggleField = (field: ProductImportField, checked: boolean) => {
+    setSelectedFields((current) =>
+      checked ? Array.from(new Set([...current, field])) : current.filter((item) => item !== field)
+    );
+  };
+
+  const resetPreview = () => {
+    setPreview(null);
+    setResult(null);
+    setMessage(null);
+  };
+
+  const previewImport = async () => {
+    if (!file || selectedFields.length === 0 || isPreviewing) {
+      return;
+    }
+
+    setIsPreviewing(true);
+    setMessage(null);
+    setResult(null);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      for (const field of selectedFields) {
+        formData.append("fields", field);
+      }
+
+      const response = await fetch("/api/admin/products/import", {
+        method: "POST",
+        body: formData
+      });
+      const payload = (await response.json().catch(() => null)) as ProductImportPreviewResponse | ApiErrorPayload | null;
+
+      if (!response.ok || !payload || payload.ok !== true) {
+        throw new Error((payload as ApiErrorPayload | null)?.message ?? "Import onizlemesi olusturulamadi.");
+      }
+
+      setPreview(payload);
+    } catch (error) {
+      setPreview(null);
+      setMessage(error instanceof Error ? error.message : "Import onizlemesi olusturulamadi.");
+    } finally {
+      setIsPreviewing(false);
+    }
+  };
+
+  const confirmImport = async () => {
+    if (!preview || preview.summary.readyRows === 0 || isConfirming) {
+      return;
+    }
+
+    const confirmation = window.confirm(
+      `${preview.summary.readyRows} satir urun verisini guncellemek uzeresiniz. Devam edilsin mi?`
+    );
+
+    if (!confirmation) {
+      return;
+    }
+
+    setIsConfirming(true);
+    setMessage(null);
+
+    try {
+      const response = await fetch("/api/admin/products/import", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          fileName: preview.fileName,
+          selectedFields: preview.summary.selectedFields,
+          rows: preview.rows
+        })
+      });
+      const payload = (await response.json().catch(() => null)) as ProductImportConfirmResponse | ApiErrorPayload | null;
+
+      if (!response.ok || !payload || payload.ok !== true) {
+        throw new Error((payload as ApiErrorPayload | null)?.message ?? "Import uygulanamadi.");
+      }
+
+      setResult(payload);
+      router.refresh();
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Import uygulanamadi.");
+    } finally {
+      setIsConfirming(false);
+    }
+  };
+
+  return (
+    <section className="rounded-3xl border border-emerald-100 bg-white/90 p-5 shadow-[0_24px_70px_rgba(15,23,42,0.08)] lg:p-6">
+      <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
+        <div className="max-w-3xl space-y-2">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-700">Iceri / Disari Aktar</p>
+          <h2 className="text-xl font-black tracking-normal text-slate-950 lg:text-2xl">
+            Toplu fiyat ve stok guncelleme
+          </h2>
+          <p className="text-sm leading-6 text-slate-600">
+            CSV veya XLSX dosyanizi yukleyin; sistem once product_id, SKU ya da slug ile eslestirir, degisiklikleri
+            onizletir ve siz onay vermeden veritabanina yazmaz.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <a
+            href={exportHref}
+            className="inline-flex rounded-full border border-slate-300 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 transition hover:border-emerald-300 hover:text-emerald-800"
+          >
+            Disari Aktar CSV
+          </a>
+          <button
+            type="button"
+            onClick={() => {
+              window.location.href = "/api/admin/products/import";
+            }}
+            className="inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm font-bold text-emerald-800 transition hover:bg-emerald-100"
+          >
+            Ornek Sablon Indir
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(260px,0.5fr)]">
+        <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+            <label className="block">
+              <span className="text-xs font-bold uppercase tracking-normal text-slate-500">Dosya</span>
+              <input
+                ref={inputRef}
+                type="file"
+                accept=".csv,.xlsx,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                onChange={(event) => {
+                  setFile(event.currentTarget.files?.[0] ?? null);
+                  resetPreview();
+                }}
+                className="mt-2 block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 file:mr-4 file:rounded-full file:border-0 file:bg-slate-950 file:px-4 file:py-2 file:text-sm file:font-bold file:text-white"
+              />
+            </label>
+            <button
+              type="button"
+              disabled={!file || selectedFields.length === 0 || isPreviewing}
+              onClick={previewImport}
+              className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {isPreviewing ? "Analiz ediliyor..." : "Onizle"}
+            </button>
+          </div>
+
+          <div className="mt-4 flex flex-wrap gap-2">
+            {productImportFieldValues.map((field) => (
+              <label
+                key={field}
+                className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-700"
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedFields.includes(field)}
+                  onChange={(event) => toggleField(field, event.currentTarget.checked)}
+                  className="h-4 w-4 rounded border-slate-300 text-emerald-700"
+                />
+                {productImportFieldLabels[field]}
+              </label>
+            ))}
+          </div>
+
+          <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900">
+            Esleme sirası: <strong>product_id</strong>, yoksa <strong>sku</strong>, yoksa <strong>slug</strong>. Urun adi
+            eslestirme icin kullanilmaz. Ayni urun/varyant dosyada iki kez varsa satirlar yazilmaz.
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-slate-200 bg-white p-4">
+          <h3 className="text-sm font-black text-slate-950">Son importlar</h3>
+          <div className="mt-3 space-y-3">
+            {history.length > 0 ? (
+              history.map((item) => (
+                <div key={item.id} className="rounded-2xl border border-slate-100 bg-slate-50 px-3 py-2">
+                  <p className="truncate text-xs font-bold text-slate-900">{item.fileName ?? "Dosya"}</p>
+                  <p className="mt-1 text-xs text-slate-500">
+                    {item.updatedRows} guncel, {item.skippedRows} atlandi · {new Date(item.createdAt).toLocaleString("tr-TR")}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <p className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-3 py-4 text-sm text-slate-500">
+                Henuz import gecmisi yok.
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {message ? (
+        <div className="mt-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700">
+          {message}
+        </div>
+      ) : null}
+
+      {preview ? (
+        <div className="mt-5 space-y-4">
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
+            {[
+              ["Toplam", preview.summary.totalRows],
+              ["Hazir", preview.summary.readyRows],
+              ["Degismedi", preview.summary.unchangedRows],
+              ["Eslesmedi", preview.summary.unmatchedRows],
+              ["Tekrar", preview.summary.duplicateRows],
+              ["Hata", preview.summary.errorRows]
+            ].map(([label, value]) => (
+              <div key={String(label)} className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
+                <p className="text-xs font-bold uppercase tracking-normal text-slate-500">{label}</p>
+                <p className="mt-1 text-2xl font-black text-slate-950">{value}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3">
+            <p className="text-sm font-semibold text-slate-600">
+              {preview.fileName} dosyasi analiz edildi. Ilk {previewRows.length} satir gosteriliyor.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {problematicRows.length > 0 ? (
+                <button
+                  type="button"
+                  onClick={() => downloadCsv("product-import-errors.csv", problematicRows)}
+                  className="rounded-full border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-bold text-rose-700"
+                >
+                  Hata raporu indir
+                </button>
+              ) : null}
+              <button
+                type="button"
+                disabled={preview.summary.readyRows === 0 || isConfirming}
+                onClick={confirmImport}
+                className="rounded-full bg-emerald-700 px-4 py-2 text-sm font-black text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {isConfirming ? "Uygulaniyor..." : "Onayla ve Uygula"}
+              </button>
+            </div>
+          </div>
+
+          <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+            <div className="max-h-[460px] overflow-auto">
+              <table className="min-w-full divide-y divide-slate-200 text-left text-sm">
+                <thead className="sticky top-0 z-10 bg-slate-50 text-xs uppercase tracking-normal text-slate-500">
+                  <tr>
+                    <th className="px-4 py-3">Satir</th>
+                    <th className="px-4 py-3">Durum</th>
+                    <th className="px-4 py-3">Urun</th>
+                    <th className="px-4 py-3">Eslesme</th>
+                    <th className="px-4 py-3">Degisiklik</th>
+                    <th className="px-4 py-3">Mesaj</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {previewRows.map((row) => (
+                    <tr key={`${row.rowNumber}-${row.productId ?? row.sku ?? row.slug}`}>
+                      <td className="px-4 py-3 font-bold text-slate-700">{row.rowNumber}</td>
+                      <td className="px-4 py-3">
+                        <span className={`inline-flex rounded-full border px-3 py-1 text-xs font-bold ${statusClasses[row.status]}`}>
+                          {statusLabels[row.status]}
+                        </span>
+                      </td>
+                      <td className="min-w-[260px] px-4 py-3">
+                        <p className="font-bold text-slate-950">{row.name}</p>
+                        <p className="mt-1 text-xs text-slate-500">{row.sku ?? row.slug ?? row.productId ?? "-"}</p>
+                      </td>
+                      <td className="px-4 py-3 text-slate-600">{row.matchedBy ?? "-"}</td>
+                      <td className="min-w-[260px] px-4 py-3 text-slate-700">{getRowChangeSummary(row)}</td>
+                      <td className="min-w-[260px] px-4 py-3 text-slate-600">{row.messages.join(" | ") || "-"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {result ? (
+        <div className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-900">
+          Import tamamlandi: {result.summary.updatedRows} satir guncellendi, {result.summary.skippedRows} satir atlandi.
+        </div>
+      ) : null}
+    </section>
+  );
+}
+

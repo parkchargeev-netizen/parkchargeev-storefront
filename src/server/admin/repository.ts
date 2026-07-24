@@ -1525,6 +1525,7 @@ export async function listAdminProducts(input: ListQueryInput) {
       shortDescription: products.shortDescription,
       status: products.status,
       defaultPriceKurus: products.defaultPriceKurus,
+      discountedPriceKurus: products.discountedPriceKurus,
       schemaJsonLd: products.schemaJsonLd,
       updatedAt: products.updatedAt
     })

@@ -25,6 +25,10 @@ function productConflictResponse(message: string) {
   return NextResponse.json({ ok: false, message }, { status: 409 });
 }
 
+function formatKurusForExport(value: number | null | undefined) {
+  return typeof value === "number" ? (value / 100).toFixed(2) : "";
+}
+
 export async function GET(request: Request) {
   const authenticatedAdmin = await requireAdminRole(["superadmin", "admin", "product_manager", "readonly"]);
 
@@ -52,13 +56,20 @@ export async function GET(request: Request) {
 
   if (query.format === "csv") {
     return csvResponse("products.csv", result.items, [
-      { header: "Ürün", value: (item) => item.name },
-      { header: "Slug", value: (item) => item.slug },
-      { header: "Durum", value: (item) => item.status },
-      { header: "Fiyat", value: (item) => item.defaultVariant?.priceKurus ?? item.defaultPriceKurus },
-      { header: "Stok", value: (item) => item.defaultVariant?.stockQuantity ?? 0 },
-      { header: "Kategoriler", value: (item) => item.categories.join(", ") },
-      { header: "Güncelleme", value: (item) => item.updatedAt }
+      { header: "product_id", value: (item) => item.id },
+      { header: "sku", value: (item) => item.defaultVariant?.sku ?? "" },
+      { header: "slug", value: (item) => item.slug },
+      { header: "name", value: (item) => item.name },
+      {
+        header: "price",
+        value: (item) => formatKurusForExport(item.defaultVariant?.priceKurus ?? item.defaultPriceKurus)
+      },
+      {
+        header: "sale_price",
+        value: (item) => formatKurusForExport(item.defaultVariant?.compareAtKurus ?? item.discountedPriceKurus)
+      },
+      { header: "stock", value: (item) => item.defaultVariant?.stockQuantity ?? 0 },
+      { header: "status", value: (item) => item.status }
     ]);
   }
 

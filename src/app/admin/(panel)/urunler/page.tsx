@@ -1,8 +1,10 @@
 import Link from "next/link";
 
+import { ProductImportPanel } from "@/components/admin/product-import-panel";
 import { AdminFilterBar } from "@/components/admin/table/admin-filter-bar";
 import { AdminPageHeader } from "@/components/admin/table/admin-page-header";
 import { ProductsTable } from "@/components/admin/table/products-table";
+import { listProductImportHistory } from "@/server/admin/product-import";
 import { listAdminCatalog, listAdminProducts } from "@/server/admin/repository";
 
 type ProductListPageProps = {
@@ -37,7 +39,7 @@ function buildHref(basePath: string, query: Record<string, string | undefined>, 
 
 export default async function AdminProductsPage({ searchParams }: ProductListPageProps) {
   const query = (await searchParams) ?? {};
-  const [result, catalog] = await Promise.all([
+  const [result, catalog, importHistory] = await Promise.all([
     listAdminProducts({
       q: query.q,
       status: query.status,
@@ -50,7 +52,8 @@ export default async function AdminProductsPage({ searchParams }: ProductListPag
       sort: query.sort,
       limit: 12
     }),
-    listAdminCatalog()
+    listAdminCatalog(),
+    listProductImportHistory()
   ]);
 
   return (
@@ -86,6 +89,11 @@ export default async function AdminProductsPage({ searchParams }: ProductListPag
             </span>
           </>
         }
+      />
+
+      <ProductImportPanel
+        exportHref={buildHref("/api/admin/products", query, { format: "csv", limit: "500" })}
+        history={importHistory}
       />
 
       <AdminFilterBar>
