@@ -65,6 +65,12 @@ export default async function AdminProductsPage({ searchParams }: ProductListPag
         action={
           <>
             <a
+              href="#product-import"
+              className="inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-5 py-3 text-sm font-semibold text-emerald-800 transition hover:border-emerald-300 hover:bg-emerald-100"
+            >
+              CSV / XLSX içe aktar
+            </a>
+            <a
               href={buildHref("/api/admin/products", query, { format: "csv", limit: "50" })}
               className="inline-flex rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-white"
             >

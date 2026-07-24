@@ -24,9 +24,9 @@ type ApiErrorPayload = {
 };
 
 const statusLabels: Record<ProductImportPreviewRow["status"], string> = {
-  ready: "Hazir",
-  unchanged: "Degismedi",
-  unmatched: "Eslesmedi",
+  ready: "Hazır",
+  unchanged: "Değişmedi",
+  unmatched: "Eşleşmedi",
   duplicate: "Tekrar",
   error: "Hata"
 };
@@ -121,14 +121,14 @@ function getRowChangeSummary(row: ProductImportPreviewRow) {
   }
 
   if (row.changedFields.includes("sale_price")) {
-    changes.push(`Indirim: ${formatKurus(row.oldSalePriceKurus)} -> ${formatKurus(row.newSalePriceKurus)}`);
+    changes.push(`İndirim: ${formatKurus(row.oldSalePriceKurus)} -> ${formatKurus(row.newSalePriceKurus)}`);
   }
 
   if (row.changedFields.includes("stock")) {
     changes.push(`Stok: ${row.oldStock ?? "-"} -> ${row.newStock ?? "-"}`);
   }
 
-  return changes.length > 0 ? changes.join("; ") : "Degisiklik yok";
+  return changes.length > 0 ? changes.join("; ") : "Değişiklik yok";
 }
 
 export function ProductImportPanel({ exportHref, history }: ProductImportPanelProps) {
@@ -183,13 +183,13 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
       const payload = (await response.json().catch(() => null)) as ProductImportPreviewResponse | ApiErrorPayload | null;
 
       if (!response.ok || !payload || payload.ok !== true) {
-        throw new Error((payload as ApiErrorPayload | null)?.message ?? "Import onizlemesi olusturulamadi.");
+        throw new Error((payload as ApiErrorPayload | null)?.message ?? "İçe aktarma önizlemesi oluşturulamadı.");
       }
 
       setPreview(payload);
     } catch (error) {
       setPreview(null);
-      setMessage(error instanceof Error ? error.message : "Import onizlemesi olusturulamadi.");
+      setMessage(error instanceof Error ? error.message : "İçe aktarma önizlemesi oluşturulamadı.");
     } finally {
       setIsPreviewing(false);
     }
@@ -201,7 +201,7 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
     }
 
     const confirmation = window.confirm(
-      `${preview.summary.readyRows} satir urun verisini guncellemek uzeresiniz. Devam edilsin mi?`
+      `${preview.summary.readyRows} satır ürün verisini güncellemek üzeresiniz. Devam edilsin mi?`
     );
 
     if (!confirmation) {
@@ -226,29 +226,28 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
       const payload = (await response.json().catch(() => null)) as ProductImportConfirmResponse | ApiErrorPayload | null;
 
       if (!response.ok || !payload || payload.ok !== true) {
-        throw new Error((payload as ApiErrorPayload | null)?.message ?? "Import uygulanamadi.");
+        throw new Error((payload as ApiErrorPayload | null)?.message ?? "İçe aktarma uygulanamadı.");
       }
 
       setResult(payload);
       router.refresh();
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Import uygulanamadi.");
+      setMessage(error instanceof Error ? error.message : "İçe aktarma uygulanamadı.");
     } finally {
       setIsConfirming(false);
     }
   };
 
   return (
-    <section className="rounded-3xl border border-emerald-100 bg-white/90 p-5 shadow-[0_24px_70px_rgba(15,23,42,0.08)] lg:p-6">
+    <section id="product-import" className="scroll-mt-28 rounded-3xl border border-emerald-100 bg-white/90 p-5 shadow-[0_24px_70px_rgba(15,23,42,0.08)] lg:p-6">
       <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
         <div className="max-w-3xl space-y-2">
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-700">Iceri / Disari Aktar</p>
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-700">CSV / XLSX içe aktar</p>
           <h2 className="text-xl font-black tracking-normal text-slate-950 lg:text-2xl">
-            Toplu fiyat ve stok guncelleme
+            Toplu ürün güncelleme
           </h2>
           <p className="text-sm leading-6 text-slate-600">
-            CSV veya XLSX dosyanizi yukleyin; sistem once product_id, SKU ya da slug ile eslestirir, degisiklikleri
-            onizletir ve siz onay vermeden veritabanina yazmaz.
+            CSV veya XLSX dosyanızı yükleyin; sistem önce product_id, SKU ya da slug ile eşleştirir, değişiklikleri önizletir ve siz onay vermeden veritabanına yazmaz.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -256,7 +255,7 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
             href={exportHref}
             className="inline-flex rounded-full border border-slate-300 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 transition hover:border-emerald-300 hover:text-emerald-800"
           >
-            Disari Aktar CSV
+            Dışarı aktar CSV
           </a>
           <button
             type="button"
@@ -265,7 +264,7 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
             }}
             className="inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm font-bold text-emerald-800 transition hover:bg-emerald-100"
           >
-            Ornek Sablon Indir
+            Örnek şablon indir
           </button>
         </div>
       </div>
@@ -292,7 +291,7 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
               onClick={previewImport}
               className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {isPreviewing ? "Analiz ediliyor..." : "Onizle"}
+              {isPreviewing ? "Analiz ediliyor..." : "Önizle"}
             </button>
           </div>
 
@@ -314,26 +313,25 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
           </div>
 
           <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900">
-            Esleme sirası: <strong>product_id</strong>, yoksa <strong>sku</strong>, yoksa <strong>slug</strong>. Urun adi
-            eslestirme icin kullanilmaz. Ayni urun/varyant dosyada iki kez varsa satirlar yazilmaz.
+            Eşleme sırası: <strong>product_id</strong>, yoksa <strong>sku</strong>, yoksa <strong>slug</strong>. Ürün adı eşleştirme için kullanılmaz. Aynı ürün/varyant dosyada iki kez varsa satırlar yazılmaz.
           </div>
         </div>
 
         <div className="rounded-2xl border border-slate-200 bg-white p-4">
-          <h3 className="text-sm font-black text-slate-950">Son importlar</h3>
+          <h3 className="text-sm font-black text-slate-950">Son içe aktarmalar</h3>
           <div className="mt-3 space-y-3">
             {history.length > 0 ? (
               history.map((item) => (
                 <div key={item.id} className="rounded-2xl border border-slate-100 bg-slate-50 px-3 py-2">
                   <p className="truncate text-xs font-bold text-slate-900">{item.fileName ?? "Dosya"}</p>
                   <p className="mt-1 text-xs text-slate-500">
-                    {item.updatedRows} guncel, {item.skippedRows} atlandi · {new Date(item.createdAt).toLocaleString("tr-TR")}
+                    {item.updatedRows} güncel, {item.skippedRows} atlandı · {new Date(item.createdAt).toLocaleString("tr-TR")}
                   </p>
                 </div>
               ))
             ) : (
               <p className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-3 py-4 text-sm text-slate-500">
-                Henuz import gecmisi yok.
+                Henüz içe aktarma geçmişi yok.
               </p>
             )}
           </div>
@@ -351,9 +349,9 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
             {[
               ["Toplam", preview.summary.totalRows],
-              ["Hazir", preview.summary.readyRows],
-              ["Degismedi", preview.summary.unchangedRows],
-              ["Eslesmedi", preview.summary.unmatchedRows],
+              ["Hazır", preview.summary.readyRows],
+              ["Değişmedi", preview.summary.unchangedRows],
+              ["Eşleşmedi", preview.summary.unmatchedRows],
               ["Tekrar", preview.summary.duplicateRows],
               ["Hata", preview.summary.errorRows]
             ].map(([label, value]) => (
@@ -366,7 +364,7 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
 
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3">
             <p className="text-sm font-semibold text-slate-600">
-              {preview.fileName} dosyasi analiz edildi. Ilk {previewRows.length} satir gosteriliyor.
+              {preview.fileName} dosyası analiz edildi. İlk {previewRows.length} satır gösteriliyor.
             </p>
             <div className="flex flex-wrap gap-2">
               {problematicRows.length > 0 ? (
@@ -384,7 +382,7 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
                 onClick={confirmImport}
                 className="rounded-full bg-emerald-700 px-4 py-2 text-sm font-black text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {isConfirming ? "Uygulaniyor..." : "Onayla ve Uygula"}
+                {isConfirming ? "Uygulanıyor..." : "Onayla ve uygula"}
               </button>
             </div>
           </div>
@@ -394,11 +392,11 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
               <table className="min-w-full divide-y divide-slate-200 text-left text-sm">
                 <thead className="sticky top-0 z-10 bg-slate-50 text-xs uppercase tracking-normal text-slate-500">
                   <tr>
-                    <th className="px-4 py-3">Satir</th>
+                    <th className="px-4 py-3">Satır</th>
                     <th className="px-4 py-3">Durum</th>
-                    <th className="px-4 py-3">Urun</th>
-                    <th className="px-4 py-3">Eslesme</th>
-                    <th className="px-4 py-3">Degisiklik</th>
+                    <th className="px-4 py-3">Ürün</th>
+                    <th className="px-4 py-3">Eşleşme</th>
+                    <th className="px-4 py-3">Değişiklik</th>
                     <th className="px-4 py-3">Mesaj</th>
                   </tr>
                 </thead>
@@ -429,7 +427,7 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
 
       {result ? (
         <div className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-900">
-          Import tamamlandi: {result.summary.updatedRows} satir guncellendi, {result.summary.skippedRows} satir atlandi.
+          İçe aktarma tamamlandı: {result.summary.updatedRows} satır güncellendi, {result.summary.skippedRows} satır atlandı.
         </div>
       ) : null}
     </section>
