@@ -236,6 +236,146 @@ function rowsToRecords(rows: string[][]): RawImportRow[] {
     .filter((row) => Object.values(row.values).some((value) => value.trim().length > 0));
 }
 
+function hasRecordIdentifier(records: RawImportRow[]) {
+  const headers = new Set(Object.keys(records[0]?.values ?? {}));
+  return ["product_id", "sku", "slug"].some((key) => headers.has(key));
+}
+
+function isBlankImportValue(value: string | undefined) {
+  const normalized = (value ?? "").trim();
+  return !normalized || normalized === "-";
+}
+
+function getCellValue(row: string[], index: number | null) {
+  return index === null ? "" : (row[index] ?? "").trim();
+}
+
+function findColumnIndex(row: string[], predicate: (value: string) => boolean) {
+  const index = row.findIndex((cell) => predicate(normalizeHeader(cell)));
+  return index >= 0 ? index : null;
+}
+
+function isHimsPriceListHeader(row: string[]) {
+  const hasSku = findColumnIndex(row, (value) => ["urun_kodu", "sku", "product_code", "kod"].includes(value)) !== null;
+  const hasEcommercePrice = findColumnIndex(
+    row,
+    (value) => value.includes("e_ticaret") && value.includes("fiyat") && !value.includes("pazaryeri")
+  ) !== null;
+
+  return hasSku && hasEcommercePrice;
+}
+
+function rowsToHimsPriceListRecords(rows: string[][]): RawImportRow[] {
+  let columns: {
+    sku: number;
+    name: number | null;
+    price: number;
+    salePrice: number | null;
+    stock: number | null;
+    status: number | null;
+  } | null = null;
+  const records: RawImportRow[] = [];
+
+  rows.forEach((row, index) => {
+    if (isHimsPriceListHeader(row)) {
+      const sku = findColumnIndex(row, (value) => ["urun_kodu", "sku", "product_code", "kod"].includes(value));
+      const price = findColumnIndex(
+        row,
+        (value) => value.includes("e_ticaret") && value.includes("fiyat") && !value.includes("pazaryeri")
+      );
+
+      if (sku !== null && price !== null) {
+        columns = {
+          sku,
+          price,
+          name: findColumnIndex(row, (value) => ["aciklama", "urun", "urun_adi", "product_name", "name"].includes(value)),
+          salePrice: findColumnIndex(row, (value) => value.includes("indirim") || value.includes("kampanya")),
+          stock: findColumnIndex(row, (value) => value.includes("stok") || value.includes("stock")),
+          status: findColumnIndex(row, (value) => value === "durum" || value === "status")
+        };
+      }
+
+      return;
+    }
+
+    if (!columns) {
+      return;
+    }
+
+    const sku = getCellValue(row, columns.sku);
+    const price = getCellValue(row, columns.price);
+    const salePrice = getCellValue(row, columns.salePrice);
+    const stock = getCellValue(row, columns.stock);
+
+    if (!sku || [price, salePrice, stock].every(isBlankImportValue)) {
+      return;
+    }
+
+    records.push({
+      rowNumber: index + 1,
+      values: {
+        sku,
+        name: getCellValue(row, columns.name),
+        price: isBlankImportValue(price) ? "" : price,
+        sale_price: isBlankImportValue(salePrice) ? "" : salePrice,
+        stock: isBlankImportValue(stock) ? "" : stock,
+        status: getCellValue(row, columns.status)
+      }
+    });
+  });
+
+  return records;
+}
+
+function rowsToImportRecords(rows: string[][]) {
+  let records: RawImportRow[] = [];
+
+  try {
+    records = rowsToRecords(rows);
+  } catch (error) {
+    const himsRecords = rowsToHimsPriceListRecords(rows);
+
+    if (himsRecords.length > 0) {
+      return himsRecords;
+    }
+
+    throw error;
+  }
+
+  if (hasRecordIdentifier(records)) {
+    return records;
+  }
+
+  const himsRecords = rowsToHimsPriceListRecords(rows);
+  return himsRecords.length > 0 ? himsRecords : records;
+}
+
+function normalizeSkuLookupValue(value: string) {
+  return value
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function getGenericHimsSkuLookupValue(value: string) {
+  const normalized = normalizeSkuLookupValue(value);
+  return normalized.replace(/-?(SS|SB|BS|BB|XY)-/g, "-XY-");
+}
+
+function addUniqueLookupTarget(map: Map<string, ProductTarget | null>, key: string, target: ProductTarget) {
+  if (!key) {
+    return;
+  }
+
+  if (map.has(key)) {
+    map.set(key, null);
+    return;
+  }
+
+  map.set(key, target);
+}
+
 function xmlDecode(value: string) {
   return value
     .replace(/&amp;/g, "&")
@@ -433,7 +573,7 @@ function parseImportRows(input: ProductImportPreviewInput) {
     throw new ProductImportError("Sadece .csv veya .xlsx dosyalari desteklenir.");
   }
 
-  const records = rowsToRecords(rows);
+  const records = rowsToImportRecords(rows);
 
   if (records.length > maxImportRows) {
     throw new ProductImportError(`Tek seferde en fazla ${maxImportRows} satir ice aktarilabilir.`);
@@ -553,6 +693,8 @@ async function loadProductTargets() {
 
   const byProductId = new Map<string, ProductTarget>();
   const bySku = new Map<string, ProductTarget>();
+  const byNormalizedSku = new Map<string, ProductTarget | null>();
+  const byGenericSku = new Map<string, ProductTarget | null>();
   const bySlug = new Map<string, ProductTarget>();
 
   for (const product of productRows) {
@@ -575,7 +717,7 @@ async function loadProductTargets() {
     bySlug.set(product.slug, { ...baseTarget, matchedBy: "slug" });
 
     for (const variant of variants) {
-      bySku.set(variant.sku, {
+      const target: ProductTarget = {
         productId: product.id,
         variantId: variant.id,
         matchedBy: "sku",
@@ -586,11 +728,15 @@ async function loadProductTargets() {
         salePriceKurus: variant.compareAtKurus,
         stockQuantity: variant.stockQuantity,
         isDefaultVariant: variant.isDefault
-      });
+      };
+
+      bySku.set(variant.sku, target);
+      addUniqueLookupTarget(byNormalizedSku, normalizeSkuLookupValue(variant.sku), target);
+      addUniqueLookupTarget(byGenericSku, getGenericHimsSkuLookupValue(variant.sku), target);
     }
   }
 
-  return { byProductId, bySku, bySlug };
+  return { byProductId, bySku, byNormalizedSku, byGenericSku, bySlug };
 }
 
 function matchRow(row: RawImportRow, targets: Awaited<ReturnType<typeof loadProductTargets>>) {
@@ -603,7 +749,23 @@ function matchRow(row: RawImportRow, targets: Awaited<ReturnType<typeof loadProd
   }
 
   if (sku) {
-    return targets.bySku.get(sku) ?? null;
+    const exactTarget = targets.bySku.get(sku);
+
+    if (exactTarget) {
+      return exactTarget;
+    }
+
+    const normalizedTarget = targets.byNormalizedSku.get(normalizeSkuLookupValue(sku));
+
+    if (normalizedTarget) {
+      return normalizedTarget;
+    }
+
+    const genericTarget = targets.byGenericSku.get(getGenericHimsSkuLookupValue(sku));
+
+    if (genericTarget) {
+      return genericTarget;
+    }
   }
 
   if (slug) {

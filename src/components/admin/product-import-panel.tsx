@@ -247,7 +247,7 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
             Toplu ürün güncelleme
           </h2>
           <p className="text-sm leading-6 text-slate-600">
-            CSV veya XLSX dosyanızı yükleyin; sistem önce product_id, SKU ya da slug ile eşleştirir, değişiklikleri önizletir ve siz onay vermeden veritabanına yazmaz.
+            CSV veya XLSX dosyanızı yükleyin; sistem önce product_id, SKU ya da slug ile eşleştirir, değişiklikleri önizletir ve siz onay vermeden veritabanına yazmaz. Hims 2026 fiyat listesinde e-ticaret sitesi fiyatı ana fiyat olarak alınır.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
