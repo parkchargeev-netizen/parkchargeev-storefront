@@ -38,7 +38,7 @@ type RawImportRow = {
 type ProductTarget = {
   productId: string;
   variantId: string | null;
-  matchedBy: "product_id" | "sku" | "slug";
+  matchedBy: "product_id" | "sku" | "slug" | "name";
   sku: string | null;
   slug: string;
   name: string;
@@ -134,6 +134,8 @@ function validateSelectedFields(fields: ProductImportField[]) {
 function normalizeHeader(value: string) {
   return value
     .trim()
+    .replace(/\u0131/g, "i")
+    .replace(/\u0130/g, "I")
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
@@ -238,7 +240,7 @@ function rowsToRecords(rows: string[][]): RawImportRow[] {
 
 function hasRecordIdentifier(records: RawImportRow[]) {
   const headers = new Set(Object.keys(records[0]?.values ?? {}));
-  return ["product_id", "sku", "slug"].some((key) => headers.has(key));
+  return ["product_id", "sku", "slug", "name"].some((key) => headers.has(key));
 }
 
 function isBlankImportValue(value: string | undefined) {
@@ -356,6 +358,21 @@ function normalizeSkuLookupValue(value: string) {
     .toUpperCase()
     .replace(/[^A-Z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
+}
+
+function normalizeSlugLookupValue(value: string) {
+  const withoutOrigin = value.trim().replace(/^https?:\/\/[^/]+/i, "");
+  const slug = withoutOrigin
+    .split(/[?#]/)[0]
+    .replace(/^\/+|\/+$/g, "")
+    .split("/")
+    .pop() ?? "";
+
+  return normalizeHeader(slug.replace(/-/g, "_"));
+}
+
+function normalizeNameLookupValue(value: string) {
+  return normalizeHeader(value);
 }
 
 function getGenericHimsSkuLookupValue(value: string) {
@@ -584,11 +601,11 @@ function parseImportRows(input: ProductImportPreviewInput) {
 
 function validateRequiredColumns(rows: RawImportRow[], selectedFields: ProductImportField[]) {
   const headers = new Set(Object.keys(rows[0]?.values ?? {}));
-  const hasIdentifier = ["product_id", "sku", "slug"].some((key) => headers.has(key));
+  const hasIdentifier = ["product_id", "sku", "slug", "name"].some((key) => headers.has(key));
   const missingFields = selectedFields.filter((field) => !headers.has(field));
 
   if (!hasIdentifier) {
-    throw new ProductImportError("Eslestirme icin product_id, sku veya slug kolonlarindan en az biri olmalidir.");
+    throw new ProductImportError("Eslestirme icin product_id, sku, slug veya name kolonlarindan en az biri olmalidir.");
   }
 
   if (missingFields.length > 0) {
@@ -696,6 +713,8 @@ async function loadProductTargets() {
   const byNormalizedSku = new Map<string, ProductTarget | null>();
   const byGenericSku = new Map<string, ProductTarget | null>();
   const bySlug = new Map<string, ProductTarget>();
+  const byNormalizedSlug = new Map<string, ProductTarget | null>();
+  const byName = new Map<string, ProductTarget | null>();
 
   for (const product of productRows) {
     const variants = variantsByProductId.get(product.id) ?? [];
@@ -715,6 +734,8 @@ async function loadProductTargets() {
 
     byProductId.set(product.id, baseTarget);
     bySlug.set(product.slug, { ...baseTarget, matchedBy: "slug" });
+    addUniqueLookupTarget(byNormalizedSlug, normalizeSlugLookupValue(product.slug), { ...baseTarget, matchedBy: "slug" });
+    addUniqueLookupTarget(byName, normalizeNameLookupValue(product.name), { ...baseTarget, matchedBy: "name" });
 
     for (const variant of variants) {
       const target: ProductTarget = {
@@ -736,13 +757,14 @@ async function loadProductTargets() {
     }
   }
 
-  return { byProductId, bySku, byNormalizedSku, byGenericSku, bySlug };
+  return { byProductId, bySku, byNormalizedSku, byGenericSku, bySlug, byNormalizedSlug, byName };
 }
 
 function matchRow(row: RawImportRow, targets: Awaited<ReturnType<typeof loadProductTargets>>) {
   const productId = getStringValue(row, "product_id");
   const sku = getStringValue(row, "sku");
   const slug = getStringValue(row, "slug");
+  const name = getStringValue(row, "name");
 
   if (productId) {
     return targets.byProductId.get(productId) ?? null;
@@ -769,16 +791,20 @@ function matchRow(row: RawImportRow, targets: Awaited<ReturnType<typeof loadProd
   }
 
   if (slug) {
-    return targets.bySlug.get(slug) ?? null;
+    return targets.bySlug.get(slug) ?? targets.byNormalizedSlug.get(normalizeSlugLookupValue(slug)) ?? null;
+  }
+
+  if (name) {
+    return targets.byName.get(normalizeNameLookupValue(name)) ?? null;
   }
 
   return null;
 }
 
 function getRowIdentifierError(row: RawImportRow) {
-  return getStringValue(row, "product_id") || getStringValue(row, "sku") || getStringValue(row, "slug")
+  return getStringValue(row, "product_id") || getStringValue(row, "sku") || getStringValue(row, "slug") || getStringValue(row, "name")
     ? null
-    : "Satirda product_id, sku veya slug yok.";
+    : "Satirda product_id, sku, slug veya urun adi yok.";
 }
 
 function buildPreviewRow(row: RawImportRow, target: ProductTarget | null, selectedFields: ProductImportField[]) {
@@ -1180,7 +1206,9 @@ export function getProductImportTemplateCsv() {
   return [
     "product_id,sku,slug,name,price,sale_price,stock,status",
     "ornek-urun-id,ORNEK-SKU,ornek-urun,Ornek urun,12990,11990,12,active",
-    ",ORNEK-SKU-2,,Sadece SKU ile eslestirme,21900,,5,active"
+    ",ORNEK-SKU-2,,Sadece SKU ile eslestirme,21900,,5,active",
+    ",,ornek-urun-slug,Slug ile eslestirme,22900,,8,active",
+    ",,,Tam urun adi ile eslestirme,23900,,3,active"
   ].join("\n");
 }
 

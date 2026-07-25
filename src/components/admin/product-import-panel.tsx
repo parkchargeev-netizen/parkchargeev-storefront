@@ -135,7 +135,7 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [file, setFile] = useState<File | null>(null);
-  const [selectedFields, setSelectedFields] = useState<ProductImportField[]>(["price", "sale_price", "stock"]);
+  const [selectedFields, setSelectedFields] = useState<ProductImportField[]>(["price"]);
   const [preview, setPreview] = useState<ProductImportPreviewResponse | null>(null);
   const [result, setResult] = useState<ProductImportConfirmResponse | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -247,7 +247,7 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
             Toplu ürün güncelleme
           </h2>
           <p className="text-sm leading-6 text-slate-600">
-            CSV veya XLSX dosyanızı yükleyin; sistem önce product_id, SKU ya da slug ile eşleştirir, değişiklikleri önizletir ve siz onay vermeden veritabanına yazmaz. Hims 2026 fiyat listesinde e-ticaret sitesi fiyatı ana fiyat olarak alınır.
+            CSV veya XLSX dosyanizi yukleyin; sistem once product_id, urun kodu/SKU, slug veya tam urun adi ile eslestirir, degisiklikleri onizletir ve siz onay vermeden veritabanina yazmaz. Hims 2026 fiyat listesinde e-ticaret sitesi fiyati ana fiyat olarak alinir.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -313,7 +313,7 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
           </div>
 
           <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900">
-            Eşleme sırası: <strong>product_id</strong>, yoksa <strong>sku</strong>, yoksa <strong>slug</strong>. Ürün adı eşleştirme için kullanılmaz. Aynı ürün/varyant dosyada iki kez varsa satırlar yazılmaz.
+            Esleme sirasi: <strong>product_id</strong>, yoksa <strong>urun kodu/SKU</strong>, yoksa <strong>slug</strong>, yoksa <strong>tam urun adi</strong>. Ayni ad birden fazla urune denk gelirse satir guvenlik icin yazilmaz.
           </div>
         </div>
 

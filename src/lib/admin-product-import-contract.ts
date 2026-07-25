@@ -19,7 +19,7 @@ export type ProductImportPreviewRow = {
   rowNumber: number;
   productId: string | null;
   variantId: string | null;
-  matchedBy: "product_id" | "sku" | "slug" | null;
+  matchedBy: "product_id" | "sku" | "slug" | "name" | null;
   sku: string | null;
   slug: string | null;
   name: string;
