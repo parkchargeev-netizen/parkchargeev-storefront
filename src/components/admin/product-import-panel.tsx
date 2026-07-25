@@ -39,6 +39,19 @@ const statusClasses: Record<ProductImportPreviewRow["status"], string> = {
   error: "border-rose-200 bg-rose-50 text-rose-700"
 };
 
+const matchedByLabels: Record<NonNullable<ProductImportPreviewRow["matchedBy"]>, string> = {
+  product_id: "Product ID",
+  sku: "Urun kodu / SKU",
+  slug: "Slug",
+  name: "Tam urun adi",
+  hims_code: "Hims urun kodu"
+};
+
+const sourceFormatLabels: Record<ProductImportPreviewResponse["sourceFormat"], string> = {
+  standard: "Standart CSV/XLSX",
+  hims_price_list: "Hims fiyat listesi"
+};
+
 function formatKurus(value: number | null) {
   if (value === null || value === undefined) {
     return "-";
@@ -312,8 +325,13 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
             ))}
           </div>
 
-          <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900">
-            Esleme sirasi: <strong>product_id</strong>, yoksa <strong>urun kodu/SKU</strong>, yoksa <strong>slug</strong>, yoksa <strong>tam urun adi</strong>. Ayni ad birden fazla urune denk gelirse satir guvenlik icin yazilmaz.
+          <div className="mt-4 grid gap-3 md:grid-cols-2">
+            <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900">
+              Esleme sirasi: <strong>product_id</strong>, yoksa <strong>urun kodu/SKU</strong>, yoksa <strong>slug</strong>, yoksa <strong>tam urun adi</strong>. Ayni ad birden fazla urune denk gelirse satir guvenlik icin yazilmaz.
+            </div>
+            <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm leading-6 text-emerald-900">
+              Hims fiyat listesi otomatik algilanir; <strong>e-ticaret sitesi fiyati</strong> ana fiyat olarak okunur. XY renk/uzunluk kodlari varsa satir ilgili guvenli varyantlara onizlemede ayrilir.
+            </div>
           </div>
         </div>
 
@@ -346,6 +364,10 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
 
       {preview ? (
         <div className="mt-5 space-y-4">
+          <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-900">
+            Algilanan dosya tipi: {sourceFormatLabels[preview.sourceFormat]}. Onizleme onaylanmadan veritabanina hicbir degisiklik yazilmaz.
+          </div>
+
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
             {[
               ["Toplam", preview.summary.totalRows],
@@ -413,7 +435,7 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
                         <p className="font-bold text-slate-950">{row.name}</p>
                         <p className="mt-1 text-xs text-slate-500">{row.sku ?? row.slug ?? row.productId ?? "-"}</p>
                       </td>
-                      <td className="px-4 py-3 text-slate-600">{row.matchedBy ?? "-"}</td>
+                      <td className="px-4 py-3 text-slate-600">{row.matchedBy ? matchedByLabels[row.matchedBy] : "-"}</td>
                       <td className="min-w-[260px] px-4 py-3 text-slate-700">{getRowChangeSummary(row)}</td>
                       <td className="min-w-[260px] px-4 py-3 text-slate-600">{row.messages.join(" | ") || "-"}</td>
                     </tr>

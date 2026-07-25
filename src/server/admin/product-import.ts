@@ -30,15 +30,19 @@ type RequestMeta = {
   userAgent?: string | null;
 };
 
+type ImportSourceFormat = "standard" | "hims_price_list";
+type ProductMatchSource = "product_id" | "sku" | "slug" | "name" | "hims_code";
+
 type RawImportRow = {
   rowNumber: number;
   values: Record<string, string>;
+  sourceFormat: ImportSourceFormat;
 };
 
 type ProductTarget = {
   productId: string;
   variantId: string | null;
-  matchedBy: "product_id" | "sku" | "slug" | "name";
+  matchedBy: ProductMatchSource;
   sku: string | null;
   slug: string;
   name: string;
@@ -46,6 +50,11 @@ type ProductTarget = {
   salePriceKurus: number | null;
   stockQuantity: number | null;
   isDefaultVariant: boolean;
+  normalizedSku: string;
+  genericSku: string;
+  normalizedSlug: string;
+  normalizedName: string;
+  lookupText: string;
 };
 
 type ProductImportConfirmInput = {
@@ -74,12 +83,12 @@ const maxImportBytes = 2 * 1024 * 1024;
 const maxImportRows = 1000;
 
 const headerAliases: Record<string, string[]> = {
-  product_id: ["product_id", "id", "urun_id", "ürün_id"],
-  sku: ["sku", "urun_kodu", "ürün_kodu", "product_code", "kod"],
-  slug: ["slug", "url", "urun_slug", "ürün_slug"],
-  name: ["name", "urun", "ürün", "urun_adi", "ürün_adı", "product_name"],
-  price: ["price", "fiyat", "liste_fiyati", "liste_fiyatı"],
-  sale_price: ["sale_price", "indirimli_fiyat", "kampanya_fiyati", "kampanya_fiyatı", "compare_at", "compare_at_price"],
+  product_id: ["product_id", "id", "urun_id", "\u00fcr\u00fcn_id", "urun_no", "product_id_no"],
+  sku: ["sku", "urun_kodu", "\u00fcr\u00fcn_kodu", "urun_kod", "product_code", "product_sku", "model_kodu", "kod"],
+  slug: ["slug", "url", "urun_slug", "\u00fcr\u00fcn_slug", "urun_linki", "product_url"],
+  name: ["name", "urun", "\u00fcr\u00fcn", "urun_adi", "\u00fcr\u00fcn_ad\u0131", "urun_ismi", "baslik", "aciklama", "product_name"],
+  price: ["price", "fiyat", "liste_fiyati", "liste_fiyat\u0131", "e_ticaret_sitesi_fiyati", "e_ticaret_sitesi_fiyat\u0131"],
+  sale_price: ["sale_price", "indirimli_fiyat", "kampanya_fiyati", "kampanya_fiyat\u0131", "compare_at", "compare_at_price"],
   stock: ["stock", "stok", "stock_quantity", "stok_adedi"],
   status: ["status", "durum"]
 };
@@ -224,6 +233,7 @@ function rowsToRecords(rows: string[][]): RawImportRow[] {
     .slice(headerIndex + 1)
     .map((row, index) => ({
       rowNumber: headerIndex + index + 2,
+      sourceFormat: "standard" as const,
       values: headers.reduce<Record<string, string>>((current, header, headerPosition) => {
         if (!header) {
           return current;
@@ -315,6 +325,7 @@ function rowsToHimsPriceListRecords(rows: string[][]): RawImportRow[] {
 
     records.push({
       rowNumber: index + 1,
+      sourceFormat: "hims_price_list",
       values: {
         sku,
         name: getCellValue(row, columns.name),
@@ -330,26 +341,19 @@ function rowsToHimsPriceListRecords(rows: string[][]): RawImportRow[] {
 }
 
 function rowsToImportRecords(rows: string[][]) {
-  let records: RawImportRow[] = [];
+  const himsRecords = rowsToHimsPriceListRecords(rows);
 
-  try {
-    records = rowsToRecords(rows);
-  } catch (error) {
-    const himsRecords = rowsToHimsPriceListRecords(rows);
-
-    if (himsRecords.length > 0) {
-      return himsRecords;
-    }
-
-    throw error;
+  if (himsRecords.length > 0) {
+    return himsRecords;
   }
+
+  const records = rowsToRecords(rows);
 
   if (hasRecordIdentifier(records)) {
     return records;
   }
 
-  const himsRecords = rowsToHimsPriceListRecords(rows);
-  return himsRecords.length > 0 ? himsRecords : records;
+  return records;
 }
 
 function normalizeSkuLookupValue(value: string) {
@@ -378,6 +382,56 @@ function normalizeNameLookupValue(value: string) {
 function getGenericHimsSkuLookupValue(value: string) {
   const normalized = normalizeSkuLookupValue(value);
   return normalized.replace(/-?(SS|SB|BS|BB|XY)-/g, "-XY-");
+}
+
+function normalizeSearchLookupValue(value: string) {
+  return normalizeHeader(value).replace(/_/g, "-");
+}
+
+function createProductTarget(input: Omit<ProductTarget, "normalizedSku" | "genericSku" | "normalizedSlug" | "normalizedName" | "lookupText">) {
+  const normalizedSku = normalizeSkuLookupValue(input.sku ?? "");
+  const genericSku = getGenericHimsSkuLookupValue(input.sku ?? "");
+  const normalizedSlug = normalizeSlugLookupValue(input.slug);
+  const normalizedName = normalizeNameLookupValue(input.name);
+  const lookupText = [
+    normalizedSku.toLowerCase(),
+    genericSku.toLowerCase(),
+    normalizedSlug.replace(/_/g, "-"),
+    normalizedName.replace(/_/g, "-")
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  return {
+    ...input,
+    normalizedSku,
+    genericSku,
+    normalizedSlug,
+    normalizedName,
+    lookupText
+  } satisfies ProductTarget;
+}
+
+function retarget(target: ProductTarget, matchedBy: ProductMatchSource) {
+  return { ...target, matchedBy };
+}
+
+function uniqueTargets(targets: ProductTarget[]) {
+  const seen = new Set<string>();
+  const unique: ProductTarget[] = [];
+
+  for (const target of targets) {
+    const key = target.variantId ?? target.productId;
+
+    if (seen.has(key)) {
+      continue;
+    }
+
+    seen.add(key);
+    unique.push(target);
+  }
+
+  return unique;
 }
 
 function addUniqueLookupTarget(map: Map<string, ProductTarget | null>, key: string, target: ProductTarget) {
@@ -715,11 +769,12 @@ async function loadProductTargets() {
   const bySlug = new Map<string, ProductTarget>();
   const byNormalizedSlug = new Map<string, ProductTarget | null>();
   const byName = new Map<string, ProductTarget | null>();
+  const allTargets: ProductTarget[] = [];
 
   for (const product of productRows) {
     const variants = variantsByProductId.get(product.id) ?? [];
     const defaultVariant = variants.find((variant) => variant.isDefault) ?? variants[0];
-    const baseTarget: ProductTarget = {
+    const baseTarget = createProductTarget({
       productId: product.id,
       variantId: defaultVariant?.id ?? null,
       matchedBy: "product_id",
@@ -730,15 +785,19 @@ async function loadProductTargets() {
       salePriceKurus: defaultVariant?.compareAtKurus ?? product.discountedPriceKurus,
       stockQuantity: defaultVariant?.stockQuantity ?? null,
       isDefaultVariant: defaultVariant?.isDefault ?? true
-    };
+    });
 
     byProductId.set(product.id, baseTarget);
-    bySlug.set(product.slug, { ...baseTarget, matchedBy: "slug" });
-    addUniqueLookupTarget(byNormalizedSlug, normalizeSlugLookupValue(product.slug), { ...baseTarget, matchedBy: "slug" });
-    addUniqueLookupTarget(byName, normalizeNameLookupValue(product.name), { ...baseTarget, matchedBy: "name" });
+    bySlug.set(product.slug, retarget(baseTarget, "slug"));
+    addUniqueLookupTarget(byNormalizedSlug, normalizeSlugLookupValue(product.slug), retarget(baseTarget, "slug"));
+    addUniqueLookupTarget(byName, normalizeNameLookupValue(product.name), retarget(baseTarget, "name"));
+
+    if (variants.length === 0) {
+      allTargets.push(baseTarget);
+    }
 
     for (const variant of variants) {
-      const target: ProductTarget = {
+      const target = createProductTarget({
         productId: product.id,
         variantId: variant.id,
         matchedBy: "sku",
@@ -749,7 +808,9 @@ async function loadProductTargets() {
         salePriceKurus: variant.compareAtKurus,
         stockQuantity: variant.stockQuantity,
         isDefaultVariant: variant.isDefault
-      };
+      });
+
+      allTargets.push(target);
 
       bySku.set(variant.sku, target);
       addUniqueLookupTarget(byNormalizedSku, normalizeSkuLookupValue(variant.sku), target);
@@ -757,7 +818,162 @@ async function loadProductTargets() {
     }
   }
 
-  return { byProductId, bySku, byNormalizedSku, byGenericSku, bySlug, byNormalizedSlug, byName };
+  return { byProductId, bySku, byNormalizedSku, byGenericSku, bySlug, byNormalizedSlug, byName, allTargets };
+}
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function hasLookupToken(text: string, token: string) {
+  if (!token) {
+    return false;
+  }
+
+  return new RegExp("(^|[\\s-])" + escapeRegExp(token) + "($|[\\s-])").test(text);
+}
+
+function targetContainsSkuCode(target: ProductTarget, value: string) {
+  const normalizedSku = normalizeSkuLookupValue(value);
+  const normalizedSkuLower = normalizedSku.toLowerCase();
+
+  if (normalizedSku.length < 5) {
+    return false;
+  }
+
+  return Boolean(
+    target.normalizedSku.includes(normalizedSku) ||
+      target.genericSku.includes(getGenericHimsSkuLookupValue(value)) ||
+      target.normalizedSlug.replace(/_/g, "-").includes(normalizedSkuLower)
+  );
+}
+
+function getHimsExplicitTargets(sku: string, targets: Awaited<ReturnType<typeof loadProductTargets>>) {
+  const code = normalizeSkuLookupValue(sku);
+  const codeLower = code.toLowerCase();
+  const allTargets = targets.allTargets;
+
+  if (/^EMEF-22T2-XY-[0-9]+$/.test(code)) {
+    const length = code.split("-").pop() ?? "";
+    return uniqueTargets(
+      allTargets
+        .filter((target) => {
+          const hasCableIdentity =
+            target.lookupText.includes("emef-22t2") ||
+            (target.lookupText.includes("22kw") &&
+              target.lookupText.includes("tip-2") &&
+              (target.lookupText.includes("kablo") || target.lookupText.includes("soketli")));
+          const hasLength = hasLookupToken(target.lookupText, length + "m");
+
+          return hasCableIdentity && hasLength;
+        })
+        .map((target) => retarget(target, "hims_code"))
+    );
+  }
+
+  if (code === "HEVC-22-2-0001-S0-W") {
+    return uniqueTargets(
+      allTargets
+        .filter((target) => target.lookupText.includes("hevc-22"))
+        .map((target) => retarget(target, "hims_code"))
+    );
+  }
+
+  if (code === "HCTK-G-3") {
+    return uniqueTargets(
+      allTargets
+        .filter((target) => target.lookupText.includes("hctk-g-3") || target.lookupText.includes("3-7kw"))
+        .map((target) => retarget(target, "hims_code"))
+    );
+  }
+
+  if (code === "HCTK-7-PS") {
+    return uniqueTargets(
+      allTargets
+        .filter((target) => target.lookupText.includes("hctk-7-ps") || target.lookupText.includes("hims-7kw-ev-tipi"))
+        .map((target) => retarget(target, "hims_code"))
+    );
+  }
+
+  if (code === "HCTK-11-PS") {
+    return uniqueTargets(
+      allTargets
+        .filter((target) =>
+          (target.lookupText.includes("hctk-11-ps") && !target.lookupText.includes("hctk-11-ps-s")) ||
+          target.lookupText.includes("hims-11kw-ev-tipi")
+        )
+        .map((target) => retarget(target, "hims_code"))
+    );
+  }
+
+  if (code === "HCTK-11-PS-S") {
+    return uniqueTargets(
+      allTargets
+        .filter((target) => target.lookupText.includes("hctk-11-ps-s") || target.lookupText.includes("hims-11kw-akilli"))
+        .map((target) => retarget(target, "hims_code"))
+    );
+  }
+
+  if (code === "HCTS-22-B" || code === "HCTS-22-S") {
+    const colorNeedle = code.endsWith("-B") ? "beyaz" : "siyah";
+
+    return uniqueTargets(
+      allTargets
+        .filter((target) =>
+          target.lookupText.includes("22kw") &&
+          target.lookupText.includes("kilitli") &&
+          target.lookupText.includes("soketli") &&
+          target.lookupText.includes(colorNeedle)
+        )
+        .map((target) => retarget(target, "hims_code"))
+    );
+  }
+
+  return [];
+}
+
+function matchHimsPriceListRow(row: RawImportRow, targets: Awaited<ReturnType<typeof loadProductTargets>>) {
+  const sku = getStringValue(row, "sku");
+  const name = getStringValue(row, "name");
+  const normalizedSku = normalizeSkuLookupValue(sku);
+
+  if (!normalizedSku && !name) {
+    return [];
+  }
+
+  const exactSkuMatches = targets.allTargets.filter((target) => normalizedSku && target.normalizedSku === normalizedSku);
+
+  if (exactSkuMatches.length > 0) {
+    return uniqueTargets(exactSkuMatches.map((target) => retarget(target, "sku")));
+  }
+
+  const genericSku = getGenericHimsSkuLookupValue(sku);
+  const genericMatches = targets.allTargets.filter((target) => genericSku && target.genericSku === genericSku);
+
+  if (genericMatches.length > 0) {
+    return uniqueTargets(genericMatches.map((target) => retarget(target, "hims_code")));
+  }
+
+  const explicitMatches = getHimsExplicitTargets(sku, targets);
+
+  if (explicitMatches.length > 0) {
+    return explicitMatches;
+  }
+
+  const skuLookupMatches = targets.allTargets.filter((target) => sku && targetContainsSkuCode(target, sku));
+
+  if (skuLookupMatches.length > 0) {
+    return uniqueTargets(skuLookupMatches.map((target) => retarget(target, "hims_code")));
+  }
+
+  const nameKey = normalizeNameLookupValue(name);
+  const exactNameTarget = nameKey ? targets.byName.get(nameKey) : null;
+
+  if (exactNameTarget) {
+    return [exactNameTarget];
+  }
+
+  return [];
 }
 
 function matchRow(row: RawImportRow, targets: Awaited<ReturnType<typeof loadProductTargets>>) {
@@ -799,6 +1015,20 @@ function matchRow(row: RawImportRow, targets: Awaited<ReturnType<typeof loadProd
   }
 
   return null;
+}
+
+function matchRows(row: RawImportRow, targets: Awaited<ReturnType<typeof loadProductTargets>>) {
+  const singleMatch = matchRow(row, targets);
+
+  if (singleMatch) {
+    return [singleMatch];
+  }
+
+  if (row.sourceFormat === "hims_price_list") {
+    return matchHimsPriceListRow(row, targets);
+  }
+
+  return [];
 }
 
 function getRowIdentifierError(row: RawImportRow) {
@@ -931,13 +1161,25 @@ export async function previewProductImport(input: ProductImportPreviewInput): Pr
   const records = parseImportRows(input);
   validateRequiredColumns(records, input.selectedFields);
   const targets = await loadProductTargets();
+  const sourceFormat: ImportSourceFormat = records.some((row) => row.sourceFormat === "hims_price_list")
+    ? "hims_price_list"
+    : "standard";
   const rows = markDuplicateRows(
-    records.map((row) => buildPreviewRow(row, matchRow(row, targets), input.selectedFields))
+    records.flatMap((row) => {
+      const matchedTargets = matchRows(row, targets);
+
+      if (matchedTargets.length === 0) {
+        return [buildPreviewRow(row, null, input.selectedFields)];
+      }
+
+      return matchedTargets.map((target) => buildPreviewRow(row, target, input.selectedFields));
+    })
   );
 
   return {
     ok: true,
     fileName: input.fileName,
+    sourceFormat,
     summary: summarizeRows(rows, input.selectedFields),
     rows
   };
@@ -1037,7 +1279,8 @@ export async function confirmProductImport(input: ProductImportConfirmInput): Pr
       } = {
         updatedAt: new Date()
       };
-      const shouldSyncProductPrice = !variant || variant.isDefault || row.matchedBy === "product_id" || row.matchedBy === "slug";
+      const shouldSyncProductPrice =
+        !variant || variant.isDefault || row.matchedBy === "product_id" || row.matchedBy === "slug" || row.matchedBy === "name";
 
       if (row.changedFields.includes("price")) {
         if (!isValidPositiveKurus(row.newPriceKurus)) {
@@ -1208,7 +1451,9 @@ export function getProductImportTemplateCsv() {
     "ornek-urun-id,ORNEK-SKU,ornek-urun,Ornek urun,12990,11990,12,active",
     ",ORNEK-SKU-2,,Sadece SKU ile eslestirme,21900,,5,active",
     ",,ornek-urun-slug,Slug ile eslestirme,22900,,8,active",
-    ",,,Tam urun adi ile eslestirme,23900,,3,active"
+    ",,,Tam urun adi ile eslestirme,23900,,3,active",
+    ",HCTK-11-PS-S,,Hims fiyat listesi urun kodu ile eslestirme,21500,,10,active",
+    ",EMEF-22T2-XY-7,,Hims kablo ailesini renk varyantlarina uygula,13182,,4,active"
   ].join("\n");
 }
 

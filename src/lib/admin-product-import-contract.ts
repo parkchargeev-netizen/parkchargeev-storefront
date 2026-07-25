@@ -2,6 +2,10 @@ export const productImportFieldValues = ["price", "sale_price", "stock"] as cons
 
 export type ProductImportField = (typeof productImportFieldValues)[number];
 
+export type ProductImportSourceFormat = "standard" | "hims_price_list";
+
+export type ProductImportMatchSource = "product_id" | "sku" | "slug" | "name" | "hims_code";
+
 export const productImportFieldLabels: Record<ProductImportField, string> = {
   price: "Fiyat",
   sale_price: "Indirimli fiyat",
@@ -19,7 +23,7 @@ export type ProductImportPreviewRow = {
   rowNumber: number;
   productId: string | null;
   variantId: string | null;
-  matchedBy: "product_id" | "sku" | "slug" | "name" | null;
+  matchedBy: ProductImportMatchSource | null;
   sku: string | null;
   slug: string | null;
   name: string;
@@ -47,6 +51,7 @@ export type ProductImportPreviewSummary = {
 export type ProductImportPreviewResponse = {
   ok: true;
   fileName: string;
+  sourceFormat: ProductImportSourceFormat;
   summary: ProductImportPreviewSummary;
   rows: ProductImportPreviewRow[];
 };
