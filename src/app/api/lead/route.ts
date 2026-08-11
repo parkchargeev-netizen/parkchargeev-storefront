@@ -50,7 +50,12 @@ function getQuoteSegment(reason: string) {
 
 function isServiceLead(reason: string) {
   const normalized = reason.toLocaleLowerCase("tr-TR");
-  return normalized.includes("servis") || normalized.includes("bakim") || normalized.includes("bakım") || normalized.includes("destek");
+  return (
+    normalized.includes("servis") ||
+    normalized.includes("bakım") ||
+    normalized.includes("bakim") ||
+    normalized.includes("destek")
+  );
 }
 
 export async function POST(request: Request) {
@@ -114,7 +119,7 @@ export async function POST(request: Request) {
       });
     }
 
-    const requireSendnomiDelivery = process.env.SENDNOMI_REQUIRE_DELIVERY?.trim() === "1";
+    const requireSendnomiDelivery = process.env.SENDNOMI_REQUIRE_DELIVERY?.trim() !== "0";
 
     if (hasSendnomiConfig()) {
       try {
@@ -162,11 +167,22 @@ export async function POST(request: Request) {
         leadId: serviceLead?.id,
         hasSendnomiApiKey: false
       });
+
+      if (requireSendnomiDelivery) {
+        return NextResponse.json(
+          {
+            ok: false,
+            message:
+              "Talebiniz kaydedildi ancak bildirim sistemi yapılandırması eksik. Lütfen kısa süre sonra yeniden deneyin."
+          },
+          { status: 503 }
+        );
+      }
     }
 
     return NextResponse.json({
       ok: true,
-      message: `${body.fullName} için talep kaydı oluşturuldu. Ekip en kısa sürede dönüş yapacak.`
+      message: `${body.fullName} için talep kaydı oluşturuldu. Ekibimiz en kısa sürede dönüş yapacak.`
     });
   } catch (error) {
     if (isRuntimeConfigError(error)) {

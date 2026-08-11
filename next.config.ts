@@ -65,7 +65,6 @@ const cloudflareInsightsScriptSources = ["https://static.cloudflareinsights.com"
 const cloudflareInsightsConnectSources = ["https://cloudflareinsights.com"];
 const sendnomiScriptSources = ["https://app.sendnomi.com"];
 const sendnomiConnectSources = ["https://app.sendnomi.com"];
-
 const scriptSources = [
   "'self'",
   "'unsafe-inline'",

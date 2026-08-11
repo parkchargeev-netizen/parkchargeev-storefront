@@ -15,6 +15,8 @@ const defaultTitle = `Elektrikli Araç Şarj Cihazı ve Kurulum | ${siteConfig.n
 const defaultOgImage = absoluteUrl("/api/og/product/homecharge-pro-11kw");
 const googleTagId = "AW-17739531406";
 const clarityProjectId = "xc0amcuu8z";
+const sendnomiLeadIntakeScriptSrc =
+  "https://app.sendnomi.com/api/public/lead-intake/lif_pub_cJuYrIXV78VJWMNetB9synmGdyIac3DG/embed.js";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -212,6 +214,7 @@ export default function RootLayout({
         <GlobalAmbientLayer />
         <div className="app-content-layer">{children}</div>
         <ScrollMotion />
+        <Script id="sendnomi-lead-intake" src={sendnomiLeadIntakeScriptSrc} strategy="afterInteractive" />
       </body>
     </html>
   );

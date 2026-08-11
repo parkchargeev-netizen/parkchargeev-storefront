@@ -1,6 +1,5 @@
 "use client";
 
-import Script from "next/script";
 import { useState } from "react";
 
 import { contactReasons } from "@/lib/contact-reasons";
@@ -10,9 +9,6 @@ import {
   leadCityOptions,
   serviceCoverageSummary
 } from "@/lib/service-coverage";
-
-const sendnomiLeadIntakeScriptSrc =
-  "https://app.sendnomi.com/api/public/lead-intake/lif_pub_931ryxcbWHyix5Vn7-ayS5kI11vUEzyi/embed.js";
 
 type LeadFormProps = {
   title?: string;
@@ -127,7 +123,6 @@ export function LeadForm({
 
   return (
     <div className={`lead-form-card surface-card ${compact ? "lead-form-card--compact p-5 lg:p-6" : "p-8"}`}>
-      <Script id="sendnomi-lead-intake" src={sendnomiLeadIntakeScriptSrc} strategy="afterInteractive" />
       <p className="text-xs font-bold uppercase text-primary">
         {title}
       </p>
