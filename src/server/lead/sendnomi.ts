@@ -31,7 +31,7 @@ function getToEmail() {
 }
 
 function getFromEmail() {
-  return process.env.SENDNOMI_FROM_EMAIL?.trim() || "";
+  return process.env.SENDNOMI_FROM_EMAIL?.trim() || process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim() || "info@parkchargeev.com";
 }
 
 function getApiKey() {
@@ -123,9 +123,9 @@ export async function deliverLeadToSendNomi(lead: SendNomiLead): Promise<SendNom
 
   if (!apiKey || !from || !to) {
     logWarn("lead.sendnomi.skipped", {
-      hasSendNomiApiKey: Boolean(apiKey),
-      hasSendNomiFromEmail: Boolean(from),
-      hasSendNomiToEmail: Boolean(to)
+      sendNomiApiConfigured: Boolean(apiKey),
+      sendNomiFromConfigured: Boolean(from),
+      sendNomiToConfigured: Boolean(to)
     });
     return { status: "skipped", reason: "missing_configuration" };
   }
