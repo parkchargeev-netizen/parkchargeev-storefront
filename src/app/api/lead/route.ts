@@ -1,12 +1,16 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import {
-  isRuntimeConfigError
-} from "@/lib/runtime-config";
-import { logError } from "@/lib/server-logger";
+import { isRuntimeConfigError } from "@/lib/runtime-config";
+import { logError, logInfo, logWarn } from "@/lib/server-logger";
 import { getDb } from "@/server/db/client";
 import { quoteRequests, serviceLeads } from "@/server/db/schema";
+import { consumeLeadAttempt, getLeadRateLimitKey } from "@/server/lead/rate-limit";
+import {
+  hasSendnomiConfig,
+  sendLeadToSendnomi,
+  SendnomiDeliveryError
+} from "@/server/lead/sendnomi";
 
 const leadSchema = z.object({
   fullName: z.string().trim().min(3, "Ad soyad en az 3 karakter olmalı."),
@@ -46,27 +50,51 @@ function getQuoteSegment(reason: string) {
 
 function isServiceLead(reason: string) {
   const normalized = reason.toLocaleLowerCase("tr-TR");
-  return normalized.includes("servis") || normalized.includes("bakim") || normalized.includes("destek");
+  return normalized.includes("servis") || normalized.includes("bakim") || normalized.includes("bakım") || normalized.includes("destek");
 }
 
 export async function POST(request: Request) {
   try {
     const body = leadSchema.parse(await request.json());
-    const db = getDb();
+    const rateLimit = consumeLeadAttempt(getLeadRateLimitKey(request, body.email));
 
-    await db.insert(serviceLeads).values({
-      leadType: body.reason,
-      projectType: body.reason,
-      fullName: body.fullName,
-      email: body.email,
-      phone: body.phone,
-      city: body.city,
-      message: body.message,
-      payload: {
-        company: body.company || null,
-        privacyConsent: true
-      }
-    });
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        {
+          ok: false,
+          message: "Çok fazla talep gönderildi. Lütfen birkaç dakika sonra yeniden deneyin."
+        },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": String(rateLimit.retryAfterSeconds)
+          }
+        }
+      );
+    }
+
+    const db = getDb();
+    const createdAt = new Date();
+
+    const [serviceLead] = await db
+      .insert(serviceLeads)
+      .values({
+        leadType: body.reason,
+        projectType: body.reason,
+        fullName: body.fullName,
+        email: body.email,
+        phone: body.phone,
+        city: body.city,
+        message: body.message,
+        payload: {
+          company: body.company || null,
+          privacyConsent: true
+        },
+        createdAt
+      })
+      .returning({
+        id: serviceLeads.id
+      });
 
     if (!isServiceLead(body.reason)) {
       await db.insert(quoteRequests).values({
@@ -83,6 +111,56 @@ export async function POST(request: Request) {
           reason: body.reason,
           privacyConsent: true
         }
+      });
+    }
+
+    const requireSendnomiDelivery = process.env.SENDNOMI_REQUIRE_DELIVERY?.trim() === "1";
+
+    if (hasSendnomiConfig()) {
+      try {
+        await sendLeadToSendnomi({
+          idempotencySource: serviceLead?.id ?? `${body.email}:${createdAt.toISOString()}`,
+          fullName: body.fullName,
+          company: body.company || null,
+          email: body.email,
+          phone: body.phone,
+          city: body.city,
+          reason: body.reason,
+          message: body.message,
+          createdAt
+        });
+
+        logInfo("lead.sendnomi.delivered", {
+          leadId: serviceLead?.id,
+          reason: body.reason,
+          city: body.city
+        });
+      } catch (sendnomiError) {
+        logError("lead.sendnomi.delivery_failed", sendnomiError, {
+          leadId: serviceLead?.id,
+          reason: body.reason,
+          city: body.city,
+          status:
+            sendnomiError instanceof SendnomiDeliveryError
+              ? sendnomiError.status
+              : undefined
+        });
+
+        if (requireSendnomiDelivery) {
+          return NextResponse.json(
+            {
+              ok: false,
+              message:
+                "Talebiniz kaydedildi ancak bildirim sistemi şu anda yanıt vermiyor. Lütfen kısa süre sonra yeniden deneyin."
+            },
+            { status: 502 }
+          );
+        }
+      }
+    } else {
+      logWarn("lead.sendnomi.not_configured", {
+        leadId: serviceLead?.id,
+        hasSendnomiApiKey: false
       });
     }
 

@@ -4,7 +4,6 @@ import { LeadForm } from "@/components/forms/lead-form";
 import { JsonLd } from "@/components/seo/json-ld";
 import { resolveContactReason } from "@/lib/contact-reasons";
 import { globalFaqs } from "@/lib/mock-data";
-import { serviceCoverageSummary } from "@/lib/service-coverage";
 import { absoluteUrl } from "@/lib/site";
 import type { PublicSiteSettings } from "@/lib/site-settings";
 import {
@@ -15,9 +14,9 @@ import { getPublishedSitePageBySlug } from "@/server/site/repository";
 import { getPublicSiteSettings } from "@/server/site/settings";
 
 const fallbackMetadata: Metadata = {
-  title: "İletişim",
+  title: "İleti�xim",
   description:
-    "Keşif, teklif, kurulum, servis ve iş ortaklığı talepleri için ParkChargeEV ile iletişime geçin.",
+    "Ke�xif, teklif, kurulum, servis ve i�x ortaklı�xı talepleri için ParkChargeEV ile ileti�xime geçin.",
   alternates: {
     canonical: "/iletisim"
   }
@@ -77,7 +76,7 @@ function OfficeMapCard({ settings }: { settings: PublicSiteSettings }) {
           rel="noopener noreferrer"
           className="mt-3 inline-flex rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-white"
         >
-          Google Maps’te aç
+          Google Maps&apos;te aç
         </a>
       </div>
       <iframe
@@ -131,13 +130,12 @@ function ContactOnePage({
 
       <section className="contact-onepage-shell">
         <div className="contact-onepage-intro">
-
           <ContactInfoCards settings={settings} />
         </div>
 
         <LeadForm
-          title="Teklif, keşif ve destek formu"
-          description="İhtiyacınızı seçin; ürün, keşif veya kurulum adımını hızlıca planlayalım."
+          title="Teklif, ke�xif ve destek formu"
+          description="İhtiyacınızı seçin; ürün, ke�xif veya kurulum adımını hızlıca planlayalım."
           compact
           defaultReason={defaultReason}
         />

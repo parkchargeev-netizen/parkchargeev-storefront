@@ -32,11 +32,11 @@ function getLeadRequestError(status: number, message?: string) {
   }
 
   if (status === 429) {
-    return "Çok fazla talep gönderildi. Lütfen birkaç dakika sonra yeniden deneyin.";
+    return "�!ok fazla talep gönderildi. Lütfen birkaç dakika sonra yeniden deneyin.";
   }
 
   if (status >= 500) {
-    return "Talep sistemi şu anda yanıt veremiyor. Lütfen kısa süre sonra yeniden deneyin.";
+    return "Talep sistemi �xu anda yanıt veremiyor. Lütfen kısa süre sonra yeniden deneyin.";
   }
 
   return "Talep gönderilemedi. Lütfen yeniden deneyin.";
@@ -44,7 +44,7 @@ function getLeadRequestError(status: number, message?: string) {
 
 function getSubmissionErrorMessage(error: unknown) {
   if (!(error instanceof Error)) {
-    return "Talep gönderilirken beklenmeyen bir hata oluştu.";
+    return "Talep gönderilirken beklenmeyen bir hata olu�xtu.";
   }
 
   const normalizedMessage = error.message.toLocaleLowerCase("tr-TR");
@@ -54,15 +54,15 @@ function getSubmissionErrorMessage(error: unknown) {
     normalizedMessage.includes("networkerror") ||
     normalizedMessage.includes("network request failed")
   ) {
-    return "Sunucuya ulaşılamadı. İnternet bağlantınızı kontrol edip yeniden deneyin.";
+    return "Sunucuya ula�xılamadı. İnternet ba�xlantınızı kontrol edip yeniden deneyin.";
   }
 
-  return error.message || "Talep gönderilirken beklenmeyen bir hata oluştu.";
+  return error.message || "Talep gönderilirken beklenmeyen bir hata olu�xtu.";
 }
 
 export function LeadForm({
-  title = "Teklif ve keşif talebi",
-  description = "İhtiyacınızı paylaşın, ürün ve kurulum yapısını birlikte netleştirelim.",
+  title = "Teklif ve ke�xif talebi",
+  description = "İhtiyacınızı payla�xın, ürün ve kurulum yapısını birlikte netle�xtirelim.",
   compact = false,
   defaultReason
 }: LeadFormProps) {
@@ -102,7 +102,7 @@ export function LeadForm({
         city: typeof payload.city === "string" ? payload.city : "",
         hasCompany: Boolean(payload.company)
       });
-      setMessage(result.message || "Talebiniz alındı. Ekibimiz en kısa sürede dönüş yapacak.");
+      setMessage(result.message || "Talebiniz alındı. Ekibimiz en kısa sürede dönü�x yapacak.");
       form.reset();
       setSelectedCity("");
       if (defaultReason) {
@@ -187,7 +187,7 @@ export function LeadForm({
             className={fieldClassName}
           />
           <span id="lead-phone-help" className={`${compact ? "sr-only" : "text-xs leading-5 text-on-surface-variant"}`}>
-            Keşif randevusu ve teklif netleştirme için kullanılır.
+            Ke�xif randevusu ve teklif netle�xtirme için kullanılır.
           </span>
         </label>
 
@@ -233,19 +233,17 @@ export function LeadForm({
         <div className={`${compact ? "px-4 py-3 text-xs leading-5" : "px-4 py-4 text-sm leading-6"} md:col-span-2 rounded-lg border border-primary/15 bg-primary/5 text-on-surface-variant`}>
           <span className="font-bold text-primary">{coverageHelp}</span>
           <span className="mt-1 block">
-            Ürün kargosu Türkiye&apos;nin 81 iline yapılır; ücretsiz keşif yalnızca Sakarya, kurulum hizmeti Sakarya ve Kocaeli için planlanır.
-          </span>
-          <span className="mt-1 block">
+            {serviceCoverageSummary.note}
           </span>
         </div>
 
         <label className={`${labelClassName} md:col-span-2`}>
-          <span className="text-sm text-on-surface-variant">İhtiyaç Özeti</span>
+          <span className="text-sm text-on-surface-variant">İhtiyaç �zeti</span>
           <textarea
             required
             name="message"
             rows={compact ? 3 : 6}
-            placeholder="Araç adedi, kullanım tipi, lokasyon ve beklentinizi paylaşın."
+            placeholder="Araç adedi, kullanım tipi, lokasyon ve beklentinizi payla�xın."
             className={`${fieldClassName} min-h-0 resize-y rounded-lg`}
           />
         </label>
@@ -264,7 +262,7 @@ export function LeadForm({
           />
 
           <span className="min-w-0">
-            ParkChargeEV&apos;in benimle teklif, keşif ve proje değerlendirmesi için iletişime geçmesini kabul ediyorum.
+            ParkChargeEV&apos;in benimle teklif, ke�xif ve proje de�xerlendirmesi için ileti�xime geçmesini kabul ediyorum.
           </span>
         </label>
 

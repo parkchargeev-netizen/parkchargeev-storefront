@@ -34,7 +34,7 @@ export const leadCityOptions = [
   "Gaziantep",
   "Giresun",
   "Gümüşhane",
-  "Hakkâri",
+  "Hakkari",
   "Hatay",
   "Iğdır",
   "Isparta",
@@ -93,18 +93,32 @@ export const serviceCoverageSummary = {
     "Türkiye'nin 81 ilinden ürün, keşif ve kurulum talebi oluşturabilirsiniz. Saha uygunluğu ve takvim ekip tarafından teyit edilir."
 } as const;
 
+const legacyCharacterMap: Record<string, string> = {
+  "Ä±": "i",
+  "Ä°": "i",
+  "ÄŸ": "g",
+  "Äž": "g",
+  "Ã¼": "u",
+  "Ãœ": "u",
+  "ÅŸ": "s",
+  "Åž": "s",
+  "Ã¶": "o",
+  "Ã–": "o",
+  "Ã§": "c",
+  "Ã‡": "c"
+};
+
 function normalizeText(value: string) {
   return value.trim().toLocaleLowerCase("tr-TR").replace(/\s+/g, " ");
 }
 
 function normalizeSearchText(value: string) {
   return normalizeText(value)
+    .replace(/[Ä±Ä°ÄŸÄžÃ¼ÃœÅŸÅžÃ¶Ã–Ã§Ã‡]/g, (character) => legacyCharacterMap[character] ?? character)
     .replace(/ı/g, "i")
-    .replace(/ğ/g, "g")
-    .replace(/ü/g, "u")
-    .replace(/ş/g, "s")
-    .replace(/ö/g, "o")
-    .replace(/ç/g, "c");
+    .replace(/İ/g, "i")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
 }
 
 export function isFreeSurveyCity(value: string) {
@@ -147,4 +161,5 @@ export function getLeadCoverageHelp(reason: string) {
     return "Kurulum talebinizi Türkiye'nin 81 ilinden iletebilirsiniz.";
   }
 
+  return "Talebinizi iletin, ekip uygun ürün ve hizmet kapsamını netleştirsin.";
 }

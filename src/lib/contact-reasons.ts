@@ -11,16 +11,30 @@ export const contactReasons = [
 
 export type ContactReason = (typeof contactReasons)[number];
 
+const legacyCharacterMap: Record<string, string> = {
+  "Ä±": "i",
+  "Ä°": "i",
+  "ÄŸ": "g",
+  "Äž": "g",
+  "Ã¼": "u",
+  "Ãœ": "u",
+  "ÅŸ": "s",
+  "Åž": "s",
+  "Ã¶": "o",
+  "Ã–": "o",
+  "Ã§": "c",
+  "Ã‡": "c"
+};
+
 function normalizeReason(value: string) {
   return value
     .trim()
-    .toLocaleLowerCase("tr-TR")
+    .replace(/[Ä±Ä°ÄŸÄžÃ¼ÃœÅŸÅžÃ¶Ã–Ã§Ã‡]/g, (character) => legacyCharacterMap[character] ?? character)
     .replace(/ı/g, "i")
-    .replace(/ğ/g, "g")
-    .replace(/ü/g, "u")
-    .replace(/ş/g, "s")
-    .replace(/ö/g, "o")
-    .replace(/ç/g, "c");
+    .replace(/İ/g, "i")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLocaleLowerCase("tr-TR");
 }
 
 export function resolveContactReason(value?: string | null): ContactReason | undefined {
