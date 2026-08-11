@@ -6,6 +6,7 @@ import { logError } from "@/lib/server-logger";
 import { getDb } from "@/server/db/client";
 import { quoteRequests, serviceLeads } from "@/server/db/schema";
 import { consumeLeadAttempt, getLeadRateLimitKey } from "@/server/lead/rate-limit";
+import { deliverLeadToSendNomi, shouldRequireSendNomiDelivery } from "@/server/lead/sendnomi";
 
 const leadSchema = z.object({
   fullName: z.string().trim().min(3, "Ad soyad en az 3 karakter olmalı."),
@@ -107,6 +108,28 @@ export async function POST(request: Request) {
           privacyConsent: true
         }
       });
+    }
+
+    const sendNomiDelivery = await deliverLeadToSendNomi({
+      fullName: body.fullName,
+      company: body.company || null,
+      email: body.email,
+      phone: body.phone,
+      city: body.city,
+      reason: body.reason,
+      message: body.message,
+      createdAt
+    });
+
+    if (sendNomiDelivery.status === "failed" && shouldRequireSendNomiDelivery()) {
+      return NextResponse.json(
+        {
+          ok: false,
+          message:
+            "Talep kaydedildi ancak e-posta bildirimi g\u00f6nderilemedi. L\u00fctfen k\u0131sa s\u00fcre sonra yeniden deneyin."
+        },
+        { status: 502 }
+      );
     }
 
     return NextResponse.json({
