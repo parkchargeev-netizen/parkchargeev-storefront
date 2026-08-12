@@ -23,7 +23,13 @@ const DEFAULT_TO_EMAIL = "parkchargeev@gmail.com";
 
 function getApiBaseUrl() {
   const configuredBaseUrl = process.env.SENDNOMI_API_BASE_URL?.trim();
-  return (configuredBaseUrl || DEFAULT_API_BASE_URL).replace(/\/+$/, "");
+  const baseUrl = (configuredBaseUrl || DEFAULT_API_BASE_URL).replace(/\/+$/, "");
+
+  if (baseUrl === "https://api.sendnomi.com" || baseUrl === "http://api.sendnomi.com") {
+    return DEFAULT_API_BASE_URL;
+  }
+
+  return baseUrl;
 }
 
 function getToEmail() {
@@ -57,7 +63,7 @@ function formatLeadRows(lead: SendNomiLead) {
     ["Firma / Site", lead.company || "-"],
     ["E-posta", lead.email],
     ["Telefon", lead.phone],
-    ["?ehir", lead.city],
+    ["\u015eehir", lead.city],
     ["Talep tipi", lead.reason],
     ["G\u00f6nderim zaman\u0131", lead.createdAt.toLocaleString("tr-TR", { timeZone: "Europe/Istanbul" })]
   ];
@@ -85,7 +91,7 @@ function buildHtml(lead: SendNomiLead) {
           ${formatLeadRows(lead)}
         </table>
         <div style="padding:18px 24px 24px;">
-          <p style="margin:0 0 8px;color:#48625b;font-size:13px;font-weight:700;">?htiya? ?zeti</p>
+          <p style="margin:0 0 8px;color:#48625b;font-size:13px;font-weight:700;">\u0130htiya\u00e7 \u00f6zeti</p>
           <div style="white-space:pre-wrap;border-radius:12px;background:#eef8f4;border:1px solid #dbe7e2;padding:14px 16px;color:#062c24;font-size:14px;line-height:1.6;">${escapeHtml(lead.message)}</div>
         </div>
       </div>
@@ -99,11 +105,11 @@ function buildText(lead: SendNomiLead) {
     `Firma / Site: ${lead.company || "-"}`,
     `E-posta: ${lead.email}`,
     `Telefon: ${lead.phone}`,
-    `?ehir: ${lead.city}`,
+    `\u015eehir: ${lead.city}`,
     `Talep tipi: ${lead.reason}`,
     `G\u00f6nderim zaman\u0131: ${lead.createdAt.toLocaleString("tr-TR", { timeZone: "Europe/Istanbul" })}`,
     "",
-    "?htiya? ?zeti:",
+    "\u0130htiya\u00e7 \u00f6zeti:",
     lead.message
   ].join("\n");
 }
