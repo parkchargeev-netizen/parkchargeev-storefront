@@ -18,7 +18,7 @@ type SendNomiDeliveryResult =
   | { status: "skipped"; reason: "missing_configuration" }
   | { status: "failed"; reason: "request_failed"; httpStatus?: number };
 
-const DEFAULT_API_BASE_URL = "https://api.sendnomi.com";
+const DEFAULT_API_BASE_URL = "https://app.sendnomi.com/api";
 const DEFAULT_TO_EMAIL = "parkchargeev@gmail.com";
 
 function getApiBaseUrl() {
