@@ -18,18 +18,33 @@ type SendNomiDeliveryResult =
   | { status: "skipped"; reason: "missing_configuration" }
   | { status: "failed"; reason: "request_failed"; httpStatus?: number };
 
-const DEFAULT_API_BASE_URL = "https://app.sendnomi.com/api";
+const DEFAULT_API_BASE_URL = "https://api.sendnomi.com/api";
+const FALLBACK_API_BASE_URLS = ["https://app.sendnomi.com/api"];
 const DEFAULT_TO_EMAIL = "parkchargeev@gmail.com";
 
-function getApiBaseUrl() {
-  const configuredBaseUrl = process.env.SENDNOMI_API_BASE_URL?.trim();
-  const baseUrl = (configuredBaseUrl || DEFAULT_API_BASE_URL).replace(/\/+$/, "");
+function normalizeApiBaseUrl(baseUrl: string) {
+  const cleanBaseUrl = baseUrl.replace(/\/+$/, "");
 
-  if (baseUrl === "https://api.sendnomi.com" || baseUrl === "http://api.sendnomi.com") {
+  if (cleanBaseUrl === "https://api.sendnomi.com" || cleanBaseUrl === "http://api.sendnomi.com") {
     return DEFAULT_API_BASE_URL;
   }
 
-  return baseUrl;
+  if (cleanBaseUrl === "https://app.sendnomi.com" || cleanBaseUrl === "http://app.sendnomi.com") {
+    return "https://app.sendnomi.com/api";
+  }
+
+  return cleanBaseUrl;
+}
+
+function getApiBaseUrls() {
+  const configuredBaseUrl = process.env.SENDNOMI_API_BASE_URL?.trim();
+  const baseUrls = [
+    configuredBaseUrl ? normalizeApiBaseUrl(configuredBaseUrl) : DEFAULT_API_BASE_URL,
+    DEFAULT_API_BASE_URL,
+    ...FALLBACK_API_BASE_URLS
+  ];
+
+  return Array.from(new Set(baseUrls));
 }
 
 function getToEmail() {
@@ -136,37 +151,55 @@ export async function deliverLeadToSendNomi(lead: SendNomiLead): Promise<SendNom
     return { status: "skipped", reason: "missing_configuration" };
   }
 
-  const response = await fetch(`${getApiBaseUrl()}/v1/messages`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-      "Idempotency-Key": randomUUID()
-    },
-    body: JSON.stringify({
-      from,
-      to,
-      subject: `ParkChargeEV yeni talep: ${lead.fullName}`,
-      html: buildHtml(lead),
-      text: buildText(lead)
-    })
-  });
+  let lastFailure: { status: number; requestId: string | null; responsePreview: string; baseUrl: string } | null = null;
 
-  const requestId = response.headers.get("x-request-id");
+  for (const baseUrl of getApiBaseUrls()) {
+    const response = await fetch(`${baseUrl}/v1/messages`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+        "Idempotency-Key": randomUUID()
+      },
+      body: JSON.stringify({
+        from,
+        to,
+        subject: `ParkChargeEV yeni talep: ${lead.fullName}`,
+        html: buildHtml(lead),
+        text: buildText(lead)
+      })
+    });
 
-  if (!response.ok) {
-    logError("lead.sendnomi.delivery_failed", new Error(`SendNomi returned ${response.status}`), {
+    const requestId = response.headers.get("x-request-id");
+
+    if (response.ok) {
+      logInfo("lead.sendnomi.sent", {
+        status: response.status,
+        requestId,
+        sendNomiApiBaseHost: new URL(baseUrl).host
+      });
+
+      return { status: "sent", requestId };
+    }
+
+    lastFailure = {
       status: response.status,
       requestId,
-      responsePreview: await readResponsePreview(response)
-    });
-    return { status: "failed", reason: "request_failed", httpStatus: response.status };
+      responsePreview: await readResponsePreview(response),
+      baseUrl
+    };
+
+    if (response.status !== 404) {
+      break;
+    }
   }
 
-  logInfo("lead.sendnomi.sent", {
-    status: response.status,
-    requestId
+  logError("lead.sendnomi.delivery_failed", new Error(`SendNomi returned ${lastFailure?.status ?? "unknown"}`), {
+    status: lastFailure?.status,
+    requestId: lastFailure?.requestId,
+    responsePreview: lastFailure?.responsePreview,
+    sendNomiApiBaseHost: lastFailure ? new URL(lastFailure.baseUrl).host : undefined
   });
 
-  return { status: "sent", requestId };
+  return { status: "failed", reason: "request_failed", httpStatus: lastFailure?.status };
 }
