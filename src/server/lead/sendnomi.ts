@@ -18,6 +18,7 @@ type SendNomiDeliveryResult =
   | { status: "skipped"; reason: "missing_configuration" }
   | { status: "failed"; reason: "request_failed"; httpStatus?: number };
 
+const DEFAULT_LEAD_INTAKE_URL = "https://app.sendnomi.com/api/public/lead-intake/lif_pub_cJuYrIXV78VJWMNetB9synmGdyIac3DG";
 const DEFAULT_API_BASE_URL = "https://api.sendnomi.com/api";
 const FALLBACK_API_BASE_URLS = ["https://app.sendnomi.com/api"];
 const DEFAULT_TO_EMAIL = "parkchargeev@gmail.com";
@@ -137,7 +138,71 @@ async function readResponsePreview(response: Response) {
   }
 }
 
+function getLeadIntakeUrl() {
+  const configuredUrl = process.env.SENDNOMI_LEAD_INTAKE_URL?.trim();
+  return (configuredUrl || DEFAULT_LEAD_INTAKE_URL).replace(/\/+$/, "");
+}
+
+function getLeadIntakeOrigin() {
+  return process.env.NEXT_PUBLIC_SITE_URL?.trim()?.replace(/\/+$/, "") || "https://parkchargeev.com";
+}
+
+function buildLeadIntakeFields(lead: SendNomiLead) {
+  return {
+    fullName: lead.fullName,
+    company: lead.company || "",
+    email: lead.email,
+    phone: lead.phone,
+    city: lead.city,
+    reason: lead.reason,
+    message: lead.message,
+    privacyConsent: "true",
+    landing_url: `${getLeadIntakeOrigin()}/iletisim`
+  };
+}
+
+async function deliverLeadToLeadIntake(lead: SendNomiLead): Promise<SendNomiDeliveryResult | null> {
+  const leadIntakeUrl = getLeadIntakeUrl();
+
+  if (!leadIntakeUrl) {
+    return null;
+  }
+
+  const response = await fetch(leadIntakeUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Origin: getLeadIntakeOrigin()
+    },
+    body: JSON.stringify({ fields: buildLeadIntakeFields(lead) })
+  });
+
+  const requestId = response.headers.get("x-request-id");
+
+  if (response.ok) {
+    logInfo("lead.sendnomi.lead_intake_sent", {
+      status: response.status,
+      requestId
+    });
+
+    return { status: "sent", requestId };
+  }
+
+  logWarn("lead.sendnomi.lead_intake_failed", {
+    status: response.status,
+    requestId,
+    responsePreview: await readResponsePreview(response)
+  });
+
+  return { status: "failed", reason: "request_failed", httpStatus: response.status };
+}
 export async function deliverLeadToSendNomi(lead: SendNomiLead): Promise<SendNomiDeliveryResult> {
+  const leadIntakeResult = await deliverLeadToLeadIntake(lead);
+
+  if (leadIntakeResult?.status === "sent") {
+    return leadIntakeResult;
+  }
+
   const apiKey = getApiKey();
   const from = getFromEmail();
   const to = getToEmail();
@@ -148,7 +213,7 @@ export async function deliverLeadToSendNomi(lead: SendNomiLead): Promise<SendNom
       sendNomiFromConfigured: Boolean(from),
       sendNomiToConfigured: Boolean(to)
     });
-    return { status: "skipped", reason: "missing_configuration" };
+    return leadIntakeResult?.status === "failed" ? leadIntakeResult : { status: "skipped", reason: "missing_configuration" };
   }
 
   let lastFailure: { status: number; requestId: string | null; responsePreview: string; baseUrl: string } | null = null;
