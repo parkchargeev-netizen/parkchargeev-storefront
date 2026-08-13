@@ -22,6 +22,67 @@ type LeadApiResponse = {
   message?: string;
 };
 
+const SENDNOMI_LEAD_INTAKE_URL =
+  process.env.NEXT_PUBLIC_SENDNOMI_LEAD_INTAKE_URL?.trim() ||
+  "https://app.sendnomi.com/api/public/lead-intake/lif_pub_cJuYrIXV78VJWMNetB9synmGdyIac3DG";
+
+function getStringField(payload: Record<string, FormDataEntryValue>, key: string) {
+  const value = payload[key];
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function buildSendNomiFields(payload: Record<string, FormDataEntryValue>) {
+  const fullName = getStringField(payload, "fullName");
+  const email = getStringField(payload, "email");
+  const phone = getStringField(payload, "phone");
+  const city = getStringField(payload, "city");
+  const reason = getStringField(payload, "reason");
+  const message = getStringField(payload, "message");
+  const company = getStringField(payload, "company");
+
+  return {
+    fullName,
+    name: fullName,
+    adSoyad: fullName,
+    company,
+    firma: company,
+    email,
+    eposta: email,
+    phone,
+    telefon: phone,
+    city,
+    sehir: city,
+    reason,
+    talepTipi: reason,
+    message,
+    mesaj: message,
+    privacyConsent: "true",
+    source: "parkchargeev-contact-form",
+    landing_url: typeof window !== "undefined" ? window.location.href : "https://parkchargeev.com/iletisim"
+  };
+}
+
+async function sendLeadToSendNomiBrowser(payload: Record<string, FormDataEntryValue>) {
+  if (!SENDNOMI_LEAD_INTAKE_URL) {
+    return false;
+  }
+
+  try {
+    const response = await fetch(SENDNOMI_LEAD_INTAKE_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ fields: buildSendNomiFields(payload) }),
+      keepalive: true
+    });
+
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
 function getLeadRequestError(status: number, message?: string) {
   if (message) {
     return message;
@@ -83,6 +144,7 @@ export function LeadForm({
   ) {
     try {
       setIsSubmitting(true);
+      const sendNomiBrowserDelivery = sendLeadToSendNomiBrowser(payload);
       const response = await fetch("/api/lead", {
         method: "POST",
         headers: {
@@ -96,6 +158,8 @@ export function LeadForm({
       if (!response.ok || !result?.ok) {
         throw new Error(getLeadRequestError(response.status, result?.message));
       }
+
+      void sendNomiBrowserDelivery;
 
       trackConversionEvent("contact_submit", {
         reason: typeof payload.reason === "string" ? payload.reason : "",
