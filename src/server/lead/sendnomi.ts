@@ -18,7 +18,7 @@ type SendNomiDeliveryResult =
   | { status: "skipped"; reason: "missing_configuration" }
   | { status: "failed"; reason: "request_failed"; httpStatus?: number };
 
-const DEFAULT_LEAD_INTAKE_URL = "https://app.sendnomi.com/api/public/lead-intake/lif_pub_cJuYrIXV78VJWMNetB9synmGdyIac3DG";
+const DEFAULT_LEAD_INTAKE_URL = "https://app.sendnomi.com/api/public/lead-intake/lif_pub_XyXI0vLpn0B5ecj5vHCmc-_K1C7pP3YC";
 const DEFAULT_API_BASE_URL = "https://api.sendnomi.com";
 const FALLBACK_API_BASE_URLS = ["https://api.sendnomi.com/api", "https://app.sendnomi.com/api"];
 const DEFAULT_TO_EMAIL = "parkchargeev@gmail.com";
