@@ -147,9 +147,23 @@ function getSiteOrigin() {
   return process.env.NEXT_PUBLIC_SITE_URL?.trim()?.replace(/\/+$/, "") || "https://parkchargeev.com";
 }
 
+function withTrailingSlash(origin: string) {
+  return origin.endsWith("/") ? origin : `${origin}/`;
+}
+
 function getLeadIntakeOrigins() {
-  const configuredOrigin = process.env.SENDNOMI_LEAD_INTAKE_ORIGIN?.trim()?.replace(/\/+$/, "");
-  const origins = [configuredOrigin, getSiteOrigin(), "https://parkchargeev.com", "https://www.parkchargeev.com"];
+  const configuredOrigin = process.env.SENDNOMI_LEAD_INTAKE_ORIGIN?.trim();
+  const siteOrigin = getSiteOrigin();
+  const origins = [
+    configuredOrigin,
+    configuredOrigin ? withTrailingSlash(configuredOrigin) : undefined,
+    withTrailingSlash(siteOrigin),
+    siteOrigin,
+    "https://parkchargeev.com/",
+    "https://parkchargeev.com",
+    "https://www.parkchargeev.com/",
+    "https://www.parkchargeev.com"
+  ];
 
   return Array.from(new Set(origins.filter((origin): origin is string => Boolean(origin))));
 }
@@ -164,6 +178,7 @@ function getSafeHost(url: string) {
 
 function buildLeadIntakeFields(lead: SendNomiLead) {
   return {
+    name: lead.fullName,
     fullName: lead.fullName,
     company: lead.company || "",
     email: lead.email,
@@ -171,7 +186,9 @@ function buildLeadIntakeFields(lead: SendNomiLead) {
     city: lead.city,
     reason: lead.reason,
     message: lead.message,
+    kvkk: "on",
     privacyConsent: "true",
+    website: "",
     landing_url: `${getSiteOrigin()}/iletisim`
   };
 }
