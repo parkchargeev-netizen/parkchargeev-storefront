@@ -19,8 +19,8 @@ type SendNomiDeliveryResult =
   | { status: "failed"; reason: "request_failed"; httpStatus?: number };
 
 const DEFAULT_LEAD_INTAKE_URL = "https://app.sendnomi.com/api/public/lead-intake/lif_pub_cJuYrIXV78VJWMNetB9synmGdyIac3DG";
-const DEFAULT_API_BASE_URL = "https://api.sendnomi.com/api";
-const FALLBACK_API_BASE_URLS = ["https://app.sendnomi.com/api"];
+const DEFAULT_API_BASE_URL = "https://api.sendnomi.com";
+const FALLBACK_API_BASE_URLS = ["https://api.sendnomi.com/api", "https://app.sendnomi.com/api"];
 const DEFAULT_TO_EMAIL = "parkchargeev@gmail.com";
 
 function normalizeApiBaseUrl(baseUrl: string) {
@@ -143,8 +143,23 @@ function getLeadIntakeUrl() {
   return (configuredUrl || DEFAULT_LEAD_INTAKE_URL).replace(/\/+$/, "");
 }
 
-function getLeadIntakeOrigin() {
+function getSiteOrigin() {
   return process.env.NEXT_PUBLIC_SITE_URL?.trim()?.replace(/\/+$/, "") || "https://parkchargeev.com";
+}
+
+function getLeadIntakeOrigins() {
+  const configuredOrigin = process.env.SENDNOMI_LEAD_INTAKE_ORIGIN?.trim()?.replace(/\/+$/, "");
+  const origins = [configuredOrigin, getSiteOrigin(), "https://parkchargeev.com", "https://www.parkchargeev.com"];
+
+  return Array.from(new Set(origins.filter((origin): origin is string => Boolean(origin))));
+}
+
+function getSafeHost(url: string) {
+  try {
+    return new URL(url).host;
+  } catch {
+    return undefined;
+  }
 }
 
 function buildLeadIntakeFields(lead: SendNomiLead) {
@@ -157,7 +172,7 @@ function buildLeadIntakeFields(lead: SendNomiLead) {
     reason: lead.reason,
     message: lead.message,
     privacyConsent: "true",
-    landing_url: `${getLeadIntakeOrigin()}/iletisim`
+    landing_url: `${getSiteOrigin()}/iletisim`
   };
 }
 
@@ -168,33 +183,51 @@ async function deliverLeadToLeadIntake(lead: SendNomiLead): Promise<SendNomiDeli
     return null;
   }
 
-  const response = await fetch(leadIntakeUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Origin: getLeadIntakeOrigin()
-    },
-    body: JSON.stringify({ fields: buildLeadIntakeFields(lead) })
-  });
+  let lastFailure: { status: number; requestId: string | null; responsePreview: string; origin: string } | null = null;
 
-  const requestId = response.headers.get("x-request-id");
-
-  if (response.ok) {
-    logInfo("lead.sendnomi.lead_intake_sent", {
-      status: response.status,
-      requestId
+  for (const origin of getLeadIntakeOrigins()) {
+    const response = await fetch(leadIntakeUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Origin: origin,
+        Referer: `${origin}/iletisim`
+      },
+      body: JSON.stringify({ fields: buildLeadIntakeFields(lead) })
     });
 
-    return { status: "sent", requestId };
+    const requestId = response.headers.get("x-request-id");
+
+    if (response.ok) {
+      logInfo("lead.sendnomi.lead_intake_sent", {
+        status: response.status,
+        requestId,
+        leadIntakeOriginHost: getSafeHost(origin)
+      });
+
+      return { status: "sent", requestId };
+    }
+
+    lastFailure = {
+      status: response.status,
+      requestId,
+      responsePreview: await readResponsePreview(response),
+      origin
+    };
+
+    if (response.status !== 403) {
+      break;
+    }
   }
 
   logWarn("lead.sendnomi.lead_intake_failed", {
-    status: response.status,
-    requestId,
-    responsePreview: await readResponsePreview(response)
+    status: lastFailure?.status,
+    requestId: lastFailure?.requestId,
+    responsePreview: lastFailure?.responsePreview,
+    leadIntakeOriginHost: lastFailure ? getSafeHost(lastFailure.origin) : undefined
   });
 
-  return { status: "failed", reason: "request_failed", httpStatus: response.status };
+  return { status: "failed", reason: "request_failed", httpStatus: lastFailure?.status };
 }
 export async function deliverLeadToSendNomi(lead: SendNomiLead): Promise<SendNomiDeliveryResult> {
   const leadIntakeResult = await deliverLeadToLeadIntake(lead);
