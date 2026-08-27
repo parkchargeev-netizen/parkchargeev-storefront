@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import { ScrollMotion } from "@/components/layout/scroll-motion";
 import { SiteAmbientLayer } from "@/components/layout/site-ambient-layer";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
@@ -38,6 +39,7 @@ export function SiteShell({ children, navigation, settings }: SiteShellProps) {
       <SiteSocialQuickLinks settings={settings} />
       <ProductCardMediaRuntime />
       <ProductCompareRuntime />
+      <ScrollMotion />
       <SiteFooter
         settings={settings}
         navigation={

@@ -701,6 +701,11 @@ html[data-motion-performance="lite"] .site-experience-shell :where(.surface-card
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .site-ambient-circuit,
+  .premium-section__atmosphere {
+    display: none !important;
+  }
+
   .global-ambient-layer,
   .global-ambient-layer::before,
   .global-ambient-layer::after,

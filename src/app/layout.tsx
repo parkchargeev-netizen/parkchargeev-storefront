@@ -2,8 +2,6 @@ import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import Script from "next/script";
 
-import { GlobalAmbientLayer } from "@/components/layout/global-ambient-layer";
-import { ScrollMotion } from "@/components/layout/scroll-motion";
 import { getConversionEventListenerScript } from "@/lib/conversion-listener-script";
 import { getEvSeoKeywords } from "@/lib/seo";
 import { absoluteUrl, siteConfig } from "@/lib/site";
@@ -208,9 +206,7 @@ export default function RootLayout({
         <Script id="parkchargeev-conversion-listener" strategy="afterInteractive">
           {getConversionEventListenerScript()}
         </Script>
-        <GlobalAmbientLayer />
         <div className="app-content-layer">{children}</div>
-        <ScrollMotion />
       </body>
     </html>
   );

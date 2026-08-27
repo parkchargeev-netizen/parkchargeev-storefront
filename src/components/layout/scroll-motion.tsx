@@ -20,6 +20,22 @@ function getScrollMotionRuntimeScript() {
       var motionSelectors = config.selectors;
       var mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
       var coarsePointerQuery = window.matchMedia("(pointer: coarse)");
+
+      if (
+        mediaQuery.matches ||
+        coarsePointerQuery.matches ||
+        document.documentElement.dataset.motionPerformance === "lite"
+      ) {
+        document.body.dataset.scrollMotionRuntime = "lite";
+        document.querySelectorAll("[data-motion]").forEach(function(element) {
+          element.dataset.motionState = "complete";
+        });
+        document.querySelectorAll("[data-motion-loop]").forEach(function(element) {
+          element.dataset.motionActive = "false";
+        });
+        return;
+      }
+
       var observedElements = new WeakSet();
       var loopElements = new WeakSet();
       var pendingRoots = new Set();
@@ -368,8 +384,12 @@ function getScrollMotionRuntimeScript() {
 
       bindMutationObserver();
       bindScrollListener();
-      window.addEventListener("resize", scheduleScrollProgress);
-      window.addEventListener("resize", schedulePointerLight);
+      function scheduleViewportSync() {
+        scheduleScrollProgress();
+        schedulePointerLight();
+      }
+
+      window.addEventListener("resize", scheduleViewportSync, { passive: true });
       document.addEventListener("visibilitychange", syncVisibilityState);
       bindPointerListener();
       mediaQuery.addEventListener("change", handleMotionPreference);
@@ -389,8 +409,7 @@ function getScrollMotionRuntimeScript() {
         revealObserver.disconnect();
         loopObserver.disconnect();
         unbindScrollListener();
-        window.removeEventListener("resize", scheduleScrollProgress);
-        window.removeEventListener("resize", schedulePointerLight);
+        window.removeEventListener("resize", scheduleViewportSync);
         document.removeEventListener("visibilitychange", syncVisibilityState);
         unbindPointerListener();
         mediaQuery.removeEventListener("change", handleMotionPreference);

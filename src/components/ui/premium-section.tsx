@@ -72,7 +72,7 @@ export function PremiumSection<T extends ElementType = "section">({
       data-motion-loop={ambient ? "ambient" : undefined}
       data-premium-depth
     >
-      <PremiumSectionAtmosphere />
+      {ambient ? <PremiumSectionAtmosphere /> : null}
       {content}
     </Component>
   );
