@@ -7,7 +7,7 @@ import { CART_TAX_RATE } from "@/lib/cart-core";
 import { generateMerchantOid } from "@/lib/paytr";
 import type { PaytrCheckoutItem } from "@/lib/paytr";
 import { getProductCableOptions } from "@/lib/product-options";
-import { listPublicProducts } from "@/server/admin/repository";
+import { listPublicProductsByIds } from "@/server/admin/repository";
 import { getDb } from "@/server/db/client";
 import { customers, orderItems, orders, paytrTransactions } from "@/server/db/schema";
 
@@ -146,7 +146,7 @@ function isUuid(value?: string | null) {
 }
 
 async function priceCheckoutItems(items: PaytrCheckoutRequest["items"]) {
-  const publicProducts = await listPublicProducts();
+  const publicProducts = await listPublicProductsByIds(items.map((item) => item.productId));
   const pricedItems = items.map((item): PricedCheckoutItem => {
     const product = publicProducts.find((candidate) => candidate.id === item.productId);
 

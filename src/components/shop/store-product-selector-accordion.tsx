@@ -14,7 +14,23 @@ import {
   getDisplayProductImageUrl,
   shouldBypassImageOptimization
 } from "@/lib/product-media";
-import { getProductStoreProfile } from "@/lib/shop-merchandising";
+import type { ProductStoreProfile } from "@/lib/shop-merchandising";
+
+export type StoreSelectorProduct = Pick<
+  ProductModel,
+  | "id"
+  | "slug"
+  | "name"
+  | "category"
+  | "summary"
+  | "description"
+  | "stockLabel"
+  | "powerLabel"
+  | "imageUrl"
+  | "priceKurus"
+> & {
+  profile: ProductStoreProfile;
+};
 
 type SelectorState = {
   useCase: "all" | "home" | "site" | "business" | "dc" | "accessory";
@@ -80,17 +96,17 @@ const selectorFields: SelectorField[] = [
   }
 ];
 
-function getInstallationFilterValue(mode: ReturnType<typeof getProductStoreProfile>["installationMode"]) {
+function getInstallationFilterValue(mode: ProductStoreProfile["installationMode"]) {
   if (mode === "Tak-çalıştır") return "quick";
   if (mode === "Sabit kurulum") return "fixed";
   if (mode === "Keşif gerekli") return "survey";
   return "none";
 }
 
-function matchesUseCase(product: ProductModel, state: SelectorState) {
+function matchesUseCase(product: StoreSelectorProduct, state: SelectorState) {
   if (state.useCase === "all") return true;
 
-  const profile = getProductStoreProfile(product);
+  const profile = product.profile;
   const haystack =
     `${product.name} ${product.category} ${product.summary} ${product.description} ${profile.primaryFit} ${profile.powerTier}`.toLocaleLowerCase(
       "tr-TR"
@@ -130,8 +146,8 @@ function matchesUseCase(product: ProductModel, state: SelectorState) {
   return profile.powerTier === "Aksesuar" || haystack.includes("kablo") || haystack.includes("aksesuar");
 }
 
-function scoreProduct(product: ProductModel, state: SelectorState) {
-  const profile = getProductStoreProfile(product);
+function scoreProduct(product: StoreSelectorProduct, state: SelectorState) {
+  const profile = product.profile;
   let score = product.stockLabel === "Stokta" ? 18 : 8;
   const reasons: string[] = [];
 
@@ -182,7 +198,7 @@ function buildStoreFilterHref(state: SelectorState) {
   return query ? `/magaza?${query}` : "/magaza";
 }
 
-export function StoreProductSelectorAccordion({ products }: { products: ProductModel[] }) {
+export function StoreProductSelectorAccordion({ products }: { products: StoreSelectorProduct[] }) {
   const [mounted, setMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [state, setState] = useState<SelectorState>(initialSelectorState);

@@ -1,4 +1,4 @@
-import { desc, sql } from "drizzle-orm";
+import { and, desc, ilike, isNotNull, or, sql } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 
 import {
@@ -9,6 +9,7 @@ import {
 } from "@/lib/blog-content";
 import { articles, type ArticleModel } from "@/lib/mock-data";
 import { hasDatabaseConfig } from "@/lib/runtime-config";
+import { matchesSearchQuery } from "@/lib/search-normalization";
 import { getDb } from "@/server/db/client";
 import { blogPosts } from "@/server/db/schema";
 
@@ -86,6 +87,76 @@ export const listPublicBlogArticles = unstable_cache(
     tags: ["public-blog"]
   }
 );
+
+async function withBlogSearchTimeout<T>(promise: Promise<T>, fallback: T) {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<T>((resolve) => {
+    timeoutId = setTimeout(() => resolve(fallback), 3500);
+  });
+
+  try {
+    return await Promise.race([promise, timeout]);
+  } finally {
+    if (timeoutId) clearTimeout(timeoutId);
+  }
+}
+
+export async function searchPublicBlogArticles(query: string, limit = 12) {
+  const normalizedQuery = query.trim();
+  const safeLimit = Math.min(Math.max(limit, 1), 24);
+
+  if (!normalizedQuery) {
+    return [];
+  }
+
+  const fallbackArticles = getFallbackPublicArticles()
+    .filter((article) =>
+      matchesSearchQuery(
+        [article.title, article.slug, article.excerpt, article.seoDescription, stripHtml(article.bodyHtml)],
+        normalizedQuery
+      )
+    )
+    .slice(0, safeLimit);
+
+  if (!hasDatabaseConfig()) {
+    return fallbackArticles;
+  }
+
+  try {
+    const db = getDb();
+    const pattern = "%" + normalizedQuery + "%";
+    const rows = await withBlogSearchTimeout(
+      db
+            .select()
+            .from(blogPosts)
+            .where(
+              and(
+                isNotNull(blogPosts.publishedAt),
+                or(
+                  ilike(blogPosts.title, pattern),
+                  ilike(blogPosts.slug, pattern),
+                  ilike(blogPosts.excerpt, pattern),
+                  ilike(blogPosts.body, pattern),
+                  ilike(blogPosts.seoDescription, pattern)
+                )
+              )
+            )
+            .orderBy(desc(blogPosts.publishedAt), desc(blogPosts.updatedAt))
+            .limit(safeLimit),
+      []
+    );
+    const databaseArticles = rows.map(mapBlogPostToPublicArticle);
+    const databaseSlugs = new Set(databaseArticles.map((article) => article.slug));
+
+    return [
+      ...databaseArticles,
+      ...fallbackArticles.filter((article) => !databaseSlugs.has(article.slug))
+    ].slice(0, safeLimit);
+  } catch (error) {
+    console.warn("Public blog search could not be loaded.", error);
+    return fallbackArticles;
+  }
+}
 
 export async function listPublicBlogSlugs() {
   const publicArticles = await listPublicBlogArticles();

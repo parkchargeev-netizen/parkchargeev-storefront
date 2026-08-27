@@ -7,9 +7,8 @@ import { SolutionCard } from "@/components/solutions/solution-card";
 import { PageHeader } from "@/components/ui/page-header";
 import { solutionPages } from "@/lib/mock-data";
 import { matchesSearchQuery } from "@/lib/search-normalization";
-import { stripHtml } from "@/lib/blog-content";
-import { listPublicBlogArticles } from "@/server/blog/repository";
-import { listPublicProducts } from "@/server/admin/repository";
+import { searchPublicBlogArticles } from "@/server/blog/repository";
+import { searchPublicProducts } from "@/server/admin/repository";
 
 export const metadata: Metadata = {
   title: "Arama",
@@ -28,59 +27,19 @@ type SearchPageProps = {
 export default async function SearchPage({ searchParams }: SearchPageProps) {
   const { q = "" } = await searchParams;
   const query = q.trim();
-  const [publicArticles, publicProducts] = await Promise.all([
-    listPublicBlogArticles(),
-    listPublicProducts()
-  ]);
+  let matchedProducts: Awaited<ReturnType<typeof searchPublicProducts>> = [];
+  let matchedArticles: Awaited<ReturnType<typeof searchPublicBlogArticles>> = [];
+  let matchedSolutions: (typeof solutionPages)[number][] = [];
 
-  const matchedProducts = query
-    ? publicProducts.filter((product) =>
-        matchesSearchQuery(
-          [
-            product.name,
-            product.slug,
-            product.summary,
-            product.description,
-            product.category,
-            product.powerLabel,
-            product.highlights,
-            product.useCases,
-            product.seoIntent,
-            product.specs.map((spec) => `${spec.label} ${spec.value}`),
-            product.faqs.map((faq) => `${faq.question} ${faq.answer}`)
-          ],
-          query
-        )
-      )
-    : [];
-
-  const matchedArticles = query
-    ? publicArticles.filter((article) =>
-        matchesSearchQuery(
-          [
-            article.title,
-            article.slug,
-            article.category,
-            article.excerpt,
-            article.seoDescription,
-            article.coverKicker,
-            stripHtml(article.bodyHtml),
-            article.sections.map((section) =>
-              [
-                section.heading,
-                ...section.paragraphs,
-                ...(section.bullets ?? [])
-              ].join(" ")
-            ),
-            article.faq?.map((faq) => `${faq.question} ${faq.answer}`) ?? []
-          ],
-          query
-        )
-      )
-    : [];
-
-  const matchedSolutions = query
-    ? solutionPages.filter((solution) =>
+  if (!query) {
+    matchedProducts = [];
+  } else {
+    [matchedArticles, matchedProducts] = await Promise.all([
+      searchPublicBlogArticles(query, 12),
+      searchPublicProducts(query, 12)
+    ]);
+    matchedSolutions = solutionPages
+      .filter((solution) =>
         matchesSearchQuery(
           [
             solution.title,
@@ -91,16 +50,14 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             solution.features,
             solution.outcomes,
             solution.useCases,
-            solution.faq.map((faq) => `${faq.question} ${faq.answer}`)
+            solution.faq.map((faq) => faq.question + " " + faq.answer)
           ],
           query
         )
       )
-    : [];
-  const totalResults =
-    matchedProducts.length +
-    matchedArticles.length +
-    matchedSolutions.length;
+      .slice(0, 12);
+  }
+  const totalResults = matchedProducts.length + matchedArticles.length + matchedSolutions.length;
 
   return (
     <main className="mx-auto max-w-7xl px-6 py-12 lg:px-8" data-motion-scope>

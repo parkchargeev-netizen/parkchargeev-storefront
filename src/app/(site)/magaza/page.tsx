@@ -52,6 +52,8 @@ export const metadata: Metadata = {
   }
 };
 
+const STORE_PAGE_SIZE = 24;
+
 const sortOptions = [
   { value: "recommended", label: "Karar için önerilenler" },
   { value: "price-asc", label: "Fiyat artan" },
@@ -67,6 +69,7 @@ type StorePageProps = {
     power?: string;
     installation?: string;
     view?: string;
+    page?: string;
   }>;
 };
 
@@ -80,7 +83,8 @@ function buildStoreHref({
   sort,
   power,
   installation,
-  view
+  view,
+  page
 }: {
   category?: string;
   q?: string;
@@ -88,6 +92,7 @@ function buildStoreHref({
   power?: string;
   installation?: string;
   view?: string;
+  page?: number;
 }) {
   const params = new URLSearchParams();
 
@@ -97,6 +102,7 @@ function buildStoreHref({
   if (power) params.set("power", power);
   if (installation) params.set("installation", installation);
   if (view && view !== "grid") params.set("view", view);
+  if (page && page > 1) params.set("page", String(page));
 
   const query = params.toString();
   return query ? `/magaza?${query}` : "/magaza";
@@ -164,6 +170,14 @@ export default async function StorePage({ searchParams }: StorePageProps) {
     }
   });
 
+  const requestedPage = Math.max(1, Number.parseInt(params.page ?? "1", 10) || 1);
+  const totalPages = Math.max(1, Math.ceil(sortedProducts.length / STORE_PAGE_SIZE));
+  const currentPage = Math.min(requestedPage, totalPages);
+  const visibleProducts = sortedProducts.slice(
+    (currentPage - 1) * STORE_PAGE_SIZE,
+    currentPage * STORE_PAGE_SIZE
+  );
+
   const activeFilterCount = [
     selectedCategory,
     query,
@@ -187,7 +201,7 @@ export default async function StorePage({ searchParams }: StorePageProps) {
     "@context": "https://schema.org",
     "@type": "ItemList",
     name: "ParkChargeEV ürün listesi",
-    itemListElement: sortedProducts.map((product, index) => ({
+    itemListElement: visibleProducts.map((product, index) => ({
       "@type": "ListItem",
       position: index + 1,
       item: {
@@ -317,7 +331,21 @@ export default async function StorePage({ searchParams }: StorePageProps) {
       </section>
 
       <section className="mt-6" aria-label="Ürün seçici">
-        <StoreProductSelectorAccordion products={products} />
+        <StoreProductSelectorAccordion
+          products={products.map((product) => ({
+            id: product.id,
+            slug: product.slug,
+            name: product.name,
+            category: product.category,
+            summary: product.summary,
+            description: product.description,
+            stockLabel: product.stockLabel,
+            powerLabel: product.powerLabel,
+            imageUrl: product.imageUrl,
+            priceKurus: product.priceKurus,
+            profile: getProductStoreProfile(product)
+          }))}
+        />
       </section>
 
       {activeFilterCount === 0 && featuredProducts.length > 0 ? (
@@ -448,7 +476,7 @@ export default async function StorePage({ searchParams }: StorePageProps) {
             </div>
           ) : (
             <div className={selectedView === "list" ? "store-product-grid grid gap-4" : "store-product-grid store-product-grid--commerce grid gap-5 md:grid-cols-2 xl:grid-cols-3"}>
-              {sortedProducts.map((product, index) => (
+              {visibleProducts.map((product, index) => (
                 <ProductCard
                   key={product.id}
                   imagePriority={prioritizeCatalogImage && index === 0}
@@ -458,6 +486,42 @@ export default async function StorePage({ searchParams }: StorePageProps) {
               ))}
             </div>
           )}
+
+          {totalPages > 1 ? (
+            <nav className="store-pagination" aria-label="Mağaza sayfaları">
+              <Link
+                href={buildStoreHref({
+                  category: selectedCategory || undefined,
+                  q: query || undefined,
+                  sort: selectedSort,
+                  power: selectedPower || undefined,
+                  installation: selectedInstallation || undefined,
+                  view: selectedView,
+                  page: currentPage - 1
+                })}
+                aria-disabled={currentPage === 1}
+                className={currentPage === 1 ? "pointer-events-none opacity-40" : ""}
+              >
+                Önceki
+              </Link>
+              <span>{currentPage} / {totalPages}</span>
+              <Link
+                href={buildStoreHref({
+                  category: selectedCategory || undefined,
+                  q: query || undefined,
+                  sort: selectedSort,
+                  power: selectedPower || undefined,
+                  installation: selectedInstallation || undefined,
+                  view: selectedView,
+                  page: currentPage + 1
+                })}
+                aria-disabled={currentPage === totalPages}
+                className={currentPage === totalPages ? "pointer-events-none opacity-40" : ""}
+              >
+                Sonraki
+              </Link>
+            </nav>
+          ) : null}
         </section>
       </div>
 

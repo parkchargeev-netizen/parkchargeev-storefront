@@ -9,6 +9,7 @@ import {
   inArray,
   isNull,
   lt,
+  ne,
   or,
   sql
 } from "drizzle-orm";
@@ -76,6 +77,7 @@ import {
   productCategoryAssignments,
   productMedia,
   productRelations,
+  productReviews,
   productSpecs,
   productTagAssignments,
   productVehicleCompatibilities,
@@ -746,6 +748,125 @@ export const listPublicProducts = unstable_cache(
   }
 );
 
+function isUuidValue(value: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+}
+
+export async function listPublicProductsByIds(productIds: readonly string[]) {
+  const uniqueIds = [...new Set(productIds.filter(Boolean))];
+
+  if (uniqueIds.length === 0) {
+    return [];
+  }
+
+  const fallbackProducts = uniqueIds
+    .map((id) => marketingProducts.find((product) => product.id === id))
+    .filter((product): product is ProductModel => Boolean(product));
+  const databaseIds = uniqueIds.filter(isUuidValue);
+
+  if (!hasDatabaseConfig() || databaseIds.length === 0) {
+    return fallbackProducts;
+  }
+
+  try {
+    const db = getDb();
+    const rows = await db
+      .select()
+      .from(products)
+      .where(and(eq(products.status, "active"), inArray(products.id, databaseIds)));
+    const collections = await hydrateProductCollections(rows.map((row) => row.id), {
+      includeMedia: false,
+      includeSpecs: false,
+      includeTags: false,
+      includeVehicles: false,
+      includeRelations: false
+    });
+    const productMap = new Map(
+      rows.map((row) => {
+        const product = mapAdminProductToPublicProduct(row, collections);
+        return [product.id, product] as const;
+      })
+    );
+
+    return uniqueIds
+      .map((id) => productMap.get(id) ?? fallbackProducts.find((product) => product.id === id))
+      .filter((product): product is ProductModel => Boolean(product));
+  } catch {
+    console.warn("Requested checkout products could not be loaded. Falling back to marketing data.");
+    return fallbackProducts;
+  }
+}
+
+export async function searchPublicProducts(query: string, limit = 12) {
+  const normalizedQuery = query.trim();
+  const safeLimit = Math.min(Math.max(limit, 1), 24);
+
+  if (!normalizedQuery) {
+    return [];
+  }
+
+  const fallbackProducts = marketingProducts
+    .filter((product) =>
+      [
+        product.name,
+        product.slug,
+        product.summary,
+        product.description,
+        product.category,
+        product.powerLabel,
+        ...product.highlights,
+        ...product.useCases,
+        ...product.seoIntent
+      ]
+        .join(" ")
+        .toLocaleLowerCase("tr-TR")
+        .includes(normalizedQuery.toLocaleLowerCase("tr-TR"))
+    )
+    .slice(0, safeLimit);
+
+  if (!hasDatabaseConfig()) {
+    return fallbackProducts;
+  }
+
+  try {
+    const db = getDb();
+    const pattern = "%" + normalizedQuery + "%";
+    const rows = await withCollectionReadFallback(
+      "public search",
+      db
+            .select()
+            .from(products)
+            .where(
+              and(
+                eq(products.status, "active"),
+                or(
+                  ilike(products.name, pattern),
+                  ilike(products.slug, pattern),
+                  ilike(products.shortDescription, pattern),
+                  ilike(products.description, pattern),
+                  ilike(products.useCase, pattern),
+                  ilike(products.powerKw, pattern),
+                  ilike(products.connectorType, pattern)
+                )
+              )
+            )
+            .orderBy(desc(products.updatedAt), desc(products.id))
+            .limit(safeLimit),
+      []
+    );
+    const collections = await hydrateProductCollections(rows.map((row) => row.id), {
+      includeSpecs: false,
+      includeVehicles: false,
+      includeRelations: false
+    });
+
+    return rows.map((row) => mapAdminProductToPublicProduct(row, collections));
+  } catch {
+    console.warn("Public product search could not be loaded. Falling back to marketing data.");
+    return fallbackProducts;
+  }
+}
+
 export async function listPublicMerchandisingProducts(
   slotKey: PublicMerchandisingSlotKey,
   fallbackProducts: ProductModel[],
@@ -849,23 +970,59 @@ export const getPublicProductBySlug = unstable_cache(
 );
 
 export async function getPublicRelatedProducts(product: ProductModel, limit = 3) {
-  const publicProducts = await listPublicProducts();
+  const safeLimit = Math.min(Math.max(limit, 1), 8);
+  const rankCandidates = (candidates: ProductModel[]) =>
+    candidates
+      .filter((candidate) => candidate.id !== product.id)
+      .map((candidate) => ({
+        product: candidate,
+        score:
+          (candidate.category === product.category ? 4 : 0) +
+          candidate.seoIntent.filter((intent) => product.seoIntent.includes(intent)).length +
+          candidate.useCases.filter((useCase) => product.useCases.includes(useCase)).length
+      }))
+      .sort((left, right) => right.score - left.score)
+      .slice(0, safeLimit)
+      .map((item) => item.product);
+  const fallbackCandidates = marketingProducts.filter((candidate) => candidate.slug !== product.slug);
 
-  return publicProducts
-    .filter((candidate) => candidate.id !== product.id)
-    .map((candidate) => {
-      const score =
-        (candidate.category === product.category ? 4 : 0) +
-        candidate.seoIntent.filter((intent) => product.seoIntent.includes(intent)).length +
-        candidate.useCases.filter((useCase) => product.useCases.includes(useCase)).length;
+  if (!hasDatabaseConfig()) {
+    return rankCandidates(fallbackCandidates);
+  }
 
-      return { product: candidate, score };
-    })
-    .sort((left, right) => right.score - left.score)
-    .slice(0, limit)
-    .map((item) => item.product);
+  try {
+    const db = getDb();
+    const [sourceRow] = await db
+      .select({ categoryId: products.categoryId })
+      .from(products)
+      .where(and(eq(products.slug, product.slug), eq(products.status, "active")))
+      .limit(1);
+    const candidateRows = await db
+      .select()
+      .from(products)
+      .where(
+        and(
+          eq(products.status, "active"),
+          ne(products.slug, product.slug),
+          sourceRow?.categoryId ? eq(products.categoryId, sourceRow.categoryId) : undefined
+        )
+      )
+      .orderBy(desc(products.updatedAt), desc(products.id))
+      .limit(Math.max(safeLimit * 3, 12));
+    const collections = await hydrateProductCollections(candidateRows.map((row) => row.id), {
+      includeSpecs: false,
+      includeVehicles: false,
+      includeRelations: false
+    });
+
+    return rankCandidates(
+      candidateRows.map((row) => mapAdminProductToPublicProduct(row, collections))
+    );
+  } catch {
+    console.warn("Related products could not be loaded. Falling back to marketing data.");
+    return rankCandidates(fallbackCandidates);
+  }
 }
-
 function normalizeProductVariants(input: ProductInput) {
   const variants =
     input.variants.length > 0
@@ -1616,77 +1773,78 @@ export async function deleteAdminProducts(
     userAgent?: string | null;
   }
 ) {
+  const blocked: Array<{ id: string; name: string; reason: string }> = [];
+
   if (!hasDatabaseConfig()) {
-    return { deletedCount: ids.length, blocked: [] };
+    return { deletedCount: ids.length, blocked };
   }
 
   const db = getDb();
   const beforeRows = await db.select().from(products).where(inArray(products.id, ids));
-  const blocked: Array<{ id: string; name: string; reason: string }> = [];
-  let deletedCount = 0;
+  const productIds = beforeRows.map((product) => product.id);
 
-  for (const product of beforeRows) {
-    const variants = await db
-      .select({ id: productVariants.id })
-      .from(productVariants)
-      .where(eq(productVariants.productId, product.id));
-    const variantIds = variants.map((variant) => variant.id);
-
-    await db.delete(campaignProducts).where(eq(campaignProducts.productId, product.id));
-    if (variantIds.length > 0) {
-      await db.delete(cartItems).where(inArray(cartItems.variantId, variantIds));
-      await db
-        .update(orderItems)
-        .set({ productId: null, variantId: null })
-        .where(or(eq(orderItems.productId, product.id), inArray(orderItems.variantId, variantIds)));
-    } else {
-      await db
-        .update(orderItems)
-        .set({ productId: null })
-        .where(eq(orderItems.productId, product.id));
-    }
-    await db
-      .update(merchandisingSlots)
-      .set({ productId: null, updatedAt: new Date() })
-      .where(eq(merchandisingSlots.productId, product.id));
-    await db
-      .delete(productRelations)
-      .where(
-        or(
-          eq(productRelations.productId, product.id),
-          eq(productRelations.relatedProductId, product.id)
-        )
-      );
-    await db.delete(productCategoryAssignments).where(eq(productCategoryAssignments.productId, product.id));
-    await db.delete(productTagAssignments).where(eq(productTagAssignments.productId, product.id));
-    await db.delete(productVehicleCompatibilities).where(
-      eq(productVehicleCompatibilities.productId, product.id)
-    );
-    await db.delete(productMedia).where(eq(productMedia.productId, product.id));
-    await db.delete(productSpecs).where(eq(productSpecs.productId, product.id));
-    await db.delete(inventoryMovements).where(eq(inventoryMovements.productId, product.id));
-    await db.delete(productVariants).where(eq(productVariants.productId, product.id));
-    await db.delete(products).where(eq(products.id, product.id));
-
-    await recordAuditLog({
-      db,
-      actor,
-      entityType: "product",
-      entityId: product.id,
-      action: "delete",
-      summary: `${product.name} ürünü kalıcı olarak silindi.`,
-      beforePayload: product,
-      afterPayload: null,
-      ipAddress: requestMeta?.ipAddress,
-      userAgent: requestMeta?.userAgent
-    });
-    revalidateProductSurfaces(product.slug);
-    deletedCount += 1;
+  if (productIds.length === 0) {
+    return { deletedCount: 0, blocked };
   }
 
-  return { deletedCount, blocked };
-}
+  const variants = await db
+    .select({ id: productVariants.id })
+    .from(productVariants)
+    .where(inArray(productVariants.productId, productIds));
+  const variantIds = variants.map((variant) => variant.id);
 
+  await db.delete(campaignProducts).where(inArray(campaignProducts.productId, productIds));
+  if (variantIds.length > 0) {
+    await db.delete(cartItems).where(inArray(cartItems.variantId, variantIds));
+    await db
+      .update(orderItems)
+      .set({ productId: null, variantId: null })
+      .where(or(inArray(orderItems.productId, productIds), inArray(orderItems.variantId, variantIds)));
+  } else {
+    await db.update(orderItems).set({ productId: null }).where(inArray(orderItems.productId, productIds));
+  }
+  await db
+    .update(merchandisingSlots)
+    .set({ productId: null, updatedAt: new Date() })
+    .where(inArray(merchandisingSlots.productId, productIds));
+  await db
+    .delete(productRelations)
+    .where(
+      or(
+        inArray(productRelations.productId, productIds),
+        inArray(productRelations.relatedProductId, productIds)
+      )
+    );
+  await db.delete(productCategoryAssignments).where(inArray(productCategoryAssignments.productId, productIds));
+  await db.delete(productTagAssignments).where(inArray(productTagAssignments.productId, productIds));
+  await db.delete(productVehicleCompatibilities).where(inArray(productVehicleCompatibilities.productId, productIds));
+  await db.delete(productReviews).where(inArray(productReviews.productId, productIds));
+  await db.delete(productMedia).where(inArray(productMedia.productId, productIds));
+  await db.delete(productSpecs).where(inArray(productSpecs.productId, productIds));
+  await db.delete(inventoryMovements).where(inArray(inventoryMovements.productId, productIds));
+  await db.delete(productVariants).where(inArray(productVariants.productId, productIds));
+  await db.delete(products).where(inArray(products.id, productIds));
+
+  await Promise.all(
+    beforeRows.map((product) =>
+      recordAuditLog({
+        db,
+        actor,
+        entityType: "product",
+        entityId: product.id,
+        action: "delete",
+        summary: product.name + " ürünü kalıcı olarak silindi.",
+        beforePayload: product,
+        afterPayload: null,
+        ipAddress: requestMeta?.ipAddress,
+        userAgent: requestMeta?.userAgent
+      })
+    )
+  );
+  beforeRows.forEach((product) => revalidateProductSurfaces(product.slug));
+
+  return { deletedCount: beforeRows.length, blocked };
+}
 export async function getAdminProductById(id: string) {
   if (!hasDatabaseConfig()) {
     return getFallbackAdminProductById(id);
