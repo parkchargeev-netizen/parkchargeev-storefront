@@ -35,7 +35,6 @@
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
     "@sentry/nextjs": "^10.53.1",
-    "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.104.0",
     "@tanstack/react-table": "^8.21.3",
     "@tiptap/extension-link": "^3.22.4",
@@ -43,7 +42,6 @@
     "@tiptap/react": "^3.22.4",
     "@tiptap/starter-kit": "^3.22.4",
     "clsx": "^2.1.1",
-    "date-fns": "^4.1.0",
     "drizzle-orm": "^0.45.2",
     "jose": "^6.2.2",
     "lucide-react": "^1.17.0",
@@ -52,7 +50,6 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-hook-form": "^7.73.1",
-    "recharts": "^3.8.1",
     "zod": "^3.25.76"
   },
   "devDependencies": {

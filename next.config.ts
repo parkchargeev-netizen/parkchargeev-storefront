@@ -163,10 +163,8 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: [
       "lucide-react",
-      "recharts",
       "@tanstack/react-table",
-      "react-hook-form",
-      "date-fns"
+      "react-hook-form"
     ]
   },
   async headers() {
