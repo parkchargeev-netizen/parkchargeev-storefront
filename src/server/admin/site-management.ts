@@ -7,6 +7,7 @@ import { logWarn } from "@/lib/server-logger";
 import type { ProductModel } from "@/lib/mock-data";
 import { slugify } from "@/lib/slug";
 import { recordAuditLog } from "@/server/admin/audit";
+import { revalidatePublicMerchandising } from "@/server/catalog/cache";
 import type {
   adminListQuerySchema,
   adminMerchandisingSlotsSchema,
@@ -574,9 +575,7 @@ function mapPublicProductToMerchandisingOption(
 }
 
 function revalidateProductMerchandisingCaches() {
-  revalidateTag("public-products");
-  revalidatePath("/");
-  revalidatePath("/magaza");
+  revalidatePublicMerchandising();
   revalidatePath("/admin");
   revalidatePath("/admin/site");
 }

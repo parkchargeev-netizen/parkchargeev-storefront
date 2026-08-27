@@ -16,6 +16,7 @@ import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 import { z } from "zod";
 
 import { hasDatabaseConfig } from "@/lib/runtime-config";
+import { revalidatePublicCatalog } from "@/server/catalog/cache";
 import {
   products as marketingProducts,
   type ProductMediaModel,
@@ -194,14 +195,7 @@ function productAdminSortOrderSql() {
 }
 
 function revalidateProductSurfaces(slug: string) {
-  revalidateTag("admin-product-lookup");
-  revalidateTag("public-products");
-  revalidatePath("/");
-  revalidatePath("/magaza");
-  revalidatePath(`/urun/${slug}`);
-  revalidatePath("/arama");
-  revalidatePath("/llms.txt");
-  revalidatePath("/sitemap.xml");
+  revalidatePublicCatalog({ slugs: [slug] });
 }
 
 function revalidateBlogSurfaces(slug?: string) {
@@ -2650,6 +2644,7 @@ export async function upsertAdminBrand(
       userAgent: requestMeta?.userAgent
     });
     revalidateTag("admin-catalog");
+    revalidatePublicCatalog({ revalidateAllProductPages: true });
     return { id: input.id, ...values };
   }
 
@@ -2666,6 +2661,7 @@ export async function upsertAdminBrand(
     userAgent: requestMeta?.userAgent
   });
   revalidateTag("admin-catalog");
+  revalidatePublicCatalog({ revalidateAllProductPages: true });
   return created;
 }
 
@@ -2711,6 +2707,7 @@ export async function deleteAdminBrand(
     userAgent: requestMeta?.userAgent
   });
   revalidateTag("admin-catalog");
+  revalidatePublicCatalog({ revalidateAllProductPages: true });
   return { deletedCount: 1, blockedReason: null };
 }
 
@@ -2747,6 +2744,7 @@ export async function upsertAdminCategory(
       userAgent: requestMeta?.userAgent
     });
     revalidateTag("admin-catalog");
+    revalidatePublicCatalog({ revalidateAllProductPages: true });
     return { id: input.id, ...values };
   }
 
@@ -2763,6 +2761,7 @@ export async function upsertAdminCategory(
     userAgent: requestMeta?.userAgent
   });
   revalidateTag("admin-catalog");
+  revalidatePublicCatalog({ revalidateAllProductPages: true });
   return created;
 }
 
@@ -2821,6 +2820,7 @@ export async function deleteAdminCategory(
     userAgent: requestMeta?.userAgent
   });
   revalidateTag("admin-catalog");
+  revalidatePublicCatalog({ revalidateAllProductPages: true });
   return { deletedCount: 1, blockedReason: null };
 }
 

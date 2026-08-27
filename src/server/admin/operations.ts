@@ -16,6 +16,7 @@ import { z } from "zod";
 
 import { hasDatabaseConfig } from "@/lib/runtime-config";
 import { recordAuditLog } from "@/server/admin/audit";
+import { revalidatePublicCatalog } from "@/server/catalog/cache";
 import type {
   adminInventoryAdjustmentSchema,
   adminListQuerySchema,
@@ -98,9 +99,7 @@ function getDateConditions(column: Parameters<typeof gte>[0], input: ListQueryIn
 
 function revalidateCommerceAdmin() {
   revalidateTag("admin-dashboard");
-  revalidateTag("public-products");
-  revalidatePath("/");
-  revalidatePath("/magaza");
+  revalidatePublicCatalog({ revalidateAllProductPages: true });
   revalidatePath("/admin");
 }
 

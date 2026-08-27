@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { inflateRawSync } from "node:zlib";
 
 import { desc, eq, inArray } from "drizzle-orm";
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidatePath } from "next/cache";
 
 import type {
   ProductImportConfirmResponse,
@@ -15,6 +15,7 @@ import type {
 import { productImportFieldValues } from "@/lib/admin-product-import-contract";
 import { hasDatabaseConfig, RuntimeConfigError } from "@/lib/runtime-config";
 import { recordAuditLog } from "@/server/admin/audit";
+import { revalidatePublicCatalog } from "@/server/catalog/cache";
 import type { AdminSessionPayload } from "@/server/auth/session";
 import { getDb } from "@/server/db/client";
 import {
@@ -1387,14 +1388,7 @@ export async function confirmProductImport(input: ProductImportConfirmInput): Pr
   });
 
   revalidatePath("/admin/urunler");
-  revalidatePath("/magaza");
-  revalidatePath("/");
-  revalidateTag("public-products");
-  revalidateTag("admin-product-lookup");
-
-  for (const slug of updatedSlugs) {
-    revalidatePath(`/urun/${slug}`);
-  }
+  revalidatePublicCatalog({ slugs: updatedSlugs });
 
   return {
     ok: true,
