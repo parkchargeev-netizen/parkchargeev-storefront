@@ -1,14 +1,13 @@
-import Image from "next/image";
+import Image, { getImageProps } from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Check } from "lucide-react";
 
 import {
   ProductBadgePill,
   ProductPlacementBadges,
   getBadgesByPlacement
 } from "@/components/shop/product-badges";
-import { ProductCompareMarker } from "@/components/shop/product-compare-marker";
 import { ProductDevicePreview } from "@/components/shop/product-device-preview";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { formatPriceTRY } from "@/lib/format";
@@ -63,6 +62,59 @@ const productCardImageSizes = {
   store: "(max-width: 767px) 44vw, (max-width: 1023px) 28vw, 150px"
 } as const;
 
+const transparentImageSource =
+  "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
+
+function ProductSecondaryMedia({
+  imageUrl,
+  sizes,
+  store
+}: {
+  imageUrl: string;
+  sizes: string;
+  store?: boolean;
+}) {
+  const { alt: _alt, sizes: responsiveSizes, src, srcSet, ...imageProps } = getImageProps({
+    src: imageUrl,
+    alt: "",
+    width: store ? 360 : 420,
+    height: store ? 360 : 420,
+    loading: "lazy",
+    sizes,
+    unoptimized: shouldBypassImageOptimization(imageUrl)
+  }).props;
+
+  return (
+    <>
+      {/* eslint-disable-next-line @next/next/no-img-element -- Next getImageProps output is attached only after fine-pointer hover. */}
+      <img
+        {...imageProps}
+        src={transparentImageSource}
+        alt=""
+        aria-hidden
+        fetchPriority="low"
+        data-product-secondary-src={src}
+        data-product-secondary-src-set={srcSet}
+        data-product-secondary-sizes={responsiveSizes}
+        className="product-card-media-image product-card-media-image--secondary"
+      />
+    </>
+  );
+}
+
+function ProductCompareStatus({ productId }: { productId: string }) {
+  return (
+    <span
+      data-compare-product-id={productId}
+      hidden
+      className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-1 text-xs font-semibold text-primary"
+    >
+      <Check className="h-3 w-3" aria-hidden />
+      <span data-compare-label />
+    </span>
+  );
+}
+
 function ProductMedia({
   imagePriority = false,
   imageUrl,
@@ -96,16 +148,10 @@ function ProductMedia({
             className={mediaClassName}
           />
           {secondaryImageUrl ? (
-            <Image
-              src={secondaryImageUrl}
-              alt=""
-              aria-hidden
-              width={store ? 360 : 420}
-              height={store ? 360 : 420}
-              loading="lazy"
-              unoptimized={shouldBypassImageOptimization(secondaryImageUrl)}
+            <ProductSecondaryMedia
+              imageUrl={secondaryImageUrl}
               sizes={store ? productCardImageSizes.store : productCardImageSizes.standard}
-              className="product-card-media-image product-card-media-image--secondary"
+              store={store}
             />
           ) : null}
         </>
@@ -288,7 +334,7 @@ export function ProductCard({
             />
             <ProductCardImageBadges badges={productBadges} />
             <div className="premium-product-card__compare absolute right-3 top-3 z-10">
-              <ProductCompareMarker productId={product.id} />
+              <ProductCompareStatus productId={product.id} />
             </div>
           </div>
 
@@ -381,7 +427,7 @@ export function ProductCard({
           />
           <ProductCardImageBadges badges={productBadges} />
           <div className="premium-product-card__compare absolute right-3 top-3 z-10">
-            <ProductCompareMarker productId={product.id} />
+            <ProductCompareStatus productId={product.id} />
           </div>
         </div>
 

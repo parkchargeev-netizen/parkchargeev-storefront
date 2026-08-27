@@ -17296,3 +17296,19 @@ html[data-device-os="android"] .product-badge::after {
     display: none !important;
   }
 }
+
+
+/* Product card hover media is attached on demand by ProductCardMediaRuntime. */
+.product-card-media-frame--has-secondary:not(.product-card-media-frame--secondary-ready)
+  .product-card-media-image--secondary {
+  opacity: 0 !important;
+}
+
+.premium-product-card-link:hover
+  .product-card-media-frame--has-secondary:not(.product-card-media-frame--secondary-ready)
+  .product-card-media-image:not(.product-card-media-image--secondary),
+.premium-product-card-link:focus-visible
+  .product-card-media-frame--has-secondary:not(.product-card-media-frame--secondary-ready)
+  .product-card-media-image:not(.product-card-media-image--secondary) {
+  opacity: 1 !important;
+}

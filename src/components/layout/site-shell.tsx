@@ -4,6 +4,8 @@ import { SiteAmbientLayer } from "@/components/layout/site-ambient-layer";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteSocialQuickLinks } from "@/components/layout/site-social-quick-links";
+import { ProductCardMediaRuntime } from "@/components/shop/product-card-media-runtime";
+import { ProductCompareRuntime } from "@/components/shop/product-compare-runtime";
 import type { PublicSiteNavigation } from "@/features/navigation/domain/public-navigation";
 import type { PublicSiteSettings } from "@/lib/site-settings";
 
@@ -34,6 +36,8 @@ export function SiteShell({ children, navigation, settings }: SiteShellProps) {
         {children}
       </div>
       <SiteSocialQuickLinks settings={settings} />
+      <ProductCardMediaRuntime />
+      <ProductCompareRuntime />
       <SiteFooter
         settings={settings}
         navigation={

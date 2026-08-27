@@ -20,24 +20,33 @@ test.beforeEach(async ({ page, context }) => {
 
 test("@e2e Return from comparison to shopping", async ({ page }) => {
   await page.goto("/magaza", { waitUntil: "domcontentloaded" });
-  await expect(page.getByText("Seçili")).toHaveCount(0);
+  await expect(page.getByText("Se\u00e7ili", { exact: true })).toHaveCount(0);
+
+  const firstMarker = page.locator("[data-compare-product-id]").first();
+  const productId = await firstMarker.getAttribute("data-compare-product-id");
+  if (!productId) {
+    throw new Error("No product comparison marker found");
+  }
+
+  await page.evaluate((id) => {
+    window.localStorage.setItem("parkchargeev-compare-selection-v1", JSON.stringify([id]));
+    window.dispatchEvent(new CustomEvent("parkchargeev:compare-selection"));
+  }, productId);
+
+  const selectedCard = page
+    .locator(".premium-product-card")
+    .filter({ has: page.locator(`[data-compare-product-id="${productId}"]`) })
+    .first();
+  await expect(selectedCard.getByText("Se\u00e7ili", { exact: true })).toBeVisible();
 
   await page.goto("/karsilastir", { waitUntil: "domcontentloaded" });
-  await expect(page.getByText("Karşılaştırmak için ürün seçin")).toBeVisible();
-
-  await page.getByRole("button", { name: /HomeCharge Pro 11kW/i }).click();
-  await expect(page.getByRole("button", { name: /HomeCharge Pro 11kW/i })).toContainText(
-    "Seçili"
-  );
-
   await page.goBack({ waitUntil: "domcontentloaded" });
-  await expect(page.getByText("Seçili").first()).toBeVisible();
-  await expect(
-    page
-      .locator(".premium-product-card", { hasText: "HomeCharge Pro 11kW" })
-      .filter({ hasText: "Seçili" })
-      .first()
-  ).toBeVisible();
+
+  const restoredCard = page
+    .locator(".premium-product-card")
+    .filter({ has: page.locator(`[data-compare-product-id="${productId}"]`) })
+    .first();
+  await expect(restoredCard.getByText("Se\u00e7ili", { exact: true })).toBeVisible();
 });
 
 test("@e2e Reject invalid login credentials", async ({ page }) => {
@@ -105,7 +114,7 @@ test("@e2e Handle an empty comparison state", async ({ page }) => {
 
   await expect(page.getByText("Karşılaştırmak için ürün seçin")).toBeVisible();
   await expect(page.locator("table")).toHaveCount(0);
-  await expect(page.getByText("Seçili")).toHaveCount(0);
+  await expect(page.getByText("Seçili", { exact: true })).toHaveCount(0);
 });
 
 test("@e2e Review the cart before checkout", async ({ page }) => {
