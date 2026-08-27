@@ -6,7 +6,7 @@ import { ProductCard } from "@/components/shop/product-card";
 import { ProductComparisonClient } from "@/components/site/product-comparison-client";
 import { JsonLd } from "@/components/seo/json-ld";
 import { formatPriceTRY } from "@/lib/format";
-import { products } from "@/lib/mock-data";
+import { listPublicProducts } from "@/server/admin/repository";
 import { getBreadcrumbJsonLd, getFaqJsonLd } from "@/lib/structured-data";
 
 export const metadata: Metadata = {
@@ -57,7 +57,8 @@ const faqs = [
   }
 ];
 
-export default function ComparePage() {
+export default async function ComparePage() {
+  const products = await listPublicProducts();
   const acProducts = products.filter((product) =>
     product.powerLabel.toLocaleLowerCase("tr-TR").includes("ac")
   );

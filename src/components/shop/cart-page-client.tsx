@@ -28,7 +28,7 @@ import {
   type EnrichedCartItem
 } from "@/lib/cart";
 import { formatPriceTRY } from "@/lib/format";
-import { products } from "@/lib/mock-data";
+import type { ProductModel } from "@/lib/mock-data";
 import {
   getDisplayProductImageUrl,
   shouldBypassImageOptimization
@@ -55,7 +55,7 @@ function getProductImageUrl(item: EnrichedCartItem) {
   return getDisplayProductImageUrl(item.product.imageUrl);
 }
 
-export function CartPageClient() {
+export function CartPageClient({ suggestionProducts }: { suggestionProducts: ProductModel[] }) {
   const {
     items: cartItems,
     isHydrated,
@@ -71,7 +71,7 @@ export function CartPageClient() {
     (item) => getProductStoreProfile(item.product).installationMode !== "Kurulum gerekmez"
   );
 
-  const suggestions = products
+  const suggestions = suggestionProducts
     .filter((product) => !items.some((item) => item.product.id === product.id))
     .sort((left, right) => {
       const leftIsAccessory = left.category.toLocaleLowerCase("tr-TR").includes("aksesuar");

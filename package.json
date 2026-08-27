@@ -69,5 +69,21 @@
   "overrides": {
     "esbuild": "0.25.12",
     "postcss": "8.5.10"
+  },
+  "browserslist": {
+    "production": [
+      "Chrome >= 91",
+      "Edge >= 91",
+      "Firefox >= 90",
+      "Safari >= 15",
+      "iOS >= 15",
+      "Android >= 10",
+      "not dead"
+    ],
+    "development": [
+      "last 1 Chrome version",
+      "last 1 Edge version",
+      "last 1 Firefox version"
+    ]
   }
 }

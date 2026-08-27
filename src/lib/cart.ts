@@ -1,4 +1,4 @@
-import { products, type ProductModel } from "@/lib/mock-data";
+import type { ProductModel } from "@/lib/mock-data";
 import {
   CART_STORAGE_KEY,
   CART_TAX_RATE,
@@ -26,7 +26,7 @@ function findProduct(item: Pick<CartItem, "productId" | "productSnapshot">) {
     return item.productSnapshot;
   }
 
-  return products.find((product) => product.id === item.productId);
+  return undefined;
 }
 
 export function normalizeCartItems(items: CartItem[]) {

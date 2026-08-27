@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 import { JsonLd } from "@/components/seo/json-ld";
 import { ProductSelectorClient } from "@/components/site/product-selector-client";
-import { products } from "@/lib/mock-data";
+import { listPublicProducts } from "@/server/admin/repository";
 import { getBreadcrumbJsonLd } from "@/lib/structured-data";
 
 export const metadata: Metadata = {
@@ -14,7 +14,8 @@ export const metadata: Metadata = {
   }
 };
 
-export default function ProductSelectorPage() {
+export default async function ProductSelectorPage() {
+  const products = await listPublicProducts();
   const breadcrumbJsonLd = getBreadcrumbJsonLd([
     { name: "Ana Sayfa", path: "/" },
     { name: "Akıllı Ürün Seçici", path: "/urun-secici" }

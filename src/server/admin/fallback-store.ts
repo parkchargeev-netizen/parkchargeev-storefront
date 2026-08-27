@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import { products as marketingProducts } from "@/lib/mock-data";
+import type { ProductModel } from "@/lib/mock-data";
 import { inferProductMediaType, type ProductMediaKind } from "@/lib/product-media";
 import {
   getProductDetailContent,
@@ -231,6 +231,8 @@ type FallbackServiceLeadRecord = {
 
 type FallbackStore = {
   version: number;
+  sourceVersion: string;
+  generatedAt: string;
   products: FallbackProductRecord[];
   orders: FallbackOrderRecord[];
   quotes: FallbackQuoteRecord[];
@@ -238,7 +240,12 @@ type FallbackStore = {
   serviceLeads: FallbackServiceLeadRecord[];
 };
 
-const STORE_VERSION = 1;
+const STORE_VERSION = 2;
+const FALLBACK_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+const FALLBACK_SOURCE_VERSION =
+  process.env.VERCEL_GIT_COMMIT_SHA ||
+  process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ||
+  "parkchargeev-local-v2";
 const STORE_DIR = path.join(process.cwd(), ".data");
 const STORE_PATH = path.join(STORE_DIR, "admin-fallback.json");
 const revenueStatuses: OrderStatus[] = [
@@ -336,7 +343,7 @@ function isoMonthsAgo(months: number, day = 12, hours = 11) {
   return value.toISOString();
 }
 
-function findMarketingProduct(slug: string) {
+function findMarketingProduct(marketingProducts: readonly ProductModel[], slug: string) {
   const product = marketingProducts.find((item) => item.slug === slug);
 
   if (!product) {
@@ -347,7 +354,7 @@ function findMarketingProduct(slug: string) {
 }
 
 function specValue(
-  product: ReturnType<typeof findMarketingProduct>,
+  product: ProductModel,
   labelPart: string
 ) {
   return (
@@ -406,7 +413,7 @@ function derivePhaseType(powerLabel: string): "single_phase" | "three_phase" {
   return powerLabel.includes("7.4") ? "single_phase" : "three_phase";
 }
 
-function createSeedProducts(): FallbackProductRecord[] {
+function createSeedProducts(marketingProducts: readonly ProductModel[]): FallbackProductRecord[] {
   const seedConfig = [
     {
       id: "11111111-1111-4111-8111-111111111111",
@@ -491,7 +498,7 @@ function createSeedProducts(): FallbackProductRecord[] {
   ];
 
   const records: FallbackProductRecord[] = seedConfig.map((config): FallbackProductRecord => {
-    const source = findMarketingProduct(config.slug);
+    const source = findMarketingProduct(marketingProducts, config.slug);
     const categorySlug = deriveCategorySlug(config.slug);
     const connectorType =
       specValue(source, "Type 2") ??
@@ -996,11 +1003,14 @@ function createSeedServiceLeads(): FallbackServiceLeadRecord[] {
   ];
 }
 
-function createInitialStore(): FallbackStore {
-  const products = createSeedProducts();
+async function createInitialStore(): Promise<FallbackStore> {
+  const { products: marketingProducts } = await import("@/lib/mock-data");
+  const products = createSeedProducts(marketingProducts);
 
   return {
     version: STORE_VERSION,
+    sourceVersion: FALLBACK_SOURCE_VERSION,
+    generatedAt: nowIso(),
     products,
     orders: createSeedOrders(products),
     quotes: createSeedQuotes(),
@@ -1019,13 +1029,20 @@ async function readStore() {
     const content = await readFile(STORE_PATH, "utf8");
     const store = JSON.parse(content) as FallbackStore;
 
-    if (store.version !== STORE_VERSION) {
-      throw new Error("Yerel yedek veri deposu sürümü güncellendi.");
+    const generatedAt = Date.parse(store.generatedAt);
+    const isFresh =
+      store.version === STORE_VERSION &&
+      store.sourceVersion === FALLBACK_SOURCE_VERSION &&
+      Number.isFinite(generatedAt) &&
+      Date.now() - generatedAt <= FALLBACK_MAX_AGE_MS;
+
+    if (!isFresh) {
+      throw new Error("Yerel yedek veri deposu eski veya farkli bir deployment surumune ait.");
     }
 
     return store;
   } catch {
-    const store = createInitialStore();
+    const store = await createInitialStore();
     await persistStore(store);
     return store;
   }
