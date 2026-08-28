@@ -16,6 +16,11 @@ import {
 import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 import { z } from "zod";
 
+import {
+  publicMerchandisingSlotKeys,
+  publicProductMerchandisingSections,
+  type PublicMerchandisingSlotKey
+} from "@/features/home/domain/product-merchandising";
 import { hasDatabaseConfig } from "@/lib/runtime-config";
 import { revalidatePublicCatalog } from "@/server/catalog/cache";
 import {
@@ -41,20 +46,24 @@ import { recordAuditLog } from "@/server/admin/audit";
 import { productCategoryOptions } from "@/server/admin/constants";
 import { AdminProductConflictError } from "@/server/admin/product-errors";
 import { getMarketingBlogSeedPosts } from "@/server/blog/repository";
+type FallbackStoreModule = typeof import("@/server/admin/fallback-store");
+
+let fallbackStoreModulePromise: Promise<FallbackStoreModule> | null = null;
+
+function getFallbackStoreModule() {
+  fallbackStoreModulePromise ??= import("@/server/admin/fallback-store");
+  return fallbackStoreModulePromise;
+}
 import {
-  getFallbackAdminProductById,
-  getFallbackAdminQuoteById,
-  getFallbackProductLookupOptions,
-  listFallbackAdminProducts,
-  listFallbackAdminQuotes,
-  updateFallbackAdminQuote,
-  upsertFallbackAdminProduct
-} from "@/server/admin/fallback-store";
+  decodeCursor,
+  encodeCursor,
+  parseFilterDate,
+  type ListQueryInput
+} from "@/server/admin/repositories/query";
 import type {
   adminBlogPostSchema,
   adminBrandSchema,
   adminCategorySchema,
-  adminListQuerySchema,
   adminProductSchema,
   adminQuoteUpdateSchema,
   adminServiceLeadUpdateSchema,
@@ -63,7 +72,6 @@ import type {
 import {
   adminSessions,
   adminUsers,
-  auditLogs,
   blogPosts,
   brands,
   cartItems,
@@ -90,77 +98,11 @@ import {
 
 type ProductInput = z.infer<typeof adminProductSchema>;
 type QuoteUpdateInput = z.infer<typeof adminQuoteUpdateSchema>;
-type ListQueryInput = z.infer<typeof adminListQuerySchema>;
 type AdminUserInput = z.infer<typeof adminUserSchema>;
 type BlogPostInput = z.infer<typeof adminBlogPostSchema>;
 type ServiceLeadUpdateInput = z.infer<typeof adminServiceLeadUpdateSchema>;
 type BrandInput = z.infer<typeof adminBrandSchema>;
 type CategoryInput = z.infer<typeof adminCategorySchema>;
-
-export const publicMerchandisingSlotKeys = {
-  homeProductPortfolio: "home_product_portfolio",
-  storeFeaturedProducts: "store_featured_products"
-} as const;
-
-export type PublicMerchandisingSlotKey =
-  (typeof publicMerchandisingSlotKeys)[keyof typeof publicMerchandisingSlotKeys];
-
-export const publicProductMerchandisingSections = [
-  {
-    slotKey: publicMerchandisingSlotKeys.homeProductPortfolio,
-    title: "Anasayfa ürün portföyü",
-    description: "Anasayfadaki Ürün portföyü bölümünde gösterilecek ürünleri ve sıralamayı yönetir.",
-    maxItems: 12
-  },
-  {
-    slotKey: publicMerchandisingSlotKeys.storeFeaturedProducts,
-    title: "Mağaza öne çıkan ürünler",
-    description: "Mağaza sayfasındaki Öne çıkanlar / Popüler şarj ürünleri alanını yönetir.",
-    maxItems: 24
-  }
-] as const;
-
-
-type CursorPayload = {
-  updatedAt: string;
-  id: string;
-};
-
-function encodeCursor(payload: CursorPayload) {
-  return Buffer.from(JSON.stringify(payload), "utf-8").toString("base64url");
-}
-
-function decodeCursor(cursor?: string) {
-  if (!cursor) {
-    return null;
-  }
-
-  try {
-    return JSON.parse(
-      Buffer.from(cursor, "base64url").toString("utf-8")
-    ) as CursorPayload;
-  } catch {
-    return null;
-  }
-}
-
-function parseFilterDate(value?: string, endOfDay = false) {
-  if (!value) {
-    return null;
-  }
-
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return null;
-  }
-
-  if (endOfDay && !value.includes("T")) {
-    date.setDate(date.getDate() + 1);
-  }
-
-  return date;
-}
 
 function buildProductSchemaJsonLd(input: ProductInput) {
   return withProductDetailContentSchemaJsonLd({
@@ -1541,7 +1483,7 @@ async function writeProductCollections(
 
 export async function listAdminProducts(input: ListQueryInput) {
   if (!hasDatabaseConfig()) {
-    return listFallbackAdminProducts(input);
+    return (await getFallbackStoreModule()).listFallbackAdminProducts(input);
   }
 
   const db = getDb();
@@ -1847,7 +1789,7 @@ export async function deleteAdminProducts(
 }
 export async function getAdminProductById(id: string) {
   if (!hasDatabaseConfig()) {
-    return getFallbackAdminProductById(id);
+    return (await getFallbackStoreModule()).getFallbackAdminProductById(id);
   }
 
   const db = getDb();
@@ -1895,7 +1837,7 @@ export async function upsertAdminProduct(
   }
 ) {
   if (!hasDatabaseConfig()) {
-    return upsertFallbackAdminProduct(input);
+    return (await getFallbackStoreModule()).upsertFallbackAdminProduct(input);
   }
 
   const db = getDb();
@@ -2018,7 +1960,7 @@ export async function upsertAdminProduct(
 
 async function loadProductLookupOptions() {
   if (!hasDatabaseConfig()) {
-    return getFallbackProductLookupOptions();
+    return (await getFallbackStoreModule()).getFallbackProductLookupOptions();
   }
 
   const db = getDb();
@@ -2042,7 +1984,7 @@ export const getProductLookupOptions = unstable_cache(
 
 export async function listAdminQuotes(input: ListQueryInput) {
   if (!hasDatabaseConfig()) {
-    return listFallbackAdminQuotes(input);
+    return (await getFallbackStoreModule()).listFallbackAdminQuotes(input);
   }
 
   const db = getDb();
@@ -2129,7 +2071,7 @@ export async function listAdminQuotes(input: ListQueryInput) {
 
 export async function getAdminQuoteById(id: string) {
   if (!hasDatabaseConfig()) {
-    return getFallbackAdminQuoteById(id);
+    return (await getFallbackStoreModule()).getFallbackAdminQuoteById(id);
   }
 
   const db = getDb();
@@ -2191,7 +2133,7 @@ export async function updateAdminQuote(
   }
 ) {
   if (!hasDatabaseConfig()) {
-    return updateFallbackAdminQuote(id, input, actor);
+    return (await getFallbackStoreModule()).updateFallbackAdminQuote(id, input, actor);
   }
 
   const db = getDb();
@@ -2982,81 +2924,10 @@ export async function deleteAdminCategory(
   return { deletedCount: 1, blockedReason: null };
 }
 
-export async function listAdminAuditLogs(input: ListQueryInput) {
-  if (!hasDatabaseConfig()) {
-    return { items: [], nextCursor: null };
-  }
+export { listAdminAuditLogs } from "@/server/admin/repositories/audit-repository";
 
-  const db = getDb();
-  const cursor = decodeCursor(input.cursor);
-  const conditions = [];
-
-  if (input.q) {
-    conditions.push(
-      or(
-        ilike(auditLogs.entityType, `%${input.q}%`),
-        ilike(auditLogs.entityId, `%${input.q}%`),
-        ilike(auditLogs.action, `%${input.q}%`),
-        ilike(auditLogs.summary, `%${input.q}%`)
-      )
-    );
-  }
-
-  if (input.status) {
-    conditions.push(eq(auditLogs.entityType, input.status));
-  }
-
-  const fromDate = parseFilterDate(input.from);
-  const toDate = parseFilterDate(input.to, true);
-
-  if (fromDate) {
-    conditions.push(gte(auditLogs.createdAt, fromDate));
-  }
-
-  if (toDate) {
-    conditions.push(lt(auditLogs.createdAt, toDate));
-  }
-
-  if (cursor) {
-    conditions.push(
-      or(
-        lt(auditLogs.createdAt, new Date(cursor.updatedAt)),
-        and(eq(auditLogs.createdAt, new Date(cursor.updatedAt)), lt(auditLogs.id, cursor.id))
-      )
-    );
-  }
-
-  const rows = await db
-    .select({
-      id: auditLogs.id,
-      entityType: auditLogs.entityType,
-      entityId: auditLogs.entityId,
-      action: auditLogs.action,
-      summary: auditLogs.summary,
-      beforePayload: auditLogs.beforePayload,
-      afterPayload: auditLogs.afterPayload,
-      ipAddress: auditLogs.ipAddress,
-      userAgent: auditLogs.userAgent,
-      createdAt: auditLogs.createdAt,
-      actorName: adminUsers.fullName,
-      actorEmail: adminUsers.email
-    })
-    .from(auditLogs)
-    .leftJoin(adminUsers, eq(adminUsers.id, auditLogs.actorAdminId))
-    .where(conditions.length > 0 ? and(...conditions) : undefined)
-    .orderBy(desc(auditLogs.createdAt), desc(auditLogs.id))
-    .limit(input.limit + 1);
-
-  const hasMore = rows.length > input.limit;
-  const items = hasMore ? rows.slice(0, input.limit) : rows;
-
-  return {
-    items,
-    nextCursor: hasMore
-      ? encodeCursor({
-          updatedAt: items.at(-1)?.createdAt.toISOString() ?? new Date().toISOString(),
-          id: items.at(-1)?.id ?? ""
-        })
-      : null
-  };
-}
+export {
+  publicMerchandisingSlotKeys,
+  publicProductMerchandisingSections
+} from "@/features/home/domain/product-merchandising";
+export type { PublicMerchandisingSlotKey } from "@/features/home/domain/product-merchandising";

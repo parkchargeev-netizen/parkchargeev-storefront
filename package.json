@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint .",
+    "lint": "eslint . --cache --cache-location .cache/eslint/.eslintcache",
     "typecheck": "tsc --noEmit",
     "test:e2e": "playwright test --grep @e2e",
     "test:a11y": "playwright test --grep @a11y",

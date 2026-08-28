@@ -1,5 +1,5 @@
 import type { HomePageDataSource } from "@/features/home/application/home-page-data-source";
-import { publicMerchandisingSlotKeys, publicProductMerchandisingSections } from "@/server/admin/repository";
+import { publicMerchandisingSlotKeys, publicProductMerchandisingSections } from "@/features/home/domain/product-merchandising";
 import type {
   ArticleModel,
   ProductModel,

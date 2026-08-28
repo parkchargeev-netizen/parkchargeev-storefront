@@ -1,4 +1,4 @@
-import type { PublicMerchandisingSlotKey } from "@/server/admin/repository";
+import type { PublicMerchandisingSlotKey } from "@/features/home/domain/product-merchandising";
 import type {
   ArticleModel,
   ProductModel,
