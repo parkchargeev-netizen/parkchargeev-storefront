@@ -283,6 +283,7 @@ export function ProductComparisonClient({ products }: ProductComparisonClientPro
                     <td key={`action-${product.id}`} className="px-5 py-4">
                       <Link
                         href={`/urun/${product.slug}`}
+                        prefetch={false}
                         className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-white transition hover:bg-primary-container"
                       >
                         Ürünü incele

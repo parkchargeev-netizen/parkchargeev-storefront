@@ -41,6 +41,7 @@ function ProductCardLink({
       aria-label={`${product.name} ürün detayını aç`}
       className={productCardLinkClassName}
       data-motion="reveal"
+      prefetch={false}
     >
       {children}
     </Link>

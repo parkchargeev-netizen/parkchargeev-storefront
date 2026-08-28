@@ -252,11 +252,11 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
   };
 
   return (
-    <section id="product-import" className="scroll-mt-28 rounded-3xl border border-emerald-100 bg-white/90 p-5 shadow-[0_24px_70px_rgba(15,23,42,0.08)] lg:p-6">
+    <section id="product-import" className="scroll-mt-28 rounded-lg border border-emerald-100 bg-white/90 p-5 shadow-[0_24px_70px_rgba(15,23,42,0.08)] lg:p-6">
       <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
         <div className="max-w-3xl space-y-2">
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-700">CSV / XLSX içe aktar</p>
-          <h2 className="text-xl font-black tracking-normal text-slate-950 lg:text-2xl">
+          <h2 className="text-xl font-bold tracking-normal text-slate-950 lg:text-2xl">
             Toplu ürün güncelleme
           </h2>
           <p className="text-sm leading-6 text-slate-600">
@@ -283,7 +283,7 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
       </div>
 
       <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(260px,0.5fr)]">
-        <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
+        <div className="rounded-lg border border-slate-200 bg-slate-50/70 p-4">
           <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
             <label className="block">
               <span className="text-xs font-bold uppercase tracking-normal text-slate-500">Dosya</span>
@@ -295,14 +295,14 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
                   setFile(event.currentTarget.files?.[0] ?? null);
                   resetPreview();
                 }}
-                className="mt-2 block w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 file:mr-4 file:rounded-full file:border-0 file:bg-slate-950 file:px-4 file:py-2 file:text-sm file:font-bold file:text-white"
+                className="mt-2 block w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 file:mr-4 file:rounded-full file:border-0 file:bg-slate-950 file:px-4 file:py-2 file:text-sm file:font-bold file:text-white"
               />
             </label>
             <button
               type="button"
               disabled={!file || selectedFields.length === 0 || isPreviewing}
               onClick={previewImport}
-              className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-lg bg-slate-950 px-5 py-3 text-sm font-bold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isPreviewing ? "Analiz ediliyor..." : "Önizle"}
             </button>
@@ -326,21 +326,21 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
           </div>
 
           <div className="mt-4 grid gap-3 md:grid-cols-2">
-            <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900">
+            <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900">
               Esleme sirasi: <strong>product_id</strong>, yoksa <strong>urun kodu/SKU</strong>, yoksa <strong>slug</strong>, yoksa <strong>tam urun adi</strong>. Ayni ad birden fazla urune denk gelirse satir guvenlik icin yazilmaz.
             </div>
-            <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm leading-6 text-emerald-900">
+            <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm leading-6 text-emerald-900">
               Hims fiyat listesi otomatik algilanir; <strong>e-ticaret sitesi fiyati</strong> ana fiyat olarak okunur. XY renk/uzunluk kodlari varsa satir ilgili guvenli varyantlara onizlemede ayrilir.
             </div>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-4">
-          <h3 className="text-sm font-black text-slate-950">Son içe aktarmalar</h3>
+        <div className="rounded-lg border border-slate-200 bg-white p-4">
+          <h3 className="text-sm font-bold text-slate-950">Son içe aktarmalar</h3>
           <div className="mt-3 space-y-3">
             {history.length > 0 ? (
               history.map((item) => (
-                <div key={item.id} className="rounded-2xl border border-slate-100 bg-slate-50 px-3 py-2">
+                <div key={item.id} className="rounded-lg border border-slate-100 bg-slate-50 px-3 py-2">
                   <p className="truncate text-xs font-bold text-slate-900">{item.fileName ?? "Dosya"}</p>
                   <p className="mt-1 text-xs text-slate-500">
                     {item.updatedRows} güncel, {item.skippedRows} atlandı · {new Date(item.createdAt).toLocaleString("tr-TR")}
@@ -348,7 +348,7 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
                 </div>
               ))
             ) : (
-              <p className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-3 py-4 text-sm text-slate-500">
+              <p className="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-3 py-4 text-sm text-slate-500">
                 Henüz içe aktarma geçmişi yok.
               </p>
             )}
@@ -357,14 +357,14 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
       </div>
 
       {message ? (
-        <div className="mt-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700">
+        <div className="mt-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700">
           {message}
         </div>
       ) : null}
 
       {preview ? (
         <div className="mt-5 space-y-4">
-          <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-900">
+          <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-900">
             Algilanan dosya tipi: {sourceFormatLabels[preview.sourceFormat]}. Onizleme onaylanmadan veritabanina hicbir degisiklik yazilmaz.
           </div>
 
@@ -377,14 +377,14 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
               ["Tekrar", preview.summary.duplicateRows],
               ["Hata", preview.summary.errorRows]
             ].map(([label, value]) => (
-              <div key={String(label)} className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
+              <div key={String(label)} className="rounded-lg border border-slate-200 bg-white px-4 py-3">
                 <p className="text-xs font-bold uppercase tracking-normal text-slate-500">{label}</p>
-                <p className="mt-1 text-2xl font-black text-slate-950">{value}</p>
+                <p className="mt-1 text-2xl font-bold text-slate-950">{value}</p>
               </div>
             ))}
           </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3">
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-4 py-3">
             <p className="text-sm font-semibold text-slate-600">
               {preview.fileName} dosyası analiz edildi. İlk {previewRows.length} satır gösteriliyor.
             </p>
@@ -402,14 +402,14 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
                 type="button"
                 disabled={preview.summary.readyRows === 0 || isConfirming}
                 onClick={confirmImport}
-                className="rounded-full bg-emerald-700 px-4 py-2 text-sm font-black text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-full bg-emerald-700 px-4 py-2 text-sm font-bold text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isConfirming ? "Uygulanıyor..." : "Onayla ve uygula"}
               </button>
             </div>
           </div>
 
-          <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+          <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
             <div className="max-h-[460px] overflow-auto">
               <table className="min-w-full divide-y divide-slate-200 text-left text-sm">
                 <thead className="sticky top-0 z-10 bg-slate-50 text-xs uppercase tracking-normal text-slate-500">
@@ -448,7 +448,7 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
       ) : null}
 
       {result ? (
-        <div className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-900">
+        <div className="mt-5 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-900">
           İçe aktarma tamamlandı: {result.summary.updatedRows} satır güncellendi, {result.summary.skippedRows} satır atlandı.
         </div>
       ) : null}

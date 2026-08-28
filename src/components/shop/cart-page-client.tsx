@@ -178,6 +178,7 @@ export function CartPageClient({ suggestionProducts }: { suggestionProducts: Pro
                 <div className="grid gap-4 sm:grid-cols-[132px_1fr]">
                   <Link
                     href={`/urun/${item.product.slug}`}
+                    prefetch={false}
                     className="relative overflow-hidden rounded-lg bg-surface-container-low"
                   >
                     {getProductImageUrl(item) ? (
@@ -212,6 +213,7 @@ export function CartPageClient({ suggestionProducts }: { suggestionProducts: Pro
                         </div>
                         <Link
                           href={`/urun/${item.product.slug}`}
+                          prefetch={false}
                           className="mt-3 block text-2xl font-bold leading-tight text-on-surface transition hover:text-primary"
                         >
                           {item.product.name}

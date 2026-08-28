@@ -6,6 +6,8 @@ const defaultPublicDsn =
 let sentryModulePromise: Promise<SentryClientModule> | null = null;
 let sentryInitialized = false;
 
+const clientMonitoringDelayMs = 12_000;
+
 async function loadClientSentry() {
   sentryModulePromise ??= import("@sentry/nextjs");
   const Sentry = await sentryModulePromise;
@@ -36,12 +38,14 @@ function scheduleClientMonitoring() {
       requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number;
     };
 
-    if (typeof idleWindow.requestIdleCallback === "function") {
-      idleWindow.requestIdleCallback(start, { timeout: 5_000 });
-      return;
-    }
+    globalThis.setTimeout(() => {
+      if (typeof idleWindow.requestIdleCallback === "function") {
+        idleWindow.requestIdleCallback(start, { timeout: 8_000 });
+        return;
+      }
 
-    globalThis.setTimeout(start, 3_000);
+      start();
+    }, clientMonitoringDelayMs);
   };
 
   if (document.readyState === "complete") {

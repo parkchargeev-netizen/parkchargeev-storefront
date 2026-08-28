@@ -336,6 +336,7 @@ export function ProductSelectorClient({ products }: { products: ProductModel[] }
             <div className="mt-7 flex flex-wrap gap-3">
               <Link
                 href={`/urun/${topRecommendation.product.slug}`}
+                prefetch={false}
                 className="inline-flex items-center gap-2 rounded-lg bg-white px-5 py-3 text-sm font-semibold text-slate-950"
                 {...conversionDataAttributes("selector_result_click", {
                   productId: topRecommendation.product.id,
@@ -372,6 +373,7 @@ export function ProductSelectorClient({ products }: { products: ProductModel[] }
             <Link
               key={recommendation.product.id}
               href={`/urun/${recommendation.product.slug}`}
+              prefetch={false}
               className="surface-card block p-5 transition hover:border-primary/30 hover:bg-surface-container-low"
             >
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">

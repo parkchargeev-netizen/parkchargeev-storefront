@@ -350,6 +350,7 @@ export function StoreProductSelectorAccordion({ products }: { products: StoreSel
                   <Link
                     key={product.id}
                     href={`/urun/${product.slug}`}
+                    prefetch={false}
                     className="store-selector-window-card store-selector-window-card--link"
                     aria-label={`${product.name} urun detayini ac`}
                     onClick={() => setIsOpen(false)}
