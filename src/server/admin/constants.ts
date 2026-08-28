@@ -43,12 +43,7 @@ export const adminNavigation: Array<{
   },
   {
     href: "/admin/teklifler",
-    label: "Teklifler",
-    roles: ["superadmin", "admin", "order_manager", "support_agent", "readonly"]
-  },
-  {
-    href: "/admin/saha",
-    label: "Saha",
+    label: "Talepler",
     roles: ["superadmin", "admin", "order_manager", "support_agent", "readonly"]
   },
   {

@@ -189,10 +189,10 @@ export async function searchAdminWorkspace(query: string, role: AdminRole) {
         group: "Teklifler"
       })),
       ...serviceRows.map((lead) => ({
-        href: `/admin/saha/${lead.id}`,
+        href: `/admin/teklifler/${lead.id}?view=saha`,
         label: lead.fullName,
         detail: `${lead.leadType} - ${lead.status}`,
-        group: "Saha"
+        group: "Saha talepleri"
       })),
       ...pageRows.map((page) => ({
         href: `/admin/site?editPage=${page.id}#site-page-editor`,

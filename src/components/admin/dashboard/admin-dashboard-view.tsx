@@ -93,7 +93,7 @@ const personaCards: Array<{
     icon: <Home className="h-5 w-5" />
   },
   {
-    href: "/admin/saha",
+    href: "/admin/teklifler?view=saha",
     label: "Site / apartman",
     detail: "RFID, adil kullanım ve yönetim sunumu teknik planla ilerler.",
     signal: "Toplu karar",
@@ -109,7 +109,7 @@ const personaCards: Array<{
     icon: <Users className="h-5 w-5" />
   },
   {
-    href: "/admin/saha",
+    href: "/admin/teklifler?view=saha",
     label: "Ticari lokasyon",
     detail: "DC veya çoklu AC saha için enerji kapasitesi ve fizibilite notu gerekir.",
     signal: "Fizibilite",
@@ -155,7 +155,7 @@ const moduleCards: Array<{
     roles: ["superadmin", "admin", "order_manager"]
   },
   {
-    href: "/admin/saha",
+    href: "/admin/teklifler?view=saha",
     label: "Saha planlama",
     detail: "Keşif, kurulum, servis ve lokasyon kapsamlarını netleştir.",
     icon: <Wrench className="h-5 w-5" />,
@@ -233,7 +233,7 @@ const commerceAdminStandards: Array<{
     roles: ["superadmin", "admin", "order_manager"]
   },
   {
-    href: "/admin/saha",
+    href: "/admin/teklifler?view=saha",
     label: "Keşif ve kurulum",
     detail: "Türkiye geneli keşif, kurulum ve servis aksiyonları saha uygunluğuna göre ayrışır.",
     proof: "Saha iş emri",
@@ -465,7 +465,7 @@ export function AdminDashboardView({
       roles: ["superadmin", "admin", "order_manager"] as AdminRole[]
     },
     {
-      href: "/admin/saha",
+      href: "/admin/teklifler?view=saha",
       label: "Saha planlama",
       value: snapshot.kpis.openServiceRequests,
       detail: "Keşif, kurulum ve teknik servis ekibine aktarılacak işler.",
@@ -504,7 +504,7 @@ export function AdminDashboardView({
     {
       label: "Saha takvimi",
       count: snapshot.kpis.openServiceRequests,
-      href: "/admin/saha",
+      href: "/admin/teklifler?view=saha",
       detail: "Keşif ve kurulum taleplerini saha uygunluğu ve planlama durumuna göre ayır."
     }
   ].filter((action) => action.count > 0);
@@ -947,7 +947,7 @@ export function AdminDashboardView({
               snapshot.activity.recentServiceRequests.map((item) => (
                 <AdminPrefetchLink
                   key={item.id}
-                  href={`/admin/saha/${item.id}`}
+                  href={`/admin/teklifler/${item.id}?view=saha`}
                   className="block rounded-lg bg-white/70 px-4 py-3 transition hover:bg-emerald-50"
                 >
                   <div className="flex items-start justify-between gap-3">

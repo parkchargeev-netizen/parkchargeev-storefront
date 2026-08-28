@@ -68,7 +68,7 @@ export const adminAccessLinks: AdminAccessLink[] = [
   {
     href: "/admin/envanter",
     label: "Envanter",
-    description: "Stok hareketleri, manuel stok duzeltmeleri ve kritik varyant takibi.",
+    description: "Stok hareketleri, manuel stok düzeltmeleri ve kritik varyant takibi.",
     group: "Katalog",
     roles: ["superadmin", "admin", "product_manager", "readonly"]
   },
@@ -81,15 +81,8 @@ export const adminAccessLinks: AdminAccessLink[] = [
   },
   {
     href: "/admin/teklifler",
-    label: "Teklifler",
-    description: "B2B talepler, atama, satış akışı ve durum güncelleme.",
-    group: "Operasyon",
-    roles: ["superadmin", "admin", "order_manager", "support_agent", "readonly"]
-  },
-  {
-    href: "/admin/saha",
-    label: "Saha talepleri",
-    description: "Keşif, servis ve kurulum taleplerinin atama/durum akışı.",
+    label: "Talepler",
+    description: "Teklif, keşif, servis ve saha taleplerini tek ekrandan yönetin.",
     group: "Operasyon",
     roles: ["superadmin", "admin", "order_manager", "support_agent", "readonly"]
   },
@@ -131,7 +124,7 @@ export const adminAccessLinks: AdminAccessLink[] = [
   {
     href: "/admin/bildirimler",
     label: "Bildirim merkezi",
-    description: "Kritik stok, odeme hatasi ve operasyon uyarilarini okunmus/okunmamis yonet.",
+    description: "Kritik stok, ödeme hatası ve operasyon uyarılarını okunmuş/okunmamış yönetin.",
     group: "Operasyon",
     roles: ["superadmin", "admin", "product_manager", "order_manager", "support_agent", "readonly"]
   },

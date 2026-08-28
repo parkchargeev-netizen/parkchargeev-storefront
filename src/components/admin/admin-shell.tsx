@@ -47,7 +47,6 @@ const navigationIconMap = {
   "/admin/urunler": Package,
   "/admin/siparisler": ShoppingCart,
   "/admin/teklifler": FileText,
-  "/admin/saha": Activity,
   "/admin/blog": BookOpen,
   "/admin/katalog": ListTree,
   "/admin/envanter": Boxes,
@@ -64,8 +63,7 @@ const navigationDetailMap: Record<string, string> = {
   "/admin/site": "Menü, sayfa ve yayın akışı",
   "/admin/urunler": "Ürün, stok, fiyat ve SEO yönetimi",
   "/admin/siparisler": "Ödeme, kargo ve sipariş karşılama",
-  "/admin/teklifler": "Ev, site, işletme ve ticari teklif akışı",
-  "/admin/saha": "Keşif, servis ve kurulum planlama",
+  "/admin/teklifler": "Teklif, keşif ve saha talepleri",
   "/admin/blog": "Blog, rehber ve içerik operasyonu",
   "/admin/katalog": "Kategori ve marka sözlükleri",
   "/admin/envanter": "Stok hareketleri ve kritik stok uyarıları",
@@ -79,7 +77,7 @@ const navigationDetailMap: Record<string, string> = {
 const moduleGroups = [
   {
     label: "Operasyon",
-    items: ["/admin", "/admin/siparisler", "/admin/teklifler", "/admin/saha"],
+    items: ["/admin", "/admin/siparisler", "/admin/teklifler"],
     icon: BarChart3
   },
   {
@@ -125,9 +123,9 @@ const commandActionItems: Array<AdminCommandItem & { roles: AdminRole[]; require
     requiresDatabase: true
   },
   {
-    href: "/admin/saha",
-    label: "Saha planını kontrol et",
-    detail: "Türkiye genelinden gelen keşif ve kurulum taleplerini yönet",
+    href: "/admin/teklifler?view=saha",
+    label: "Saha taleplerini aç",
+    detail: "Keşif, servis ve kurulum taleplerini birleşik talep ekranında yönet",
     group: "Operasyon",
     roles: ["superadmin", "admin", "order_manager", "support_agent"],
     requiresDatabase: true
