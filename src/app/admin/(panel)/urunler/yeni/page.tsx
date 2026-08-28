@@ -1,4 +1,4 @@
-import { ProductForm } from "@/components/admin/product-form";
+import { ProductFormLoader } from "@/components/admin/product-form-loader";
 import { getAdminProductFormOptions } from "@/server/admin/product-form-options";
 
 export default async function NewAdminProductPage() {
@@ -16,7 +16,7 @@ export default async function NewAdminProductPage() {
         </p>
       </section>
 
-      <ProductForm
+      <ProductFormLoader
         mode="create"
         lookupOptions={lookupOptions}
         catalogOptions={catalogOptions}

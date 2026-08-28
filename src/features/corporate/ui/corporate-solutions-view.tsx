@@ -30,12 +30,11 @@ export function CorporateSolutionsView({
     <main className="corporate-page mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <section className="corporate-hero">
         <div className="corporate-hero__copy">
-          <p className="premium-eyebrow">Site & işletme şarj altyapısı</p>
-          <h1>Lokasyonunuzu güvenilir, ölçülebilir ve büyüyebilir bir şarj operasyonuna dönüştürün.</h1>
+          <p className="premium-eyebrow">Site ve işletme şarj altyapısı</p>
+          <h1>Lokasyonunuzu yönetilebilir bir şarj operasyonuna dönüştürün.</h1>
           <p>
-            Apartman, site, ofis, otel, filo ve ticari otopark projelerinde cihaz seçiminden önce
-            kapasiteyi, kullanıcı yönetimini, servis modelini ve yatırım geri dönüşünü birlikte
-            planlıyoruz.
+            Apartman, site, ofis, otel, filo ve ticari otopark projelerinde kapasiteyi, kullanıcı
+            yönetimini, servis modelini ve yatırım geri dönüşünü sade bir teknik planla netleştiriyoruz.
           </p>
           <div className="corporate-hero__actions">
             <a href="#kurumsal-teklif" className="premium-btn premium-btn--primary">
@@ -90,8 +89,8 @@ export function CorporateSolutionsView({
             <h2>İşletim modelinize uygun şarj altyapısını seçin.</h2>
           </div>
           <p>
-            Her senaryo; kapasite, kullanıcı yönetimi, raporlama, ödeme akışı ve servis
-            gereksinimleriyle ayrı değerlendirilir.
+            Her senaryo kapasite, kullanıcı yönetimi, raporlama, ödeme akışı ve servis gereksinimleriyle
+            ayrı değerlendirilir.
           </p>
         </div>
 
@@ -107,8 +106,8 @@ export function CorporateSolutionsView({
           <p className="premium-eyebrow text-emerald-300">Proje yaşam döngüsü</p>
           <h2>Karardan devreye almaya kadar dört kontrollü aşama.</h2>
           <p>
-            Teknik belirsizliği azaltan, sorumlulukları görünür tutan ve büyümeyi baştan hesaba
-            katan bir çalışma modeli.
+            Teknik belirsizliği azaltan, sorumlulukları görünür tutan ve büyümeyi baştan hesaba katan
+            bir çalışma modeli.
           </p>
           <div className="corporate-standard-list">
             {standards.map((standard) => (
@@ -139,8 +138,8 @@ export function CorporateSolutionsView({
           <p className="premium-eyebrow">Proje değerlendirmesi</p>
           <h2>İlk teknik çerçeve için temel bilgiler yeterli.</h2>
           <p>
-            Lokasyon, araç sayısı ve kullanım modelini paylaşın. Ekibimiz uygun mimari, cihaz ve
-            devreye alma planıyla dönüş yapsın.
+            Lokasyon, araç sayısı ve kullanım modelini paylaşın. Ekibimiz uygun mimari, cihaz ve devreye
+            alma planıyla dönüş yapsın.
           </p>
           <ul>
             <li>Kapasite ve güç sınıfı önerisi</li>

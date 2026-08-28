@@ -16,7 +16,7 @@ export function SolutionCard({ solution }: SolutionCardProps) {
         <div className="min-w-0">
           <p className="text-xs font-bold uppercase text-secondary">{solution.segment}</p>
 
-          <h3 className="mt-3 text-xl font-extrabold leading-tight text-on-surface md:text-2xl">
+          <h3 className="mt-3 text-lg font-bold leading-tight text-on-surface md:text-xl">
             {solution.title}
           </h3>
         </div>
@@ -24,7 +24,7 @@ export function SolutionCard({ solution }: SolutionCardProps) {
         <div className="mt-4 rounded-lg bg-[#EEF5F1] px-4 py-3">
           <p className="text-xs leading-5 text-on-surface-variant">{solution.heroLabel}</p>
 
-          <p className="mt-1 text-lg font-extrabold leading-tight text-primary">
+          <p className="mt-1 text-base font-bold leading-tight text-primary">
             {solution.heroMetric}
           </p>
         </div>

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import { formatPriceTRY } from "@/lib/format";
+import { AdminPrefetchLink } from "@/components/admin/admin-prefetch-link";
 import { AdminDataTable } from "@/components/admin/table/admin-data-table";
 import { AdminStatusBadge } from "@/components/admin/table/admin-status-badge";
 
@@ -184,13 +185,12 @@ export function ProductsTable({ items, footer }: ProductsTableProps) {
         header: "Urun",
         cell: ({ row }) => (
           <div className="min-w-[260px]">
-            <Link
+            <AdminPrefetchLink
               href={`/admin/urunler/${row.original.id}`}
-              prefetch={false}
               className="text-sm font-semibold text-slate-950 transition hover:text-[#063326]"
             >
               {row.original.name}
-            </Link>
+            </AdminPrefetchLink>
             <p className="mt-1 text-xs uppercase tracking-normal text-slate-500">
               {row.original.slug}
             </p>
@@ -245,13 +245,12 @@ export function ProductsTable({ items, footer }: ProductsTableProps) {
         enableSorting: false,
         cell: ({ row }) => (
           <div className="flex flex-wrap items-center gap-2">
-            <Link
+            <AdminPrefetchLink
               href={`/admin/urunler/${row.original.id}`}
-              prefetch={false}
               className="inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-800 transition hover:border-emerald-300 hover:bg-emerald-100"
             >
               Duzenle
-            </Link>
+            </AdminPrefetchLink>
             {row.original.status === "active" ? (
               <Link
                 href={`/urun/${row.original.slug}`}

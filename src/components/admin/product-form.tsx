@@ -109,7 +109,7 @@ const baseProductFormResolver = zodResolver(adminProductSchema) as unknown as Re
 const productFormResolver: Resolver<ProductFormValues> = (values, context, options) =>
   baseProductFormResolver(normalizeAdminProductPayload(values), context, options);
 
-type ProductFormProps = {
+export type ProductFormProps = {
   mode: "create" | "edit";
   productId?: string;
   initialValues?: Partial<ProductFormValues>;

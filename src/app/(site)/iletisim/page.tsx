@@ -134,8 +134,8 @@ function ContactOnePage({
         </div>
 
         <LeadForm
-          title="Teklif, ke�xif ve destek formu"
-          description="İhtiyacınızı seçin; ürün, ke�xif veya kurulum adımını hızlıca planlayalım."
+          title="Teklif, keşif ve destek formu"
+          description="İhtiyacınızı seçin; ürün, keşif veya kurulum adımını hızlıca planlayalım."
           compact
           defaultReason={defaultReason}
         />

@@ -1,3 +1,5 @@
+import clsx from "clsx";
+
 import { PageHeader } from "@/components/ui/page-header";
 import { sanitizeRichTextHtml } from "@/lib/sanitize-html";
 
@@ -10,21 +12,24 @@ type ManagedPage = {
 
 type ManagedPageRendererProps = {
   page: ManagedPage;
+  variant?: "default" | "service";
 };
 
-export function ManagedPageRenderer({ page }: ManagedPageRendererProps) {
+export function ManagedPageRenderer({ page, variant = "default" }: ManagedPageRendererProps) {
   return (
-    <main className="mx-auto max-w-5xl px-6 py-12 lg:px-8" data-motion-scope>
-      <section className="border-b border-outline-variant/40 pb-10">
-        <PageHeader
-          eyebrow={page.eyebrow}
-          title={page.title}
-          body={page.excerpt}
-        />
+    <main
+      className={clsx(
+        "managed-page mx-auto px-4 py-10 sm:px-6 lg:px-8",
+        variant === "service" ? "managed-page--service max-w-6xl" : "max-w-5xl"
+      )}
+      data-motion-scope
+    >
+      <section className="managed-page__header border-b border-outline-variant/40 pb-9">
+        <PageHeader eyebrow={page.eyebrow} title={page.title} body={page.excerpt} />
       </section>
 
       <article
-        className="managed-richtext mt-10 max-w-none leading-8 text-on-surface-variant"
+        className="managed-richtext mt-9 max-w-none text-on-surface-variant"
         data-motion="reveal"
         dangerouslySetInnerHTML={{
           __html: sanitizeRichTextHtml(page.body)

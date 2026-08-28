@@ -1,5 +1,4 @@
-import Link from "next/link";
-
+import { AdminPrefetchLink } from "@/components/admin/admin-prefetch-link";
 import { ProductImportPanel } from "@/components/admin/product-import-panel";
 import { AdminFilterBar } from "@/components/admin/table/admin-filter-bar";
 import { AdminPageHeader } from "@/components/admin/table/admin-page-header";
@@ -76,13 +75,7 @@ export default async function AdminProductsPage({ searchParams }: ProductListPag
             >
               CSV indir
             </a>
-            <Link
-              href="/admin/urunler/yeni"
-              prefetch={false}
-              className="inline-flex rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
-            >
-              Yeni Ürün
-            </Link>
+            <AdminPrefetchLink href="/admin/urunler/yeni" className="inline-flex rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">Yeni Ürün</AdminPrefetchLink>
           </>
         }
         meta={
@@ -187,13 +180,7 @@ export default async function AdminProductsPage({ searchParams }: ProductListPag
         items={result.items}
         footer={
           result.nextCursor ? (
-            <Link
-              href={buildHref("/admin/urunler", query, { cursor: result.nextCursor })}
-              prefetch={false}
-              className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-white"
-            >
-              Sonraki sayfa
-            </Link>
+            <AdminPrefetchLink href={buildHref("/admin/urunler", query, { cursor: result.nextCursor })} className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-white">Sonraki sayfa</AdminPrefetchLink>
           ) : (
             <span className="text-sm font-medium text-slate-500">Tüm kayıtlar yüklendi.</span>
           )

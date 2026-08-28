@@ -5,13 +5,39 @@ import { ManagedPageRenderer } from "@/components/site/managed-page-renderer";
 import { JsonLd } from "@/components/seo/json-ld";
 import { PageHeader } from "@/components/ui/page-header";
 import { services } from "@/lib/mock-data";
-import { serviceCoverageSummary } from "@/lib/service-coverage";
 import { absoluteUrl } from "@/lib/site";
 import {
   getBreadcrumbJsonLd,
   getServiceCatalogJsonLd
 } from "@/lib/structured-data";
 import { getPublishedSitePageBySlug } from "@/server/site/repository";
+
+const installationSteps = [
+  {
+    step: "Adım 01",
+    title: "Ücretsiz keşif",
+    summary:
+      "Mevcut altyapı, pano mesafesi, enerji kapasitesi ve cihaz konumu ilk değerlendirmede netleştirilir."
+  },
+  {
+    step: "Adım 02",
+    title: "Projelendirme ve planlama",
+    summary:
+      "Cihaz, kablo hattı, koruma elemanları ve saha uygulama detayları tek kurulum planında toplanır."
+  },
+  {
+    step: "Adım 03",
+    title: "Profesyonel kurulum",
+    summary:
+      "Saha uygunluğu teyit edilen lokasyonlarda montaj, bağlantı ve kullanıcı bilgilendirmesi birlikte tamamlanır."
+  },
+  {
+    step: "Adım 04",
+    title: "Test ve devreye alma",
+    summary:
+      "Sistem güvenlik kontrollerinden geçirilir; kullanım, garanti ve destek süreci açık şekilde teslim edilir."
+  }
+] as const;
 
 const fallbackMetadata: Metadata = {
   title: "Hizmetler",
@@ -62,13 +88,13 @@ export default async function ServicesPage() {
     return (
       <>
         <JsonLd data={structuredData} />
-        <ManagedPageRenderer page={page} />
+        <ManagedPageRenderer page={page} variant="service" />
       </>
     );
   }
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8" data-motion-scope>
+    <main className="services-page mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8" data-motion-scope>
       <JsonLd data={structuredData} />
       <PageHeader
         align="center"
@@ -79,30 +105,22 @@ export default async function ServicesPage() {
             <span className="text-gradient"> güvenli kurulumla tamamlayın</span>
           </>
         }
-        body={`Ev kullanıcısından site yönetimine, ofis otoparkından ticari sahaya kadar cihaz, keşif, kurulum ve servis sürecini tek plan içinde yönetiyoruz. ${serviceCoverageSummary.shipping}; ${serviceCoverageSummary.freeSurvey}; ${serviceCoverageSummary.installation}.`}
+        body="Ev, site ve işletme projelerinde doğru cihaz seçimi, keşif, kurulum ve servis sürecini tek plan altında yönetiyoruz. Saha koşullarını netleştirir, uygun güç sınıfını belirler ve teslim sonrası desteği görünür tutarız."
       />
 
-      <div className="mt-12 grid gap-6 lg:grid-cols-2">
+      <div className="services-page__grid mt-12 grid gap-5 md:grid-cols-2">
         {services.map((service, index) => (
           <article
             key={service.id}
-            className={index === 1 ? "overflow-hidden rounded-lg bg-primary p-8 text-white" : "surface-card p-8"}
+            className={index === 1 ? "services-page__card services-page__card--dark" : "services-page__card surface-card"}
           >
-            <h2 className="text-3xl font-bold tracking-normal">
-              {service.title}
-            </h2>
-            <p
-              className={`mt-4 text-base leading-7 ${
-                index === 1 ? "text-white/80" : "text-on-surface-variant"
-              }`}
-            >
+            <h2>{service.title}</h2>
+            <p className={index === 1 ? "text-white/80" : "text-on-surface-variant"}>
               {service.summary}
             </p>
             <Link
               href={service.href}
-              className={`mt-8 inline-block text-sm font-semibold ${
-                index === 1 ? "text-white" : "text-primary"
-              }`}
+              className={index === 1 ? "services-page__link text-white" : "services-page__link text-primary"}
             >
               {service.cta}
             </Link>
@@ -110,84 +128,43 @@ export default async function ServicesPage() {
         ))}
       </div>
 
-      <section className="mt-12 border-y border-outline-variant/35 bg-white py-10">
-        <div className="flex flex-col gap-5 px-4 sm:px-6 md:flex-row md:items-end md:justify-between">
+      <section className="services-page__local mt-12">
+        <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div className="max-w-3xl">
-            <p className="text-sm font-semibold uppercase text-primary">Yerel kurulum</p>
-            <h2 className="mt-3 text-3xl font-bold text-on-surface">
-              Sakarya ve Kocaeli şarj cihazı kurulum hizmetleri
-            </h2>
-            <p className="mt-4 text-base leading-8 text-on-surface-variant">
-              Ev, site ve iş yeri projelerinde araç uyumu, pano kapasitesi, kablo
-              hattı ve koruma ekipmanlarını şehir bazlı saha planıyla netleştirin.
+            <p className="services-page__eyebrow">Yerel kurulum</p>
+            <h2>Sakarya ve Kocaeli şarj cihazı kurulum hizmetleri</h2>
+            <p>
+              Ev, site ve iş yeri projelerinde araç uyumu, pano kapasitesi, kablo hattı ve koruma
+              ekipmanlarını şehir bazlı saha planıyla netleştirin.
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Link
-              href="/sarj-cihazi-kurulumu/sakarya"
-              className="premium-btn premium-btn--secondary"
-            >
+            <Link href="/sarj-cihazi-kurulumu/sakarya" className="premium-btn premium-btn--secondary">
               Sakarya kurulumu
             </Link>
-            <Link
-              href="/sarj-cihazi-kurulumu/kocaeli"
-              className="premium-btn premium-btn--secondary"
-            >
+            <Link href="/sarj-cihazi-kurulumu/kocaeli" className="premium-btn premium-btn--secondary">
               Kocaeli kurulumu
             </Link>
           </div>
         </div>
       </section>
 
-      <section className="mt-12 overflow-hidden rounded-lg border border-outline-variant/35 bg-surface-container-low p-8 lg:p-12">
-        <h2 className="text-4xl font-bold tracking-normal text-on-surface">
-          Net kurulum süreci
-        </h2>
-        <p className="mt-4 max-w-3xl text-lg leading-8 text-on-surface-variant">
-          Keşif, projelendirme, profesyonel kurulum ve devreye alma adımlarıyla
-          cihazın sahada güvenle çalışmasını sağlıyoruz.
+      <section className="services-page__process mt-12">
+        <h2>Net kurulum süreci</h2>
+        <p className="services-page__process-intro">
+          Keşif, projelendirme, profesyonel kurulum ve devreye alma adımlarıyla cihazın sahada
+          güvenle çalışmasını sağlıyoruz.
         </p>
 
-        <div className="mt-10 grid gap-5">
-          {[
-            {
-              step: "Adım 01",
-              title: "Ücretsiz keşif",
-              summary:
-                "Türkiye genelinden alınan taleplerde mevcut altyapı, pano mesafesi, enerji kapasitesi ve cihaz lokasyonu ön değerlendirmeye alınır."
-            },
-            {
-              step: "Adım 02",
-              title: "Projelendirme ve planlama",
-              summary:
-                "Cihaz, kablo, koruma elemanları ve saha uygulama detayları netleştirilir."
-            },
-            {
-              step: "Adım 03",
-              title: "Profesyonel kurulum",
-              summary:
-                "Saha uygunluğu teyit edilen lokasyonlarda standartlara uygun montaj, bağlantı ve kullanıcı eğitimi birlikte tamamlanır."
-            },
-            {
-              step: "Adım 04",
-              title: "Test ve devreye alma",
-              summary:
-                "Sistem güvenlik testlerinden geçirilir, kullanım ve destek süreci net şekilde teslim edilir."
-            }
-          ].map((item) => (
-            <div key={item.step} className="surface-card p-6">
-              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="mt-10 grid gap-4">
+          {installationSteps.map((item) => (
+            <div key={item.step} className="services-page__step surface-card">
+              <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 <div>
-                  <p className="text-sm font-semibold uppercase tracking-normal text-primary">
-                    {item.step}
-                  </p>
-                  <h3 className="mt-2 text-2xl font-bold tracking-normal text-on-surface">
-                    {item.title}
-                  </h3>
+                  <p>{item.step}</p>
+                  <h3>{item.title}</h3>
                 </div>
-                <p className="max-w-2xl text-sm leading-7 text-on-surface-variant">
-                  {item.summary}
-                </p>
+                <p className="max-w-2xl text-on-surface-variant">{item.summary}</p>
               </div>
             </div>
           ))}

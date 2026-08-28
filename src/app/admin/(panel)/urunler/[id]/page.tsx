@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 
-import { ProductForm } from "@/components/admin/product-form";
+import { ProductFormLoader } from "@/components/admin/product-form-loader";
 import { getAdminProductFormOptions } from "@/server/admin/product-form-options";
 import { getAdminProductById } from "@/server/admin/repository";
 
@@ -40,7 +40,7 @@ export default async function EditAdminProductPage({ params }: EditProductPagePr
         </p>
       </section>
 
-      <ProductForm
+      <ProductFormLoader
         key={product.id}
         mode="edit"
         productId={product.id}

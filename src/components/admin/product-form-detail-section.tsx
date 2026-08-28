@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import type { z } from "zod";
 import type {
   UseFieldArrayReturn,
@@ -36,7 +37,7 @@ function ExampleHint({ children }: { children: string }) {
   return <p className="mt-2 text-xs leading-5 text-slate-500">{children}</p>;
 }
 
-export function ProductFormDetailSection({
+function ProductFormDetailSectionComponent({
   detailContent,
   register,
   setValue,
@@ -730,3 +731,5 @@ export function ProductFormDetailSection({
       </section>
   );
 }
+export const ProductFormDetailSection = memo(ProductFormDetailSectionComponent);
+ProductFormDetailSection.displayName = "ProductFormDetailSection";
