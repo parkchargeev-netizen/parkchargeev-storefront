@@ -147,6 +147,7 @@ function ProductMedia({
             height={store ? 360 : 420}
             loading={imagePriority ? undefined : "lazy"}
             priority={imagePriority}
+            fetchPriority={imagePriority ? "high" : "auto"}
             unoptimized={shouldBypassImageOptimization(imageUrl)}
             sizes={store ? productCardImageSizes.store : productCardImageSizes.standard}
             className={mediaClassName}

@@ -366,8 +366,8 @@ export default async function StorePage({ searchParams }: StorePageProps) {
             {featuredProducts.map((product, index) => (
               <div key={`featured-${product.id}`} className="store-product-slide">
                 <ProductCard
-                  imagePriority={prioritizeFeaturedImage && index === 0}
-                  navigationPrefetch={index < 4}
+                  imagePriority={prioritizeFeaturedImage && index < 4}
+                  navigationPrefetch
                   product={product}
                   layout="compact"
                 />
@@ -481,7 +481,7 @@ export default async function StorePage({ searchParams }: StorePageProps) {
                 <ProductCard
                   key={product.id}
                   imagePriority={prioritizeCatalogImage && index === 0}
-                  navigationPrefetch={index < 6}
+                  navigationPrefetch={index < 8}
                   product={product}
                   layout={selectedView === "list" ? "store" : "standard"}
                 />

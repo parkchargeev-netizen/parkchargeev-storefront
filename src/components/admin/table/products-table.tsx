@@ -249,7 +249,7 @@ export function ProductsTable({ items, footer }: ProductsTableProps) {
               href={`/admin/urunler/${row.original.id}`}
               className="inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-800 transition hover:border-emerald-300 hover:bg-emerald-100"
             >
-              Duzenle
+              Düzenle
             </AdminPrefetchLink>
             {row.original.status === "active" ? (
               <Link

@@ -581,9 +581,29 @@ html[data-motion-performance="lite"] .site-experience-shell :where(.surface-card
 
 /* Interaction performance hardening for product cards and galleries. */
 .premium-product-card-link {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
   cursor: pointer;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+}
+
+.store-featured .store-product-rail,
+.store-product-rail {
+  touch-action: pan-x pan-y;
+  overscroll-behavior-inline: contain;
+}
+
+.store-product-slide {
+  position: relative;
+  z-index: 0;
+  pointer-events: auto;
+}
+
+.store-product-slide > .premium-product-card-link {
+  min-height: 100%;
 }
 
 .premium-product-card-link > .premium-product-card,
@@ -656,4 +676,34 @@ html[data-motion-performance="lite"] .site-experience-shell :where(.surface-card
   .product-card-media-image--secondary {
     display: none !important;
   }
+}
+
+/* Product list and gallery paint containment for smoother low-end scrolling. */
+.site-experience-shell :where(.premium-product-card, .store-product-slide, .product-gallery-stage-card, .product-gallery-thumbnail) {
+  contain: paint;
+}
+
+@media (hover: none), (pointer: coarse), (max-width: 767px) {
+  .site-experience-shell :where(.store-featured, .store-results, .store-catalog-layout, .product-gallery-premium, .product-detail-page) {
+    background-attachment: scroll !important;
+  }
+
+  .store-product-rail {
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .store-product-slide {
+    scroll-snap-align: start;
+  }
+}
+
+html[data-device-os="android"] .site-experience-shell :where(.store-featured, .store-results, .store-catalog-layout, .product-gallery-premium, .product-detail-page) {
+  background-image: none !important;
+  background-attachment: scroll !important;
+}
+
+html[data-device-os="android"] .site-experience-shell :where(.premium-product-card, .store-product-slide, .product-gallery-stage-card, .product-gallery-thumbnail) {
+  box-shadow: 0 8px 18px rgba(6, 51, 38, 0.07) !important;
+  filter: none !important;
 }

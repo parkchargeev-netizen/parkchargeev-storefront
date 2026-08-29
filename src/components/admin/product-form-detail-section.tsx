@@ -49,7 +49,19 @@ function ProductFormDetailSectionComponent({
   faqFields
 }: ProductFormDetailSectionProps) {
   return (
-      <section id="detay" className="surface-card scroll-mt-28 border border-slate-200 bg-white/95 p-6">
+      <section id="detay" className="surface-card scroll-mt-28 overflow-hidden border border-slate-200 bg-white/95 p-0">
+        <details className="group">
+          <summary className="flex cursor-pointer list-none flex-col gap-2 px-6 py-5 transition hover:bg-emerald-50/55 sm:flex-row sm:items-center sm:justify-between">
+            <span>
+              <span className="block text-xs font-bold uppercase tracking-normal text-emerald-700">Gelişmiş ayar</span>
+              <span className="mt-1 block text-lg font-semibold text-slate-950">Ürün sayfası içeriği</span>
+              <span className="mt-1 block max-w-3xl text-sm leading-6 text-slate-600">Rozetler, karar kartları, güven metinleri, yorum metinleri ve SSS alanlarını yalnızca ihtiyaç olduğunda düzenleyin.</span>
+            </span>
+            <span className="inline-flex w-fit items-center rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 group-open:bg-[#063326] group-open:text-white">
+              Aç / kapat
+            </span>
+          </summary>
+          <div className="border-t border-slate-100 p-6">
         <div className="mb-6">
           <h2 className="text-xl font-semibold text-slate-950">Ürün detay sayfası</h2>
           <p className="mt-1 text-sm text-slate-600">
@@ -728,6 +740,8 @@ function ProductFormDetailSectionComponent({
             ))}
           </div>
         </div>
+          </div>
+        </details>
       </section>
   );
 }

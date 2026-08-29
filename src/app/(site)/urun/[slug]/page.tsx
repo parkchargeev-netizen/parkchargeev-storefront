@@ -40,7 +40,8 @@ import {
 } from "@/lib/structured-data";
 import {
   getPublicProductBySlug,
-  getPublicRelatedProducts
+  getPublicRelatedProducts,
+  listPublicProductSlugs
 } from "@/server/admin/repository";
 
 type ProductDetailPageProps = {
@@ -51,7 +52,9 @@ export const revalidate = 300;
 export const dynamicParams = true;
 
 export async function generateStaticParams() {
-  return [];
+  const slugs = await listPublicProductSlugs();
+
+  return slugs.slice(0, 24).map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({

@@ -25,8 +25,23 @@ function isProductMediaItem(item: ProductGalleryThumbnail): item is ProductMedia
   return "url" in item && typeof item.url === "string";
 }
 
-const maxGalleryPreloadItems = 12;
+const galleryStageImageSizes = "(min-width: 1024px) 760px, 92vw";
+const galleryLightboxImageSizes = "(min-width: 1024px) 86vw, 94vw";
+const maxGalleryPreloadItems = 32;
 const galleryImagePreloadElements = new Map<string, HTMLImageElement>();
+
+type GalleryPreloadPriority = "auto" | "high" | "low";
+type WindowWithIdleCallback = Window & {
+  cancelIdleCallback?: (handle: number) => void;
+  requestIdleCallback?: (
+    callback: () => void,
+    options?: { timeout?: number }
+  ) => number;
+};
+
+function buildGalleryPreloadKey(imageUrl: string, sizes: string) {
+  return `${sizes}::${imageUrl.trim()}`;
+}
 
 function rememberPreloadedGalleryImage(key: string, image: HTMLImageElement) {
   if (galleryImagePreloadElements.has(key)) {
@@ -45,12 +60,54 @@ function rememberPreloadedGalleryImage(key: string, image: HTMLImageElement) {
   }
 }
 
-function preloadGalleryImage(imageUrl?: string | null) {
+function scheduleGalleryPreload(
+  callback: () => void,
+  options: { delayMs?: number; timeoutMs?: number } = {}
+) {
+  if (typeof window === "undefined") {
+    return () => undefined;
+  }
+
+  const windowWithIdle = window as WindowWithIdleCallback;
+  let cancelled = false;
+  let timeoutId = 0;
+  let idleId = 0;
+
+  const run = () => {
+    if (!cancelled) {
+      callback();
+    }
+  };
+
+  if (typeof windowWithIdle.requestIdleCallback === "function") {
+    idleId = windowWithIdle.requestIdleCallback(run, {
+      timeout: options.timeoutMs ?? 900
+    });
+
+    return () => {
+      cancelled = true;
+      windowWithIdle.cancelIdleCallback?.(idleId);
+    };
+  }
+
+  timeoutId = window.setTimeout(run, options.delayMs ?? 0);
+
+  return () => {
+    cancelled = true;
+    window.clearTimeout(timeoutId);
+  };
+}
+
+function preloadGalleryImage(
+  imageUrl?: string | null,
+  sizes = galleryStageImageSizes,
+  priority: GalleryPreloadPriority = "low"
+) {
   if (!imageUrl || typeof document === "undefined") {
     return;
   }
 
-  const cacheKey = imageUrl.trim();
+  const cacheKey = buildGalleryPreloadKey(imageUrl, sizes);
   if (!cacheKey || galleryImagePreloadElements.has(cacheKey)) {
     return;
   }
@@ -58,15 +115,15 @@ function preloadGalleryImage(imageUrl?: string | null) {
   const image = document.createElement("img");
   image.decoding = "async";
   image.loading = "eager";
-  image.setAttribute("fetchpriority", "low");
+  image.setAttribute("fetchpriority", priority);
 
   try {
     const { props } = getImageProps({
       src: imageUrl,
       alt: "",
-      width: 1440,
-      height: 1080,
-      sizes: "(min-width: 1024px) 86vw, 94vw",
+      width: 1600,
+      height: 1200,
+      sizes,
       unoptimized: shouldBypassImageOptimization(imageUrl)
     });
 
@@ -85,7 +142,21 @@ function preloadGalleryImage(imageUrl?: string | null) {
     image.src = imageUrl;
   }
 
+  if (typeof image.decode === "function") {
+    void image.decode().catch(() => undefined);
+  }
+
   rememberPreloadedGalleryImage(cacheKey, image);
+}
+
+function preloadGalleryMedia(
+  media: ProductMediaModel | undefined,
+  sizes = galleryStageImageSizes,
+  priority: GalleryPreloadPriority = "low"
+) {
+  if (media?.mediaType === "image") {
+    preloadGalleryImage(media.url, sizes, priority);
+  }
 }
 
 function getNearbyImageIndexes(imageIndexes: number[], currentIndex: number) {
@@ -108,6 +179,7 @@ function getNearbyImageIndexes(imageIndexes: number[], currentIndex: number) {
     )
   );
 }
+
 function getEmbeddableVideoUrl(url: string) {
   try {
     const parsedUrl = new URL(url);
@@ -208,6 +280,8 @@ function ProductGalleryMedia({
         alt={media.altText || productName}
         fill
         unoptimized={shouldBypassImageOptimization(media.url)}
+        loading="eager"
+        fetchPriority="high"
         sizes="(min-width: 1024px) 360px, 90vw"
         className="h-full w-full object-contain p-4"
       />
@@ -257,7 +331,7 @@ function ProductGalleryStageMedia({
       unoptimized={shouldBypassImageOptimization(media.url)}
       priority
       fetchPriority="high"
-      sizes="(min-width: 1024px) 760px, 92vw"
+      sizes={galleryStageImageSizes}
       className="object-contain p-2 sm:p-3"
     />
   );
@@ -354,19 +428,50 @@ export function ProductGallery({
       return;
     }
 
-    const timeoutId = window.setTimeout(() => {
-      nearbyImageIndexes.forEach((index) => {
-        const media = galleryMedia[index];
-        if (media?.mediaType === "image") {
-          preloadGalleryImage(media.url);
-        }
-      });
-    }, isLightboxOpen ? 0 : 120);
+    const timeoutId = window.setTimeout(
+      () => {
+        nearbyImageIndexes.forEach((index) => {
+          const media = galleryMedia[index];
+          preloadGalleryMedia(media, galleryStageImageSizes, "high");
+
+          if (isLightboxOpen) {
+            preloadGalleryMedia(media, galleryLightboxImageSizes, "high");
+          }
+        });
+      },
+      isLightboxOpen ? 0 : 40
+    );
+
+    return () => window.clearTimeout(timeoutId);
+  }, [galleryMedia, isLightboxOpen, nearbyImageIndexes]);
+
+  useEffect(() => {
+    const remainingImageIndexes = imageIndexes.filter(
+      (index) => !nearbyImageIndexes.includes(index)
+    );
+
+    if (remainingImageIndexes.length === 0) {
+      return;
+    }
+
+    const scheduledTimeoutIds: number[] = [];
+    const cancelIdle = scheduleGalleryPreload(
+      () => {
+        remainingImageIndexes.forEach((index, order) => {
+          const timeoutId = window.setTimeout(() => {
+            preloadGalleryMedia(galleryMedia[index], galleryStageImageSizes, "low");
+          }, order * 90);
+          scheduledTimeoutIds.push(timeoutId);
+        });
+      },
+      { delayMs: 240, timeoutMs: 1200 }
+    );
 
     return () => {
-      window.clearTimeout(timeoutId);
+      cancelIdle();
+      scheduledTimeoutIds.forEach((timeoutId) => window.clearTimeout(timeoutId));
     };
-  }, [galleryMedia, isLightboxOpen, nearbyImageIndexes]);
+  }, [galleryMedia, imageIndexes, nearbyImageIndexes]);
 
   const moveGallery = useCallback(
     (direction: -1 | 1) => {
@@ -374,11 +479,11 @@ export function ProductGallery({
         return;
       }
 
-      setActiveIndex((currentIndex) => (
-        currentIndex + direction + galleryItemCount
-      ) % galleryItemCount);
+      const nextIndex = (activeIndex + direction + galleryItemCount) % galleryItemCount;
+      preloadGalleryMedia(galleryMedia[nextIndex], galleryStageImageSizes, "high");
+      setActiveIndex(nextIndex);
     },
-    [galleryItemCount]
+    [activeIndex, galleryItemCount, galleryMedia]
   );
 
   const openLightbox = useCallback(
@@ -388,7 +493,8 @@ export function ProductGallery({
         return;
       }
 
-      preloadGalleryImage(selectedMedia.url);
+      preloadGalleryImage(selectedMedia.url, galleryLightboxImageSizes, "high");
+      preloadGalleryImage(selectedMedia.url, galleryStageImageSizes, "high");
       setSelectedImageIndex(index);
       setIsLightboxOpen(true);
     },
@@ -412,11 +518,13 @@ export function ProductGallery({
         (currentImagePosition + direction + imageIndexes.length) %
         imageIndexes.length;
       const nextIndex = imageIndexes[nextPosition] ?? imageIndexes[0] ?? 0;
+      preloadGalleryMedia(galleryMedia[nextIndex], galleryStageImageSizes, "high");
+      preloadGalleryMedia(galleryMedia[nextIndex], galleryLightboxImageSizes, "high");
 
       setSelectedImageIndex(nextIndex);
       setActiveIndex(nextIndex);
     },
-    [imageIndexes, selectedImageIndex]
+    [galleryMedia, imageIndexes, selectedImageIndex]
   );
 
   const nextImage = useCallback(() => {
@@ -459,6 +567,9 @@ export function ProductGallery({
     };
   }, [closeLightbox, isLightboxOpen, nextImage, prevImage]);
 
+  const warmImageIndexes = nearbyImageIndexes.filter(
+    (index) => index !== activeIndex && galleryMedia[index]?.mediaType === "image"
+  );
   const lightbox =
     isMounted && isLightboxOpen && selectedLightboxMedia
       ? createPortal(
@@ -519,7 +630,7 @@ export function ProductGallery({
                 unoptimized={shouldBypassImageOptimization(selectedLightboxMedia.url)}
                 priority
                 fetchPriority="high"
-                sizes="(min-width: 1024px) 86vw, 94vw"
+                sizes={galleryLightboxImageSizes}
                 className="mx-auto block max-h-[85vh] max-w-[90vw] object-contain"
               />
             </div>
@@ -530,6 +641,26 @@ export function ProductGallery({
 
   return (
     <>
+      <div className="product-gallery-preload-strip" aria-hidden="true">
+        {warmImageIndexes.map((index) => {
+          const media = galleryMedia[index];
+
+          return media?.mediaType === "image" ? (
+            <Image
+              key={`warm-${media.url}-${index}`}
+              src={media.url}
+              alt=""
+              width={760}
+              height={760}
+              unoptimized={shouldBypassImageOptimization(media.url)}
+              loading="eager"
+              fetchPriority="low"
+              sizes={galleryStageImageSizes}
+              className="h-px w-px object-contain"
+            />
+          ) : null;
+        })}
+      </div>
       <div className="product-gallery-premium surface-card grid gap-4 p-3 sm:p-4 lg:grid-cols-[88px_minmax(0,1fr)] lg:p-5">
         <div className="product-gallery-stage-card order-first overflow-hidden rounded-lg bg-white p-3 lg:order-2 lg:p-4">
           <div
@@ -663,7 +794,14 @@ export function ProductGallery({
                 type="button"
                 onClick={(event) => {
                   event.preventDefault();
+                  preloadGalleryMedia(galleryMedia[index], galleryStageImageSizes, "high");
                   setActiveIndex(index);
+                }}
+                onFocus={() => {
+                  preloadGalleryMedia(galleryMedia[index], galleryStageImageSizes, "low");
+                }}
+                onPointerEnter={() => {
+                  preloadGalleryMedia(galleryMedia[index], galleryStageImageSizes, "low");
                 }}
                 aria-label={`${productName} ${index + 1}. görseli seç`}
                 className={`product-gallery-thumbnail group w-16 shrink-0 overflow-hidden rounded-lg p-1 transition lg:w-full ${
@@ -679,6 +817,8 @@ export function ProductGallery({
                       alt={`${productName} ${item.altText}`}
                       fill
                       unoptimized={shouldBypassImageOptimization(item.url)}
+                      loading={index < 5 ? "eager" : "lazy"}
+                      fetchPriority={index < 5 ? "low" : "auto"}
                       sizes="(min-width: 1024px) 120px, 24vw"
                       className="h-full w-full object-contain p-2 transition duration-300 group-hover:scale-[1.02]"
                     />

@@ -1,16 +1,109 @@
 "use client";
 
 import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 const finePointerQuery = "(hover: hover) and (pointer: fine)";
+const productCardLinkSelector = ".premium-product-card-link";
 const secondaryImageSelector = "[data-product-secondary-src]";
+const warmedProductRoutes = new Set<string>();
 
-function loadSecondaryImage(event: Event) {
+type ProductCardRouter = {
+  prefetch?: (href: string) => void;
+  push: (href: string) => void;
+};
+
+function getProductCardLink(event: Event) {
   if (!(event.target instanceof Element)) {
+    return null;
+  }
+
+  return event.target.closest<HTMLAnchorElement>(productCardLinkSelector);
+}
+
+function getSameOriginRouteHref(link: HTMLAnchorElement) {
+  if (!link.href || link.target || link.hasAttribute("download")) {
+    return null;
+  }
+
+  try {
+    const url = new URL(link.href);
+
+    if (url.origin !== window.location.origin) {
+      return null;
+    }
+
+    return `${url.pathname}${url.search}${url.hash}`;
+  } catch {
+    return null;
+  }
+}
+
+function warmProductRoute(link: HTMLAnchorElement, router?: ProductCardRouter) {
+  const routeHref = getSameOriginRouteHref(link);
+
+  if (!routeHref || warmedProductRoutes.has(link.href)) {
     return;
   }
 
-  const productCard = event.target.closest(".premium-product-card-link");
+  warmedProductRoutes.add(link.href);
+  router?.prefetch?.(routeHref);
+
+  const prefetchLink = document.createElement("link");
+  prefetchLink.rel = "prefetch";
+  prefetchLink.as = "document";
+  prefetchLink.href = link.href;
+  prefetchLink.dataset.productCardPrefetch = "true";
+  document.head.appendChild(prefetchLink);
+}
+
+function warmProductRouteFromEvent(event: Event, router: ProductCardRouter) {
+  const link = getProductCardLink(event);
+  if (link) {
+    warmProductRoute(link, router);
+  }
+}
+
+function navigateProductRoute(event: MouseEvent, router: ProductCardRouter) {
+  if (
+    event.defaultPrevented ||
+    event.button !== 0 ||
+    event.altKey ||
+    event.ctrlKey ||
+    event.metaKey ||
+    event.shiftKey
+  ) {
+    return;
+  }
+
+  const link = getProductCardLink(event);
+  if (!link) {
+    return;
+  }
+
+  const routeHref = getSameOriginRouteHref(link);
+  if (!routeHref || window.location.href === link.href) {
+    return;
+  }
+
+  const currentHref = window.location.href;
+  const targetHref = link.href;
+
+  event.preventDefault();
+  warmProductRoute(link, router);
+  router.push(routeHref);
+
+  window.setTimeout(() => {
+    if (window.location.href !== currentHref || !document.documentElement.contains(link)) {
+      return;
+    }
+
+    window.location.assign(targetHref);
+  }, 3500);
+}
+
+function loadSecondaryImage(event: Event) {
+  const productCard = getProductCardLink(event);
   const image = productCard?.querySelector<HTMLImageElement>(secondaryImageSelector);
 
   if (!image || image.dataset.secondaryLoaded === "true") {
@@ -44,21 +137,36 @@ function loadSecondaryImage(event: Event) {
 }
 
 export function ProductCardMediaRuntime() {
+  const router = useRouter();
+
   useEffect(() => {
-    const mediaQuery = window.matchMedia(finePointerQuery);
-    if (!mediaQuery.matches) {
+    const contentRoot = document.getElementById("main-content");
+    if (!contentRoot) {
       return;
     }
 
-    const contentRoot = document.getElementById("main-content");
-    contentRoot?.addEventListener("pointerover", loadSecondaryImage, { passive: true });
-    contentRoot?.addEventListener("focusin", loadSecondaryImage);
+    const mediaQuery = window.matchMedia(finePointerQuery);
+    const intentOptions = { capture: true, passive: true } as const;
+    const warmRoute = (event: Event) => warmProductRouteFromEvent(event, router);
+    const navigateRoute = (event: MouseEvent) => navigateProductRoute(event, router);
+
+    contentRoot.addEventListener("pointerdown", warmRoute, intentOptions);
+    contentRoot.addEventListener("focusin", warmRoute, true);
+    contentRoot.addEventListener("click", navigateRoute, true);
+
+    if (mediaQuery.matches) {
+      contentRoot.addEventListener("pointerover", loadSecondaryImage, { passive: true });
+      contentRoot.addEventListener("focusin", loadSecondaryImage);
+    }
 
     return () => {
-      contentRoot?.removeEventListener("pointerover", loadSecondaryImage);
-      contentRoot?.removeEventListener("focusin", loadSecondaryImage);
+      contentRoot.removeEventListener("pointerdown", warmRoute, intentOptions);
+      contentRoot.removeEventListener("focusin", warmRoute, true);
+      contentRoot.removeEventListener("click", navigateRoute, true);
+      contentRoot.removeEventListener("pointerover", loadSecondaryImage);
+      contentRoot.removeEventListener("focusin", loadSecondaryImage);
     };
-  }, []);
+  }, [router]);
 
   return null;
 }

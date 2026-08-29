@@ -173,15 +173,12 @@ const emptyValues: ProductFormValues = {
 
 const productFormSections = [
   { id: "temel-bilgiler", label: "Temel" },
-  { id: "fiyat-stok", label: "Fiyat/Stok" },
-  { id: "varyantlar", label: "Varyantlar" },
-  { id: "katalog", label: "Katalog" },
+  { id: "fiyat-stok", label: "Satış" },
   { id: "teknik", label: "Teknik" },
-  { id: "görseller", label: "Görseller" },
-  { id: "özellikler", label: "Özellikler" },
-  { id: "detay", label: "Detay" },
-  { id: "seo", label: "SEO" },
-  { id: "iliskiler", label: "Iliskiler" }
+  { id: "görseller", label: "Görsel" },
+  { id: "özellikler", label: "Özellik" },
+  { id: "katalog", label: "Gelişmiş" },
+  { id: "seo", label: "SEO" }
 ];
 
 function splitLines(value: string) {
@@ -1358,158 +1355,54 @@ export function ProductForm({
         disabled={!isHydrated || isSubmitting}
         className="space-y-8 disabled:cursor-wait disabled:opacity-75"
       >
-      <section className="surface-card border border-emerald-100 bg-white/95 p-6">
-        <div className="grid gap-5 xl:grid-cols-[minmax(0,1.15fr)_minmax(280px,0.85fr)]">
+      <section className="rounded-xl border border-emerald-100 bg-white/95 p-4 shadow-sm">
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
           <div>
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <p className="text-sm font-bold uppercase tracking-normal text-emerald-700">
-                  Yayın hazırlığı
-                </p>
-                <h2 className="mt-2 text-2xl font-semibold text-slate-950">
-                  Ürünü satışa açmadan önce kritik e-ticaret sinyallerini tamamlayın.
-                </h2>
-              </div>
-              <span className="inline-flex w-fit items-center gap-2 rounded-lg bg-emerald-50 px-4 py-2 text-sm font-bold text-[#063326]">
-                <CheckCircle2 className="h-4 w-4" aria-hidden />
-                {publishReadyCount}/{publicationChecklist.length} hazır
-              </span>
-            </div>
-            <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
-              {publicationChecklist.map((item) => {
-                const Icon = item.icon;
-
-                return (
-                  <div
-                    key={item.label}
-                    className={`rounded-lg border p-4 ${
-                      item.ok
-                        ? "border-emerald-200 bg-emerald-50/70"
-                        : "border-amber-200 bg-amber-50/70"
-                    }`}
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <span className={`rounded-lg p-2 ${item.ok ? "bg-white text-emerald-800" : "bg-white text-amber-800"}`}>
-                        <Icon className="h-4 w-4" aria-hidden />
-                      </span>
-                      <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${item.ok ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}`}>
-                        {item.ok ? "Tamam" : "Eksik"}
-                      </span>
-                    </div>
-                    <p className="mt-3 text-sm font-bold text-slate-950">{item.label}</p>
-                    <p className="mt-1 text-xs leading-5 text-slate-600">{item.detail}</p>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          <aside className="rounded-lg border border-slate-200 bg-slate-50 p-4">
-            <p className="text-sm font-bold text-slate-950">Mağaza kartı önizlemesi</p>
-            <div className="mt-4 overflow-hidden rounded-lg border border-white bg-white shadow-sm">
-              <div className="grid aspect-[4/3] place-items-center bg-gradient-to-br from-emerald-50 to-slate-100">
-                {primaryMedia?.url ? (
-                  primaryMedia.mediaType === "video" ? (
-                    <video src={primaryMedia.url} className="h-full w-full object-contain" muted />
-                  ) : (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={primaryMedia.url}
-                      alt={primaryMedia.altText || currentName || "Ürün görseli"}
-                      loading="lazy"
-                      decoding="async"
-                      className="h-full w-full object-contain p-2"
-                    />
-                  )
-                ) : (
-                  <div className="grid place-items-center gap-2 text-center text-slate-500">
-                    <ImagePlus className="mx-auto h-8 w-8" aria-hidden />
-                    <span className="text-xs font-semibold">Ana görsel bekleniyor</span>
-                  </div>
-                )}
-              </div>
-              <div className="p-4">
-                <p className="line-clamp-2 text-base font-bold text-slate-950">
-                  {cleanText(currentName) || "Ürün adı"}
-                </p>
-                <p className="mt-2 line-clamp-2 text-xs leading-5 text-slate-600">
-                  {cleanText(shortDescriptionValue) || "Kısa açıklama mağaza kartında burada görünür."}
-                </p>
-                <div className="mt-4 flex items-center justify-between gap-3">
-                  <span className="text-lg font-bold text-[#063326]">{displayPrice}</span>
-                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-700">
-                    {stockState}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </aside>
-        </div>
-      </section>
-
-      <section className="surface-card scroll-mt-28 border border-emerald-100 bg-white/95 p-6">
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)] xl:items-start">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-normal text-emerald-700">
-              Ürün kalite skoru
+            <p className="text-sm font-bold uppercase tracking-normal text-emerald-700">
+              Hızlı ürün girişi
             </p>
-            <h2 className="mt-2 text-2xl font-semibold text-slate-950">
-              Ürün bilgileri yayın öncesi net ve eksiksiz görünsün.
+            <h2 className="mt-2 text-xl font-semibold text-slate-950">
+              Önce temel satış bilgilerini doldurun, gelişmiş alanları gerektiğinde açın.
             </h2>
-            <p className="mt-3 text-sm leading-6 text-slate-600">
-              Ürün adı, kısa açıklama, teknik tablo, medya ve SEO alanlarını kontrol edin.
-              Bu bölüm otomatik metin üretmez; yalnızca eksik alanları okunabilir şekilde gösterir.
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
+              Ürün adı, fiyat, stok, teknik değer ve ana görsel kaydı yayına hazırlamak için yeterlidir. Varyant, SEO, rozet ve detay sayfası içerikleri altta kapalı panellerde durur.
             </p>
-            <div className="mt-5 rounded-lg bg-[#063326] p-5 text-white">
-              <div className="flex items-end justify-between gap-4">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-normal text-white/76">
-                    İçerik hazırlık skoru
-                  </p>
-                  <p className="mt-2 text-4xl font-bold tracking-normal">
-                    %{featureReadinessPercent}
-                  </p>
-                </div>
-                <span className="rounded-full bg-white px-3 py-1 text-xs font-bold text-[#063326]">
-                  {readyFeatureCount}/{featureAuditItems.length} tamam
-                </span>
-              </div>
-              <div className="mt-4 h-3 overflow-hidden rounded-full bg-white/15">
-                <span
-                  className="block h-full rounded-full bg-[#7eecc9]"
-                  style={{ width: `${featureReadinessPercent}%` }}
-                />
-              </div>
-            </div>
           </div>
+          <div className="flex flex-wrap items-center gap-2 lg:justify-end">
+            <span className="rounded-full bg-[#063326] px-4 py-2 text-xs font-bold text-white">
+              {publishReadyCount}/{publicationChecklist.length} temel kontrol
+            </span>
+            <span className="rounded-full bg-emerald-50 px-4 py-2 text-xs font-bold text-[#063326]">
+              %{featureReadinessPercent} içerik skoru
+            </span>
+            <span className="rounded-full bg-slate-100 px-4 py-2 text-xs font-bold text-slate-700">
+              {displayPrice} · {stockState}
+            </span>
+          </div>
+        </div>
+        <div className="mt-4 grid gap-2 md:grid-cols-5">
+          {publicationChecklist.map((item) => {
+            const Icon = item.icon;
 
-          <div className="grid gap-3 md:grid-cols-2">
-            {featureAuditItems.map((item) => (
+            return (
               <div
                 key={item.label}
-                className={`rounded-lg border p-4 ${
+                className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-semibold ${
                   item.ok
-                    ? "border-emerald-200 bg-emerald-50/70"
-                    : "border-amber-200 bg-amber-50/70"
+                    ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+                    : "border-amber-200 bg-amber-50 text-amber-800"
                 }`}
               >
-                <div className="flex items-start justify-between gap-3">
-                  <p className="text-sm font-semibold text-slate-950">{item.label}</p>
-                  <span
-                    className={`rounded-full px-3 py-1 text-xs font-bold ${
-                      item.ok ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"
-                    }`}
-                  >
-                    {item.ok ? "Hazir" : "Eksik"}
-                  </span>
-                </div>
-                <p className="mt-2 text-xs leading-5 text-slate-600">{item.detail}</p>
+                <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                <span className="truncate">{item.label}</span>
+                <span className="ml-auto rounded-full bg-white/80 px-2 py-0.5">
+                  {item.ok ? "Tamam" : "Eksik"}
+                </span>
               </div>
-            ))}
-          </div>
+            );
+          })}
         </div>
       </section>
-
       <section id="temel-bilgiler" className="surface-card scroll-mt-28 border border-slate-200 bg-white/95 p-6">
         <div className="mb-6">
           <h2 className="text-xl font-semibold text-slate-950">Temel Bilgiler</h2>
@@ -1608,6 +1501,11 @@ export function ProductForm({
       </section>
 
       <section id="fiyat-stok" className="surface-card scroll-mt-28 border border-slate-200 bg-white/95 p-6">
+        <div className="mb-6">
+          <h2 className="text-xl font-semibold text-slate-950">Fiyat ve stok</h2>
+          <p className="mt-1 text-sm leading-6 text-slate-600">Satış fiyatı, kampanya, stok ve KDV ayarları mağaza kartı, ürün detayı ve ödeme tutarı için temel kaynaktır.</p>
+        </div>
+
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           <div>
             <label className="mb-2 block text-sm font-medium text-slate-700">SKU</label>
@@ -1695,7 +1593,19 @@ export function ProductForm({
         </div>
       </section>
 
-      <section id="varyantlar" className="surface-card scroll-mt-28 border border-slate-200 bg-white/95 p-6">
+      <section id="varyantlar" className="surface-card scroll-mt-28 overflow-hidden border border-slate-200 bg-white/95 p-0">
+        <details className="group">
+          <summary className="flex cursor-pointer list-none flex-col gap-2 px-6 py-5 transition hover:bg-emerald-50/55 sm:flex-row sm:items-center sm:justify-between">
+            <span>
+              <span className="block text-xs font-bold uppercase tracking-normal text-emerald-700">Gelişmiş ayar</span>
+              <span className="mt-1 block text-lg font-semibold text-slate-950">Varyantlar</span>
+              <span className="mt-1 block max-w-3xl text-sm leading-6 text-slate-600">Birden fazla kablo, güç, stok veya fiyat seçeneğiniz yoksa bu bölümü kapalı bırakabilirsiniz.</span>
+            </span>
+            <span className="inline-flex w-fit items-center rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 group-open:bg-[#063326] group-open:text-white">
+              Aç / kapat
+            </span>
+          </summary>
+          <div className="border-t border-slate-100 p-6">
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-xl font-semibold text-slate-950">Varyantlar</h2>
@@ -1795,9 +1705,23 @@ export function ProductForm({
             </p>
           ) : null}
         </div>
+          </div>
+        </details>
       </section>
 
-      <section id="katalog" className="surface-card scroll-mt-28 border border-slate-200 bg-white/95 p-6">
+      <section id="katalog" className="surface-card scroll-mt-28 overflow-hidden border border-slate-200 bg-white/95 p-0">
+        <details className="group">
+          <summary className="flex cursor-pointer list-none flex-col gap-2 px-6 py-5 transition hover:bg-emerald-50/55 sm:flex-row sm:items-center sm:justify-between">
+            <span>
+              <span className="block text-xs font-bold uppercase tracking-normal text-emerald-700">Gelişmiş ayar</span>
+              <span className="mt-1 block text-lg font-semibold text-slate-950">Katalog, etiket ve araç uyumluluğu</span>
+              <span className="mt-1 block max-w-3xl text-sm leading-6 text-slate-600">Kategori, vitrin etiketi ve uyumlu araç listesi gibi yayın sonrası zenginleştirme alanları.</span>
+            </span>
+            <span className="inline-flex w-fit items-center rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 group-open:bg-[#063326] group-open:text-white">
+              Aç / kapat
+            </span>
+          </summary>
+          <div className="border-t border-slate-100 p-6">
         <div className="grid gap-6 lg:grid-cols-3">
           <div>
             <p className="mb-3 text-sm font-semibold text-slate-800">Kategoriler</p>
@@ -1924,6 +1848,8 @@ export function ProductForm({
             </div>
           </div>
         </div>
+          </div>
+        </details>
       </section>
 
       <section id="teknik" className="surface-card scroll-mt-28 border border-slate-200 bg-white/95 p-6">
@@ -2443,7 +2369,19 @@ export function ProductForm({
         faqFields={faqFields}
       />
 
-      <section id="seo" className="surface-card scroll-mt-28 border border-slate-200 bg-white/95 p-6">
+      <section id="seo" className="surface-card scroll-mt-28 overflow-hidden border border-slate-200 bg-white/95 p-0">
+        <details className="group">
+          <summary className="flex cursor-pointer list-none flex-col gap-2 px-6 py-5 transition hover:bg-emerald-50/55 sm:flex-row sm:items-center sm:justify-between">
+            <span>
+              <span className="block text-xs font-bold uppercase tracking-normal text-emerald-700">Gelişmiş ayar</span>
+              <span className="mt-1 block text-lg font-semibold text-slate-950">SEO ve arama görünümü</span>
+              <span className="mt-1 block max-w-3xl text-sm leading-6 text-slate-600">Ürün yayına hazır olduktan sonra meta başlık, açıklama, canonical ve arama kelimelerini düzenleyin.</span>
+            </span>
+            <span className="inline-flex w-fit items-center rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 group-open:bg-[#063326] group-open:text-white">
+              Aç / kapat
+            </span>
+          </summary>
+          <div className="border-t border-slate-100 p-6">
         <div className="mb-6">
           <h2 className="text-xl font-semibold text-slate-950">SEO</h2>
           <ExampleHint>Örnek meta başlık: HomeCharge Pro 11kW EV Şarj Cihazı. Meta açıklama kullanıcıya net satın alma sebebi vermeli.</ExampleHint>
@@ -2497,9 +2435,23 @@ export function ProductForm({
             </p>
           </div>
         </div>
+          </div>
+        </details>
       </section>
 
-      <section id="iliskiler" className="surface-card scroll-mt-28 border border-slate-200 bg-white/95 p-6">
+      <section id="iliskiler" className="surface-card scroll-mt-28 overflow-hidden border border-slate-200 bg-white/95 p-0">
+        <details className="group">
+          <summary className="flex cursor-pointer list-none flex-col gap-2 px-6 py-5 transition hover:bg-emerald-50/55 sm:flex-row sm:items-center sm:justify-between">
+            <span>
+              <span className="block text-xs font-bold uppercase tracking-normal text-emerald-700">Gelişmiş ayar</span>
+              <span className="mt-1 block text-lg font-semibold text-slate-950">İlişkiler ve admin notları</span>
+              <span className="mt-1 block max-w-3xl text-sm leading-6 text-slate-600">Benzer ürün, aksesuar önerisi ve yalnızca ekip içinde görünen operasyon notları.</span>
+            </span>
+            <span className="inline-flex w-fit items-center rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 group-open:bg-[#063326] group-open:text-white">
+              Aç / kapat
+            </span>
+          </summary>
+          <div className="border-t border-slate-100 p-6">
         <div className="mb-6 grid gap-5 lg:grid-cols-2">
           <div>
             <label className="mb-2 block text-sm font-medium text-slate-700">İlgili ürünler</label>
@@ -2555,6 +2507,8 @@ export function ProductForm({
           placeholder="Admin notları"
           {...register("adminNotes")}
         />
+          </div>
+        </details>
       </section>
 
       {errorMessage ? (

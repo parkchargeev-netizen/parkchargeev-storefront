@@ -17134,3 +17134,38 @@ html[data-device-os="android"] .product-badge::after {
   .product-card-media-image:not(.product-card-media-image--secondary) {
   opacity: 1 !important;
 }
+/* Product media final safety: no hidden zoom on card imagery, faster mobile paints. */
+.store-product-grid--commerce .premium-product-card__media .product-card-media-image,
+.premium-product-spotlight .premium-product-card__media .product-card-media-image,
+.store-featured .premium-product-card__media .product-card-media-image,
+.product-detail-related-track .premium-product-card__media .product-card-media-image,
+.store-product-slide .premium-product-card__media .product-card-media-image {
+  transform: none !important;
+  transition: opacity 160ms ease !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .premium-product-card-link:hover .product-card-media-frame--has-secondary .product-card-media-image--secondary,
+  .premium-product-card-link:focus-visible .product-card-media-frame--has-secondary .product-card-media-image--secondary {
+    transform: none !important;
+  }
+}
+
+html[data-device-os="android"] .store-product-grid--commerce .premium-product-card__media,
+html[data-device-os="android"] .premium-product-spotlight .premium-product-card__media,
+html[data-device-os="android"] .store-featured .premium-product-card__media,
+html[data-device-os="android"] .product-detail-related-track .premium-product-card__media,
+html[data-device-os="android"] .store-product-slide .premium-product-card__media {
+  background: #fff !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.92) !important;
+}
+.product-gallery-preload-strip {
+  position: fixed !important;
+  left: -9999px !important;
+  top: -9999px !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
