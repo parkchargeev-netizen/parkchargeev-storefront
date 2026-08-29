@@ -124,8 +124,8 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               Ürünler ({matchedProducts.length})
             </h2>
             <div className="mt-6 grid gap-6 lg:grid-cols-3">
-              {matchedProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
+              {matchedProducts.map((product, index) => (
+                <ProductCard key={product.id} navigationPrefetch={index < 6} product={product} />
               ))}
             </div>
           </section>

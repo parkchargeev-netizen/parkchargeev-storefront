@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image, { getImageProps } from "next/image";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -25,6 +25,89 @@ function isProductMediaItem(item: ProductGalleryThumbnail): item is ProductMedia
   return "url" in item && typeof item.url === "string";
 }
 
+const maxGalleryPreloadItems = 12;
+const galleryImagePreloadElements = new Map<string, HTMLImageElement>();
+
+function rememberPreloadedGalleryImage(key: string, image: HTMLImageElement) {
+  if (galleryImagePreloadElements.has(key)) {
+    return;
+  }
+
+  galleryImagePreloadElements.set(key, image);
+
+  if (galleryImagePreloadElements.size <= maxGalleryPreloadItems) {
+    return;
+  }
+
+  const oldestKey = galleryImagePreloadElements.keys().next().value as string | undefined;
+  if (oldestKey) {
+    galleryImagePreloadElements.delete(oldestKey);
+  }
+}
+
+function preloadGalleryImage(imageUrl?: string | null) {
+  if (!imageUrl || typeof document === "undefined") {
+    return;
+  }
+
+  const cacheKey = imageUrl.trim();
+  if (!cacheKey || galleryImagePreloadElements.has(cacheKey)) {
+    return;
+  }
+
+  const image = document.createElement("img");
+  image.decoding = "async";
+  image.loading = "eager";
+  image.setAttribute("fetchpriority", "low");
+
+  try {
+    const { props } = getImageProps({
+      src: imageUrl,
+      alt: "",
+      width: 1440,
+      height: 1080,
+      sizes: "(min-width: 1024px) 86vw, 94vw",
+      unoptimized: shouldBypassImageOptimization(imageUrl)
+    });
+
+    if (typeof props.sizes === "string") {
+      image.sizes = props.sizes;
+    }
+
+    if (typeof props.srcSet === "string") {
+      image.srcset = props.srcSet;
+    }
+
+    if (typeof props.src === "string") {
+      image.src = props.src;
+    }
+  } catch {
+    image.src = imageUrl;
+  }
+
+  rememberPreloadedGalleryImage(cacheKey, image);
+}
+
+function getNearbyImageIndexes(imageIndexes: number[], currentIndex: number) {
+  if (imageIndexes.length === 0) {
+    return [];
+  }
+
+  const currentImagePosition = imageIndexes.includes(currentIndex)
+    ? imageIndexes.indexOf(currentIndex)
+    : 0;
+  const previousIndex = imageIndexes[(currentImagePosition - 1 + imageIndexes.length) % imageIndexes.length];
+  const currentImageIndex = imageIndexes[currentImagePosition];
+  const nextIndex = imageIndexes[(currentImagePosition + 1) % imageIndexes.length];
+
+  return Array.from(
+    new Set(
+      [currentImageIndex, previousIndex, nextIndex].filter(
+        (index): index is number => typeof index === "number"
+      )
+    )
+  );
+}
 function getEmbeddableVideoUrl(url: string) {
   try {
     const parsedUrl = new URL(url);
@@ -256,9 +339,34 @@ export function ProductGallery({
     galleryMedia[selectedImageIndex]?.mediaType === "image"
       ? galleryMedia[selectedImageIndex]
       : undefined;
+  const preloadBasisIndex = isLightboxOpen ? selectedImageIndex : activeIndex;
+  const nearbyImageIndexes = useMemo(
+    () => getNearbyImageIndexes(imageIndexes, preloadBasisIndex),
+    [imageIndexes, preloadBasisIndex]
+  );
+
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (nearbyImageIndexes.length === 0) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      nearbyImageIndexes.forEach((index) => {
+        const media = galleryMedia[index];
+        if (media?.mediaType === "image") {
+          preloadGalleryImage(media.url);
+        }
+      });
+    }, isLightboxOpen ? 0 : 120);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [galleryMedia, isLightboxOpen, nearbyImageIndexes]);
 
   const moveGallery = useCallback(
     (direction: -1 | 1) => {
@@ -275,10 +383,12 @@ export function ProductGallery({
 
   const openLightbox = useCallback(
     (index: number) => {
-      if (galleryMedia[index]?.mediaType !== "image") {
+      const selectedMedia = galleryMedia[index];
+      if (selectedMedia?.mediaType !== "image") {
         return;
       }
 
+      preloadGalleryImage(selectedMedia.url);
       setSelectedImageIndex(index);
       setIsLightboxOpen(true);
     },
@@ -407,7 +517,9 @@ export function ProductGallery({
                 width={1600}
                 height={1200}
                 unoptimized={shouldBypassImageOptimization(selectedLightboxMedia.url)}
-                sizes="90vw"
+                priority
+                fetchPriority="high"
+                sizes="(min-width: 1024px) 86vw, 94vw"
                 className="mx-auto block max-h-[85vh] max-w-[90vw] object-contain"
               />
             </div>

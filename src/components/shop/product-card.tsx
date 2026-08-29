@@ -21,6 +21,7 @@ import { getProductStoreProfile } from "@/lib/shop-merchandising";
 
 type ProductCardProps = {
   imagePriority?: boolean;
+  navigationPrefetch?: boolean;
   product: ProductModel;
   layout?: "standard" | "store" | "compact";
 };
@@ -30,9 +31,11 @@ const productCardLinkClassName =
 
 function ProductCardLink({
   children,
+  prefetch = false,
   product
 }: {
   children: ReactNode;
+  prefetch?: boolean;
   product: ProductModel;
 }) {
   return (
@@ -41,7 +44,7 @@ function ProductCardLink({
       aria-label={`${product.name} ürün detayını aç`}
       className={productCardLinkClassName}
       data-motion="reveal"
-      prefetch={false}
+      prefetch={prefetch}
     >
       {children}
     </Link>
@@ -299,6 +302,7 @@ function ProductInspectLabel({
 
 export function ProductCard({
   imagePriority = false,
+  navigationPrefetch = false,
   product,
   layout = "standard"
 }: ProductCardProps) {
@@ -322,7 +326,7 @@ export function ProductCard({
     ] as const;
 
     return (
-      <ProductCardLink product={product}>
+      <ProductCardLink product={product} prefetch={navigationPrefetch || imagePriority}>
         <article className="premium-product-card premium-product-card--store surface-card grid h-full gap-4 rounded-lg p-3 transition-transform duration-200 group-hover:-translate-y-1 group-hover:border-primary/30 md:grid-cols-[150px_1fr]">
           <div className="premium-product-card__media relative min-h-36 overflow-hidden rounded-lg bg-surface-container">
             <ProductFixedBadge badge={product.badge} />
@@ -416,7 +420,7 @@ export function ProductCard({
   }
 
   return (
-    <ProductCardLink product={product}>
+    <ProductCardLink product={product} prefetch={navigationPrefetch || imagePriority}>
       <article className={`premium-product-card surface-card flex h-full flex-col rounded-lg p-3 transition-transform duration-200 group-hover:-translate-y-1 group-hover:border-primary/30 ${isCompact ? "premium-product-card--compact" : ""}`}>
         <div className="premium-product-card__media relative mb-4 overflow-hidden rounded-lg bg-surface-container">
           <ProductFixedBadge badge={product.badge} />

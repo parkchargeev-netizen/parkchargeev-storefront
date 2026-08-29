@@ -100,7 +100,7 @@ export function LoginForm() {
         className="w-full rounded-lg bg-slate-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
         disabled={isSubmitting}
       >
-        {isSubmitting ? "Giris yapılıyor..." : "Admin Girişi"}
+        {isSubmitting ? "Giriş yapılıyor..." : "Admin Girişi"}
       </button>
     </form>
   );

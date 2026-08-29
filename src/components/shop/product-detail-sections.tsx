@@ -399,8 +399,8 @@ export function ProductRelatedProducts({
         <h2>{detailContent.relatedHeading}</h2>
       </div>
       <div className="product-detail-related-track mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {relatedProducts.slice(0, detailContent.relatedLimit || 4).map((relatedProduct) => (
-          <ProductCard key={relatedProduct.id} product={relatedProduct} />
+        {relatedProducts.slice(0, detailContent.relatedLimit || 4).map((relatedProduct, index) => (
+          <ProductCard key={relatedProduct.id} navigationPrefetch={index < 2} product={relatedProduct} />
         ))}
       </div>
     </section>
