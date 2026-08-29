@@ -27,7 +27,8 @@ function isProductMediaItem(item: ProductGalleryThumbnail): item is ProductMedia
 
 const galleryStageImageSizes = "(min-width: 1024px) 760px, 92vw";
 const galleryLightboxImageSizes = "(min-width: 1024px) 86vw, 94vw";
-const maxGalleryPreloadItems = 32;
+const maxGalleryPreloadItems = 16;
+const maxIdleGalleryPreloadItems = 2;
 const galleryImagePreloadElements = new Map<string, HTMLImageElement>();
 
 type GalleryPreloadPriority = "auto" | "high" | "low";
@@ -446,9 +447,9 @@ export function ProductGallery({
   }, [galleryMedia, isLightboxOpen, nearbyImageIndexes]);
 
   useEffect(() => {
-    const remainingImageIndexes = imageIndexes.filter(
-      (index) => !nearbyImageIndexes.includes(index)
-    );
+    const remainingImageIndexes = imageIndexes
+      .filter((index) => !nearbyImageIndexes.includes(index))
+      .slice(0, maxIdleGalleryPreloadItems);
 
     if (remainingImageIndexes.length === 0) {
       return;

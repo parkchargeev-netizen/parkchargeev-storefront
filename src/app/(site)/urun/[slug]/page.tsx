@@ -149,6 +149,20 @@ export default async function ProductDetailPage({
     { name: product.name, path: `/urun/${product.slug}` }
   ]);
   const faqJsonLd = getFaqJsonLd(detailContent.faqs);
+  const sectionNavItems = [
+    { href: "#product-description", label: "Açıklama" },
+    { href: "#technical-specs", label: "Teknik Özellikler" },
+    ...(detailContent.smartFeaturesEnabled !== false && smartFeatures.length > 0
+      ? [{ href: "#product-connectivity", label: "Bağlantı" }]
+      : []),
+    { href: "#trust-and-policies", label: "Teslimat" },
+    ...(detailContent.relatedEnabled !== false && relatedProducts.length > 0
+      ? [{ href: "#related-products", label: "Benzer Ürünler" }]
+      : []),
+    ...(detailContent.reviews.isEnabled
+      ? [{ href: "#product-reviews", label: "Yorumlar" }]
+      : [])
+  ];
 
   return (
     <main className="product-detail-commerce-page">
@@ -233,30 +247,55 @@ export default async function ProductDetailPage({
 
           <ProductInfoCards items={infoCardItems} />
         </section>
+        <nav
+          aria-label="Ürün detay bölümleri"
+          className="product-commerce-section-nav"
+        >
+          {sectionNavItems.map((item) => (
+            <a key={item.href} href={item.href}>
+              {item.label}
+            </a>
+          ))}
+        </nav>
       </div>
 
       <div className="product-commerce-content">
-        <ProductHighlightGrid detailContent={detailContent} />
-        <ProductDescriptionBlock
-          product={product}
-          detailContent={detailContent}
-          descriptionHtml={descriptionHtml}
-        />
-        <ProductTechnicalSpecs detailContent={detailContent} groups={technicalGroups} />
-        <ProductSmartFeatures detailContent={detailContent} features={smartFeatures} />
-        <ProductTrustGrid detailContent={detailContent} />
-        <ProductPolicies detailContent={detailContent} />
-        <ProductFaqs detailContent={detailContent} />
-        <ProductRelatedProducts
-          detailContent={detailContent}
-          relatedProducts={relatedProducts}
-        />
-        {detailContent.reviews.isEnabled ? (
-          <ProductReviewsLazy
-            content={detailContent.reviews}
-            productName={product.name}
-            productSlug={product.slug}
+        <div id="product-description" className="product-commerce-anchor-section">
+          <ProductDescriptionBlock
+            product={product}
+            detailContent={detailContent}
+            descriptionHtml={descriptionHtml}
           />
+        </div>
+        <ProductTechnicalSpecs detailContent={detailContent} groups={technicalGroups} />
+        <ProductHighlightGrid detailContent={detailContent} />
+        {detailContent.smartFeaturesEnabled !== false && smartFeatures.length > 0 ? (
+          <div id="product-connectivity" className="product-commerce-anchor-section">
+            <ProductSmartFeatures detailContent={detailContent} features={smartFeatures} />
+          </div>
+        ) : null}
+        <div
+          id="trust-and-policies"
+          className="product-commerce-anchor-section product-commerce-trust-stack"
+        >
+          <ProductTrustGrid detailContent={detailContent} />
+          <ProductPolicies detailContent={detailContent} />
+        </div>
+        <ProductFaqs detailContent={detailContent} />
+        <div id="related-products" className="product-commerce-anchor-section">
+          <ProductRelatedProducts
+            detailContent={detailContent}
+            relatedProducts={relatedProducts}
+          />
+        </div>
+        {detailContent.reviews.isEnabled ? (
+          <div id="product-reviews" className="product-commerce-anchor-section">
+            <ProductReviewsLazy
+              content={detailContent.reviews}
+              productName={product.name}
+              productSlug={product.slug}
+            />
+          </div>
         ) : null}
       </div>
     </main>
