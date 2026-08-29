@@ -259,7 +259,7 @@ export function ProductsTable({ items, footer }: ProductsTableProps) {
                 rel="noreferrer"
                 className="inline-flex rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-white"
               >
-                Sitede gor
+                Sitede gör
               </Link>
             ) : null}
             {row.original.status !== "archived" ? (
@@ -271,7 +271,7 @@ export function ProductsTable({ items, footer }: ProductsTableProps) {
                 }
                 className="inline-flex rounded-full border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-700 transition hover:border-rose-300 hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Arsivle
+                Arşivle
               </button>
             ) : (
               <button
