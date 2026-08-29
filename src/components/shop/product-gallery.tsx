@@ -1,6 +1,7 @@
 "use client";
 
 import Image, { getImageProps } from "next/image";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -601,7 +602,7 @@ export function ProductGallery({
                   className="product-gallery-lightbox-nav absolute left-3 top-1/2 z-20 inline-flex h-9 w-9 min-h-0 min-w-0 -translate-y-1/2 items-center justify-center p-0 rounded-full border border-white/25 bg-white/16 text-xl font-bold text-white shadow-[0_14px_34px_rgba(0,0,0,0.28)] backdrop-blur transition hover:bg-white/26 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white sm:left-5 sm:h-10 sm:w-10"
                   aria-label="Önceki görsel"
                 >
-                  ‹
+                  <ChevronLeft className="h-5 w-5" aria-hidden />
                 </button>
                 <button
                   type="button"
@@ -612,7 +613,7 @@ export function ProductGallery({
                   className="product-gallery-lightbox-nav absolute right-3 top-1/2 z-20 inline-flex h-9 w-9 min-h-0 min-w-0 -translate-y-1/2 items-center justify-center p-0 rounded-full border border-white/25 bg-white/16 text-xl font-bold text-white shadow-[0_14px_34px_rgba(0,0,0,0.28)] backdrop-blur transition hover:bg-white/26 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white sm:right-5 sm:h-10 sm:w-10"
                   aria-label="Sonraki görsel"
                 >
-                  ›
+                  <ChevronRight className="h-5 w-5" aria-hidden />
                 </button>
               </>
             ) : null}
@@ -767,7 +768,7 @@ export function ProductGallery({
                   className="product-gallery-stage-nav product-gallery-stage-nav--prev"
                   aria-label="Önceki ürün görseli"
                 >
-                  ‹
+                  <ChevronLeft className="h-5 w-5" aria-hidden />
                 </button>
                 <button
                   type="button"
@@ -778,7 +779,7 @@ export function ProductGallery({
                   className="product-gallery-stage-nav product-gallery-stage-nav--next"
                   aria-label="Sonraki ürün görseli"
                 >
-                  ›
+                  <ChevronRight className="h-5 w-5" aria-hidden />
                 </button>
               </>
             ) : null}
