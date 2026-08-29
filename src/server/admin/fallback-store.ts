@@ -105,7 +105,7 @@ type FallbackProductRecord = {
   powerKw: string | null;
   chargeType: "ac" | "dc" | null;
   connectorType: string | null;
-  phaseType: "single_phase" | "three_phase" | null;
+  phaseType: "single_phase" | "three_phase" | "single_and_three_phase" | null;
   ipClass: string | null;
   hasWifi: boolean;
   hasRfid: boolean;
@@ -409,7 +409,18 @@ function deriveChargeType(powerLabel: string): "ac" | "dc" {
   return powerLabel.toLowerCase().includes("dc") ? "dc" : "ac";
 }
 
-function derivePhaseType(powerLabel: string): "single_phase" | "three_phase" {
+function derivePhaseType(powerLabel: string): "single_phase" | "three_phase" | "single_and_three_phase" {
+  const normalizedPower = powerLabel
+    .toLocaleLowerCase("tr-TR")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+  const supportsSinglePhase = normalizedPower.includes("mono") || normalizedPower.includes("tek faz");
+  const supportsThreePhase = normalizedPower.includes("tri") || normalizedPower.includes("uc faz");
+
+  if (supportsSinglePhase && supportsThreePhase) {
+    return "single_and_three_phase";
+  }
+
   return powerLabel.includes("7.4") ? "single_phase" : "three_phase";
 }
 

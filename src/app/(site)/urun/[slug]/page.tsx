@@ -135,6 +135,10 @@ export default async function ProductDetailPage({
   const storeProfile = getProductStoreProfile(product);
   const mediaItems = detailContent.galleryItems;
   const productImageUrl = getDisplayProductImageUrl(product.imageUrl);
+  const infoCardItems = detailContent.infoCards.map((item) => ({
+    label: item.label,
+    value: item.value
+  }));
   const descriptionHtml = formatProductDescriptionHtml(
     product.descriptionHtml ?? product.description,
     product.summary
@@ -227,12 +231,7 @@ export default async function ProductDetailPage({
             />
           </aside>
 
-          <ProductInfoCards
-            items={detailContent.infoCards.map((item) => ({
-              label: item.label,
-              value: item.value
-            }))}
-          />
+          <ProductInfoCards items={infoCardItems} />
         </section>
       </div>
 

@@ -270,8 +270,8 @@ export function ProductTechnicalSpecs({
         className="mb-4"
       />
       <div className="product-detail-section-heading">
-        <p>Teknik özellikler</p>
-        <h2>{detailContent.specsHeading}</h2>
+        <p>Ürün teknik bilgileri</p>
+        <h2>{detailContent.specsHeading || "Teknik Özellikler"}</h2>
       </div>
       <div className="product-detail-spec-list">
         {rows.map((spec) => (

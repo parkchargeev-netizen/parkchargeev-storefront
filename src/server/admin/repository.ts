@@ -217,6 +217,23 @@ function getMarketingChargeType(product: ProductModel) {
 }
 
 function getMarketingPhaseType(product: ProductModel) {
+  const normalizedProductText = [
+    product.powerLabel,
+    ...product.specs.map((spec) => `${spec.label} ${spec.value}`)
+  ]
+    .join(" ")
+    .toLocaleLowerCase("tr-TR")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+  const supportsSinglePhase =
+    normalizedProductText.includes("mono") || normalizedProductText.includes("tek faz");
+  const supportsThreePhase =
+    normalizedProductText.includes("tri") || normalizedProductText.includes("uc faz");
+
+  if (supportsSinglePhase && supportsThreePhase) {
+    return "single_and_three_phase";
+  }
+
   return product.powerLabel.includes("11") || product.powerLabel.includes("22")
     ? "three_phase"
     : "single_phase";

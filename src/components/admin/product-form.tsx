@@ -248,6 +248,10 @@ function cleanText(value: unknown) {
 }
 
 function phaseLabel(value: string) {
+  if (value === "single_and_three_phase") {
+    return "monofaz + trifaz";
+  }
+
   if (value === "three_phase") {
     return "trifaz";
   }
@@ -1889,6 +1893,7 @@ export function ProductForm({
             <select className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" {...register("phaseType")}>
               <option value="single_phase">Monofaz</option>
               <option value="three_phase">Trifaz</option>
+              <option value="single_and_three_phase">Monofaz + Trifaz</option>
             </select>
             <ExampleHint>Ev altyapısı ve kurulum uygunluğu metinlerine yansır.</ExampleHint>
           </div>

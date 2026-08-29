@@ -25,7 +25,8 @@ export const productChargeTypeEnum = pgEnum("product_charge_type", ["ac", "dc"])
 
 export const productPhaseEnum = pgEnum("product_phase", [
   "single_phase",
-  "three_phase"
+  "three_phase",
+  "single_and_three_phase"
 ]);
 
 export const customerRoleEnum = pgEnum("customer_role", [
