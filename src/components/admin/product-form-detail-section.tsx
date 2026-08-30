@@ -20,7 +20,6 @@ type ProductFormDetailSectionProps = {
   setValue: UseFormSetValue<ProductFormValues>;
   badgeFields: UseFieldArrayReturn<ProductFormValues, "detailContent.badges", "fieldId">;
   infoCardFields: UseFieldArrayReturn<ProductFormValues, "detailContent.infoCards", "fieldId">;
-  readinessFields: UseFieldArrayReturn<ProductFormValues, "detailContent.purchaseReadiness", "fieldId">;
   trustBlockFields: UseFieldArrayReturn<ProductFormValues, "detailContent.trustBlocks", "fieldId">;
   policyFields: UseFieldArrayReturn<ProductFormValues, "detailContent.policyDetails", "fieldId">;
   faqFields: UseFieldArrayReturn<ProductFormValues, "detailContent.faqs", "fieldId">;
@@ -43,7 +42,6 @@ function ProductFormDetailSectionComponent({
   setValue,
   badgeFields,
   infoCardFields,
-  readinessFields,
   trustBlockFields,
   policyFields,
   faqFields
@@ -185,11 +183,7 @@ function ProductFormDetailSectionComponent({
               }
             />
           </div>
-          <input
-            className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
-            placeholder="Öne çıkan avantajlar başlığı"
-            {...register("detailContent.highlightsHeading")}
-          />
+
           <input
             className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
             placeholder="SSS başlığı"
@@ -231,51 +225,9 @@ function ProductFormDetailSectionComponent({
             placeholder="Bağlantı/kontrol ana başlığı"
             {...register("detailContent.smartFeaturesHeading")}
           />
-          <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">
-              Öne çıkan avantaj maddeleri
-            </label>
-            <textarea
-              rows={4}
-              className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
-              value={detailContent.highlights?.join("\n") ?? ""}
-              onChange={(event) =>
-                setValue("detailContent.highlights", splitLines(event.target.value), {
-                  shouldValidate: true
-                })
-              }
-            />
-          </div>
-          <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">
-              Satın alma güven maddeleri
-            </label>
-            <textarea
-              rows={4}
-              className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
-              value={detailContent.purchaseBenefits?.join("\n") ?? ""}
-              onChange={(event) =>
-                setValue("detailContent.purchaseBenefits", splitLines(event.target.value), {
-                  shouldValidate: true
-                })
-              }
-            />
-          </div>
-          <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">
-              Karar bilgilendirme kutuları
-            </label>
-            <textarea
-              rows={4}
-              className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
-              value={detailContent.decisionChecks?.join("\n") ?? ""}
-              onChange={(event) =>
-                setValue("detailContent.decisionChecks", splitLines(event.target.value), {
-                  shouldValidate: true
-                })
-              }
-            />
-          </div>
+
+
+
         </div>
 
         <div className="mt-8">
@@ -430,84 +382,6 @@ function ProductFormDetailSectionComponent({
                   className="rounded-lg border border-slate-300 px-4 py-3 text-sm md:col-span-2"
                   placeholder="İkon adı (opsiyonel)"
                   {...register(`detailContent.infoCards.${index}.iconName`)}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-8">
-          <div className="mb-4 flex items-center justify-between">
-            <div>
-              <h3 className="text-base font-semibold text-slate-900">
-                Ürün özeti kartları
-              </h3>
-              <p className="mt-1 text-sm text-slate-500">
-                Ürün açıklamasının üstünde görünen Güç, Bağlantı, Kurulum ve Kullanım gibi
-                kısa karar kartlarını buradan yönetin.
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() =>
-                readinessFields.append({
-                  label: "",
-                  value: "",
-                  description: "",
-                  iconName: "",
-                  isActive: true,
-                  sortOrder: readinessFields.fields.length + 1
-                })
-              }
-              className="rounded-full border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700"
-            >
-              Özet kart ekle
-            </button>
-          </div>
-          <div className="space-y-3">
-            {readinessFields.fields.map((field, index) => (
-              <div
-                key={field.fieldId}
-                className="grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4 md:grid-cols-[180px_1fr_120px_auto]"
-              >
-                <input
-                  className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
-                  placeholder="Başlık"
-                  {...register(`detailContent.purchaseReadiness.${index}.label`)}
-                />
-                <input
-                  className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
-                  placeholder="Değer"
-                  {...register(`detailContent.purchaseReadiness.${index}.value`)}
-                />
-                <input
-                  className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
-                  placeholder="Sıra"
-                  type="number"
-                  {...register(`detailContent.purchaseReadiness.${index}.sortOrder`, { valueAsNumber: true })}
-                />
-                <div className="flex items-center gap-3">
-                  <label className="flex items-center gap-2 text-sm text-slate-700">
-                    <input type="checkbox" {...register(`detailContent.purchaseReadiness.${index}.isActive`)} />
-                    Aktif
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => readinessFields.remove(index)}
-                    className="rounded-full border border-red-200 px-3 py-2 text-sm text-red-700"
-                  >
-                    Sil
-                  </button>
-                </div>
-                <input
-                  className="rounded-lg border border-slate-300 px-4 py-3 text-sm md:col-span-2"
-                  placeholder="Kart açıklaması"
-                  {...register(`detailContent.purchaseReadiness.${index}.description`)}
-                />
-                <input
-                  className="rounded-lg border border-slate-300 px-4 py-3 text-sm md:col-span-2"
-                  placeholder="İkon adı (güç, bağlantı, kurulum, kontrol...)"
-                  {...register(`detailContent.purchaseReadiness.${index}.iconName`)}
                 />
               </div>
             ))}

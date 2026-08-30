@@ -18043,3 +18043,113 @@ html[data-device-os="android"] .store-product-slide .premium-product-card__media
   transform: none !important;
   transition: none !important;
 }
+
+/* Product detail v9: remove the old decision grid and polish trust/policy panels. */
+.product-detail-commerce-page .product-detail-trust-panel,
+.product-detail-commerce-page .product-detail-policy-panel {
+  position: relative !important;
+  overflow: hidden !important;
+  border-color: rgba(15, 143, 111, 0.14) !important;
+  background:
+    radial-gradient(circle at 14% 0%, rgba(126, 236, 201, 0.16), transparent 13rem),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 253, 250, 0.96)) !important;
+  box-shadow: 0 18px 42px rgba(6, 51, 38, 0.07) !important;
+}
+
+.product-detail-commerce-page .product-detail-trust-panel::before,
+.product-detail-commerce-page .product-detail-policy-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: linear-gradient(90deg, rgba(15, 143, 111, 0.85), rgba(126, 236, 201, 0.26), transparent);
+  pointer-events: none;
+}
+
+.product-detail-commerce-page .product-detail-trust-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: clamp(0.7rem, 0.9vw, 0.95rem) !important;
+  margin-top: clamp(0.74rem, 1vw, 0.95rem) !important;
+}
+
+.product-detail-commerce-page .product-detail-trust-card,
+.product-detail-commerce-page .product-detail-policy-card {
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 9.2rem !important;
+  border: 1px solid rgba(6, 51, 38, 0.11) !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(252, 255, 253, 0.92)) !important;
+  box-shadow: 0 12px 26px rgba(6, 51, 38, 0.055) !important;
+}
+
+.product-detail-commerce-page .product-detail-trust-card {
+  padding: clamp(0.92rem, 1.05vw, 1.08rem) !important;
+}
+
+.product-detail-commerce-page .product-detail-trust-card > svg {
+  width: 2rem !important;
+  height: 2rem !important;
+  padding: 0.46rem !important;
+  border-radius: 8px !important;
+  background: rgba(15, 143, 111, 0.1) !important;
+  color: var(--color-primary) !important;
+}
+
+.product-detail-commerce-page .product-detail-policy-panel {
+  gap: clamp(0.65rem, 0.85vw, 0.85rem) !important;
+  counter-reset: policy-detail !important;
+}
+
+.product-detail-commerce-page .product-detail-policy-card {
+  position: relative !important;
+  padding: clamp(0.9rem, 1vw, 1.04rem) clamp(0.95rem, 1.1vw, 1.1rem) !important;
+  padding-top: clamp(1.55rem, 1.65vw, 1.75rem) !important;
+}
+
+.product-detail-commerce-page .product-detail-policy-card::before {
+  counter-increment: policy-detail;
+  content: counter(policy-detail, decimal-leading-zero);
+  position: absolute;
+  top: 0.8rem;
+  right: 0.9rem;
+  color: rgba(15, 143, 111, 0.28);
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.product-detail-commerce-page .product-detail-trust-card > h3,
+.product-detail-commerce-page .product-detail-policy-card > h3 {
+  margin-top: 0.62rem !important;
+  font-size: clamp(0.92rem, 0.98vw, 1.02rem) !important;
+  font-weight: 820 !important;
+  line-height: 1.18 !important;
+}
+
+.product-detail-commerce-page .product-detail-trust-card > p,
+.product-detail-commerce-page .product-detail-policy-card > p {
+  margin-top: 0.45rem !important;
+  color: rgba(21, 55, 44, 0.76) !important;
+  font-size: clamp(0.78rem, 0.84vw, 0.88rem) !important;
+  line-height: 1.48 !important;
+  -webkit-line-clamp: 3 !important;
+}
+
+@media (max-width: 1179px) {
+  .product-detail-commerce-page .product-detail-trust-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .product-detail-commerce-page .product-detail-trust-grid,
+  .product-detail-commerce-page .product-detail-policy-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .product-detail-commerce-page .product-detail-trust-card,
+  .product-detail-commerce-page .product-detail-policy-card {
+    min-height: auto !important;
+  }
+}

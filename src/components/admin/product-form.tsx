@@ -736,12 +736,6 @@ export function ProductForm({
     keyName: "fieldId"
   });
 
-  const readinessFields = useFieldArray({
-    control,
-    name: "detailContent.purchaseReadiness",
-    keyName: "fieldId"
-  });
-
   const trustBlockFields = useFieldArray({
     control,
     name: "detailContent.trustBlocks",
@@ -2368,7 +2362,6 @@ export function ProductForm({
         setValue={setValue}
         badgeFields={badgeFields}
         infoCardFields={infoCardFields}
-        readinessFields={readinessFields}
         trustBlockFields={trustBlockFields}
         policyFields={policyFields}
         faqFields={faqFields}

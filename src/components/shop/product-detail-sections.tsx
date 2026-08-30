@@ -1,11 +1,8 @@
 import Link from "next/link";
 import {
-  BatteryCharging,
   Bluetooth,
-  CheckCircle2,
   Cpu,
   Headphones,
-  Home,
   Radio,
   RotateCcw,
   Settings,
@@ -112,84 +109,6 @@ function compactText(text: string, maxLength = 110) {
   return `${compactedText}...`;
 }
 
-function getSummaryIcon(label: string) {
-  const normalizedLabel = label.toLocaleLowerCase("tr-TR");
-
-  if (normalizedLabel.includes("güç") || normalizedLabel.includes("kw")) {
-    return BatteryCharging;
-  }
-
-  if (
-    normalizedLabel.includes("bağlant") ||
-    normalizedLabel.includes("soket") ||
-    normalizedLabel.includes("type")
-  ) {
-    return Zap;
-  }
-
-  if (
-    normalizedLabel.includes("kurulum") ||
-    normalizedLabel.includes("montaj") ||
-    normalizedLabel.includes("keşif")
-  ) {
-    return Home;
-  }
-
-  return CheckCircle2;
-}
-
-export function ProductHighlightGrid({
-  detailContent
-}: Pick<ProductDetailSectionsProps, "detailContent">) {
-  const highlights = detailContent.purchaseReadiness
-    .map((item, index) => ({
-      label: item.label?.trim() ?? "",
-      value: item.value?.trim() ?? "",
-      description: detailContent.decisionChecks[index] ?? "",
-      icon: getSummaryIcon(item.label ?? "")
-    }))
-    .filter((item) => item.label && item.value)
-    .slice(0, 6);
-  const benefitHighlights = detailContent.highlights.filter(Boolean).slice(0, 2);
-
-  if (highlights.length === 0 && benefitHighlights.length === 0) {
-    return null;
-  }
-
-  return (
-    <section className="product-detail-section product-detail-section--compact">
-      {highlights.length > 0 ? (
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          {highlights.map((item) => {
-            const Icon = item.icon;
-
-            return (
-              <article key={item.label} className="product-detail-mini-card">
-                <span className="product-detail-mini-card__icon">
-                  <Icon className="h-5 w-5" aria-hidden />
-                </span>
-                <p>{item.label}</p>
-                <strong>{item.value}</strong>
-                {item.description ? <small>{compactText(item.description, 72)}</small> : null}
-              </article>
-            );
-          })}
-        </div>
-      ) : null}
-      {benefitHighlights.length > 0 ? (
-        <div className="mt-5 grid gap-3 md:grid-cols-2">
-          {benefitHighlights.map((highlight) => (
-            <div key={highlight} className="product-detail-benefit-line">
-              <CheckCircle2 className="h-4 w-4 shrink-0 text-primary" aria-hidden />
-              <span>{highlight}</span>
-            </div>
-          ))}
-        </div>
-      ) : null}
-    </section>
-  );
-}
-
 export function ProductTrustGrid({
   detailContent
 }: Pick<ProductDetailSectionsProps, "detailContent">) {
@@ -202,7 +121,7 @@ export function ProductTrustGrid({
   }
 
   return (
-    <section className="product-detail-section">
+    <section className="product-detail-section product-detail-trust-panel">
       <ProductPlacementBadges
         badges={detailContent.badges}
         placement="detail_trust_section_top"
@@ -212,7 +131,7 @@ export function ProductTrustGrid({
         <p>{detailContent.trustEyebrow}</p>
         <h2>{detailContent.trustHeading}</h2>
       </div>
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="product-detail-trust-grid">
         {trustItems.map((item) => (
           <article key={item.title} className="product-detail-trust-card">
             <TrustBlockIcon iconName={item.iconName} />
@@ -359,9 +278,9 @@ export function ProductPolicies({
   }
 
   return (
-    <section className="product-detail-section product-detail-policy-grid">
+    <section className="product-detail-section product-detail-policy-grid product-detail-policy-panel">
       {detailContent.policyDetails.slice(0, 3).map((detail) => (
-        <article key={detail.title}>
+        <article key={detail.title} className="product-detail-policy-card">
           <h3>{detail.title}</h3>
           <p>{compactText(detail.body, 118)}</p>
         </article>

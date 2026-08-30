@@ -5,7 +5,6 @@ import { notFound } from "next/navigation";
 import {
   ProductDescriptionBlock,
   ProductFaqs,
-  ProductHighlightGrid,
   ProductPolicies,
   ProductRelatedProducts,
   ProductSmartFeatures,
@@ -268,7 +267,6 @@ export default async function ProductDetailPage({
           />
         </div>
         <ProductTechnicalSpecs detailContent={detailContent} groups={technicalGroups} />
-        <ProductHighlightGrid detailContent={detailContent} />
         {detailContent.smartFeaturesEnabled !== false && smartFeatures.length > 0 ? (
           <div id="product-connectivity" className="product-commerce-anchor-section">
             <ProductSmartFeatures detailContent={detailContent} features={smartFeatures} />
