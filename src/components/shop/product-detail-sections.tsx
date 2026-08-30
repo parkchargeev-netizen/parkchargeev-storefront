@@ -101,6 +101,17 @@ function getTechnicalRows(groups: ProductTechnicalSpecGroup[]) {
   );
 }
 
+function compactText(text: string, maxLength = 110) {
+  const normalizedText = text.replace(/\s+/g, " ").trim();
+
+  if (normalizedText.length <= maxLength) {
+    return normalizedText;
+  }
+
+  const compactedText = normalizedText.slice(0, maxLength).replace(/\s+\S*$/, "").trim();
+  return `${compactedText}...`;
+}
+
 function getSummaryIcon(label: string) {
   const normalizedLabel = label.toLocaleLowerCase("tr-TR");
 
@@ -139,7 +150,7 @@ export function ProductHighlightGrid({
     }))
     .filter((item) => item.label && item.value)
     .slice(0, 6);
-  const benefitHighlights = detailContent.highlights.slice(0, 4);
+  const benefitHighlights = detailContent.highlights.filter(Boolean).slice(0, 2);
 
   if (highlights.length === 0 && benefitHighlights.length === 0) {
     return null;
@@ -159,7 +170,7 @@ export function ProductHighlightGrid({
                 </span>
                 <p>{item.label}</p>
                 <strong>{item.value}</strong>
-                {item.description ? <small>{item.description}</small> : null}
+                {item.description ? <small>{compactText(item.description, 72)}</small> : null}
               </article>
             );
           })}
@@ -184,7 +195,7 @@ export function ProductTrustGrid({
 }: Pick<ProductDetailSectionsProps, "detailContent">) {
   const trustItems = detailContent.trustBlocks
     .filter((item) => item.isActive !== false && item.title && item.body)
-    .slice(0, 8);
+    .slice(0, 3);
 
   if (detailContent.trustEnabled === false || trustItems.length === 0) {
     return null;
@@ -206,7 +217,7 @@ export function ProductTrustGrid({
           <article key={item.title} className="product-detail-trust-card">
             <TrustBlockIcon iconName={item.iconName} />
             <h3>{item.title}</h3>
-            <p>{item.body}</p>
+            <p>{compactText(item.body, 96)}</p>
           </article>
         ))}
       </div>
@@ -241,7 +252,7 @@ export function ProductSmartFeatures({
               <SmartFeatureIcon iconName={feature.iconName} />
             </span>
             <h3>{feature.title}</h3>
-            <p>{feature.description}</p>
+            <p>{compactText(feature.description, 72)}</p>
           </article>
         ))}
       </div>
@@ -320,7 +331,7 @@ export function ProductDescriptionBlock({
         <aside className="product-detail-fit-card">
           <h3>{detailContent.useCasesHeading}</h3>
           <div className="mt-4 grid gap-2">
-            {detailContent.useCases.slice(0, 8).map((useCase) => (
+            {detailContent.useCases.slice(0, 4).map((useCase) => (
               <span key={useCase}>{useCase}</span>
             ))}
           </div>
@@ -349,10 +360,10 @@ export function ProductPolicies({
 
   return (
     <section className="product-detail-section product-detail-policy-grid">
-      {detailContent.policyDetails.map((detail) => (
+      {detailContent.policyDetails.slice(0, 3).map((detail) => (
         <article key={detail.title}>
           <h3>{detail.title}</h3>
-          <p>{detail.body}</p>
+          <p>{compactText(detail.body, 118)}</p>
         </article>
       ))}
     </section>

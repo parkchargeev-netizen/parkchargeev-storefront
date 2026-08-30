@@ -17800,3 +17800,246 @@ html[data-device-os="android"] .store-product-slide .premium-product-card__media
     line-height: 1.22 !important;
   }
 }
+
+/* Product detail v6: denser commerce layout and quieter long-copy sections. */
+@media (min-width: 980px) {
+  .product-detail-commerce-page .product-commerce-hero {
+    align-items: stretch !important;
+    grid-template-columns: minmax(0, 1.06fr) minmax(360px, 0.94fr) !important;
+    grid-template-areas:
+      "media buybox"
+      "info info" !important;
+    gap: clamp(0.72rem, 1.15vw, 0.95rem) !important;
+  }
+
+  .product-detail-commerce-page .product-commerce-media {
+    display: flex !important;
+    min-height: 100% !important;
+  }
+
+  .product-detail-commerce-page .product-commerce-media .product-gallery-premium {
+    flex: 1 1 auto !important;
+    height: 100% !important;
+  }
+
+  .product-detail-commerce-page .product-gallery-stage-card {
+    display: flex !important;
+    min-height: 100% !important;
+  }
+
+  .product-detail-commerce-page .product-gallery-stage,
+  .product-detail-commerce-page .product-gallery-stage--contain {
+    flex: 1 1 auto !important;
+    min-height: clamp(18.75rem, 32vw, 28rem) !important;
+    height: auto !important;
+  }
+
+  .product-detail-commerce-page .product-commerce-info-grid {
+    grid-area: info !important;
+    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+    gap: clamp(0.58rem, 0.8vw, 0.72rem) !important;
+    margin-top: 0 !important;
+  }
+}
+
+.product-detail-commerce-page .product-commerce-info-card {
+  min-height: clamp(4.95rem, 5.4vw, 5.75rem) !important;
+  padding: clamp(0.78rem, 1vw, 0.96rem) !important;
+}
+
+.product-detail-commerce-page .product-commerce-info-card span {
+  font-size: clamp(0.62rem, 0.66vw, 0.72rem) !important;
+}
+
+.product-detail-commerce-page .product-commerce-info-card strong {
+  font-size: clamp(0.86rem, 0.92vw, 1rem) !important;
+  font-weight: 760 !important;
+  line-height: 1.22 !important;
+}
+
+.product-detail-commerce-page .product-commerce-section-nav {
+  margin-top: clamp(0.52rem, 0.75vw, 0.68rem) !important;
+}
+
+.product-detail-commerce-page .product-commerce-content {
+  margin-top: clamp(0.24rem, 0.55vw, 0.44rem) !important;
+  gap: clamp(0.72rem, 1vw, 0.9rem) !important;
+}
+
+.product-detail-commerce-page .product-detail-section--compact,
+.product-detail-commerce-page .product-commerce-trust-stack .product-detail-section {
+  padding: clamp(0.82rem, 1.12vw, 1.05rem) !important;
+}
+
+.product-detail-commerce-page .product-detail-section-heading {
+  max-width: 620px !important;
+}
+
+.product-detail-commerce-page .product-detail-section-heading > h2 {
+  font-size: clamp(1.12rem, 1.45vw, 1.5rem) !important;
+  line-height: 1.14 !important;
+}
+
+.product-detail-commerce-page .product-detail-mini-card,
+.product-detail-commerce-page .product-detail-trust-card,
+.product-detail-commerce-page .product-detail-smart-card,
+.product-detail-commerce-page .product-detail-policy-grid > article {
+  min-height: auto !important;
+  padding: 0.86rem !important;
+}
+
+.product-detail-commerce-page .product-detail-mini-card__icon,
+.product-detail-commerce-page .product-detail-smart-card > span {
+  width: 2.1rem !important;
+  height: 2.1rem !important;
+}
+
+.product-detail-commerce-page .product-detail-mini-card__icon svg,
+.product-detail-commerce-page .product-detail-smart-card svg,
+.product-detail-commerce-page .product-detail-trust-card > svg {
+  width: 1rem !important;
+  height: 1rem !important;
+}
+
+.product-detail-commerce-page .product-detail-mini-card > p {
+  margin-top: 0.56rem !important;
+  font-size: 0.64rem !important;
+}
+
+.product-detail-commerce-page .product-detail-mini-card > strong,
+.product-detail-commerce-page .product-detail-trust-card > h3,
+.product-detail-commerce-page .product-detail-smart-card > h3,
+.product-detail-commerce-page .product-detail-policy-grid h3 {
+  margin-top: 0.42rem !important;
+  font-size: 0.9rem !important;
+  line-height: 1.22 !important;
+}
+
+.product-detail-commerce-page .product-detail-mini-card > small,
+.product-detail-commerce-page .product-detail-trust-card > p,
+.product-detail-commerce-page .product-detail-smart-card > p,
+.product-detail-commerce-page .product-detail-policy-grid p {
+  margin-top: 0.42rem !important;
+  font-size: 0.78rem !important;
+  line-height: 1.45 !important;
+}
+
+.product-detail-commerce-page .product-detail-trust-card > p,
+.product-detail-commerce-page .product-detail-smart-card > p,
+.product-detail-commerce-page .product-detail-policy-grid p {
+  display: -webkit-box !important;
+  overflow: hidden !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 3 !important;
+}
+
+.product-detail-commerce-page .product-detail-benefit-line {
+  min-height: 2.55rem !important;
+  padding: 0.58rem 0.72rem !important;
+  font-size: 0.82rem !important;
+  line-height: 1.32 !important;
+}
+
+.product-detail-commerce-page .product-detail-policy-grid {
+  gap: 0.75rem !important;
+}
+
+.product-detail-commerce-page .product-detail-description-grid .managed-richtext {
+  font-size: 0.92rem !important;
+  line-height: 1.68 !important;
+}
+
+.product-detail-commerce-page .product-detail-fit-card span {
+  padding: 0.58rem 0.72rem !important;
+  font-size: 0.82rem !important;
+  line-height: 1.38 !important;
+}
+
+@media (max-width: 979px) {
+  .product-detail-commerce-page .product-commerce-info-grid {
+    gap: 0.65rem !important;
+  }
+
+  .product-detail-commerce-page .product-commerce-content {
+    margin-top: 0.35rem !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .product-detail-commerce-page .product-commerce-info-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .product-detail-commerce-page .product-detail-trust-card > p,
+  .product-detail-commerce-page .product-detail-smart-card > p,
+  .product-detail-commerce-page .product-detail-policy-grid p {
+    -webkit-line-clamp: 2 !important;
+  }
+}
+/* Product detail v7: remove remaining empty bands and make lower content scan faster. */
+.product-detail-commerce-page .product-commerce-section-nav {
+  margin-top: clamp(0.42rem, 0.7vw, 0.62rem) !important;
+}
+
+.product-detail-commerce-page .product-commerce-content {
+  margin-top: 0 !important;
+  gap: clamp(0.58rem, 0.82vw, 0.78rem) !important;
+}
+
+.product-detail-commerce-page .product-commerce-anchor-section {
+  scroll-margin-top: 6.6rem !important;
+}
+
+.product-detail-commerce-page .product-detail-section-heading > p {
+  margin-bottom: 0.34rem !important;
+}
+
+.product-detail-commerce-page .product-detail-section-heading > h2 {
+  max-width: 620px !important;
+}
+
+.product-detail-commerce-page .product-detail-mini-card,
+.product-detail-commerce-page .product-detail-trust-card,
+.product-detail-commerce-page .product-detail-smart-card,
+.product-detail-commerce-page .product-detail-policy-grid > article {
+  box-shadow: 0 12px 28px rgba(6, 51, 38, 0.055) !important;
+}
+
+.product-detail-commerce-page .product-detail-benefit-line span {
+  display: -webkit-box !important;
+  overflow: hidden !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 2 !important;
+}
+
+.product-detail-commerce-page .product-commerce-trust-stack {
+  gap: clamp(0.58rem, 0.85vw, 0.78rem) !important;
+}
+
+@media (max-width: 1179px) {
+  .product-detail-commerce-page .product-commerce-trust-stack {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (min-width: 1180px) {
+  .product-detail-commerce-page .product-commerce-trust-stack {
+    grid-template-columns: minmax(0, 1.04fr) minmax(300px, 0.58fr) !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .product-detail-commerce-page .product-commerce-section-nav {
+    margin-top: 0.42rem !important;
+  }
+
+  .product-detail-commerce-page .product-commerce-content {
+    margin-top: 0 !important;
+  }
+}
+/* Product detail v8: keep tabbed content in normal document flow on mobile/slow devices. */
+.product-detail-commerce-page .product-commerce-content[data-motion] {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
