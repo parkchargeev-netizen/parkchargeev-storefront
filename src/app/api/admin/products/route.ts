@@ -7,6 +7,7 @@ import {
   getProductLookupOptions,
   listAdminProducts,
   updateAdminProductStatuses,
+  updateAdminProductSortOrders,
   upsertAdminProduct
 } from "@/server/admin/repository";
 import { isValidationError, validationErrorResponse } from "@/server/admin/http";
@@ -17,6 +18,7 @@ import {
 import {
   adminListQuerySchema,
   adminProductBulkActionSchema,
+  adminProductReorderSchema,
   adminProductSchema
 } from "@/server/admin/validators";
 import { getRequestMeta, requireAdminRole } from "@/server/auth/guards";
@@ -128,13 +130,26 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });
   }
 
-  const payload = adminProductBulkActionSchema.parse(await request.json());
+  const body = await request.json();
+  const requestMeta = await getRequestMeta();
+
+  if (body?.action === "reorder") {
+    const payload = adminProductReorderSchema.parse(body);
+    const result = await updateAdminProductSortOrders(
+      payload.items,
+      authenticatedAdmin.session,
+      requestMeta
+    );
+
+    return NextResponse.json({ ok: true, ...result });
+  }
+
+  const payload = adminProductBulkActionSchema.parse(body);
   const statusByAction = {
     archive: "archived",
     activate: "active",
     draft: "draft"
   } as const;
-  const requestMeta = await getRequestMeta();
   const result = await updateAdminProductStatuses(
     payload.ids,
     statusByAction[payload.action],

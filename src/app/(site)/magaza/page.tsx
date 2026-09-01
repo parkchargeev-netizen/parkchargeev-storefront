@@ -490,7 +490,7 @@ export default async function StorePage({ searchParams }: StorePageProps) {
           )}
 
           {totalPages > 1 ? (
-            <nav className="store-pagination" aria-label="Mağaza sayfaları">
+            <nav className="store-pagination store-pagination--luxury" aria-label="Mağaza sayfaları">
               <Link
                 href={buildStoreHref({
                   category: selectedCategory || undefined,
@@ -502,11 +502,14 @@ export default async function StorePage({ searchParams }: StorePageProps) {
                   page: currentPage - 1
                 })}
                 aria-disabled={currentPage === 1}
-                className={currentPage === 1 ? "pointer-events-none opacity-40" : ""}
+                className={`store-pagination__button ${currentPage === 1 ? "pointer-events-none opacity-45" : ""}`}
               >
-                Önceki
+                Önceki sayfa
               </Link>
-              <span>{currentPage} / {totalPages}</span>
+              <span className="store-pagination__status" aria-current="page">
+                <b>{currentPage}</b>
+                <small>/ {totalPages}</small>
+              </span>
               <Link
                 href={buildStoreHref({
                   category: selectedCategory || undefined,
@@ -518,9 +521,9 @@ export default async function StorePage({ searchParams }: StorePageProps) {
                   page: currentPage + 1
                 })}
                 aria-disabled={currentPage === totalPages}
-                className={currentPage === totalPages ? "pointer-events-none opacity-40" : ""}
+                className={`store-pagination__button store-pagination__button--next ${currentPage === totalPages ? "pointer-events-none opacity-45" : ""}`}
               >
-                Sonraki
+                Sonraki sayfa
               </Link>
             </nav>
           ) : null}

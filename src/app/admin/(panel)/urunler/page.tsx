@@ -89,11 +89,7 @@ export default async function AdminProductsPage({ searchParams }: ProductListPag
           </>
         }
       />
-
-      <ProductImportPanel
-        exportHref={buildHref("/api/admin/products", query, { format: "csv", limit: "500" })}
-        history={importHistory}
-      />
+      <ProductImportPanel history={importHistory} />
 
       <AdminFilterBar>
         <form className="grid gap-4 lg:grid-cols-4 xl:grid-cols-[minmax(0,1.4fr)_160px_160px_160px_160px_160px_auto]">

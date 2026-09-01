@@ -138,6 +138,19 @@ function productAdminSortOrderSql() {
   return sql<number>`coalesce(nullif(${products.schemaJsonLd} -> ${productDetailContentSchemaKey} ->> 'adminSortOrder', '')::integer, 0)`;
 }
 
+function withProductAdminSortOrder(schemaJsonLd: unknown, sortOrder: number) {
+  const baseSchema =
+    schemaJsonLd && typeof schemaJsonLd === "object" && !Array.isArray(schemaJsonLd)
+      ? (schemaJsonLd as Record<string, unknown>)
+      : {};
+  const detailContent = getProductDetailContentFromSchemaJsonLd(baseSchema) ?? {};
+
+  return withProductDetailContentSchemaJsonLd(baseSchema, {
+    ...detailContent,
+    adminSortOrder: sortOrder
+  });
+}
+
 function revalidateProductSurfaces(slug: string) {
   revalidatePublicCatalog({ slugs: [slug] });
 }
@@ -1680,6 +1693,75 @@ export async function listAdminProducts(input: ListQueryInput) {
   };
 }
 
+export async function updateAdminProductSortOrders(
+  items: Array<{ id: string; sortOrder: number }>,
+  actor: AdminSessionPayload | null,
+  requestMeta?: {
+    ipAddress?: string | null;
+    userAgent?: string | null;
+  }
+) {
+  const normalizedById = new Map<string, number>();
+
+  for (const item of items) {
+    normalizedById.set(item.id, Math.max(0, Math.min(9999, Math.trunc(item.sortOrder))));
+  }
+
+  if (normalizedById.size === 0) {
+    return { updatedCount: 0 };
+  }
+
+  if (!hasDatabaseConfig()) {
+    return { updatedCount: normalizedById.size };
+  }
+
+  const db = getDb();
+  const beforeRows = await db
+    .select({ id: products.id, name: products.name, slug: products.slug, schemaJsonLd: products.schemaJsonLd })
+    .from(products)
+    .where(inArray(products.id, [...normalizedById.keys()]));
+  const changedRows = beforeRows.flatMap((product) => {
+    const nextSortOrder = normalizedById.get(product.id);
+
+    if (nextSortOrder === undefined || getProductAdminSortOrder(product.schemaJsonLd) === nextSortOrder) {
+      return [];
+    }
+
+    return [{ product, nextSortOrder }];
+  });
+
+  if (changedRows.length === 0) {
+    return { updatedCount: 0 };
+  }
+
+  await db.transaction(async (tx) => {
+    for (const { product, nextSortOrder } of changedRows) {
+      const schemaJsonLd = withProductAdminSortOrder(product.schemaJsonLd, nextSortOrder);
+
+      await tx
+        .update(products)
+        .set({ schemaJsonLd, updatedAt: new Date() })
+        .where(eq(products.id, product.id));
+
+      await recordAuditLog({
+        db: tx,
+        actor,
+        entityType: "product",
+        entityId: product.id,
+        action: "sort_update",
+        summary: `${product.name} ürün sırası ${nextSortOrder} olarak güncellendi.`,
+        beforePayload: product,
+        afterPayload: { ...product, schemaJsonLd, sortOrder: nextSortOrder },
+        ipAddress: requestMeta?.ipAddress,
+        userAgent: requestMeta?.userAgent
+      });
+    }
+  });
+
+  revalidatePublicCatalog({ revalidateAllProductPages: true });
+
+  return { updatedCount: changedRows.length };
+}
 export async function updateAdminProductStatuses(
   ids: string[],
   status: typeof products.$inferSelect.status,

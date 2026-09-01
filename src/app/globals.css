@@ -18153,3 +18153,95 @@ html[data-device-os="android"] .store-product-slide .premium-product-card__media
     min-height: auto !important;
   }
 }
+
+/* Store pagination v2: premium, compact and mobile-safe. */
+.store-pagination--luxury {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.72rem;
+  margin-top: clamp(1.5rem, 4vw, 2.45rem);
+  padding: 0.62rem;
+  border: 1px solid rgba(6, 51, 38, 0.12);
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(230, 255, 247, 0.88));
+  box-shadow: 0 20px 54px rgba(6, 51, 38, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(18px);
+}
+
+.store-pagination__button {
+  position: relative;
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(6, 51, 38, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.88);
+  color: var(--color-primary);
+  font-size: 0.88rem;
+  font-weight: 850;
+  line-height: 1;
+  padding: 0.82rem 1.15rem;
+  text-decoration: none;
+  transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+}
+
+.store-pagination__button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(15, 143, 111, 0.32);
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 14px 30px rgba(6, 51, 38, 0.12);
+}
+
+.store-pagination__button--next {
+  background: linear-gradient(135deg, var(--color-primary), #12896f);
+  border-color: rgba(15, 143, 111, 0.44);
+  color: white;
+  box-shadow: 0 16px 36px rgba(6, 51, 38, 0.18);
+}
+
+.store-pagination__status {
+  display: inline-flex;
+  min-height: 2.75rem;
+  min-width: 5.2rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  border: 1px solid rgba(6, 51, 38, 0.1);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  color: rgba(6, 51, 38, 0.76);
+  padding: 0.7rem 1rem;
+}
+
+.store-pagination__status b {
+  color: var(--color-primary);
+  font-size: 1.02rem;
+  font-weight: 900;
+}
+
+.store-pagination__status small {
+  font-size: 0.8rem;
+  font-weight: 760;
+}
+
+@media (max-width: 560px) {
+  .store-pagination--luxury {
+    width: 100%;
+    gap: 0.45rem;
+    padding: 0.5rem;
+  }
+
+  .store-pagination__button {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0.78rem 0.62rem;
+    font-size: 0.8rem;
+  }
+
+  .store-pagination__status {
+    min-width: 4.2rem;
+    padding-inline: 0.72rem;
+  }
+}

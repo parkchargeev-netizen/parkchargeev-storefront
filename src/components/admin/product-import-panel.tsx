@@ -10,10 +10,8 @@ import type {
   ProductImportPreviewResponse,
   ProductImportPreviewRow
 } from "@/lib/admin-product-import-contract";
-import { productImportFieldLabels, productImportFieldValues } from "@/lib/admin-product-import-contract";
 
 type ProductImportPanelProps = {
-  exportHref: string;
   history: ProductImportHistoryItem[];
 };
 
@@ -22,6 +20,8 @@ type ApiErrorPayload = {
   message?: string;
   details?: string[];
 };
+
+const priceUpdateFields: ProductImportField[] = ["price"];
 
 const statusLabels: Record<ProductImportPreviewRow["status"], string> = {
   ready: "Hazır",
@@ -41,10 +41,10 @@ const statusClasses: Record<ProductImportPreviewRow["status"], string> = {
 
 const matchedByLabels: Record<NonNullable<ProductImportPreviewRow["matchedBy"]>, string> = {
   product_id: "Product ID",
-  sku: "Urun kodu / SKU",
+  sku: "Ürün kodu / SKU",
   slug: "Slug",
-  name: "Tam urun adi",
-  hims_code: "Hims urun kodu"
+  name: "Tam ürün adı",
+  hims_code: "Hims ürün kodu"
 };
 
 const sourceFormatLabels: Record<ProductImportPreviewResponse["sourceFormat"], string> = {
@@ -57,14 +57,10 @@ function formatKurus(value: number | null) {
     return "-";
   }
 
-  if (value === 0) {
-    return "Temizle";
-  }
-
   return new Intl.NumberFormat("tr-TR", {
     style: "currency",
     currency: "TRY",
-    maximumFractionDigits: 2
+    maximumFractionDigits: 0
   }).format(value / 100);
 }
 
@@ -84,13 +80,8 @@ function downloadCsv(filename: string, rows: ProductImportPreviewRow[]) {
     "slug",
     "name",
     "messages",
-    "changedFields",
     "oldPrice",
-    "newPrice",
-    "oldSalePrice",
-    "newSalePrice",
-    "oldStock",
-    "newStock"
+    "newPrice"
   ];
   const csv = [
     columns.map(escapeCsvValue).join(","),
@@ -105,13 +96,8 @@ function downloadCsv(filename: string, rows: ProductImportPreviewRow[]) {
         row.slug,
         row.name,
         row.messages.join(" | "),
-        row.changedFields.join(" | "),
         row.oldPriceKurus,
-        row.newPriceKurus,
-        row.oldSalePriceKurus,
-        row.newSalePriceKurus,
-        row.oldStock,
-        row.newStock
+        row.newPriceKurus
       ]
         .map(escapeCsvValue)
         .join(",")
@@ -127,28 +113,17 @@ function downloadCsv(filename: string, rows: ProductImportPreviewRow[]) {
 }
 
 function getRowChangeSummary(row: ProductImportPreviewRow) {
-  const changes: string[] = [];
-
-  if (row.changedFields.includes("price")) {
-    changes.push(`Fiyat: ${formatKurus(row.oldPriceKurus)} -> ${formatKurus(row.newPriceKurus)}`);
+  if (!row.changedFields.includes("price")) {
+    return "Değişiklik yok";
   }
 
-  if (row.changedFields.includes("sale_price")) {
-    changes.push(`İndirim: ${formatKurus(row.oldSalePriceKurus)} -> ${formatKurus(row.newSalePriceKurus)}`);
-  }
-
-  if (row.changedFields.includes("stock")) {
-    changes.push(`Stok: ${row.oldStock ?? "-"} -> ${row.newStock ?? "-"}`);
-  }
-
-  return changes.length > 0 ? changes.join("; ") : "Değişiklik yok";
+  return `Fiyat: ${formatKurus(row.oldPriceKurus)} -> ${formatKurus(row.newPriceKurus)}`;
 }
 
-export function ProductImportPanel({ exportHref, history }: ProductImportPanelProps) {
+export function ProductImportPanel({ history }: ProductImportPanelProps) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [file, setFile] = useState<File | null>(null);
-  const [selectedFields, setSelectedFields] = useState<ProductImportField[]>(["price"]);
   const [preview, setPreview] = useState<ProductImportPreviewResponse | null>(null);
   const [result, setResult] = useState<ProductImportConfirmResponse | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -160,12 +135,6 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
   );
   const previewRows = preview?.rows.slice(0, 80) ?? [];
 
-  const toggleField = (field: ProductImportField, checked: boolean) => {
-    setSelectedFields((current) =>
-      checked ? Array.from(new Set([...current, field])) : current.filter((item) => item !== field)
-    );
-  };
-
   const resetPreview = () => {
     setPreview(null);
     setResult(null);
@@ -173,7 +142,7 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
   };
 
   const previewImport = async () => {
-    if (!file || selectedFields.length === 0 || isPreviewing) {
+    if (!file || isPreviewing) {
       return;
     }
 
@@ -185,7 +154,7 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
       const formData = new FormData();
       formData.append("file", file);
 
-      for (const field of selectedFields) {
+      for (const field of priceUpdateFields) {
         formData.append("fields", field);
       }
 
@@ -196,13 +165,13 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
       const payload = (await response.json().catch(() => null)) as ProductImportPreviewResponse | ApiErrorPayload | null;
 
       if (!response.ok || !payload || payload.ok !== true) {
-        throw new Error((payload as ApiErrorPayload | null)?.message ?? "İçe aktarma önizlemesi oluşturulamadı.");
+        throw new Error((payload as ApiErrorPayload | null)?.message ?? "Fiyat önizlemesi oluşturulamadı.");
       }
 
       setPreview(payload);
     } catch (error) {
       setPreview(null);
-      setMessage(error instanceof Error ? error.message : "İçe aktarma önizlemesi oluşturulamadı.");
+      setMessage(error instanceof Error ? error.message : "Fiyat önizlemesi oluşturulamadı.");
     } finally {
       setIsPreviewing(false);
     }
@@ -214,7 +183,7 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
     }
 
     const confirmation = window.confirm(
-      `${preview.summary.readyRows} satır ürün verisini güncellemek üzeresiniz. Devam edilsin mi?`
+      `${preview.summary.readyRows} satırda ana fiyat güncellenecek. Devam edilsin mi?`
     );
 
     if (!confirmation) {
@@ -232,20 +201,20 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
         },
         body: JSON.stringify({
           fileName: preview.fileName,
-          selectedFields: preview.summary.selectedFields,
+          selectedFields: priceUpdateFields,
           rows: preview.rows
         })
       });
       const payload = (await response.json().catch(() => null)) as ProductImportConfirmResponse | ApiErrorPayload | null;
 
       if (!response.ok || !payload || payload.ok !== true) {
-        throw new Error((payload as ApiErrorPayload | null)?.message ?? "İçe aktarma uygulanamadı.");
+        throw new Error((payload as ApiErrorPayload | null)?.message ?? "Fiyat güncellemesi uygulanamadı.");
       }
 
       setResult(payload);
       router.refresh();
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "İçe aktarma uygulanamadı.");
+      setMessage(error instanceof Error ? error.message : "Fiyat güncellemesi uygulanamadı.");
     } finally {
       setIsConfirming(false);
     }
@@ -255,31 +224,23 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
     <section id="product-import" className="scroll-mt-28 rounded-lg border border-emerald-100 bg-white/90 p-5 shadow-[0_24px_70px_rgba(15,23,42,0.08)] lg:p-6">
       <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
         <div className="max-w-3xl space-y-2">
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-700">CSV / XLSX içe aktar</p>
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-700">Excel fiyat güncelle</p>
           <h2 className="text-xl font-bold tracking-normal text-slate-950 lg:text-2xl">
-            Toplu ürün güncelleme
+            Toplu fiyat güncelleme
           </h2>
           <p className="text-sm leading-6 text-slate-600">
-            CSV veya XLSX dosyanizi yukleyin; sistem once product_id, urun kodu/SKU, slug veya tam urun adi ile eslestirir, degisiklikleri onizletir ve siz onay vermeden veritabanina yazmaz. Hims 2026 fiyat listesinde e-ticaret sitesi fiyati ana fiyat olarak alinir.
+            CSV veya XLSX dosyanızı yükleyin; sistem product_id, ürün kodu/SKU, slug veya tam ürün adı ile eşleştirir. Hims fiyat listesinde e-ticaret sitesi fiyatı ana fiyat olarak okunur. Onay vermeden veritabanına yazılmaz.
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <a
-            href={exportHref}
-            className="inline-flex rounded-full border border-slate-300 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 transition hover:border-emerald-300 hover:text-emerald-800"
-          >
-            Dışarı aktar CSV
-          </a>
-          <button
-            type="button"
-            onClick={() => {
-              window.location.href = "/api/admin/products/import";
-            }}
-            className="inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm font-bold text-emerald-800 transition hover:bg-emerald-100"
-          >
-            Örnek şablon indir
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={() => {
+            window.location.href = "/api/admin/products/import";
+          }}
+          className="inline-flex w-fit rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm font-bold text-emerald-800 transition hover:bg-emerald-100"
+        >
+          Örnek fiyat şablonu indir
+        </button>
       </div>
 
       <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(260px,0.5fr)]">
@@ -300,7 +261,7 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
             </label>
             <button
               type="button"
-              disabled={!file || selectedFields.length === 0 || isPreviewing}
+              disabled={!file || isPreviewing}
               onClick={previewImport}
               className="rounded-lg bg-slate-950 px-5 py-3 text-sm font-bold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
             >
@@ -308,48 +269,38 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
             </button>
           </div>
 
-          <div className="mt-4 flex flex-wrap gap-2">
-            {productImportFieldValues.map((field) => (
-              <label
-                key={field}
-                className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-700"
-              >
-                <input
-                  type="checkbox"
-                  checked={selectedFields.includes(field)}
-                  onChange={(event) => toggleField(field, event.currentTarget.checked)}
-                  className="h-4 w-4 rounded border-slate-300 text-emerald-700"
-                />
-                {productImportFieldLabels[field]}
-              </label>
-            ))}
+          <div className="mt-4 rounded-lg border border-emerald-200 bg-white px-4 py-3">
+            <p className="text-xs font-bold uppercase tracking-normal text-emerald-700">Güncellenecek alan</p>
+            <p className="mt-1 text-sm font-semibold text-slate-800">
+              Sadece ana fiyat güncellenir. İndirimli fiyat ve stok bu import akışıyla değiştirilmez.
+            </p>
           </div>
 
           <div className="mt-4 grid gap-3 md:grid-cols-2">
             <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900">
-              Esleme sirasi: <strong>product_id</strong>, yoksa <strong>urun kodu/SKU</strong>, yoksa <strong>slug</strong>, yoksa <strong>tam urun adi</strong>. Ayni ad birden fazla urune denk gelirse satir guvenlik icin yazilmaz.
+              Eşleşme sırası: <strong>product_id</strong>, yoksa <strong>ürün kodu/SKU</strong>, yoksa <strong>slug</strong>, yoksa <strong>tam ürün adı</strong>. Aynı ad birden fazla ürüne denk gelirse satır yazılmaz.
             </div>
             <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm leading-6 text-emerald-900">
-              Hims fiyat listesi otomatik algilanir; <strong>e-ticaret sitesi fiyati</strong> ana fiyat olarak okunur. XY renk/uzunluk kodlari varsa satir ilgili guvenli varyantlara onizlemede ayrilir.
+              Hims fiyat listesi otomatik algılanır; <strong>e-ticaret sitesi fiyatı</strong> ana fiyat olarak okunur. XY renk/uzunluk kodları güvenli varyantlara önizlemede ayrılır.
             </div>
           </div>
         </div>
 
         <div className="rounded-lg border border-slate-200 bg-white p-4">
-          <h3 className="text-sm font-bold text-slate-950">Son içe aktarmalar</h3>
+          <h3 className="text-sm font-bold text-slate-950">Son fiyat güncellemeleri</h3>
           <div className="mt-3 space-y-3">
             {history.length > 0 ? (
               history.map((item) => (
                 <div key={item.id} className="rounded-lg border border-slate-100 bg-slate-50 px-3 py-2">
                   <p className="truncate text-xs font-bold text-slate-900">{item.fileName ?? "Dosya"}</p>
                   <p className="mt-1 text-xs text-slate-500">
-                    {item.updatedRows} güncel, {item.skippedRows} atlandı · {new Date(item.createdAt).toLocaleString("tr-TR")}
+                    {item.updatedRows} güncel, {item.skippedRows} atlandı - {new Date(item.createdAt).toLocaleString("tr-TR")}
                   </p>
                 </div>
               ))
             ) : (
               <p className="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-3 py-4 text-sm text-slate-500">
-                Henüz içe aktarma geçmişi yok.
+                Henüz fiyat güncelleme geçmişi yok.
               </p>
             )}
           </div>
@@ -365,7 +316,7 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
       {preview ? (
         <div className="mt-5 space-y-4">
           <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-900">
-            Algilanan dosya tipi: {sourceFormatLabels[preview.sourceFormat]}. Onizleme onaylanmadan veritabanina hicbir degisiklik yazilmaz.
+            Algılanan dosya tipi: {sourceFormatLabels[preview.sourceFormat]}. Önizleme onaylanmadan veritabanına hiçbir fiyat yazılmaz.
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
@@ -392,7 +343,7 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
               {problematicRows.length > 0 ? (
                 <button
                   type="button"
-                  onClick={() => downloadCsv("product-import-errors.csv", problematicRows)}
+                  onClick={() => downloadCsv("product-price-import-errors.csv", problematicRows)}
                   className="rounded-full border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-bold text-rose-700"
                 >
                   Hata raporu indir
@@ -404,7 +355,7 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
                 onClick={confirmImport}
                 className="rounded-full bg-emerald-700 px-4 py-2 text-sm font-bold text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {isConfirming ? "Uygulanıyor..." : "Onayla ve uygula"}
+                {isConfirming ? "Uygulanıyor..." : "Fiyatları güncelle"}
               </button>
             </div>
           </div>
@@ -418,7 +369,7 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
                     <th className="px-4 py-3">Durum</th>
                     <th className="px-4 py-3">Ürün</th>
                     <th className="px-4 py-3">Eşleşme</th>
-                    <th className="px-4 py-3">Değişiklik</th>
+                    <th className="px-4 py-3">Fiyat değişikliği</th>
                     <th className="px-4 py-3">Mesaj</th>
                   </tr>
                 </thead>
@@ -436,7 +387,7 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
                         <p className="mt-1 text-xs text-slate-500">{row.sku ?? row.slug ?? row.productId ?? "-"}</p>
                       </td>
                       <td className="px-4 py-3 text-slate-600">{row.matchedBy ? matchedByLabels[row.matchedBy] : "-"}</td>
-                      <td className="min-w-[260px] px-4 py-3 text-slate-700">{getRowChangeSummary(row)}</td>
+                      <td className="min-w-[240px] px-4 py-3 text-slate-700">{getRowChangeSummary(row)}</td>
                       <td className="min-w-[260px] px-4 py-3 text-slate-600">{row.messages.join(" | ") || "-"}</td>
                     </tr>
                   ))}
@@ -449,10 +400,9 @@ export function ProductImportPanel({ exportHref, history }: ProductImportPanelPr
 
       {result ? (
         <div className="mt-5 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-900">
-          İçe aktarma tamamlandı: {result.summary.updatedRows} satır güncellendi, {result.summary.skippedRows} satır atlandı.
+          Fiyat güncellemesi tamamlandı: {result.summary.updatedRows} satır güncellendi, {result.summary.skippedRows} satır atlandı.
         </div>
       ) : null}
     </section>
   );
 }
-

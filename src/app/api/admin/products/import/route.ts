@@ -56,7 +56,7 @@ export async function POST(request: Request) {
   try {
     const formData = await request.formData();
     const file = formData.get("file");
-    const selectedFields = normalizeImportFields(formData.getAll("fields"));
+    const selectedFields = normalizeImportFields(["price"]);
 
     if (!(file instanceof File)) {
       return NextResponse.json(
@@ -99,7 +99,7 @@ export async function PATCH(request: Request) {
       selectedFields?: unknown;
       rows?: ProductImportPreviewRow[];
     };
-    const selectedFields = normalizeImportFields(payload.selectedFields);
+    const selectedFields = normalizeImportFields(["price"]);
 
     if (!payload.fileName || !Array.isArray(payload.rows)) {
       return NextResponse.json(

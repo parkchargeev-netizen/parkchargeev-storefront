@@ -12,7 +12,6 @@ import type {
   ProductImportPreviewRow,
   ProductImportPreviewSummary
 } from "@/lib/admin-product-import-contract";
-import { productImportFieldValues } from "@/lib/admin-product-import-contract";
 import { hasDatabaseConfig, RuntimeConfigError } from "@/lib/runtime-config";
 import { recordAuditLog } from "@/server/admin/audit";
 import { revalidatePublicCatalog } from "@/server/catalog/cache";
@@ -112,32 +111,18 @@ function ensureDatabaseConfig() {
   throw new RuntimeConfigError({
     area: "database",
     missingKeys: ["DATABASE_URL"],
-    message: "Toplu urun importu icin DATABASE_URL tanimli olmalidir."
+    message: "Toplu ürün importu için DATABASE_URL tanımlı olmalıdır."
   });
 }
 
 export function normalizeImportFields(input: unknown): ProductImportField[] {
-  const rawValues = Array.isArray(input)
-    ? input
-    : typeof input === "string"
-      ? input.split(",")
-      : [];
-  const seen = new Set<ProductImportField>();
-
-  for (const value of rawValues) {
-    const normalized = String(value).trim();
-
-    if (productImportFieldValues.includes(normalized as ProductImportField)) {
-      seen.add(normalized as ProductImportField);
-    }
-  }
-
-  return [...seen];
+  void input;
+  return ["price"];
 }
 
 function validateSelectedFields(fields: ProductImportField[]) {
   if (fields.length === 0) {
-    throw new ProductImportError("En az bir guncellenecek alan secin.");
+    throw new ProductImportError("Fiyat güncelleme için price alanı etkin olmalıdır.");
   }
 }
 
@@ -648,7 +633,7 @@ function parseImportRows(input: ProductImportPreviewInput) {
   const records = rowsToImportRecords(rows);
 
   if (records.length > maxImportRows) {
-    throw new ProductImportError(`Tek seferde en fazla ${maxImportRows} satir ice aktarilabilir.`);
+    throw new ProductImportError(`Tek seferde en fazla ${maxImportRows} satır içe aktarılabilir.`);
   }
 
   return records;
@@ -1035,7 +1020,7 @@ function matchRows(row: RawImportRow, targets: Awaited<ReturnType<typeof loadPro
 function getRowIdentifierError(row: RawImportRow) {
   return getStringValue(row, "product_id") || getStringValue(row, "sku") || getStringValue(row, "slug") || getStringValue(row, "name")
     ? null
-    : "Satirda product_id, sku, slug veya urun adi yok.";
+    : "Satırda product_id, sku, slug veya ürün adı yok.";
 }
 
 function buildPreviewRow(row: RawImportRow, target: ProductTarget | null, selectedFields: ProductImportField[]) {
@@ -1075,7 +1060,7 @@ function buildPreviewRow(row: RawImportRow, target: ProductTarget | null, select
       newStock = parseStock(getStringValue(row, "stock"));
 
       if (target && newStock !== null && target.variantId === null) {
-        messages.push("Stok guncellemesi icin varyant bulunamadi.");
+        messages.push("Stok güncellemesi için varyant bulunamadı.");
       }
 
       if (target && newStock !== null && newStock !== target.stockQuantity) {
@@ -1103,7 +1088,7 @@ function buildPreviewRow(row: RawImportRow, target: ProductTarget | null, select
     slug: target?.slug ?? (getStringValue(row, "slug") || null),
     name: target?.name ?? (getStringValue(row, "name") || "Eslestirilemedi"),
     status,
-    messages: status === "unmatched" ? ["Urun bulunamadi."] : messages,
+    messages: status === "unmatched" ? ["Ürün bulunamadı."] : messages,
     changedFields,
     oldPriceKurus: target?.priceKurus ?? null,
     newPriceKurus,
@@ -1140,7 +1125,7 @@ function markDuplicateRows(rows: ProductImportPreviewRow[]) {
     return {
       ...row,
       status: "duplicate" as const,
-      messages: [...row.messages, "Ayni urun/varyant dosyada birden fazla kez yer aliyor."]
+      messages: [...row.messages, "Aynı ürün/varyant dosyada birden fazla kez yer alıyor."]
     };
   });
 }
@@ -1282,8 +1267,9 @@ export async function confirmProductImport(input: ProductImportConfirmInput): Pr
       };
       const shouldSyncProductPrice =
         !variant || variant.isDefault || row.matchedBy === "product_id" || row.matchedBy === "slug" || row.matchedBy === "name";
+      const allowedChangedFields = row.changedFields.filter((field) => input.selectedFields.includes(field));
 
-      if (row.changedFields.includes("price")) {
+      if (allowedChangedFields.includes("price")) {
         if (!isValidPositiveKurus(row.newPriceKurus)) {
           skippedRows += 1;
           continue;
@@ -1298,7 +1284,7 @@ export async function confirmProductImport(input: ProductImportConfirmInput): Pr
         }
       }
 
-      if (row.changedFields.includes("sale_price")) {
+      if (allowedChangedFields.includes("sale_price")) {
         if (!isValidKurus(row.newSalePriceKurus)) {
           skippedRows += 1;
           continue;
@@ -1315,7 +1301,7 @@ export async function confirmProductImport(input: ProductImportConfirmInput): Pr
         }
       }
 
-      if (row.changedFields.includes("stock")) {
+      if (allowedChangedFields.includes("stock")) {
         const nextStock = row.newStock;
 
         if (!variant || !isValidStock(nextStock)) {
@@ -1334,7 +1320,7 @@ export async function confirmProductImport(input: ProductImportConfirmInput): Pr
             quantityAfter: nextStock,
             quantityDelta: nextStock - variant.stockQuantity,
             reason: "bulk_import",
-            note: `${input.fileName} dosyasi ile toplu stok guncellemesi.`,
+            note: `${input.fileName} dosyası ile toplu fiyat güncellemesi.`,
             adminUserId: input.actor.sub
           });
         }
@@ -1375,7 +1361,7 @@ export async function confirmProductImport(input: ProductImportConfirmInput): Pr
     entityType: "product_import",
     entityId: importId,
     action: "confirm",
-    summary: `${updatedRows} satir toplu urun importu ile guncellendi.`,
+    summary: `${updatedRows} satır toplu fiyat güncellemesiyle güncellendi.`,
     afterPayload: {
       fileName: input.fileName,
       selectedFields: input.selectedFields,
@@ -1441,13 +1427,13 @@ export async function listProductImportHistory(limit = 8): Promise<ProductImport
 
 export function getProductImportTemplateCsv() {
   return [
-    "product_id,sku,slug,name,price,sale_price,stock,status",
-    "ornek-urun-id,ORNEK-SKU,ornek-urun,Ornek urun,12990,11990,12,active",
-    ",ORNEK-SKU-2,,Sadece SKU ile eslestirme,21900,,5,active",
-    ",,ornek-urun-slug,Slug ile eslestirme,22900,,8,active",
-    ",,,Tam urun adi ile eslestirme,23900,,3,active",
-    ",HCTK-11-PS-S,,Hims fiyat listesi urun kodu ile eslestirme,21500,,10,active",
-    ",EMEF-22T2-XY-7,,Hims kablo ailesini renk varyantlarina uygula,13182,,4,active"
+    "product_id,sku,slug,name,price",
+    "ornek-urun-id,ORNEK-SKU,ornek-urun,Örnek ürün,12990",
+    ",ORNEK-SKU-2,,Sadece SKU ile eşleştirme,21900",
+    ",,ornek-urun-slug,Slug ile eşleştirme,22900",
+    ",,,Tam ürün adı ile eşleştirme,23900",
+    ",HCTK-11-PS-S,,Hims fiyat listesi ürün kodu ile eşleştirme,21500",
+    ",EMEF-22T2-XY-7,,Hims kablo ailesini fiyatla eşleştirme,13182"
   ].join("\n");
 }
 

@@ -309,6 +309,19 @@ export const adminProductBulkActionSchema = z.object({
   action: z.enum(["archive", "activate", "draft"])
 });
 
+export const adminProductReorderSchema = z.object({
+  action: z.literal("reorder"),
+  items: z
+    .array(
+      z.object({
+        id: z.string().uuid(),
+        sortOrder: z.coerce.number().int().min(0).max(9999)
+      })
+    )
+    .min(1)
+    .max(200)
+});
+
 export const adminInventoryAdjustmentSchema = z.object({
   variantId: z.string().uuid(),
   quantityAfter: z.coerce.number().int().min(0),

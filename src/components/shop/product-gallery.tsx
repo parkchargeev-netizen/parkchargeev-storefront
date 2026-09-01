@@ -29,7 +29,7 @@ function isProductMediaItem(item: ProductGalleryThumbnail): item is ProductMedia
 const galleryStageImageSizes = "(min-width: 1024px) 760px, 92vw";
 const galleryLightboxImageSizes = "(min-width: 1024px) 86vw, 94vw";
 const maxGalleryPreloadItems = 16;
-const maxIdleGalleryPreloadItems = 2;
+const maxIdleGalleryPreloadItems = 8;
 const galleryImagePreloadElements = new Map<string, HTMLImageElement>();
 
 type GalleryPreloadPriority = "auto" | "high" | "low";
@@ -430,21 +430,15 @@ export function ProductGallery({
       return;
     }
 
-    const timeoutId = window.setTimeout(
-      () => {
-        nearbyImageIndexes.forEach((index) => {
-          const media = galleryMedia[index];
-          preloadGalleryMedia(media, galleryStageImageSizes, "high");
-
-          if (isLightboxOpen) {
-            preloadGalleryMedia(media, galleryLightboxImageSizes, "high");
-          }
-        });
-      },
-      isLightboxOpen ? 0 : 40
-    );
-
-    return () => window.clearTimeout(timeoutId);
+    nearbyImageIndexes.forEach((index) => {
+      const media = galleryMedia[index];
+      preloadGalleryMedia(media, galleryStageImageSizes, "high");
+      preloadGalleryMedia(
+        media,
+        galleryLightboxImageSizes,
+        isLightboxOpen ? "high" : "low"
+      );
+    });
   }, [galleryMedia, isLightboxOpen, nearbyImageIndexes]);
 
   useEffect(() => {
@@ -461,12 +455,14 @@ export function ProductGallery({
       () => {
         remainingImageIndexes.forEach((index, order) => {
           const timeoutId = window.setTimeout(() => {
-            preloadGalleryMedia(galleryMedia[index], galleryStageImageSizes, "low");
-          }, order * 90);
+            const media = galleryMedia[index];
+            preloadGalleryMedia(media, galleryStageImageSizes, "low");
+            preloadGalleryMedia(media, galleryLightboxImageSizes, "low");
+          }, order * 45);
           scheduledTimeoutIds.push(timeoutId);
         });
       },
-      { delayMs: 240, timeoutMs: 1200 }
+      { delayMs: 80, timeoutMs: 600 }
     );
 
     return () => {
@@ -481,11 +477,15 @@ export function ProductGallery({
         return;
       }
 
-      const nextIndex = (activeIndex + direction + galleryItemCount) % galleryItemCount;
-      preloadGalleryMedia(galleryMedia[nextIndex], galleryStageImageSizes, "high");
-      setActiveIndex(nextIndex);
+      setActiveIndex((currentIndex) => {
+        const nextIndex = (currentIndex + direction + galleryItemCount) % galleryItemCount;
+        const nextMedia = galleryMedia[nextIndex];
+        preloadGalleryMedia(nextMedia, galleryStageImageSizes, "high");
+        preloadGalleryMedia(nextMedia, galleryLightboxImageSizes, "low");
+        return nextIndex;
+      });
     },
-    [activeIndex, galleryItemCount, galleryMedia]
+    [galleryItemCount, galleryMedia]
   );
 
   const openLightbox = useCallback(
@@ -569,9 +569,9 @@ export function ProductGallery({
     };
   }, [closeLightbox, isLightboxOpen, nextImage, prevImage]);
 
-  const warmImageIndexes = nearbyImageIndexes.filter(
-    (index) => index !== activeIndex && galleryMedia[index]?.mediaType === "image"
-  );
+  const warmImageIndexes = imageIndexes
+    .filter((index) => index !== activeIndex && galleryMedia[index]?.mediaType === "image")
+    .slice(0, maxIdleGalleryPreloadItems);
   const lightbox =
     isMounted && isLightboxOpen && selectedLightboxMedia
       ? createPortal(
@@ -796,8 +796,9 @@ export function ProductGallery({
                 type="button"
                 onClick={(event) => {
                   event.preventDefault();
-                  preloadGalleryMedia(galleryMedia[index], galleryStageImageSizes, "high");
                   setActiveIndex(index);
+                  preloadGalleryMedia(galleryMedia[index], galleryStageImageSizes, "high");
+                  preloadGalleryMedia(galleryMedia[index], galleryLightboxImageSizes, "low");
                 }}
                 onFocus={() => {
                   preloadGalleryMedia(galleryMedia[index], galleryStageImageSizes, "low");
