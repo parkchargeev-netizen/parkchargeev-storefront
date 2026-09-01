@@ -131,8 +131,6 @@ export const productDetailContentSchema = z
     heroEyebrow: z.string().trim().max(80).optional().or(z.literal("")),
     badges: z.array(productDetailBadgeSchema).default([]),
     galleryItems: productDetailStringListSchema,
-    galleryFeatureLabels: productDetailStringListSchema,
-    galleryDeviceCaption: z.string().trim().max(120).optional().or(z.literal("")),
     descriptionEyebrow: z.string().trim().max(100).optional().or(z.literal("")),
     descriptionHeading: z.string().trim().max(180).optional().or(z.literal("")),
     useCasesCtaLabel: z.string().trim().max(80).optional().or(z.literal("")),
@@ -478,5 +476,6 @@ export const adminSitePageSchema = z.object({
     .enum(["always", "hourly", "daily", "weekly", "monthly", "yearly", "never"])
     .default("monthly")
 });
+
 
 

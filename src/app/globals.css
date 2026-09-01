@@ -18372,3 +18372,43 @@ html[data-device-os="android"] .store-product-slide .premium-product-card__media
     width: 1.15rem;
   }
 }
+/* Final store pagination and homepage portfolio enforcement */
+.store-pagination.store-pagination--luxury {
+  isolation: isolate;
+  width: min(100%, 36rem);
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.98), rgba(232,255,247,0.94));
+  box-shadow: 0 24px 70px rgba(6, 51, 38, 0.15), inset 0 1px 0 rgba(255,255,255,0.96);
+}
+
+.store-pagination.store-pagination--luxury .store-pagination__button {
+  min-height: 3.1rem;
+  border-radius: 999px;
+  transform: translateZ(0);
+}
+
+.store-pagination.store-pagination--luxury .store-pagination__button--next {
+  background: linear-gradient(135deg, #052d22, #0a6f58 48%, #14b891);
+}
+
+.premium-product-spotlight .premium-product-spotlight__rail {
+  display: grid !important;
+  grid-auto-flow: column !important;
+  grid-auto-columns: clamp(11.25rem, 17vw, 13.75rem) !important;
+  grid-template-columns: none !important;
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+  scroll-snap-type: x proximity;
+}
+
+.premium-product-spotlight .premium-product-spotlight__slide {
+  width: auto !important;
+  min-width: 0;
+  scroll-snap-align: start;
+}
+
+@media (max-width: 767px) {
+  .premium-product-spotlight .premium-product-spotlight__rail {
+    grid-auto-columns: minmax(11rem, 66vw) !important;
+  }
+}

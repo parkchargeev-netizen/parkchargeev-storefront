@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Image, { getImageProps } from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -15,8 +15,6 @@ type ProductGalleryProps = {
   items: string[];
   imageUrl?: string;
   mediaItems?: ProductMediaModel[];
-  featureLabels?: string[];
-  deviceCaption?: string;
   commerceBadges?: ProductDetailBadge[];
 };
 
@@ -374,8 +372,6 @@ export function ProductGallery({
   items,
   imageUrl,
   mediaItems,
-  featureLabels = ["IP koruma", "Type 2", "Kurulum"],
-  deviceCaption = "Ölçekli cihaz temsili",
   commerceBadges = []
 }: ProductGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -578,7 +574,7 @@ export function ProductGallery({
           <div
             role="dialog"
             aria-modal="true"
-            aria-label={`${productName} büyütülmüş ürün görseli`}
+            aria-label={`${productName} bÃ¼yÃ¼tÃ¼lmÃ¼ÅŸ Ã¼rÃ¼n gÃ¶rseli`}
             className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-md"
             onClick={closeLightbox}
           >
@@ -600,7 +596,7 @@ export function ProductGallery({
                     prevImage();
                   }}
                   className="product-gallery-lightbox-nav absolute left-3 top-1/2 z-20 inline-flex h-9 w-9 min-h-0 min-w-0 -translate-y-1/2 items-center justify-center p-0 rounded-full border border-white/25 bg-white/16 text-xl font-bold text-white shadow-[0_14px_34px_rgba(0,0,0,0.28)] backdrop-blur transition hover:bg-white/26 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white sm:left-5 sm:h-10 sm:w-10"
-                  aria-label="Önceki görsel"
+                  aria-label="Ã–nceki gÃ¶rsel"
                 >
                   <ChevronLeft className="h-5 w-5" aria-hidden />
                 </button>
@@ -611,7 +607,7 @@ export function ProductGallery({
                     nextImage();
                   }}
                   className="product-gallery-lightbox-nav absolute right-3 top-1/2 z-20 inline-flex h-9 w-9 min-h-0 min-w-0 -translate-y-1/2 items-center justify-center p-0 rounded-full border border-white/25 bg-white/16 text-xl font-bold text-white shadow-[0_14px_34px_rgba(0,0,0,0.28)] backdrop-blur transition hover:bg-white/26 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white sm:right-5 sm:h-10 sm:w-10"
-                  aria-label="Sonraki görsel"
+                  aria-label="Sonraki gÃ¶rsel"
                 >
                   <ChevronRight className="h-5 w-5" aria-hidden />
                 </button>
@@ -678,7 +674,7 @@ export function ProductGallery({
                   type="button"
                   onClick={() => openLightbox(activeIndex)}
                   className="absolute inset-0 block h-full w-full cursor-zoom-in rounded-lg transition hover:scale-[1.01] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-                  aria-label={`${activeMedia.altText || productName} görselini büyüt`}
+                  aria-label={`${activeMedia.altText || productName} gÃ¶rselini bÃ¼yÃ¼t`}
                 >
                   <ProductGalleryStageMedia media={activeMedia} productName={productName} />
                 </button>
@@ -728,28 +724,12 @@ export function ProductGallery({
                     {productName}
                   </p>
                 </div>
-                <div className="grid max-w-md gap-3 sm:grid-cols-3">
-                  {featureLabels.map((label) => (
-                    <div
-                      key={label}
-                      className="rounded-lg border border-white/10 bg-white/8 px-3 py-3"
-                    >
-                      <p className="text-xs font-semibold text-white/82">{label}</p>
-                    </div>
-                  ))}
-                </div>
               </div>
             )}
 
             {activeMedia ? null : (
               <div className="relative z-10 mt-8 flex items-center justify-center md:mt-0">
                 <ProductGalleryMedia media={activeMedia} productName={productName} />
-              </div>
-            )}
-
-            {activeMedia ? null : (
-              <div className="absolute bottom-6 right-6 z-20 rounded-lg bg-slate-950/45 px-3 py-2 text-xs font-semibold text-white/84 backdrop-blur">
-                {deviceCaption}
               </div>
             )}
 
@@ -766,7 +746,7 @@ export function ProductGallery({
                     moveGallery(-1);
                   }}
                   className="product-gallery-stage-nav product-gallery-stage-nav--prev"
-                  aria-label="Önceki ürün görseli"
+                  aria-label="Ã–nceki Ã¼rÃ¼n gÃ¶rseli"
                 >
                   <ChevronLeft className="h-5 w-5" aria-hidden />
                 </button>
@@ -777,7 +757,7 @@ export function ProductGallery({
                     moveGallery(1);
                   }}
                   className="product-gallery-stage-nav product-gallery-stage-nav--next"
-                  aria-label="Sonraki ürün görseli"
+                  aria-label="Sonraki Ã¼rÃ¼n gÃ¶rseli"
                 >
                   <ChevronRight className="h-5 w-5" aria-hidden />
                 </button>
@@ -806,7 +786,7 @@ export function ProductGallery({
                 onPointerEnter={() => {
                   preloadGalleryMedia(galleryMedia[index], galleryStageImageSizes, "low");
                 }}
-                aria-label={`${productName} ${index + 1}. görseli seç`}
+                aria-label={`${productName} ${index + 1}. gÃ¶rseli seÃ§`}
                 className={`product-gallery-thumbnail group w-16 shrink-0 overflow-hidden rounded-lg p-1 transition lg:w-full ${
                   index === activeIndex
                     ? "is-active border-2 border-primary bg-white shadow-[0_16px_36px_rgba(6,51,38,0.12)]"
@@ -838,3 +818,4 @@ export function ProductGallery({
     </>
   );
 }
+

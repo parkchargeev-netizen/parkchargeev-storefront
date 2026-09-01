@@ -601,9 +601,6 @@ export function ProductForm({
         ...initialValues?.detailContent,
         galleryItems:
           initialValues?.detailContent?.galleryItems ?? detailContentDefaults.galleryItems,
-        galleryFeatureLabels:
-          initialValues?.detailContent?.galleryFeatureLabels ??
-          detailContentDefaults.galleryFeatureLabels,
         badges:
           initialValues?.detailContent?.badges?.length
             ? initialValues.detailContent.badges
@@ -703,29 +700,23 @@ export function ProductForm({
   const connectorTypeValue = watch("connectorType") ?? "";
   const phaseTypeValue = watch("phaseType") ?? "";
   const ipClassValue = watch("ipClass") ?? "";
-  const hasWifiValue = Boolean(watch("hasWifi"));
-  const hasBluetoothValue = Boolean(watch("hasBluetooth"));
-  const hasRfidValue = Boolean(watch("hasRfid"));
-  const has4gValue = Boolean(watch("has4g"));
-  const installRequiredValue = Boolean(watch("installRequired"));
-  const mediaValues = watch("media") ?? [];
-  const specValues = watch("specs") ?? [];
-  const variantValues = watch("variants") ?? [];
-  const seoTitleValue = watch("seoTitle") ?? "";
-  const seoDescriptionValue = watch("seoDescription") ?? "";
-  const detailContent = (watch("detailContent") ?? detailContentDefaults) as ProductDetailFormValues;
-  const technicalGroupValues = detailContent.technicalGroups ?? [];
-  const flattenedTechnicalSpecValues = flattenTechnicalGroupsToSpecs(technicalGroupValues, specValues);
-  const smartFeatureLabels = uniqueList([
-    hasWifiValue ? "Wi-Fi" : "",
-    hasBluetoothValue ? "Bluetooth" : "",
-    hasRfidValue ? "RFID" : "",
-    has4gValue ? "4G" : "",
-  ]);
   const powerText = cleanText(powerLabelValue || (powerKwValue ? `${powerKwValue} kW` : ""));
   const chargeText = cleanText(chargeTypeValue).toUpperCase();
   const connectorText = cleanText(connectorTypeValue || "Type 2");
   const phaseText = phaseLabel(phaseTypeValue);
+  const mediaValues = watch("media") ?? [];
+  const variantValues = watch("variants") ?? [];
+  const specValues = watch("specs") ?? [];
+  const detailContent = watch("detailContent") ?? detailContentDefaults;
+  const technicalGroupValues = detailContent.technicalGroups ?? [];
+  const seoTitleValue = watch("seoTitle") ?? "";
+  const seoDescriptionValue = watch("seoDescription") ?? "";
+  const flattenedTechnicalSpecValues = [
+    ...specValues.map((item) => ({ label: item.label, value: item.value })),
+    ...technicalGroupValues.flatMap((group) =>
+      (group.items ?? []).map((item) => ({ label: item.name, value: item.value }))
+    )
+  ];
   const featureAuditItems = [
     {
       label: "ÃœrÃ¼n adÄ±",
@@ -753,13 +744,8 @@ export function ProductForm({
       detail: "Type 2/CCS2 ve monofaz/trifaz bilgisi yazÄ±lmalÄ±."
     },
     {
-      label: "AkÄ±llÄ± Ã¶zellikler",
-      ok: smartFeatureLabels.length > 0 || flattenedTechnicalSpecValues.some((item) => /ocpp|yÃ¼k|yuk|load|wifi|wi-fi|rfid/i.test(`${item.label} ${item.value}`)),
-      detail: "Wi-Fi, RFID, 4G, OCPP veya yÃ¼k dengeleme sinyali eklenmeli."
-    },
-    {
       label: "Kurulum bilgisi",
-      ok: installRequiredValue || cleanText(descriptionValue).toLocaleLowerCase("tr-TR").includes("kurulum"),
+      ok: cleanText(descriptionValue).toLocaleLowerCase("tr-TR").includes("kurulum"),
       detail: "KeÅŸif, pano, faz, kablo hattÄ± veya montaj notu olmalÄ±."
     },
     {
@@ -2455,5 +2441,8 @@ export function ProductForm({
     </form>
   );
 }
+
+
+
 
 

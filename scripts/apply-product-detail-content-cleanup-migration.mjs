@@ -36,7 +36,8 @@ if (!databaseUrl) {
 
 const migrationFiles = [
   "0008_remove_product_detail_auxiliary_sections.sql",
-  "0009_products_sort_order_and_detail_cleanup.sql"
+  "0009_products_sort_order_and_detail_cleanup.sql",
+  "0010_remove_gallery_quick_info_content.sql"
 ];
 
 const sql = postgres(databaseUrl, {
@@ -68,3 +69,5 @@ try {
 } finally {
   await sql.end({ timeout: 5 });
 }
+
+

@@ -253,8 +253,6 @@ export type ProductDetailContent = {
   heroEyebrow: string;
   badges: ProductDetailBadge[];
   galleryItems: string[];
-  galleryFeatureLabels: string[];
-  galleryDeviceCaption: string;
   descriptionEyebrow: string;
   descriptionHeading: string;
   useCasesCtaLabel: string;
@@ -527,8 +525,6 @@ export function getDefaultProductDetailContent(product?: ProductModel): ProductD
     galleryItems: product?.galleryItems?.length
       ? product.galleryItems
       : ["Ã–n gÃ¶rÃ¼nÃ¼m", "Yan profil", "Montaj gÃ¶rÃ¼nÃ¼mÃ¼", "Video"],
-    galleryFeatureLabels: ["IP koruma", "Type 2", "Kurulum"],
-    galleryDeviceCaption: "Ã–lÃ§ekli cihaz temsili",
     descriptionEyebrow: "ÃœrÃ¼n aÃ§Ä±klamasÄ±",
     descriptionHeading: product?.name ? `${product.name} kimler iÃ§in uygun?` : "ÃœrÃ¼n kimler iÃ§in uygun?",
     useCasesCtaLabel: "AkÄ±llÄ± seÃ§iciye git",
@@ -578,9 +574,6 @@ export function mergeProductDetailContent(
       ? Number(input.adminSortOrder)
       : base.adminSortOrder,
     galleryItems: hasItems(input.galleryItems) ? compactList(input.galleryItems) : base.galleryItems,
-    galleryFeatureLabels: hasItems(input.galleryFeatureLabels)
-      ? compactList(input.galleryFeatureLabels)
-      : base.galleryFeatureLabels,
     badges: hasItems(input.badges)
       ? normalizeBadges(input.badges)
       : base.badges,
@@ -693,5 +686,6 @@ export function withProductDetailContentSchemaJsonLd<T extends Record<string, un
     [productDetailContentSchemaKey]: detailContent
   };
 }
+
 
 

@@ -80,26 +80,6 @@ function ProductFormDetailSectionComponent({
               }
             />
           </div>
-          <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">
-              Galeri Ã¶zellik rozetleri
-            </label>
-            <textarea
-              rows={4}
-              className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
-              value={detailContent.galleryFeatureLabels?.join("\n") ?? ""}
-              onChange={(event) =>
-                setValue("detailContent.galleryFeatureLabels", splitLines(event.target.value), {
-                  shouldValidate: true
-                })
-              }
-            />
-          </div>
-          <input
-            className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
-            placeholder="Galeri cihaz notu"
-            {...register("detailContent.galleryDeviceCaption")}
-          />
           <input
             className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
             placeholder="ÃœrÃ¼n adÄ± Ã¼stÃ¼ ana rozet / Ã¼st metin"
@@ -395,6 +375,7 @@ function ProductFormDetailSectionComponent({
 }
 export const ProductFormDetailSection = memo(ProductFormDetailSectionComponent);
 ProductFormDetailSection.displayName = "ProductFormDetailSection";
+
 
 
 
