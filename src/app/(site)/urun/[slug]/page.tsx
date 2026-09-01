@@ -5,14 +5,11 @@ import { notFound } from "next/navigation";
 import {
   ProductDescriptionBlock,
   ProductFaqs,
-  ProductPolicies,
   ProductRelatedProducts,
-  ProductSmartFeatures,
   ProductTechnicalSpecs,
   ProductTrustGrid
 } from "@/components/shop/product-detail-sections";
 import { ProductGallery } from "@/components/shop/product-gallery";
-import { ProductInfoCards } from "@/components/shop/product-info-cards";
 import { ProductPurchasePanel } from "@/components/shop/product-purchase-panel";
 import { ProductReviewsLazy } from "@/components/shop/product-reviews-lazy";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -25,7 +22,6 @@ import {
   getProductSeoTitle
 } from "@/lib/seo";
 import {
-  getActiveProductSmartFeatures,
   getActiveProductTechnicalGroups,
   getActiveProductDetailBadges,
   getProductDetailContent
@@ -129,15 +125,10 @@ export default async function ProductDetailPage({
   const productJsonLd = getProductJsonLd(product);
   const detailContent = getProductDetailContent(product);
   const productBadges = getActiveProductDetailBadges(product);
-  const smartFeatures = getActiveProductSmartFeatures(product);
   const technicalGroups = getActiveProductTechnicalGroups(product);
   const storeProfile = getProductStoreProfile(product);
   const mediaItems = detailContent.galleryItems;
   const productImageUrl = getDisplayProductImageUrl(product.imageUrl);
-  const infoCardItems = detailContent.infoCards.map((item) => ({
-    label: item.label,
-    value: item.value
-  }));
   const descriptionHtml = formatProductDescriptionHtml(
     product.descriptionHtml ?? product.description,
     product.summary
@@ -151,10 +142,6 @@ export default async function ProductDetailPage({
   const sectionNavItems = [
     { href: "#product-description", label: "Açıklama" },
     { href: "#technical-specs", label: "Teknik Özellikler" },
-    ...(detailContent.smartFeaturesEnabled !== false && smartFeatures.length > 0
-      ? [{ href: "#product-connectivity", label: "Bağlantı" }]
-      : []),
-    { href: "#trust-and-policies", label: "Teslimat" },
     ...(detailContent.relatedEnabled !== false && relatedProducts.length > 0
       ? [{ href: "#related-products", label: "Benzer Ürünler" }]
       : []),
@@ -243,8 +230,6 @@ export default async function ProductDetailPage({
               badges={productBadges}
             />
           </aside>
-
-          <ProductInfoCards items={infoCardItems} />
         </section>
         <nav
           aria-label="Ürün detay bölümleri"
@@ -267,17 +252,11 @@ export default async function ProductDetailPage({
           />
         </div>
         <ProductTechnicalSpecs detailContent={detailContent} groups={technicalGroups} />
-        {detailContent.smartFeaturesEnabled !== false && smartFeatures.length > 0 ? (
-          <div id="product-connectivity" className="product-commerce-anchor-section">
-            <ProductSmartFeatures detailContent={detailContent} features={smartFeatures} />
-          </div>
-        ) : null}
         <div
-          id="trust-and-policies"
+          id="trust-section"
           className="product-commerce-anchor-section product-commerce-trust-stack"
         >
           <ProductTrustGrid detailContent={detailContent} />
-          <ProductPolicies detailContent={detailContent} />
         </div>
         <ProductFaqs detailContent={detailContent} />
         <div id="related-products" className="product-commerce-anchor-section">

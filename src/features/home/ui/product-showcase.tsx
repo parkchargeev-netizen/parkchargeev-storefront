@@ -1,4 +1,4 @@
-import { ArrowRight } from "lucide-react";
+﻿import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 import { PremiumSection } from "@/components/ui/premium-section";
@@ -32,11 +32,14 @@ export function ProductShowcase({ products }: ProductShowcaseProps) {
             <ArrowRight className="h-4 w-4" aria-hidden />
           </Link>
         </div>
-
-        <div className="premium-product-spotlight__grid mx-auto mt-8 grid max-w-6xl gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {products.map((product, index) => (
-            <ProductCard key={product.id} navigationPrefetch={index < 4} product={product} layout="compact" />
-          ))}
+        <div className="premium-product-spotlight__rail-wrap mt-8">
+          <div className="premium-product-spotlight__rail" role="list" aria-label="Ürün portföyü">
+            {products.map((product, index) => (
+              <div key={product.id} className="premium-product-spotlight__slide" role="listitem">
+                <ProductCard navigationPrefetch={index < 4} product={product} layout="compact" />
+              </div>
+            ))}
+          </div>
         </div>
     </PremiumSection>
   );

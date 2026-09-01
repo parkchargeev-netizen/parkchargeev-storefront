@@ -135,7 +135,9 @@ function getProductAdminSortOrder(schemaJsonLd: unknown) {
 }
 
 function productAdminSortOrderSql() {
-  return sql<number>`coalesce(nullif(${products.schemaJsonLd} -> ${productDetailContentSchemaKey} ->> 'adminSortOrder', '')::integer, 0)`;
+  const rawSortOrder = sql<number>`coalesce(nullif(${products.schemaJsonLd} -> ${productDetailContentSchemaKey} ->> 'adminSortOrder', '')::integer, 0)`;
+
+  return sql<number>`case when ${rawSortOrder} > 0 then ${rawSortOrder} else 2147483647 end`;
 }
 
 function withProductAdminSortOrder(schemaJsonLd: unknown, sortOrder: number) {
@@ -1638,7 +1640,7 @@ export async function listAdminProducts(input: ListQueryInput) {
               ) asc nulls last`,
               desc(products.id)
             ]
-          : [desc(products.updatedAt), desc(products.id)];
+          : [asc(productAdminSortOrderSql()), desc(products.updatedAt), desc(products.id)];
 
   const rows = await db
     .select({

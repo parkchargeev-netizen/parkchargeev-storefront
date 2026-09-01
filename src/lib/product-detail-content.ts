@@ -193,23 +193,12 @@ export type ProductDetailBadge = {
   sortOrder?: number;
 };
 
-export type ProductPolicyDetail = {
-  title: string;
-  body: string;
-};
 
 export type ProductDetailFaq = {
   question: string;
   answer: string;
 };
 
-export type ProductSmartFeature = {
-  title: string;
-  description: string;
-  iconName?: string;
-  isActive?: boolean;
-  sortOrder?: number;
-};
 
 export type ProductTechnicalSpecItem = {
   name: string;
@@ -270,7 +259,6 @@ export type ProductReviewContent = {
 export type ProductDetailContent = {
   adminSortOrder: number;
   heroEyebrow: string;
-  infoCards: ProductDetailTextPair[];
   badges: ProductDetailBadge[];
   galleryItems: string[];
   galleryFeatureLabels: string[];
@@ -287,10 +275,6 @@ export type ProductDetailContent = {
   useCases: string[];
   highlightsHeading: string;
   highlights: string[];
-  smartFeatures: ProductSmartFeature[];
-  smartFeaturesEnabled: boolean;
-  smartFeaturesEyebrow: string;
-  smartFeaturesHeading: string;
   technicalGroups: ProductTechnicalSpecGroup[];
   purchaseBenefits: string[];
   purchaseReadiness: ProductDetailTextPair[];
@@ -300,8 +284,6 @@ export type ProductDetailContent = {
   trustEyebrow: string;
   trustHeading: string;
   trustBlocks: ProductTrustBlock[];
-  policiesEnabled: boolean;
-  policyDetails: ProductPolicyDetail[];
   faqHeading: string;
   faqs: ProductDetailFaq[];
   relatedEnabled: boolean;
@@ -315,12 +297,11 @@ export type ProductDetailContent = {
 export type ProductDetailContentInput = Partial<
   Omit<
     ProductDetailContent,
-    "support" | "purchaseReadiness" | "policyDetails" | "actionLabels" | "reviews"
+    "support" | "purchaseReadiness" | "actionLabels" | "reviews"
   >
 > & {
   support?: Partial<ProductSupportContent>;
   purchaseReadiness?: ProductDetailTextPair[];
-  policyDetails?: ProductPolicyDetail[];
   actionLabels?: Partial<ProductActionLabels>;
   reviews?: Partial<ProductReviewContent>;
 };
@@ -339,18 +320,6 @@ function hasItems<T>(values: T[] | undefined): values is T[] {
 
 function sortByOrder<T extends { sortOrder?: number }>(values: T[]) {
   return [...values].sort((left, right) => (left.sortOrder ?? 0) - (right.sortOrder ?? 0));
-}
-
-function normalizeSmartFeatures(values?: ProductSmartFeature[]) {
-  return sortByOrder(values ?? [])
-    .map((item, index) => ({
-      title: item.title?.trim() ?? "",
-      description: item.description?.trim() ?? "",
-      iconName: item.iconName?.trim() || "sparkles",
-      isActive: item.isActive !== false,
-      sortOrder: Number.isFinite(Number(item.sortOrder)) ? Number(item.sortOrder) : index + 1
-    }))
-    .filter((item) => item.title && item.description);
 }
 
 function normalizeTechnicalGroups(values?: ProductTechnicalSpecGroup[]) {
@@ -479,41 +448,6 @@ function getSummaryCardDefaults(product?: ProductModel): ProductDetailTextPair[]
       value: primaryUseCase || (isAccessory ? "Type 2 uyumlu araçlar" : "Ev, site ve iş yeri")
     }
   ];
-}
-
-function getInfoCardDefaults(product?: ProductModel): ProductDetailTextPair[] {
-  const defaultVariant =
-    product?.variants?.find((variant) => variant.isDefault) ?? product?.variants?.[0];
-  const connector = defaultVariant?.connectorType || getConnectorLabel(product);
-  const category = product?.category || "";
-  const powerLabel = product?.powerLabel || "";
-  const useCase = product?.useCases?.[0] || "";
-  const specsCorpus = product?.specs.map((spec) => `${spec.label} ${spec.value}`).join(" ") ?? "";
-  const likelyAc =
-    /\bac\b/i.test(`${powerLabel} ${specsCorpus}`) || /type\s*2|tip\s*2/i.test(`${connector} ${specsCorpus}`);
-  const infrastructure =
-    powerLabel.toLocaleLowerCase("tr-TR").includes("dc") && !likelyAc
-      ? "DC hızlı şarj"
-      : powerLabel.includes("22")
-        ? "Trifaze AC"
-        : likelyAc
-          ? "AC altyapı"
-          : "";
-
-  return normalizeTextPairs([
-    { label: "Kategori", value: category, sortOrder: 1 },
-    { label: "Kullanım", value: useCase, sortOrder: 2 },
-    { label: "Altyapı", value: infrastructure, sortOrder: 3 },
-    { label: "Güç", value: powerLabel, sortOrder: 4 },
-    { label: "Soket", value: connector, sortOrder: 5 },
-    {
-      label: "Kurulum",
-      value: powerLabel.toLocaleLowerCase("tr-TR").includes("dc") || powerLabel.includes("22")
-        ? "Keşif gerekli"
-        : "Kurulum/keşif opsiyonel",
-      sortOrder: 6
-    }
-  ]);
 }
 
 function getBadgeDefaults(product?: ProductModel): ProductDetailBadge[] {
@@ -684,7 +618,6 @@ export function getDefaultProductDetailContent(product?: ProductModel): ProductD
   return {
     adminSortOrder: 0,
     heroEyebrow: "ParkChargeEV seçkisi",
-    infoCards: getInfoCardDefaults(product),
     badges: getBadgeDefaults(product),
     galleryItems: product?.galleryItems?.length
       ? product.galleryItems
@@ -704,10 +637,6 @@ export function getDefaultProductDetailContent(product?: ProductModel): ProductD
     useCases: product?.useCases?.length ? product.useCases : getUseCaseDefaults(product),
     highlightsHeading: "Satış ve kurulum avantajları",
     highlights: product?.highlights?.length ? product.highlights : getHighlightDefaults(product),
-    smartFeatures: [],
-    smartFeaturesEnabled: true,
-    smartFeaturesEyebrow: "Bağlantı ve kontrol",
-    smartFeaturesHeading: "Üründe aktif olan erişim ve kontrol yetenekleri.",
     technicalGroups: [],
     purchaseBenefits: [
       "Tek sayfa güvenli ödeme ve net sipariş takibi",
@@ -727,24 +656,6 @@ export function getDefaultProductDetailContent(product?: ProductModel): ProductD
     trustEyebrow: "Güven ve satın alma",
     trustHeading: "Teknik üründe karar riskini azaltan net bilgiler.",
     trustBlocks: getTrustBlockDefaults(),
-    policiesEnabled: true,
-    policyDetails: [
-      {
-        title: "Teslimat ve kurulum planı",
-        body:
-          "Stoktaki ürünlerde sevkiyat 2-5 iş günü olarak planlanır. Kurulum talebi varsa keşif sonrası randevu, kablo hattı ve kapsam ayrıca netleştirilir."
-      },
-      {
-        title: "İade ve değişim",
-        body:
-          "Kullanılmamış ürünlerde 14 gün içinde iade talebi alınabilir. Montaj yapılan projelerde cihaz, keşif ve kurulum kapsamı ayrı değerlendirilir."
-      },
-      {
-        title: "Garanti ve servis",
-        body:
-          "Ürünler için garanti ve kurulum sonrası teknik destek süreci sunulur. Site, ofis ve ticari projelerde bakım periyodu teklif kapsamına eklenebilir."
-      }
-    ],
     faqHeading: "Karar öncesi sık sorulanlar",
     faqs: product?.faqs?.length ? product.faqs : [],
     relatedEnabled: true,
@@ -776,9 +687,6 @@ export function mergeProductDetailContent(
     galleryFeatureLabels: hasItems(input.galleryFeatureLabels)
       ? compactList(input.galleryFeatureLabels)
       : base.galleryFeatureLabels,
-    infoCards: hasItems(input.infoCards)
-      ? normalizeTextPairs(input.infoCards)
-      : base.infoCards,
     badges: hasItems(input.badges)
       ? normalizeBadges(input.badges)
       : base.badges,
@@ -794,9 +702,6 @@ export function mergeProductDetailContent(
     highlights: hasItems(input.highlights)
       ? compactList(input.highlights)
       : base.highlights,
-    smartFeatures: hasItems(input.smartFeatures)
-      ? normalizeSmartFeatures(input.smartFeatures)
-      : base.smartFeatures,
     technicalGroups: hasItems(input.technicalGroups)
       ? normalizeTechnicalGroups(input.technicalGroups)
       : base.technicalGroups,
@@ -813,9 +718,6 @@ export function mergeProductDetailContent(
     trustBlocks: hasItems(input.trustBlocks)
       ? normalizeTrustBlocks(input.trustBlocks)
       : base.trustBlocks,
-    policyDetails: hasItems(input.policyDetails)
-      ? input.policyDetails
-      : base.policyDetails,
     faqs: hasItems(input.faqs) ? input.faqs : base.faqs,
     relatedLimit: Number.isFinite(Number(input.relatedLimit))
       ? Number(input.relatedLimit)
@@ -840,34 +742,6 @@ export function getProductDetailContent(product: ProductModel): ProductDetailCon
 
 export function getActiveProductDetailBadges(product: ProductModel) {
   return normalizeBadges(getProductDetailContent(product).badges);
-}
-
-export function getActiveProductSmartFeatures(product: ProductModel) {
-  const detailContent = getProductDetailContent(product);
-
-  if (detailContent.smartFeaturesEnabled === false) {
-    return [];
-  }
-
-  const configuredFeatures = normalizeSmartFeatures(detailContent.smartFeatures)
-    .filter((item) => item.isActive !== false);
-
-  if (configuredFeatures.length > 0) {
-    return configuredFeatures;
-  }
-
-  return product.specs
-    .filter((spec) => {
-      const haystack = `${spec.groupName ?? ""} ${spec.label} ${spec.value}`.toLocaleLowerCase("tr-TR");
-      return /akıllı|akilli|wifi|wi-fi|rfid|4g|ocpp|yük|yuk|load|uygulama/.test(haystack);
-    })
-    .map((spec, index) => ({
-      title: spec.label,
-      description: spec.value,
-      iconName: "sparkles",
-      isActive: true,
-      sortOrder: index + 1
-    }));
 }
 
 export function getActiveProductTechnicalGroups(product: ProductModel) {

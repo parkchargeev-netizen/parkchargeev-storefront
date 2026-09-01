@@ -40,22 +40,6 @@ function hasCompleteText(value: unknown, fields: string[]) {
   return fields.every((field) => getText(value, field).length > 0);
 }
 
-function normalizeSmartFeatures(value: unknown) {
-  return filterRows(value, (row) => hasAnyText(row, ["title", "description", "iconName"]))
-    .filter((row) => hasCompleteText(row, ["title", "description"]))
-    .map((row, index) => {
-      const feature = row as Record<string, unknown>;
-
-      return {
-        title: getText(feature, "title"),
-        description: getText(feature, "description"),
-        iconName: getText(feature, "iconName") || "sparkles",
-        isActive: getBoolean(feature.isActive),
-        sortOrder: normalizeNumber(feature.sortOrder, index + 1)
-      };
-    });
-}
-
 function normalizeTextPairs(value: unknown) {
   return filterRows(value, (row) => hasAnyText(row, ["label", "value", "description", "iconName"]))
     .filter((row) => hasCompleteText(row, ["label", "value"]))
@@ -193,16 +177,10 @@ function normalizeDetailContent(detailContent: unknown) {
 
   return {
     ...detail,
-    smartFeatures: normalizeSmartFeatures(detail.smartFeatures),
     technicalGroups,
-    infoCards: normalizeTextPairs(detail.infoCards),
     badges: normalizeBadges(detail.badges),
     purchaseReadiness: normalizeTextPairs(detail.purchaseReadiness),
     trustBlocks: normalizeTrustBlocks(detail.trustBlocks),
-    policyDetails: filterRows(
-      detail.policyDetails,
-      (row) => hasAnyText(row, ["title", "body"])
-    ),
     faqs: filterRows(
       detail.faqs,
       (row) => hasAnyText(row, ["question", "answer"])

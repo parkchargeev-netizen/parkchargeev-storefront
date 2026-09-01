@@ -48,7 +48,7 @@ export default async function AdminProductsPage({ searchParams }: ProductListPag
       category: query.category,
       brand: query.brand,
       stock: query.stock,
-      sort: query.sort,
+      sort: query.sort ?? "manual_order",
       limit: 12
     }),
     listAdminCatalog(),
@@ -114,7 +114,7 @@ export default async function AdminProductsPage({ searchParams }: ProductListPag
             defaultValue={query.category ?? ""}
             className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm"
           >
-            <option value="">Tum kategoriler</option>
+            <option value="">Tüm kategoriler</option>
             {catalog.categories.map((category) => (
               <option key={category.id} value={category.id}>
                 {category.name}
@@ -126,7 +126,7 @@ export default async function AdminProductsPage({ searchParams }: ProductListPag
             defaultValue={query.brand ?? ""}
             className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm"
           >
-            <option value="">Tum markalar</option>
+            <option value="">Tüm markalar</option>
             {catalog.brands.map((brand) => (
               <option key={brand.id} value={brand.id}>
                 {brand.name}
@@ -138,20 +138,20 @@ export default async function AdminProductsPage({ searchParams }: ProductListPag
             defaultValue={query.stock ?? ""}
             className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm"
           >
-            <option value="">Tum stoklar</option>
+            <option value="">Tüm stoklar</option>
             <option value="available">Stokta</option>
             <option value="low">Kritik stok</option>
             <option value="out">Stok yok</option>
           </select>
           <select
             name="sort"
-            defaultValue={query.sort ?? ""}
+            defaultValue={query.sort ?? "manual_order"}
             className="rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm"
           >
-            <option value="">Varsayilan</option>
             <option value="manual_order">Manuel sıra</option>
-            <option value="name_asc">Ada gore</option>
-            <option value="price_desc">Fiyat yuksek</option>
+
+            <option value="name_asc">Ada göre</option>
+            <option value="price_desc">Fiyat yüksek</option>
             <option value="stock_asc">Stok azalan risk</option>
           </select>
           <input

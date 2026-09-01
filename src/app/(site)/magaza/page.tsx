@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import {
+  ArrowLeft,
+  ArrowRight,
   Search,
   SlidersHorizontal,
   X
@@ -502,11 +504,13 @@ export default async function StorePage({ searchParams }: StorePageProps) {
                   page: currentPage - 1
                 })}
                 aria-disabled={currentPage === 1}
-                className={`store-pagination__button ${currentPage === 1 ? "pointer-events-none opacity-45" : ""}`}
+                className={`store-pagination__button store-pagination__button--prev ${currentPage === 1 ? "pointer-events-none opacity-45" : ""}`}
               >
-                Önceki sayfa
+                <ArrowLeft className="h-4 w-4" aria-hidden />
+                <span>Önceki</span>
               </Link>
               <span className="store-pagination__status" aria-current="page">
+                <small>Sayfa</small>
                 <b>{currentPage}</b>
                 <small>/ {totalPages}</small>
               </span>
@@ -523,7 +527,8 @@ export default async function StorePage({ searchParams }: StorePageProps) {
                 aria-disabled={currentPage === totalPages}
                 className={`store-pagination__button store-pagination__button--next ${currentPage === totalPages ? "pointer-events-none opacity-45" : ""}`}
               >
-                Sonraki sayfa
+                <span>Sonraki</span>
+                <ArrowRight className="h-4 w-4" aria-hidden />
               </Link>
             </nav>
           ) : null}

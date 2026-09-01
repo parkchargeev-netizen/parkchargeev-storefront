@@ -1,61 +1,21 @@
 import Link from "next/link";
-import {
-  Bluetooth,
-  Cpu,
-  Headphones,
-  Radio,
-  RotateCcw,
-  Settings,
-  ShieldCheck,
-  Sparkles,
-  Truck,
-  Wifi,
-  Zap
-} from "lucide-react";
+import { Headphones, RotateCcw, ShieldCheck, Truck } from "lucide-react";
 
 import { ProductPlacementBadges } from "@/components/shop/product-badges";
 import { ProductCard } from "@/components/shop/product-card";
 import type { ProductModel } from "@/lib/mock-data";
 import type {
   ProductDetailContent,
-  ProductSmartFeature,
   ProductTechnicalSpecGroup
 } from "@/lib/product-detail-content";
 
 type ProductDetailSectionsProps = {
   product: ProductModel;
   detailContent: ProductDetailContent;
-  smartFeatures: ProductSmartFeature[];
   technicalGroups: ProductTechnicalSpecGroup[];
   relatedProducts: ProductModel[];
   descriptionHtml: string;
 };
-
-function SmartFeatureIcon({ iconName }: { iconName?: string }) {
-  const normalizedIconName = iconName?.toLocaleLowerCase("tr-TR") ?? "";
-  const Icon =
-    normalizedIconName.includes("wifi") || normalizedIconName.includes("wi-fi")
-      ? Wifi
-      : normalizedIconName.includes("bluetooth")
-        ? Bluetooth
-        : normalizedIconName.includes("shield") ||
-            normalizedIconName.includes("güven")
-          ? ShieldCheck
-          : normalizedIconName.includes("zap") ||
-              normalizedIconName.includes("power")
-            ? Zap
-            : normalizedIconName.includes("radio") ||
-                normalizedIconName.includes("rfid")
-              ? Radio
-              : normalizedIconName.includes("cpu") ||
-                  normalizedIconName.includes("ocpp")
-                ? Cpu
-                : normalizedIconName.includes("setting")
-                  ? Settings
-                  : Sparkles;
-
-  return <Icon className="h-5 w-5" aria-hidden />;
-}
 
 function TrustBlockIcon({ iconName }: { iconName?: string }) {
   const normalizedIconName = iconName?.toLocaleLowerCase("tr-TR") ?? "";
@@ -137,41 +97,6 @@ export function ProductTrustGrid({
             <TrustBlockIcon iconName={item.iconName} />
             <h3>{item.title}</h3>
             <p>{compactText(item.body, 96)}</p>
-          </article>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-export function ProductSmartFeatures({
-  detailContent,
-  features
-}: {
-  detailContent: ProductDetailContent;
-  features: ProductSmartFeature[];
-}) {
-  if (detailContent.smartFeaturesEnabled === false || features.length === 0) {
-    return null;
-  }
-
-  return (
-    <section className="product-detail-section">
-      <div className="product-detail-section-heading">
-        <p>{detailContent.smartFeaturesEyebrow}</p>
-        <h2>{detailContent.smartFeaturesHeading}</h2>
-      </div>
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        {features.map((feature) => (
-          <article
-            key={`${feature.title}-${feature.description}`}
-            className="product-detail-smart-card"
-          >
-            <span>
-              <SmartFeatureIcon iconName={feature.iconName} />
-            </span>
-            <h3>{feature.title}</h3>
-            <p>{compactText(feature.description, 72)}</p>
           </article>
         ))}
       </div>
@@ -266,25 +191,6 @@ export function ProductDescriptionBlock({
         placement="detail_description_bottom"
         className="mt-4 md:col-span-2"
       />
-    </section>
-  );
-}
-
-export function ProductPolicies({
-  detailContent
-}: Pick<ProductDetailSectionsProps, "detailContent">) {
-  if (detailContent.policiesEnabled === false || detailContent.policyDetails.length === 0) {
-    return null;
-  }
-
-  return (
-    <section className="product-detail-section product-detail-policy-grid product-detail-policy-panel">
-      {detailContent.policyDetails.slice(0, 3).map((detail) => (
-        <article key={detail.title} className="product-detail-policy-card">
-          <h3>{detail.title}</h3>
-          <p>{compactText(detail.body, 118)}</p>
-        </article>
-      ))}
     </section>
   );
 }

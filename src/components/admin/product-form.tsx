@@ -367,22 +367,6 @@ function buildTechnicalGroupsFromSpecs(specs: ProductFormValues["specs"]) {
   ];
 }
 
-function buildSmartFeaturesFromSpecs(specs: ProductFormValues["specs"]) {
-  return (specs ?? [])
-    .filter((spec) => {
-      const haystack = `${spec.groupName ?? ""} ${spec.label ?? ""} ${spec.value ?? ""}`.toLocaleLowerCase("tr-TR");
-      return /akıllı|akilli|wifi|wi-fi|rfid|4g|ocpp|yük|yuk|load|uygulama/.test(haystack);
-    })
-    .map((spec, index) => ({
-      title: cleanText(spec.label),
-      description: cleanText(spec.value),
-      iconName: "sparkles",
-      isActive: true,
-      sortOrder: index + 1
-    }))
-    .filter((feature) => feature.title && feature.description);
-}
-
 function flattenTechnicalGroupsToSpecs(
   groups: ProductDetailFormValues["technicalGroups"],
   fallbackSpecs: ProductFormValues["specs"]
@@ -408,14 +392,6 @@ function flattenTechnicalGroupsToSpecs(
 
 function validateStructuredProductDetails(detailContent: ProductDetailFormValues) {
   const issues: string[] = [];
-
-  (detailContent.smartFeatures ?? []).forEach((feature, index) => {
-    const hasAnyValue = [feature.title, feature.description, feature.iconName].some((value) => cleanText(value));
-
-    if (hasAnyValue && (!cleanText(feature.title) || !cleanText(feature.description))) {
-      issues.push(`${index + 1}. akıllı özellikte başlık ve açıklama zorunlu.`);
-    }
-  });
 
   (detailContent.technicalGroups ?? []).forEach((group, groupIndex) => {
     const visibleItems = group.items ?? [];
@@ -628,10 +604,6 @@ export function ProductForm({
         galleryFeatureLabels:
           initialValues?.detailContent?.galleryFeatureLabels ??
           detailContentDefaults.galleryFeatureLabels,
-        infoCards:
-          initialValues?.detailContent?.infoCards?.length
-            ? initialValues.detailContent.infoCards
-            : detailContentDefaults.infoCards,
         badges:
           initialValues?.detailContent?.badges?.length
             ? initialValues.detailContent.badges
@@ -652,10 +624,6 @@ export function ProductForm({
           initialValues?.detailContent?.highlights?.length
             ? initialValues.detailContent.highlights
             : detailContentDefaults.highlights,
-        smartFeatures:
-          initialValues?.detailContent?.smartFeatures?.length
-            ? initialValues.detailContent.smartFeatures
-            : buildSmartFeaturesFromSpecs(initialValues?.specs),
         technicalGroups: mergeTechnicalGroupsToSingleGroup(
           initialValues?.detailContent?.technicalGroups,
           initialValues?.specs
@@ -674,9 +642,6 @@ export function ProductForm({
           initialValues?.detailContent?.trustBlocks?.length
             ? initialValues.detailContent.trustBlocks
             : detailContentDefaults.trustBlocks,
-        policyDetails:
-          initialValues?.detailContent?.policyDetails ??
-          detailContentDefaults.policyDetails,
         faqs:
           initialValues?.detailContent?.faqs ??
           detailContentDefaults.faqs,
@@ -718,12 +683,6 @@ export function ProductForm({
     keyName: "fieldId"
   });
 
-  const infoCardFields = useFieldArray({
-    control,
-    name: "detailContent.infoCards",
-    keyName: "fieldId"
-  });
-
   const variantFields = useFieldArray({
     control,
     name: "variants",
@@ -739,12 +698,6 @@ export function ProductForm({
   const trustBlockFields = useFieldArray({
     control,
     name: "detailContent.trustBlocks",
-    keyName: "fieldId"
-  });
-
-  const policyFields = useFieldArray({
-    control,
-    name: "detailContent.policyDetails",
     keyName: "fieldId"
   });
 
@@ -780,7 +733,6 @@ export function ProductForm({
   const seoTitleValue = watch("seoTitle") ?? "";
   const seoDescriptionValue = watch("seoDescription") ?? "";
   const detailContent = (watch("detailContent") ?? detailContentDefaults) as ProductDetailFormValues;
-  const smartFeatureValues = detailContent.smartFeatures ?? [];
   const technicalGroupValues = detailContent.technicalGroups ?? [];
   const flattenedTechnicalSpecValues = flattenTechnicalGroupsToSpecs(technicalGroupValues, specValues);
   const smartFeatureLabels = uniqueList([
@@ -788,9 +740,6 @@ export function ProductForm({
     hasBluetoothValue ? "Bluetooth" : "",
     hasRfidValue ? "RFID" : "",
     has4gValue ? "4G" : "",
-    ...smartFeatureValues
-      .filter((feature) => feature.isActive !== false)
-      .map((feature) => cleanText(feature.title))
   ]);
   const powerText = cleanText(powerLabelValue || (powerKwValue ? `${powerKwValue} kW` : ""));
   const chargeText = cleanText(chargeTypeValue).toUpperCase();
@@ -2361,9 +2310,7 @@ export function ProductForm({
         register={register}
         setValue={setValue}
         badgeFields={badgeFields}
-        infoCardFields={infoCardFields}
         trustBlockFields={trustBlockFields}
-        policyFields={policyFields}
         faqFields={faqFields}
       />
 

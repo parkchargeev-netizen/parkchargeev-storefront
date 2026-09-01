@@ -86,23 +86,12 @@ const productDetailBadgeSchema = z.object({
   sortOrder: z.coerce.number().int().min(0).max(999).default(0)
 });
 
-const productPolicyDetailSchema = z.object({
-  title: z.string().trim().min(2).max(140),
-  body: z.string().trim().min(10).max(1200)
-});
 
 const productDetailFaqSchema = z.object({
   question: z.string().trim().min(3).max(180),
   answer: z.string().trim().min(10).max(1200)
 });
 
-const productSmartFeatureSchema = z.object({
-  title: z.string().trim().min(2).max(120),
-  description: z.string().trim().min(3).max(500),
-  iconName: z.string().trim().max(80).optional().or(z.literal("")),
-  isActive: z.boolean().default(true),
-  sortOrder: z.coerce.number().int().min(0).max(999).default(0)
-});
 
 const productTrustBlockSchema = z.object({
   title: z.string().trim().min(2).max(140),
@@ -157,7 +146,6 @@ export const productDetailContentSchema = z
   .object({
     adminSortOrder: z.coerce.number().int().min(0).max(9999).default(0),
     heroEyebrow: z.string().trim().max(80).optional().or(z.literal("")),
-    infoCards: z.array(productDetailTextPairSchema).default([]),
     badges: z.array(productDetailBadgeSchema).default([]),
     galleryItems: productDetailStringListSchema,
     galleryFeatureLabels: productDetailStringListSchema,
@@ -183,10 +171,6 @@ export const productDetailContentSchema = z
     useCases: productDetailStringListSchema,
     highlightsHeading: z.string().trim().max(120).optional().or(z.literal("")),
     highlights: productDetailStringListSchema,
-    smartFeatures: z.array(productSmartFeatureSchema).default([]),
-    smartFeaturesEnabled: z.boolean().default(true),
-    smartFeaturesEyebrow: z.string().trim().max(100).optional().or(z.literal("")),
-    smartFeaturesHeading: z.string().trim().max(180).optional().or(z.literal("")),
     technicalGroups: z.array(productTechnicalSpecGroupSchema).default([]),
     purchaseBenefits: productDetailStringListSchema,
     purchaseReadiness: z.array(productDetailTextPairSchema).default([]),
@@ -212,8 +196,6 @@ export const productDetailContentSchema = z
     trustEyebrow: z.string().trim().max(100).optional().or(z.literal("")),
     trustHeading: z.string().trim().max(180).optional().or(z.literal("")),
     trustBlocks: z.array(productTrustBlockSchema).default([]),
-    policiesEnabled: z.boolean().default(true),
-    policyDetails: z.array(productPolicyDetailSchema).default([]),
     faqHeading: z.string().trim().max(120).optional().or(z.literal("")),
     faqs: z.array(productDetailFaqSchema).default([]),
     relatedEnabled: z.boolean().default(true),
