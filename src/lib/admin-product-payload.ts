@@ -1,4 +1,4 @@
-import { inferProductMediaType } from "@/lib/product-media";
+﻿import { inferProductMediaType } from "@/lib/product-media";
 import {
   normalizeProductBadgePlacement,
   productBadgePlacementValues
@@ -40,23 +40,6 @@ function hasCompleteText(value: unknown, fields: string[]) {
   return fields.every((field) => getText(value, field).length > 0);
 }
 
-function normalizeTextPairs(value: unknown) {
-  return filterRows(value, (row) => hasAnyText(row, ["label", "value", "description", "iconName"]))
-    .filter((row) => hasCompleteText(row, ["label", "value"]))
-    .map((row, index) => {
-      const item = row as Record<string, unknown>;
-
-      return {
-        label: getText(item, "label"),
-        value: getText(item, "value"),
-        description: getText(item, "description"),
-        iconName: getText(item, "iconName"),
-        isActive: getBoolean(item.isActive),
-        sortOrder: normalizeNumber(item.sortOrder, index + 1)
-      };
-    });
-}
-
 function normalizeBadges(value: unknown) {
   return filterRows(value, (row) => hasAnyText(row, ["label", "tone", "position"]))
     .filter((row) => hasCompleteText(row, ["label"]))
@@ -75,22 +58,6 @@ function normalizeBadges(value: unknown) {
           : normalizeProductBadgePlacement(position),
         isActive: getBoolean(badge.isActive),
         sortOrder: normalizeNumber(badge.sortOrder, index + 1)
-      };
-    });
-}
-
-function normalizeTrustBlocks(value: unknown) {
-  return filterRows(value, (row) => hasAnyText(row, ["title", "body", "iconName"]))
-    .filter((row) => hasCompleteText(row, ["title", "body"]))
-    .map((row, index) => {
-      const block = row as Record<string, unknown>;
-
-      return {
-        title: getText(block, "title"),
-        body: getText(block, "body"),
-        iconName: getText(block, "iconName") || "shield",
-        isActive: getBoolean(block.isActive),
-        sortOrder: normalizeNumber(block.sortOrder, index + 1)
       };
     });
 }
@@ -115,7 +82,7 @@ function normalizeTechnicalGroups(value: unknown) {
         });
 
       return {
-        title: getText(group, "title") || "Teknik özellikler",
+        title: getText(group, "title") || "Teknik Ã¶zellikler",
         description: getText(group, "description"),
         isActive: getBoolean(group.isActive),
         sortOrder: normalizeNumber(group.sortOrder, groupIndex + 1),
@@ -129,8 +96,8 @@ function normalizeTechnicalGroups(value: unknown) {
   return items.length
     ? [
         {
-          title: "Teknik özellikler",
-          description: "Ürün detayında tek tabloda görünen teknik özellikler.",
+          title: "Teknik Ã¶zellikler",
+          description: "ÃœrÃ¼n detayÄ±nda tek tabloda gÃ¶rÃ¼nen teknik Ã¶zellikler.",
           isActive: true,
           sortOrder: 1,
           items: items.map((item, index) => ({
@@ -179,8 +146,6 @@ function normalizeDetailContent(detailContent: unknown) {
     ...detail,
     technicalGroups,
     badges: normalizeBadges(detail.badges),
-    purchaseReadiness: normalizeTextPairs(detail.purchaseReadiness),
-    trustBlocks: normalizeTrustBlocks(detail.trustBlocks),
     faqs: filterRows(
       detail.faqs,
       (row) => hasAnyText(row, ["question", "answer"])
@@ -249,3 +214,4 @@ export function normalizeAdminProductPayload<T>(payload: T): T {
     detailContent
   } as T;
 }
+

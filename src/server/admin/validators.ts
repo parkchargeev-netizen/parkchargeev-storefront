@@ -1,4 +1,4 @@
-import { z } from "zod";
+﻿import { z } from "zod";
 
 import { productBadgePlacementValues } from "@/lib/product-detail-content";
 import {
@@ -22,7 +22,7 @@ const publicOrRemoteUrlSchema = z
   .max(500)
   .refine(
     (value) => value.startsWith("/") || value.startsWith("http://") || value.startsWith("https://"),
-    "URL /, http:// veya https:// ile başlamalıdır."
+    "URL /, http:// veya https:// ile baÅŸlamalÄ±dÄ±r."
   );
 
 export const adminLoginSchema = z.object({
@@ -61,15 +61,6 @@ export const productVariantSchema = z.object({
 
 const productDetailStringListSchema = z.array(z.string().trim().min(1).max(240)).default([]);
 
-const productDetailTextPairSchema = z.object({
-  label: z.string().trim().min(2).max(120),
-  value: z.string().trim().min(2).max(320),
-  description: z.string().trim().max(500).optional().or(z.literal("")),
-  iconName: z.string().trim().max(80).optional().or(z.literal("")),
-  isActive: z.boolean().default(true),
-  sortOrder: z.coerce.number().int().min(0).max(999).default(0)
-});
-
 const productDetailBadgeSchema = z.object({
   label: z.string().trim().min(1).max(80),
   tone: z.enum(["success", "primary", "warning", "neutral", "danger"]).default("neutral"),
@@ -79,7 +70,7 @@ const productDetailBadgeSchema = z.object({
       (value) =>
         ([...productBadgePlacementValues, "hero", "image-left", "image-right", "card"] as string[])
           .includes(value),
-      "Etiket konumu geçersiz."
+      "Etiket konumu geÃ§ersiz."
     )
     .default("detail_title_top"),
   isActive: z.boolean().default(true),
@@ -92,14 +83,6 @@ const productDetailFaqSchema = z.object({
   answer: z.string().trim().min(10).max(1200)
 });
 
-
-const productTrustBlockSchema = z.object({
-  title: z.string().trim().min(2).max(140),
-  body: z.string().trim().min(3).max(1000),
-  iconName: z.string().trim().max(80).optional().or(z.literal("")),
-  isActive: z.boolean().default(true),
-  sortOrder: z.coerce.number().int().min(0).max(999).default(0)
-});
 
 const productActionLabelsSchema = z.object({
   priceEyebrow: z.string().trim().max(80).optional().or(z.literal("")),
@@ -159,7 +142,7 @@ export const productDetailContentSchema = z
       .max(500)
       .refine(
         (value) => value === "" || value.startsWith("/") || value.startsWith("https://"),
-        "Link / ile veya https:// ile başlamalıdır."
+        "Link / ile veya https:// ile baÅŸlamalÄ±dÄ±r."
       )
       .optional()
       .or(z.literal("")),
@@ -172,9 +155,6 @@ export const productDetailContentSchema = z
     highlightsHeading: z.string().trim().max(120).optional().or(z.literal("")),
     highlights: productDetailStringListSchema,
     technicalGroups: z.array(productTechnicalSpecGroupSchema).default([]),
-    purchaseBenefits: productDetailStringListSchema,
-    purchaseReadiness: z.array(productDetailTextPairSchema).default([]),
-    decisionChecks: productDetailStringListSchema,
     support: z
       .object({
         title: z.string().trim().max(120).optional().or(z.literal("")),
@@ -186,16 +166,12 @@ export const productDetailContentSchema = z
           .max(500)
           .refine(
             (value) => value === "" || value.startsWith("/") || value.startsWith("https://"),
-            "Link / ile veya https:// ile başlamalıdır."
+            "Link / ile veya https:// ile baÅŸlamalÄ±dÄ±r."
           )
           .optional()
           .or(z.literal(""))
       })
       .default({}),
-    trustEnabled: z.boolean().default(true),
-    trustEyebrow: z.string().trim().max(100).optional().or(z.literal("")),
-    trustHeading: z.string().trim().max(180).optional().or(z.literal("")),
-    trustBlocks: z.array(productTrustBlockSchema).default([]),
     faqHeading: z.string().trim().max(120).optional().or(z.literal("")),
     faqs: z.array(productDetailFaqSchema).default([]),
     relatedEnabled: z.boolean().default(true),
@@ -375,7 +351,7 @@ export const adminNavigationItemSchema = z.object({
     .max(500)
     .refine(
       (value) => value.startsWith("/") || value.startsWith("https://"),
-      "Link / ile veya https:// ile başlamalıdır."
+      "Link / ile veya https:// ile baÅŸlamalÄ±dÄ±r."
     ),
   sortOrder: z.coerce.number().int().min(0).max(9999).default(0),
   isActive: z.boolean().default(true),
@@ -422,7 +398,7 @@ export const adminSiteSettingsSchema = z.object({
             .max(500)
             .refine(
               (value) => value === "" || value.startsWith("/") || value.startsWith("https://"),
-              "Duyuru linki / veya https:// ile başlamalıdır."
+              "Duyuru linki / veya https:// ile baÅŸlamalÄ±dÄ±r."
             )
             .optional()
             .or(z.literal("")),
@@ -485,7 +461,7 @@ export const adminSitePageSchema = z.object({
     .min(1)
     .max(220)
     .transform((value) => value.replace(/^\/+|\/+$/g, ""))
-    .refine((value) => value.length > 0, "Slug boş olamaz."),
+    .refine((value) => value.length > 0, "Slug boÅŸ olamaz."),
   title: z.string().trim().min(3).max(180),
   eyebrow: z.string().trim().max(120).optional().or(z.literal("")),
   excerpt: z.string().trim().min(10).max(2000),
@@ -502,3 +478,5 @@ export const adminSitePageSchema = z.object({
     .enum(["always", "hourly", "daily", "weekly", "monthly", "yearly", "never"])
     .default("monthly")
 });
+
+

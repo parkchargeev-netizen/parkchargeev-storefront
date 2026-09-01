@@ -1,4 +1,4 @@
-import {
+﻿import {
   and,
   asc,
   count,
@@ -135,22 +135,9 @@ function getProductAdminSortOrder(schemaJsonLd: unknown) {
 }
 
 function productAdminSortOrderSql() {
-  const rawSortOrder = sql<number>`coalesce(nullif(${products.schemaJsonLd} -> ${productDetailContentSchemaKey} ->> 'adminSortOrder', '')::integer, 0)`;
+  const legacySortOrder = sql<number>`coalesce(nullif(${products.schemaJsonLd} -> ${productDetailContentSchemaKey} ->> 'adminSortOrder', '')::integer, 0)`;
 
-  return sql<number>`case when ${rawSortOrder} > 0 then ${rawSortOrder} else 2147483647 end`;
-}
-
-function withProductAdminSortOrder(schemaJsonLd: unknown, sortOrder: number) {
-  const baseSchema =
-    schemaJsonLd && typeof schemaJsonLd === "object" && !Array.isArray(schemaJsonLd)
-      ? (schemaJsonLd as Record<string, unknown>)
-      : {};
-  const detailContent = getProductDetailContentFromSchemaJsonLd(baseSchema) ?? {};
-
-  return withProductDetailContentSchemaJsonLd(baseSchema, {
-    ...detailContent,
-    adminSortOrder: sortOrder
-  });
+  return sql<number>`case when ${products.sortOrder} > 0 then ${products.sortOrder} when ${legacySortOrder} > 0 then ${legacySortOrder} else 2147483647 end`;
 }
 
 function revalidateProductSurfaces(slug: string) {
@@ -182,9 +169,9 @@ function getMarketingProductCategorySlug(product: ProductModel) {
   switch (product.category) {
     case "Ev Tipi":
       return "ev-tipi";
-    case "İş Yeri Tipi":
+    case "Ä°ÅŸ Yeri Tipi":
       return "is-yeri-tipi";
-    case "DC Hızlı Şarj":
+    case "DC HÄ±zlÄ± Åarj":
       return "dc-hizli-sarj";
     case "Aksesuar":
       return "aksesuar";
@@ -196,7 +183,7 @@ function getMarketingProductCategorySlug(product: ProductModel) {
 function getMarketingProductTags(product: ProductModel) {
   const tags = new Set<string>();
 
-  if (product.badge === "Çok Satan") {
+  if (product.badge === "Ã‡ok Satan") {
     tags.add("best_seller");
   }
 
@@ -261,7 +248,7 @@ function getMarketingConnectorType(product: ProductModel) {
     return "CCS2";
   }
 
-  return values.includes("Type 2") || product.category !== "DC Hızlı Şarj" ? "Type 2" : "CCS2";
+  return values.includes("Type 2") || product.category !== "DC HÄ±zlÄ± Åarj" ? "Type 2" : "CCS2";
 }
 
 function getMarketingIpClass(product: ProductModel) {
@@ -353,6 +340,7 @@ async function seedMarketingProductsForAdmin() {
           canonicalUrl: `https://parkcharge.com/urun/${marketingProduct.slug}`,
           ogImageUrl: `https://placehold.co/1200x900/png?text=${encodeURIComponent(marketingProduct.name)}`,
           aiSummary: marketingProduct.summary.slice(0, 180),
+          sortOrder: getProductAdminSortOrder(marketingProduct.detailContent ?? null),
           schemaJsonLd: withProductDetailContentSchemaJsonLd({
             "@context": "https://schema.org",
             "@type": "Product",
@@ -376,7 +364,7 @@ async function seedMarketingProductsForAdmin() {
           has4g: false,
           installRequired: marketingProduct.category !== "Aksesuar",
           searchKeywords: marketingProduct.seoIntent,
-          adminNotes: "Mağaza vitrininden otomatik oluşturulan yönetilebilir katalog kaydı."
+          adminNotes: "MaÄŸaza vitrininden otomatik oluÅŸturulan yÃ¶netilebilir katalog kaydÄ±."
         })
         .onConflictDoNothing()
         .returning({ id: products.id });
@@ -415,7 +403,7 @@ async function seedMarketingProductsForAdmin() {
           .values(
             (marketingProduct.galleryItems?.length
               ? marketingProduct.galleryItems
-              : ["Ön görünüm", "Yan profil", "Montaj görünümü", "Video"]
+              : ["Ã–n gÃ¶rÃ¼nÃ¼m", "Yan profil", "Montaj gÃ¶rÃ¼nÃ¼mÃ¼", "Video"]
             ).map((item, index) => ({
               productId: targetProductId,
               url: `https://placehold.co/1200x900/png?text=${encodeURIComponent(`${marketingProduct.name} ${item}`)}`,
@@ -541,14 +529,14 @@ function getPublicCategoryLabel(categorySlugs: string[], base?: ProductModel) {
   const primarySlug = categorySlugs[0];
   const option = productCategoryOptions.find((item) => item.slug === primarySlug);
 
-  return option?.label ?? base?.category ?? primarySlug ?? "Şarj Çözümleri";
+  return option?.label ?? base?.category ?? primarySlug ?? "Åarj Ã‡Ã¶zÃ¼mleri";
 }
 
 function getPublicProductBadge(tags: string[], base?: ProductModel) {
   const values = new Set(tags);
 
   if (values.has("best_seller")) {
-    return "Çok Satan";
+    return "Ã‡ok Satan";
   }
 
   if (values.has("new")) {
@@ -560,7 +548,7 @@ function getPublicProductBadge(tags: string[], base?: ProductModel) {
   }
 
   if (values.has("discounted")) {
-    return "İndirimli";
+    return "Ä°ndirimli";
   }
 
   return base?.badge;
@@ -621,7 +609,7 @@ function mapAdminProductToPublicProduct(
       : base?.specs ?? [];
   const media: ProductMediaModel[] = mediaRows.map((item, index) => ({
     url: item.url,
-    altText: item.altText || `${row.name} görsel ${index + 1}`,
+    altText: item.altText || `${row.name} gÃ¶rsel ${index + 1}`,
     mediaType: inferProductMediaType(item.url, item.mediaType),
     sortOrder: item.sortOrder,
     isPrimary: item.isPrimary
@@ -1058,7 +1046,7 @@ async function assertProductWriteIsUnique(
 
   if (duplicateSku) {
     throw new AdminProductConflictError(
-      `${duplicateSku} SKU değeri form içinde birden fazla kez kullanılmış.`
+      `${duplicateSku} SKU deÄŸeri form iÃ§inde birden fazla kez kullanÄ±lmÄ±ÅŸ.`
     );
   }
 
@@ -1070,7 +1058,7 @@ async function assertProductWriteIsUnique(
 
   if (slugConflict && slugConflict.id !== productId) {
     throw new AdminProductConflictError(
-      "Bu slug ile kayıtlı başka bir ürün var. Lütfen benzersiz bir slug kullanın."
+      "Bu slug ile kayÄ±tlÄ± baÅŸka bir Ã¼rÃ¼n var. LÃ¼tfen benzersiz bir slug kullanÄ±n."
     );
   }
 
@@ -1091,7 +1079,7 @@ async function assertProductWriteIsUnique(
 
   if (conflictingSku) {
     throw new AdminProductConflictError(
-      `${conflictingSku.sku} SKU değeri başka bir üründe kullanılıyor.`
+      `${conflictingSku.sku} SKU deÄŸeri baÅŸka bir Ã¼rÃ¼nde kullanÄ±lÄ±yor.`
     );
   }
 }
@@ -1150,7 +1138,7 @@ async function writeProductVariants(
           quantityAfter: variant.stockQuantity,
           quantityDelta: variant.stockQuantity - previousStock,
           reason: "manual_update",
-          note: "Admin ürün formu üzerinden stok güncellendi.",
+          note: "Admin Ã¼rÃ¼n formu Ã¼zerinden stok gÃ¼ncellendi.",
           adminUserId: actor?.sub ?? null
         });
       }
@@ -1171,7 +1159,7 @@ async function writeProductVariants(
       quantityAfter: variant.stockQuantity,
       quantityDelta: variant.stockQuantity,
       reason: "product_created",
-      note: "Admin ürün formu üzerinden varyant oluşturuldu.",
+      note: "Admin Ã¼rÃ¼n formu Ã¼zerinden varyant oluÅŸturuldu.",
       adminUserId: actor?.sub ?? null
     });
   }
@@ -1206,7 +1194,7 @@ async function writeProductVariants(
         quantityAfter: 0,
         quantityDelta: -(previousVariant?.stockQuantity ?? 0),
         reason: "variant_archived",
-        note: "Sipariş veya sepet bağı olan varyant silinemedi, stok sıfırlandı.",
+        note: "SipariÅŸ veya sepet baÄŸÄ± olan varyant silinemedi, stok sÄ±fÄ±rlandÄ±.",
         adminUserId: actor?.sub ?? null
       });
     }
@@ -1222,7 +1210,7 @@ async function ensureDefaultCategories() {
       productCategoryOptions.map((item) => ({
         name: item.label,
         slug: item.slug,
-        description: `${item.label} kategori kaydı`
+        description: `${item.label} kategori kaydÄ±`
       }))
     )
     .onConflictDoNothing();
@@ -1502,7 +1490,7 @@ async function writeProductCollections(
     entityType: "product_collections",
     entityId: productId,
     action: "sync",
-    summary: "Ürün koleksiyon alanları senkronize edildi.",
+    summary: "ÃœrÃ¼n koleksiyon alanlarÄ± senkronize edildi.",
     afterPayload: {
       categories: input.categories,
       tags: input.tags,
@@ -1652,6 +1640,7 @@ export async function listAdminProducts(input: ListQueryInput) {
       defaultPriceKurus: products.defaultPriceKurus,
       discountedPriceKurus: products.discountedPriceKurus,
       schemaJsonLd: products.schemaJsonLd,
+      sortOrder: products.sortOrder,
       updatedAt: products.updatedAt
     })
     .from(products)
@@ -1677,7 +1666,7 @@ export async function listAdminProducts(input: ListQueryInput) {
       const media = collections.media.get(item.id) ?? [];
       return {
         ...item,
-        sortOrder: getProductAdminSortOrder(item.schemaJsonLd),
+        sortOrder: item.sortOrder || getProductAdminSortOrder(item.schemaJsonLd),
         defaultVariant,
         variants,
         media,
@@ -1719,13 +1708,13 @@ export async function updateAdminProductSortOrders(
 
   const db = getDb();
   const beforeRows = await db
-    .select({ id: products.id, name: products.name, slug: products.slug, schemaJsonLd: products.schemaJsonLd })
+    .select({ id: products.id, name: products.name, slug: products.slug, sortOrder: products.sortOrder, schemaJsonLd: products.schemaJsonLd })
     .from(products)
     .where(inArray(products.id, [...normalizedById.keys()]));
   const changedRows = beforeRows.flatMap((product) => {
     const nextSortOrder = normalizedById.get(product.id);
 
-    if (nextSortOrder === undefined || getProductAdminSortOrder(product.schemaJsonLd) === nextSortOrder) {
+    if (nextSortOrder === undefined || Number(product.sortOrder ?? 0) === nextSortOrder) {
       return [];
     }
 
@@ -1738,11 +1727,9 @@ export async function updateAdminProductSortOrders(
 
   await db.transaction(async (tx) => {
     for (const { product, nextSortOrder } of changedRows) {
-      const schemaJsonLd = withProductAdminSortOrder(product.schemaJsonLd, nextSortOrder);
-
       await tx
         .update(products)
-        .set({ schemaJsonLd, updatedAt: new Date() })
+        .set({ sortOrder: nextSortOrder, updatedAt: new Date() })
         .where(eq(products.id, product.id));
 
       await recordAuditLog({
@@ -1751,9 +1738,9 @@ export async function updateAdminProductSortOrders(
         entityType: "product",
         entityId: product.id,
         action: "sort_update",
-        summary: `${product.name} ürün sırası ${nextSortOrder} olarak güncellendi.`,
+        summary: `${product.name} Ã¼rÃ¼n sÄ±rasÄ± ${nextSortOrder} olarak gÃ¼ncellendi.`,
         beforePayload: product,
-        afterPayload: { ...product, schemaJsonLd, sortOrder: nextSortOrder },
+        afterPayload: { ...product, sortOrder: nextSortOrder },
         ipAddress: requestMeta?.ipAddress,
         userAgent: requestMeta?.userAgent
       });
@@ -1796,7 +1783,7 @@ export async function updateAdminProductStatuses(
       entityType: "product",
       entityId: product.id,
       action: status === "archived" ? "archive" : "status_update",
-      summary: `${product.name} ürünü ${status} durumuna alındı.`,
+      summary: `${product.name} Ã¼rÃ¼nÃ¼ ${status} durumuna alÄ±ndÄ±.`,
       beforePayload: product,
       afterPayload: { ...product, status },
       ipAddress: requestMeta?.ipAddress,
@@ -1876,7 +1863,7 @@ export async function deleteAdminProducts(
         entityType: "product",
         entityId: product.id,
         action: "delete",
-        summary: product.name + " ürünü kalıcı olarak silindi.",
+        summary: product.name + " Ã¼rÃ¼nÃ¼ kalÄ±cÄ± olarak silindi.",
         beforePayload: product,
         afterPayload: null,
         ipAddress: requestMeta?.ipAddress,
@@ -1963,6 +1950,7 @@ export async function upsertAdminProduct(
     ogImageUrl: input.ogImageUrl || null,
     aiSummary: input.aiSummary || null,
     schemaJsonLd,
+    sortOrder: input.detailContent.adminSortOrder ?? 0,
     defaultPriceKurus: input.priceKurus,
     discountedPriceKurus: input.discountedPriceKurus ?? null,
     discountEndsAt: input.discountEndsAt ? new Date(input.discountEndsAt) : null,
@@ -2010,7 +1998,7 @@ export async function upsertAdminProduct(
       entityType: "product",
       entityId: input.id,
       action: "update",
-      summary: `${input.name} ürünü güncellendi.`,
+      summary: `${input.name} Ã¼rÃ¼nÃ¼ gÃ¼ncellendi.`,
       beforePayload: before,
       afterPayload: after,
       ipAddress: requestMeta?.ipAddress,
@@ -2048,7 +2036,7 @@ export async function upsertAdminProduct(
     entityType: "product",
     entityId: createdProduct.id,
     action: "create",
-    summary: `${input.name} ürünü oluşturuldu.`,
+    summary: `${input.name} Ã¼rÃ¼nÃ¼ oluÅŸturuldu.`,
     afterPayload: after,
     ipAddress: requestMeta?.ipAddress,
     userAgent: requestMeta?.userAgent
@@ -2257,7 +2245,7 @@ export async function updateAdminQuote(
     quoteRequestId: id,
     adminUserId: actor?.sub ?? null,
     activityType: "status_change",
-    note: input.note || `${input.status} durumuna güncellendi.`,
+    note: input.note || `${input.status} durumuna gÃ¼ncellendi.`,
     payload: {
       fromStatus: before.status,
       toStatus: input.status
@@ -2272,7 +2260,7 @@ export async function updateAdminQuote(
     entityType: "quote_request",
     entityId: id,
     action: "update",
-    summary: `${before.fullName} teklif kaydı güncellendi.`,
+    summary: `${before.fullName} teklif kaydÄ± gÃ¼ncellendi.`,
     beforePayload: before,
     afterPayload: after,
     ipAddress: requestMeta?.ipAddress,
@@ -2398,7 +2386,7 @@ export async function upsertAdminUser(
       entityType: "admin_user",
       entityId: input.id,
       action: "update",
-      summary: `${input.email} admin kullanıcısı güncellendi.`,
+      summary: `${input.email} admin kullanÄ±cÄ±sÄ± gÃ¼ncellendi.`,
       beforePayload: before,
       afterPayload: after,
       ipAddress: requestMeta?.ipAddress,
@@ -2409,7 +2397,7 @@ export async function upsertAdminUser(
   }
 
   if (!input.password) {
-    throw new Error("Yeni admin kullanıcısı için şifre gereklidir.");
+    throw new Error("Yeni admin kullanÄ±cÄ±sÄ± iÃ§in ÅŸifre gereklidir.");
   }
 
   const [created] = await db
@@ -2431,7 +2419,7 @@ export async function upsertAdminUser(
     entityType: "admin_user",
     entityId: created.id,
     action: "create",
-    summary: `${created.email} admin kullanıcısı oluşturuldu.`,
+    summary: `${created.email} admin kullanÄ±cÄ±sÄ± oluÅŸturuldu.`,
     afterPayload: created,
     ipAddress: requestMeta?.ipAddress,
     userAgent: requestMeta?.userAgent
@@ -2635,7 +2623,7 @@ export async function updateAdminServiceLead(
     entityType: "service_lead",
     entityId: id,
     action: "update",
-    summary: `${before.fullName} saha talebi güncellendi.`,
+    summary: `${before.fullName} saha talebi gÃ¼ncellendi.`,
     beforePayload: before,
     afterPayload: after,
     ipAddress: requestMeta?.ipAddress,
@@ -2761,7 +2749,7 @@ export async function upsertAdminBlogPost(
       entityType: "blog_post",
       entityId: input.id,
       action: "update",
-      summary: `${input.title} içeriği güncellendi.`,
+      summary: `${input.title} iÃ§eriÄŸi gÃ¼ncellendi.`,
       beforePayload: before,
       afterPayload: after,
       ipAddress: requestMeta?.ipAddress,
@@ -2780,7 +2768,7 @@ export async function upsertAdminBlogPost(
     entityType: "blog_post",
     entityId: created.id,
     action: "create",
-    summary: `${created.title} içeriği oluşturuldu.`,
+    summary: `${created.title} iÃ§eriÄŸi oluÅŸturuldu.`,
     afterPayload: created,
     ipAddress: requestMeta?.ipAddress,
     userAgent: requestMeta?.userAgent
@@ -2839,7 +2827,7 @@ export async function upsertAdminBrand(
       entityType: "brand",
       entityId: input.id,
       action: "update",
-      summary: `${input.name} markası güncellendi.`,
+      summary: `${input.name} markasÄ± gÃ¼ncellendi.`,
       afterPayload: values,
       ipAddress: requestMeta?.ipAddress,
       userAgent: requestMeta?.userAgent
@@ -2856,7 +2844,7 @@ export async function upsertAdminBrand(
     entityType: "brand",
     entityId: created.id,
     action: "create",
-    summary: `${created.name} markası oluşturuldu.`,
+    summary: `${created.name} markasÄ± oluÅŸturuldu.`,
     afterPayload: created,
     ipAddress: requestMeta?.ipAddress,
     userAgent: requestMeta?.userAgent
@@ -2879,7 +2867,7 @@ export async function deleteAdminBrand(
   const [before] = await db.select().from(brands).where(eq(brands.id, id)).limit(1);
 
   if (!before) {
-    return { deletedCount: 0, blockedReason: "Marka bulunamadı." };
+    return { deletedCount: 0, blockedReason: "Marka bulunamadÄ±." };
   }
 
   const [productReference] = await db
@@ -2890,7 +2878,7 @@ export async function deleteAdminBrand(
   if (Number(productReference?.total ?? 0) > 0) {
     return {
       deletedCount: 0,
-      blockedReason: "Bu markaya bağlı ürünler var. Önce ürünleri başka markaya taşıyın veya markayı pasife alın."
+      blockedReason: "Bu markaya baÄŸlÄ± Ã¼rÃ¼nler var. Ã–nce Ã¼rÃ¼nleri baÅŸka markaya taÅŸÄ±yÄ±n veya markayÄ± pasife alÄ±n."
     };
   }
 
@@ -2901,7 +2889,7 @@ export async function deleteAdminBrand(
     entityType: "brand",
     entityId: id,
     action: "delete",
-    summary: `${before.name} markası kalıcı olarak silindi.`,
+    summary: `${before.name} markasÄ± kalÄ±cÄ± olarak silindi.`,
     beforePayload: before,
     afterPayload: null,
     ipAddress: requestMeta?.ipAddress,
@@ -2939,7 +2927,7 @@ export async function upsertAdminCategory(
       entityType: "category",
       entityId: input.id,
       action: "update",
-      summary: `${input.name} kategorisi güncellendi.`,
+      summary: `${input.name} kategorisi gÃ¼ncellendi.`,
       afterPayload: values,
       ipAddress: requestMeta?.ipAddress,
       userAgent: requestMeta?.userAgent
@@ -2956,7 +2944,7 @@ export async function upsertAdminCategory(
     entityType: "category",
     entityId: created.id,
     action: "create",
-    summary: `${created.name} kategorisi oluşturuldu.`,
+    summary: `${created.name} kategorisi oluÅŸturuldu.`,
     afterPayload: created,
     ipAddress: requestMeta?.ipAddress,
     userAgent: requestMeta?.userAgent
@@ -2979,7 +2967,7 @@ export async function deleteAdminCategory(
   const [before] = await db.select().from(categories).where(eq(categories.id, id)).limit(1);
 
   if (!before) {
-    return { deletedCount: 0, blockedReason: "Kategori bulunamadı." };
+    return { deletedCount: 0, blockedReason: "Kategori bulunamadÄ±." };
   }
 
   const [childReference] = await db
@@ -3003,7 +2991,7 @@ export async function deleteAdminCategory(
     return {
       deletedCount: 0,
       blockedReason:
-        "Bu kategori ürün veya alt kategori bağlantısı taşıyor. Önce bağlantıları taşıyın veya kategoriyi pasife alın."
+        "Bu kategori Ã¼rÃ¼n veya alt kategori baÄŸlantÄ±sÄ± taÅŸÄ±yor. Ã–nce baÄŸlantÄ±larÄ± taÅŸÄ±yÄ±n veya kategoriyi pasife alÄ±n."
     };
   }
 
@@ -3014,7 +3002,7 @@ export async function deleteAdminCategory(
     entityType: "category",
     entityId: id,
     action: "delete",
-    summary: `${before.name} kategorisi kalıcı olarak silindi.`,
+    summary: `${before.name} kategorisi kalÄ±cÄ± olarak silindi.`,
     beforePayload: before,
     afterPayload: null,
     ipAddress: requestMeta?.ipAddress,
@@ -3032,3 +3020,6 @@ export {
   publicProductMerchandisingSections
 } from "@/features/home/domain/product-merchandising";
 export type { PublicMerchandisingSlotKey } from "@/features/home/domain/product-merchandising";
+
+
+

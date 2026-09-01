@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -6,8 +6,7 @@ import {
   ProductDescriptionBlock,
   ProductFaqs,
   ProductRelatedProducts,
-  ProductTechnicalSpecs,
-  ProductTrustGrid
+  ProductTechnicalSpecs
 } from "@/components/shop/product-detail-sections";
 import { ProductGallery } from "@/components/shop/product-gallery";
 import { ProductPurchasePanel } from "@/components/shop/product-purchase-panel";
@@ -60,7 +59,7 @@ export async function generateMetadata({
 
   if (!product) {
     return {
-      title: "Ürün bulunamadı",
+      title: "ÃœrÃ¼n bulunamadÄ±",
       robots: {
         index: false,
         follow: false
@@ -135,15 +134,15 @@ export default async function ProductDetailPage({
   );
   const breadcrumbJsonLd = getBreadcrumbJsonLd([
     { name: "Ana Sayfa", path: "/" },
-    { name: "Mağaza", path: "/magaza" },
+    { name: "MaÄŸaza", path: "/magaza" },
     { name: product.name, path: `/urun/${product.slug}` }
   ]);
   const faqJsonLd = getFaqJsonLd(detailContent.faqs);
   const sectionNavItems = [
-    { href: "#product-description", label: "Açıklama" },
-    { href: "#technical-specs", label: "Teknik Özellikler" },
+    { href: "#product-description", label: "AÃ§Ä±klama" },
+    { href: "#technical-specs", label: "Teknik Ã–zellikler" },
     ...(detailContent.relatedEnabled !== false && relatedProducts.length > 0
-      ? [{ href: "#related-products", label: "Benzer Ürünler" }]
+      ? [{ href: "#related-products", label: "Benzer ÃœrÃ¼nler" }]
       : []),
     ...(detailContent.reviews.isEnabled
       ? [{ href: "#product-reviews", label: "Yorumlar" }]
@@ -155,30 +154,28 @@ export default async function ProductDetailPage({
       <JsonLd data={[productJsonLd, breadcrumbJsonLd, faqJsonLd]} />
 
       <div className="product-commerce-shell">
-        <nav aria-label="Ürün yolu" className="product-commerce-breadcrumb">
+        <nav aria-label="ÃœrÃ¼n yolu" className="product-commerce-breadcrumb">
           <Link href="/">Ana Sayfa</Link>
           <span>/</span>
-          <Link href="/magaza">Mağaza</Link>
+          <Link href="/magaza">MaÄŸaza</Link>
           <span>/</span>
           <span>{product.category}</span>
           <span>/</span>
           <strong>{product.name}</strong>
         </nav>
 
-        <section className="product-commerce-hero" aria-label="Ürün satın alma alanı">
+        <section className="product-commerce-hero" aria-label="ÃœrÃ¼n satÄ±n alma alanÄ±">
           <div className="product-commerce-media">
             <ProductGallery
               productName={product.name}
               items={mediaItems}
               imageUrl={productImageUrl}
               mediaItems={product.media}
-              featureLabels={detailContent.galleryFeatureLabels}
-              deviceCaption={detailContent.galleryDeviceCaption}
               commerceBadges={productBadges}
             />
           </div>
 
-          <aside className="product-commerce-buybox" aria-label="Ürün bilgisi ve sepet">
+          <aside className="product-commerce-buybox" aria-label="ÃœrÃ¼n bilgisi ve sepet">
             <div className="product-commerce-meta">
               {[detailContent.heroEyebrow]
                 .filter(Boolean)
@@ -232,7 +229,7 @@ export default async function ProductDetailPage({
           </aside>
         </section>
         <nav
-          aria-label="Ürün detay bölümleri"
+          aria-label="ÃœrÃ¼n detay bÃ¶lÃ¼mleri"
           className="product-commerce-section-nav"
         >
           {sectionNavItems.map((item) => (
@@ -252,12 +249,6 @@ export default async function ProductDetailPage({
           />
         </div>
         <ProductTechnicalSpecs detailContent={detailContent} groups={technicalGroups} />
-        <div
-          id="trust-section"
-          className="product-commerce-anchor-section product-commerce-trust-stack"
-        >
-          <ProductTrustGrid detailContent={detailContent} />
-        </div>
         <ProductFaqs detailContent={detailContent} />
         <div id="related-products" className="product-commerce-anchor-section">
           <ProductRelatedProducts
@@ -278,3 +269,6 @@ export default async function ProductDetailPage({
     </main>
   );
 }
+
+
+

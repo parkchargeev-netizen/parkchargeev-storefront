@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import dynamic from "next/dynamic";
@@ -48,7 +48,7 @@ const RichTextEditor = dynamic(
     ssr: false,
     loading: () => (
       <div className="min-h-[220px] rounded-lg border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-500">
-        Editör yükleniyor...
+        EditÃ¶r yÃ¼kleniyor...
       </div>
     )
   }
@@ -173,11 +173,11 @@ const emptyValues: ProductFormValues = {
 
 const productFormSections = [
   { id: "temel-bilgiler", label: "Temel" },
-  { id: "fiyat-stok", label: "Satış" },
+  { id: "fiyat-stok", label: "SatÄ±ÅŸ" },
   { id: "teknik", label: "Teknik" },
-  { id: "görseller", label: "Görsel" },
-  { id: "özellikler", label: "Özellik" },
-  { id: "katalog", label: "Gelişmiş" },
+  { id: "gÃ¶rseller", label: "GÃ¶rsel" },
+  { id: "Ã¶zellikler", label: "Ã–zellik" },
+  { id: "katalog", label: "GeliÅŸmiÅŸ" },
   { id: "seo", label: "SEO" }
 ];
 
@@ -196,15 +196,15 @@ function TechnicalFieldExamples() {
   const examples = [
     {
       title: "Ev tipi wallbox",
-      body: "Güç: 11 | Tip: AC | Konnektör: Type 2 | Faz: Trifaz | IP: IP54 | Kablo: Soketli veya 5 m"
+      body: "GÃ¼Ã§: 11 | Tip: AC | KonnektÃ¶r: Type 2 | Faz: Trifaz | IP: IP54 | Kablo: Soketli veya 5 m"
     },
     {
-      title: "Site / ofis cihazı",
-      body: "Güç: 22 | Tip: AC | Konnektör: Type 2 | Faz: Trifaz | IP: IP65 | Akıllı: RFID, OCPP, yük dengeleme"
+      title: "Site / ofis cihazÄ±",
+      body: "GÃ¼Ã§: 22 | Tip: AC | KonnektÃ¶r: Type 2 | Faz: Trifaz | IP: IP65 | AkÄ±llÄ±: RFID, OCPP, yÃ¼k dengeleme"
     },
     {
       title: "Aksesuar / kablo",
-      body: "Güç: 22 kW uyumlu | Konnektör: Type 2 - Type 2 | Faz: Trifaz | Kablo: 5 m veya 7 m"
+      body: "GÃ¼Ã§: 22 kW uyumlu | KonnektÃ¶r: Type 2 - Type 2 | Faz: Trifaz | Kablo: 5 m veya 7 m"
     }
   ];
 
@@ -222,10 +222,10 @@ function TechnicalFieldExamples() {
 
 function TechnicalSpecExamples() {
   const examples = [
-    ["Teknik", "Maksimum güç", "22 kW"],
-    ["Teknik", "Konnektör", "Type 2"],
-    ["Kurulum", "Faz yapısı", "Trifaz"],
-    ["Akıllı özellik", "Uzaktan yönetim", "RFID / OCPP uyumlu"]
+    ["Teknik", "Maksimum gÃ¼Ã§", "22 kW"],
+    ["Teknik", "KonnektÃ¶r", "Type 2"],
+    ["Kurulum", "Faz yapÄ±sÄ±", "Trifaz"],
+    ["AkÄ±llÄ± Ã¶zellik", "Uzaktan yÃ¶netim", "RFID / OCPP uyumlu"]
   ];
 
   return (
@@ -235,8 +235,8 @@ function TechnicalSpecExamples() {
           <p className="text-xs font-bold uppercase tracking-normal text-slate-500">
             Grup: {groupName}
           </p>
-          <p className="mt-2 text-sm font-semibold text-slate-950">Başlık: {label}</p>
-          <p className="mt-1 text-xs font-semibold text-emerald-800">Değer: {value}</p>
+          <p className="mt-2 text-sm font-semibold text-slate-950">BaÅŸlÄ±k: {label}</p>
+          <p className="mt-1 text-xs font-semibold text-emerald-800">DeÄŸer: {value}</p>
         </div>
       ))}
     </div>
@@ -260,7 +260,7 @@ function phaseLabel(value: string) {
     return "monofaz";
   }
 
-  return "altyapı";
+  return "altyapÄ±";
 }
 
 function uniqueList(values: string[]) {
@@ -278,7 +278,7 @@ function createTechnicalSpecItem(sortOrder: number) {
   };
 }
 
-const singleTechnicalGroupTitle = "Teknik özellikler";
+const singleTechnicalGroupTitle = "Teknik Ã¶zellikler";
 
 function createTechnicalGroup(sortOrder: number, title = singleTechnicalGroupTitle) {
   return {
@@ -294,18 +294,18 @@ function createTechnicalGroupTemplate() {
   return [
     {
       ...createTechnicalGroup(1),
-      description: "Ürün detayında tek tabloda görünen teknik özellikler.",
+      description: "ÃœrÃ¼n detayÄ±nda tek tabloda gÃ¶rÃ¼nen teknik Ã¶zellikler.",
       items: [
-        { ...createTechnicalSpecItem(1), name: "Ürün tipi", value: "AC duvar tipi şarj cihazı" },
-        { ...createTechnicalSpecItem(2), name: "Kullanım alanı", value: "Ev, site ve işletme" },
-        { ...createTechnicalSpecItem(3), name: "Maksimum güç", value: "22", unit: "kW" },
-        { ...createTechnicalSpecItem(4), name: "Faz yapısı", value: "Trifaz" },
-        { ...createTechnicalSpecItem(5), name: "Konnektör", value: "Type 2" },
+        { ...createTechnicalSpecItem(1), name: "ÃœrÃ¼n tipi", value: "AC duvar tipi ÅŸarj cihazÄ±" },
+        { ...createTechnicalSpecItem(2), name: "KullanÄ±m alanÄ±", value: "Ev, site ve iÅŸletme" },
+        { ...createTechnicalSpecItem(3), name: "Maksimum gÃ¼Ã§", value: "22", unit: "kW" },
+        { ...createTechnicalSpecItem(4), name: "Faz yapÄ±sÄ±", value: "Trifaz" },
+        { ...createTechnicalSpecItem(5), name: "KonnektÃ¶r", value: "Type 2" },
         { ...createTechnicalSpecItem(6), name: "Wi-Fi", value: "Desteklenir" },
         { ...createTechnicalSpecItem(7), name: "RFID", value: "Opsiyonel" },
         { ...createTechnicalSpecItem(8), name: "OCPP", value: "Uyumlu" },
-        { ...createTechnicalSpecItem(9), name: "Koruma sınıfı", value: "IP54 / IP65" },
-        { ...createTechnicalSpecItem(10), name: "Kaçak akım koruması", value: "Desteklenir" }
+        { ...createTechnicalSpecItem(9), name: "Koruma sÄ±nÄ±fÄ±", value: "IP54 / IP65" },
+        { ...createTechnicalSpecItem(10), name: "KaÃ§ak akÄ±m korumasÄ±", value: "Desteklenir" }
       ]
     }
   ];
@@ -331,7 +331,7 @@ function mergeTechnicalGroupsToSingleGroup(
   return [
     {
       ...createTechnicalGroup(1),
-      description: "Ürün detayında tek tabloda görünen teknik özellikler.",
+      description: "ÃœrÃ¼n detayÄ±nda tek tabloda gÃ¶rÃ¼nen teknik Ã¶zellikler.",
       items
     }
   ];
@@ -361,7 +361,7 @@ function buildTechnicalGroupsFromSpecs(specs: ProductFormValues["specs"]) {
   return [
     {
       ...createTechnicalGroup(1),
-      description: "Ürün detayında tek tabloda görünen teknik özellikler.",
+      description: "ÃœrÃ¼n detayÄ±nda tek tabloda gÃ¶rÃ¼nen teknik Ã¶zellikler.",
       items: items.length ? items : [createTechnicalSpecItem(1)]
     }
   ];
@@ -402,14 +402,14 @@ function validateStructuredProductDetails(detailContent: ProductDetailFormValues
       );
 
     if (hasAnyGroupValue && !cleanText(group.title)) {
-      issues.push(`${groupIndex + 1}. teknik grupta grup başlığı zorunlu.`);
+      issues.push(`${groupIndex + 1}. teknik grupta grup baÅŸlÄ±ÄŸÄ± zorunlu.`);
     }
 
     visibleItems.forEach((item, itemIndex) => {
       const hasAnyItemValue = [item.name, item.value, item.unit, item.description].some((value) => cleanText(value));
 
       if (hasAnyItemValue && (!cleanText(item.name) || !cleanText(item.value))) {
-        issues.push(`${groupIndex + 1}. teknik grubun ${itemIndex + 1}. satırında özellik adı ve değer zorunlu.`);
+        issues.push(`${groupIndex + 1}. teknik grubun ${itemIndex + 1}. satÄ±rÄ±nda Ã¶zellik adÄ± ve deÄŸer zorunlu.`);
       }
     });
   });
@@ -522,7 +522,7 @@ async function parseJsonResponse<T>(response: Response, fallbackMessage: string)
       ok: false,
       message:
         response.status === 413
-          ? "Dosya sunucu yükleme sınırını aşıyor. Video yükleme için parçalara bölünmüş akış kullanılmalı."
+          ? "Dosya sunucu yÃ¼kleme sÄ±nÄ±rÄ±nÄ± aÅŸÄ±yor. Video yÃ¼kleme iÃ§in parÃ§alara bÃ¶lÃ¼nmÃ¼ÅŸ akÄ±ÅŸ kullanÄ±lmalÄ±."
           : fallbackMessage
     } as T;
   }
@@ -534,7 +534,7 @@ async function parseJsonResponse<T>(response: Response, fallbackMessage: string)
       ok: false,
       message:
         response.status === 413
-          ? "Dosya sunucu yükleme sınırını aşıyor. Video yükleme için parçalara bölünmüş akış kullanılmalı."
+          ? "Dosya sunucu yÃ¼kleme sÄ±nÄ±rÄ±nÄ± aÅŸÄ±yor. Video yÃ¼kleme iÃ§in parÃ§alara bÃ¶lÃ¼nmÃ¼ÅŸ akÄ±ÅŸ kullanÄ±lmalÄ±."
           : fallbackMessage
     } as T;
   }
@@ -608,10 +608,6 @@ export function ProductForm({
           initialValues?.detailContent?.badges?.length
             ? initialValues.detailContent.badges
             : detailContentDefaults.badges,
-        purchaseBenefits:
-          initialValues?.detailContent?.purchaseBenefits?.length
-            ? initialValues.detailContent.purchaseBenefits
-            : detailContentDefaults.purchaseBenefits,
         seoIntents:
           initialValues?.detailContent?.seoIntents?.length
             ? initialValues.detailContent.seoIntents
@@ -628,20 +624,10 @@ export function ProductForm({
           initialValues?.detailContent?.technicalGroups,
           initialValues?.specs
         ),
-        purchaseReadiness:
-          initialValues?.detailContent?.purchaseReadiness ??
-          detailContentDefaults.purchaseReadiness,
-        decisionChecks:
-          initialValues?.detailContent?.decisionChecks ??
-          detailContentDefaults.decisionChecks,
         support: {
           ...detailContentDefaults.support,
           ...initialValues?.detailContent?.support
         },
-        trustBlocks:
-          initialValues?.detailContent?.trustBlocks?.length
-            ? initialValues.detailContent.trustBlocks
-            : detailContentDefaults.trustBlocks,
         faqs:
           initialValues?.detailContent?.faqs ??
           detailContentDefaults.faqs,
@@ -695,11 +681,6 @@ export function ProductForm({
     keyName: "fieldId"
   });
 
-  const trustBlockFields = useFieldArray({
-    control,
-    name: "detailContent.trustBlocks",
-    keyName: "fieldId"
-  });
 
   const faqFields = useFieldArray({
     control,
@@ -747,54 +728,54 @@ export function ProductForm({
   const phaseText = phaseLabel(phaseTypeValue);
   const featureAuditItems = [
     {
-      label: "Ürün adı",
+      label: "ÃœrÃ¼n adÄ±",
       ok: cleanText(currentName).length > 2,
-      detail: "Başlık karar verme ve SEO için net olmalı."
+      detail: "BaÅŸlÄ±k karar verme ve SEO iÃ§in net olmalÄ±."
     },
     {
-      label: "Kısa açıklama",
+      label: "KÄ±sa aÃ§Ä±klama",
       ok: cleanText(shortDescriptionValue).length >= 70,
-      detail: "Kullanım alanı, güç, uyum ve kurulum bilgisi özetlenmeli."
+      detail: "KullanÄ±m alanÄ±, gÃ¼Ã§, uyum ve kurulum bilgisi Ã¶zetlenmeli."
     },
     {
-      label: "Uzun açıklama",
+      label: "Uzun aÃ§Ä±klama",
       ok: cleanText(descriptionValue).replace(/<[^>]+>/g, "").length >= 180,
-      detail: "Fayda, teknik detay, kurulum, teslimat ve güven bilgisi olmalı."
+      detail: "Fayda, teknik detay, kurulum, teslimat ve gÃ¼ven bilgisi olmalÄ±."
     },
     {
-      label: "Güç + şarj tipi",
+      label: "GÃ¼Ã§ + ÅŸarj tipi",
       ok: Boolean(powerText && chargeText),
-      detail: "7.4/11/22 kW veya DC güç sınıfı net olmalı."
+      detail: "7.4/11/22 kW veya DC gÃ¼Ã§ sÄ±nÄ±fÄ± net olmalÄ±."
     },
     {
-      label: "Faz + konnektör",
+      label: "Faz + konnektÃ¶r",
       ok: Boolean(connectorText && phaseTypeValue),
-      detail: "Type 2/CCS2 ve monofaz/trifaz bilgisi yazılmalı."
+      detail: "Type 2/CCS2 ve monofaz/trifaz bilgisi yazÄ±lmalÄ±."
     },
     {
-      label: "Akıllı özellikler",
-      ok: smartFeatureLabels.length > 0 || flattenedTechnicalSpecValues.some((item) => /ocpp|yük|yuk|load|wifi|wi-fi|rfid/i.test(`${item.label} ${item.value}`)),
-      detail: "Wi-Fi, RFID, 4G, OCPP veya yük dengeleme sinyali eklenmeli."
+      label: "AkÄ±llÄ± Ã¶zellikler",
+      ok: smartFeatureLabels.length > 0 || flattenedTechnicalSpecValues.some((item) => /ocpp|yÃ¼k|yuk|load|wifi|wi-fi|rfid/i.test(`${item.label} ${item.value}`)),
+      detail: "Wi-Fi, RFID, 4G, OCPP veya yÃ¼k dengeleme sinyali eklenmeli."
     },
     {
       label: "Kurulum bilgisi",
       ok: installRequiredValue || cleanText(descriptionValue).toLocaleLowerCase("tr-TR").includes("kurulum"),
-      detail: "Keşif, pano, faz, kablo hattı veya montaj notu olmalı."
+      detail: "KeÅŸif, pano, faz, kablo hattÄ± veya montaj notu olmalÄ±."
     },
     {
       label: "Teknik tablo",
       ok: flattenedTechnicalSpecValues.filter((item) => cleanText(item.label) && cleanText(item.value)).length >= 6,
-      detail: "Güç, faz, konnektör, IP, akıllı özellik ve kapsam maddeleri olmalı."
+      detail: "GÃ¼Ã§, faz, konnektÃ¶r, IP, akÄ±llÄ± Ã¶zellik ve kapsam maddeleri olmalÄ±."
     },
     {
-      label: "Görsel",
+      label: "GÃ¶rsel",
       ok: mediaValues.some((item) => cleanText(item.url)),
-      detail: "En az bir görsel URL gerekli; alt text opsiyonel SEO desteği sağlar."
+      detail: "En az bir gÃ¶rsel URL gerekli; alt text opsiyonel SEO desteÄŸi saÄŸlar."
     },
     {
       label: "SEO kalitesi",
       ok: Boolean(cleanText(seoTitleValue) && cleanText(seoDescriptionValue)),
-      detail: "Meta başlık ve meta açıklama tamamlanmalı."
+      detail: "Meta baÅŸlÄ±k ve meta aÃ§Ä±klama tamamlanmalÄ±."
     }
   ];
   const readyFeatureCount = featureAuditItems.filter((item) => item.ok).length;
@@ -809,14 +790,14 @@ export function ProductForm({
     displayStock <= 0
       ? "Stok yok"
       : stockThreshold > 0 && displayStock <= stockThreshold
-        ? "Düşük stok"
-        : "Stok hazır";
+        ? "DÃ¼ÅŸÃ¼k stok"
+        : "Stok hazÄ±r";
   const seoTitleLength = cleanText(seoTitleValue).length;
   const seoDescriptionLength = cleanText(seoDescriptionValue).length;
   const plainDescriptionLength = cleanText(descriptionValue).replace(/<[^>]+>/g, "").length;
   const publicationChecklist = [
     {
-      label: "Ürün kimliği",
+      label: "ÃœrÃ¼n kimliÄŸi",
       detail: cleanText(currentName) || "Ad ve slug bekleniyor",
       ok: cleanText(currentName).length > 2 && Boolean(currentSlug || currentName),
       icon: PackageCheck
@@ -829,19 +810,19 @@ export function ProductForm({
     },
     {
       label: "Medya",
-      detail: hasPrimaryMedia ? `${mediaValues.length} medya` : "Ana görsel bekleniyor",
+      detail: hasPrimaryMedia ? `${mediaValues.length} medya` : "Ana gÃ¶rsel bekleniyor",
       ok: hasPrimaryMedia,
       icon: ImagePlus
     },
     {
       label: "Teknik veri",
-      detail: `${flattenedTechnicalSpecValues.length} özellik / ${variantValues.length || 1} varyant`,
+      detail: `${flattenedTechnicalSpecValues.length} Ã¶zellik / ${variantValues.length || 1} varyant`,
       ok: flattenedTechnicalSpecValues.length >= 4 && Boolean(powerText || connectorText),
       icon: Sparkles
     },
     {
-      label: "SEO ve içerik",
-      detail: `${seoTitleLength}/60 başlık, ${seoDescriptionLength}/160 açıklama, ${plainDescriptionLength} içerik`,
+      label: "SEO ve iÃ§erik",
+      detail: `${seoTitleLength}/60 baÅŸlÄ±k, ${seoDescriptionLength}/160 aÃ§Ä±klama, ${plainDescriptionLength} iÃ§erik`,
       ok:
         seoTitleLength >= 35 &&
         seoTitleLength <= 70 &&
@@ -943,7 +924,7 @@ export function ProductForm({
     mediaFields.append({
       mediaType: data.mediaType ?? inferProductMediaType(data.url),
       url: data.url,
-      altText: watch("name") || "Ürün medyası",
+      altText: watch("name") || "ÃœrÃ¼n medyasÄ±",
       sortOrder: mediaValues.length + 1,
       isPrimary: mediaFields.fields.length === 0
     });
@@ -953,7 +934,7 @@ export function ProductForm({
     if (file.size > maxVideoUploadBytes) {
       setUploadNotice({
         tone: "error",
-        message: `Video yükleme sınırı ${formatBytes(maxVideoUploadBytes)}.`
+        message: `Video yÃ¼kleme sÄ±nÄ±rÄ± ${formatBytes(maxVideoUploadBytes)}.`
       });
       return;
     }
@@ -981,8 +962,8 @@ export function ProductForm({
 
       setUploadNotice({
         tone: "info",
-        message: "Video yükleniyor.",
-        detail: `${chunkIndex + 1}/${totalChunks} parça aktarıldı.`
+        message: "Video yÃ¼kleniyor.",
+        detail: `${chunkIndex + 1}/${totalChunks} parÃ§a aktarÄ±ldÄ±.`
       });
 
       const response = await fetch("/api/admin/media/upload/chunk", {
@@ -991,11 +972,11 @@ export function ProductForm({
       });
       const data = await parseJsonResponse<MediaUploadResponse>(
         response,
-        "Video yükleme yanıtı okunamadı."
+        "Video yÃ¼kleme yanÄ±tÄ± okunamadÄ±."
       );
 
       if (!response.ok || !data.ok) {
-        throw new Error(data.message ?? "Video yüklenemedi.");
+        throw new Error(data.message ?? "Video yÃ¼klenemedi.");
       }
 
       if (data.done) {
@@ -1004,14 +985,14 @@ export function ProductForm({
     }
 
     if (!completedResponse?.url) {
-      throw new Error("Video tamamlandı bilgisi alınamadı.");
+      throw new Error("Video tamamlandÄ± bilgisi alÄ±namadÄ±.");
     }
 
     applyUploadedMedia(completedResponse, targetIndex);
     setUploadNotice({
       tone: "success",
-      message: "Video yüklendi.",
-      detail: `${totalChunks} parça başarıyla birleştirildi.`
+      message: "Video yÃ¼klendi.",
+      detail: `${totalChunks} parÃ§a baÅŸarÄ±yla birleÅŸtirildi.`
     });
   }
 
@@ -1028,7 +1009,7 @@ export function ProductForm({
       if (file.size > maxImageUploadBytes) {
         setUploadNotice({
           tone: "error",
-          message: `Görsel yükleme sınırı ${formatBytes(maxImageUploadBytes)}.`
+          message: `GÃ¶rsel yÃ¼kleme sÄ±nÄ±rÄ± ${formatBytes(maxImageUploadBytes)}.`
         });
         return;
       }
@@ -1042,16 +1023,16 @@ export function ProductForm({
       });
       const data = await parseJsonResponse<MediaUploadResponse>(
         response,
-        "Sunucu yanıtı okunamadı."
+        "Sunucu yanÄ±tÄ± okunamadÄ±."
       );
 
       if (!response.ok || !data.ok || !data.url) {
         setUploadNotice({
           tone: "error",
-          message: data.message ?? "Medya yüklenemedi.",
+          message: data.message ?? "Medya yÃ¼klenemedi.",
           detail:
             data.missingEnvironment?.length
-              ? `Eksik ortam değişkenleri: ${data.missingEnvironment.join(", ")}. ${data.setupAction ?? ""}`
+              ? `Eksik ortam deÄŸiÅŸkenleri: ${data.missingEnvironment.join(", ")}. ${data.setupAction ?? ""}`
               : data.setupAction
         });
         return;
@@ -1060,7 +1041,7 @@ export function ProductForm({
       applyUploadedMedia(data, targetIndex);
       setUploadNotice({
         tone: "success",
-        message: "Görsel yüklendi.",
+        message: "GÃ¶rsel yÃ¼klendi.",
         detail: data.storageBucket ? `Bucket: ${data.storageBucket}` : undefined
       });
     } catch (error) {
@@ -1069,7 +1050,7 @@ export function ProductForm({
         message:
           error instanceof Error
             ? error.message
-            : "Medya yüklenirken sunucuya ulaşılamadı."
+            : "Medya yÃ¼klenirken sunucuya ulaÅŸÄ±lamadÄ±."
       });
     } finally {
       setIsUploading(false);
@@ -1223,7 +1204,7 @@ export function ProductForm({
 
       const data = await parseJsonResponse<ProductMutationResponse>(
         response,
-        "Sunucu yanıtı okunamadı."
+        "Sunucu yanÄ±tÄ± okunamadÄ±."
       );
 
       if (!response.ok || !data.ok) {
@@ -1233,11 +1214,11 @@ export function ProductForm({
               .map((issue) => issue.message)
               .join(" ")}`
           : "";
-        setErrorMessage(`${data.message ?? "Kayit işlemi başarısız."}${issueText}`);
+        setErrorMessage(`${data.message ?? "Kayit iÅŸlemi baÅŸarÄ±sÄ±z."}${issueText}`);
         return;
       }
 
-      setSuccessMessage(mode === "create" ? "Ürün oluşturuldu." : "Ürün güncellendi.");
+      setSuccessMessage(mode === "create" ? "ÃœrÃ¼n oluÅŸturuldu." : "ÃœrÃ¼n gÃ¼ncellendi.");
 
       if (mode === "create" && data.product?.id) {
         router.push(`/admin/urunler/${data.product.id}`);
@@ -1245,7 +1226,7 @@ export function ProductForm({
         router.refresh();
       }
     } catch {
-      setErrorMessage("Sunucuya ulaşılamadı. Lütfen tekrar deneyin.");
+      setErrorMessage("Sunucuya ulaÅŸÄ±lamadÄ±. LÃ¼tfen tekrar deneyin.");
     }
   });
 
@@ -1256,12 +1237,12 @@ export function ProductForm({
           <div className="min-w-0">
             <p className="flex items-center gap-2 text-sm font-bold text-slate-950">
               <PackageCheck className="h-4 w-4 text-emerald-700" aria-hidden />
-              Ürün çalışma masası
+              ÃœrÃ¼n Ã§alÄ±ÅŸma masasÄ±
             </p>
             <p className="mt-1 text-xs leading-5 text-slate-500">
               {hasValidationErrors
-                ? "Eksik alanlar var; bölümlerden hızlıca kontrol edin."
-                : `${publishReadyCount}/${publicationChecklist.length} yayın kontrolü hazır · ${displayPrice} · ${stockState}`}
+                ? "Eksik alanlar var; bÃ¶lÃ¼mlerden hÄ±zlÄ±ca kontrol edin."
+                : `${publishReadyCount}/${publicationChecklist.length} yayÄ±n kontrolÃ¼ hazÄ±r Â· ${displayPrice} Â· ${stockState}`}
             </p>
           </div>
           <div className="flex gap-2 overflow-x-auto pb-1 xl:flex-wrap xl:overflow-visible xl:pb-0">
@@ -1284,7 +1265,7 @@ export function ProductForm({
                 className="inline-flex items-center justify-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-5 py-3 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-100"
               >
                 <LinkIcon className="h-4 w-4" aria-hidden />
-                Sitede önizle
+                Sitede Ã¶nizle
               </a>
             ) : null}
             <button
@@ -1306,13 +1287,13 @@ export function ProductForm({
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
           <div>
             <p className="text-sm font-bold uppercase tracking-normal text-emerald-700">
-              Hızlı ürün girişi
+              HÄ±zlÄ± Ã¼rÃ¼n giriÅŸi
             </p>
             <h2 className="mt-2 text-xl font-semibold text-slate-950">
-              Önce temel satış bilgilerini doldurun, gelişmiş alanları gerektiğinde açın.
+              Ã–nce temel satÄ±ÅŸ bilgilerini doldurun, geliÅŸmiÅŸ alanlarÄ± gerektiÄŸinde aÃ§Ä±n.
             </h2>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-              Ürün adı, fiyat, stok, teknik değer ve ana görsel kaydı yayına hazırlamak için yeterlidir. Varyant, SEO, rozet ve detay sayfası içerikleri altta kapalı panellerde durur.
+              ÃœrÃ¼n adÄ±, fiyat, stok, teknik deÄŸer ve ana gÃ¶rsel kaydÄ± yayÄ±na hazÄ±rlamak iÃ§in yeterlidir. Varyant, SEO, rozet ve detay sayfasÄ± iÃ§erikleri altta kapalÄ± panellerde durur.
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2 lg:justify-end">
@@ -1320,10 +1301,10 @@ export function ProductForm({
               {publishReadyCount}/{publicationChecklist.length} temel kontrol
             </span>
             <span className="rounded-full bg-emerald-50 px-4 py-2 text-xs font-bold text-[#063326]">
-              %{featureReadinessPercent} içerik skoru
+              %{featureReadinessPercent} iÃ§erik skoru
             </span>
             <span className="rounded-full bg-slate-100 px-4 py-2 text-xs font-bold text-slate-700">
-              {displayPrice} · {stockState}
+              {displayPrice} Â· {stockState}
             </span>
           </div>
         </div>
@@ -1354,18 +1335,18 @@ export function ProductForm({
         <div className="mb-6">
           <h2 className="text-xl font-semibold text-slate-950">Temel Bilgiler</h2>
           <p className="mt-1 text-sm text-slate-600">
-            Faz 1 kapsamında ürün kimliği, fiyat, stok ve SEO alanları birlikte yönetilir.
+            Faz 1 kapsamÄ±nda Ã¼rÃ¼n kimliÄŸi, fiyat, stok ve SEO alanlarÄ± birlikte yÃ¶netilir.
           </p>
         </div>
 
         <div className="grid gap-5 md:grid-cols-2">
           <div className="md:col-span-2">
-            <label className="mb-2 block text-sm font-medium text-slate-700">Ürün adı</label>
+            <label className="mb-2 block text-sm font-medium text-slate-700">ÃœrÃ¼n adÄ±</label>
             <input
               className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
               {...register("name")}
             />
-            <ExampleHint>Örnek: HomeCharge Pro 11kW</ExampleHint>
+            <ExampleHint>Ã–rnek: HomeCharge Pro 11kW</ExampleHint>
             {errors.name ? <p className="mt-2 text-sm text-red-600">{errors.name.message}</p> : null}
           </div>
 
@@ -1377,13 +1358,13 @@ export function ProductForm({
                 onBlur: fillSlugFromName
               })}
             />
-            <ExampleHint>Örnek: homecharge-pro-11kw. Boş bırakırsanız ürün adından üretilebilir.</ExampleHint>
+            <ExampleHint>Ã–rnek: homecharge-pro-11kw. BoÅŸ bÄ±rakÄ±rsanÄ±z Ã¼rÃ¼n adÄ±ndan Ã¼retilebilir.</ExampleHint>
             <button
               type="button"
               onClick={fillSlugFromName}
               className="mt-2 rounded-full border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
             >
-              Slug oluştur
+              Slug oluÅŸtur
             </button>
           </div>
 
@@ -1396,18 +1377,18 @@ export function ProductForm({
                 </option>
               ))}
             </select>
-            <ExampleHint>Taslak siteye çıkmaz; Aktif seçilirse mağazada görünür.</ExampleHint>
+            <ExampleHint>Taslak siteye Ã§Ä±kmaz; Aktif seÃ§ilirse maÄŸazada gÃ¶rÃ¼nÃ¼r.</ExampleHint>
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">Ürün sırası</label>
+            <label className="mb-2 block text-sm font-medium text-slate-700">ÃœrÃ¼n sÄ±rasÄ±</label>
             <input
               type="number"
               min={0}
               className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
               {...register("detailContent.adminSortOrder", { valueAsNumber: true })}
             />
-            <ExampleHint>Düşük sıra değeri mağaza ve admin listelerinde ürünü daha öne alır.</ExampleHint>
+            <ExampleHint>DÃ¼ÅŸÃ¼k sÄ±ra deÄŸeri maÄŸaza ve admin listelerinde Ã¼rÃ¼nÃ¼ daha Ã¶ne alÄ±r.</ExampleHint>
           </div>
 
           <div>
@@ -1420,21 +1401,21 @@ export function ProductForm({
                 </option>
               ))}
             </select>
-            <ExampleHint>Marka yoksa boş bırakın; markaları Katalog ekranından ekleyebilirsiniz.</ExampleHint>
+            <ExampleHint>Marka yoksa boÅŸ bÄ±rakÄ±n; markalarÄ± Katalog ekranÄ±ndan ekleyebilirsiniz.</ExampleHint>
           </div>
 
           <div className="md:col-span-2">
-            <label className="mb-2 block text-sm font-medium text-slate-700">Kısa açıklama</label>
+            <label className="mb-2 block text-sm font-medium text-slate-700">KÄ±sa aÃ§Ä±klama</label>
             <textarea
               rows={3}
               className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
               {...register("shortDescription")}
             />
-            <ExampleHint>Örnek: Ev kullanıcıları için 11kW AC şarj, zamanlama ve enerji takibi sunar.</ExampleHint>
+            <ExampleHint>Ã–rnek: Ev kullanÄ±cÄ±larÄ± iÃ§in 11kW AC ÅŸarj, zamanlama ve enerji takibi sunar.</ExampleHint>
           </div>
 
           <div className="md:col-span-2">
-            <label className="mb-2 block text-sm font-medium text-slate-700">Uzun açıklama</label>
+            <label className="mb-2 block text-sm font-medium text-slate-700">Uzun aÃ§Ä±klama</label>
             <Controller
               control={control}
               name="description"
@@ -1442,7 +1423,7 @@ export function ProductForm({
                 <RichTextEditor value={field.value} onChange={field.onChange} />
               )}
             />
-            <ExampleHint>Örnek: Kurulum, uyumlu araçlar, garanti ve teslimat bilgisini kısa paragraflarla yazın.</ExampleHint>
+            <ExampleHint>Ã–rnek: Kurulum, uyumlu araÃ§lar, garanti ve teslimat bilgisini kÄ±sa paragraflarla yazÄ±n.</ExampleHint>
           </div>
         </div>
       </section>
@@ -1450,25 +1431,25 @@ export function ProductForm({
       <section id="fiyat-stok" className="surface-card scroll-mt-28 border border-slate-200 bg-white/95 p-6">
         <div className="mb-6">
           <h2 className="text-xl font-semibold text-slate-950">Fiyat ve stok</h2>
-          <p className="mt-1 text-sm leading-6 text-slate-600">Satış fiyatı, kampanya, stok ve KDV ayarları mağaza kartı, ürün detayı ve ödeme tutarı için temel kaynaktır.</p>
+          <p className="mt-1 text-sm leading-6 text-slate-600">SatÄ±ÅŸ fiyatÄ±, kampanya, stok ve KDV ayarlarÄ± maÄŸaza kartÄ±, Ã¼rÃ¼n detayÄ± ve Ã¶deme tutarÄ± iÃ§in temel kaynaktÄ±r.</p>
         </div>
 
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           <div>
             <label className="mb-2 block text-sm font-medium text-slate-700">SKU</label>
             <input className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" {...register("sku")} />
-            <ExampleHint>Örnek: HCP-11KW-5M</ExampleHint>
+            <ExampleHint>Ã–rnek: HCP-11KW-5M</ExampleHint>
           </div>
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">Varyant başlığı</label>
+            <label className="mb-2 block text-sm font-medium text-slate-700">Varyant baÅŸlÄ±ÄŸÄ±</label>
             <input
               className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
               {...register("variantTitle")}
             />
-            <ExampleHint>Örnek: 5 Metre Kablo</ExampleHint>
+            <ExampleHint>Ã–rnek: 5 Metre Kablo</ExampleHint>
           </div>
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">Satış fiyatı (TL)</label>
+            <label className="mb-2 block text-sm font-medium text-slate-700">SatÄ±ÅŸ fiyatÄ± (TL)</label>
             <input
               type="number"
               min={0}
@@ -1476,10 +1457,10 @@ export function ProductForm({
               className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
               {...register("priceKurus", { valueAsNumber: true })}
             />
-            <ExampleHint>Örnek: 12.490 TL için 12490 yazın; ekranda ve önizlemede TL olarak görünür.</ExampleHint>
+            <ExampleHint>Ã–rnek: 12.490 TL iÃ§in 12490 yazÄ±n; ekranda ve Ã¶nizlemede TL olarak gÃ¶rÃ¼nÃ¼r.</ExampleHint>
           </div>
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">Karşılaştırma fiyatı (TL)</label>
+            <label className="mb-2 block text-sm font-medium text-slate-700">KarÅŸÄ±laÅŸtÄ±rma fiyatÄ± (TL)</label>
             <input
               type="number"
               min={0}
@@ -1487,10 +1468,10 @@ export function ProductForm({
               className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
               {...register("compareAtKurus", { valueAsNumber: true })}
             />
-            <ExampleHint>Örnek: Eski fiyat 13.990 TL ise 13990 yazın.</ExampleHint>
+            <ExampleHint>Ã–rnek: Eski fiyat 13.990 TL ise 13990 yazÄ±n.</ExampleHint>
           </div>
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">Kampanyalı fiyat (TL)</label>
+            <label className="mb-2 block text-sm font-medium text-slate-700">KampanyalÄ± fiyat (TL)</label>
             <input
               type="number"
               min={0}
@@ -1500,16 +1481,16 @@ export function ProductForm({
                 setValueAs: (value) => (value === "" ? null : Number(value))
               })}
             />
-            <ExampleHint>Örnek: Kampanya fiyatı 11.990 TL ise 11990 yazın.</ExampleHint>
+            <ExampleHint>Ã–rnek: Kampanya fiyatÄ± 11.990 TL ise 11990 yazÄ±n.</ExampleHint>
           </div>
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">Kampanya bitişi</label>
+            <label className="mb-2 block text-sm font-medium text-slate-700">Kampanya bitiÅŸi</label>
             <input
               type="datetime-local"
               className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
               {...register("discountEndsAt")}
             />
-            <ExampleHint>Örnek: Kampanya yoksa boş bırakın.</ExampleHint>
+            <ExampleHint>Ã–rnek: Kampanya yoksa boÅŸ bÄ±rakÄ±n.</ExampleHint>
           </div>
           <div>
             <label className="mb-2 block text-sm font-medium text-slate-700">Stok</label>
@@ -1518,20 +1499,20 @@ export function ProductForm({
               className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
               {...register("stockQuantity", { valueAsNumber: true })}
             />
-            <ExampleHint>Örnek: 24</ExampleHint>
+            <ExampleHint>Ã–rnek: 24</ExampleHint>
           </div>
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">Min stok eşiği</label>
+            <label className="mb-2 block text-sm font-medium text-slate-700">Min stok eÅŸiÄŸi</label>
             <input
               type="number"
               className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
               {...register("minimumStockThreshold", { valueAsNumber: true })}
             />
-            <ExampleHint>Örnek: 3; stok bu seviyeye inince takip kolaylaşır.</ExampleHint>
+            <ExampleHint>Ã–rnek: 3; stok bu seviyeye inince takip kolaylaÅŸÄ±r.</ExampleHint>
           </div>
           <div className="flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
             <input type="checkbox" className="h-4 w-4" {...register("inventoryTrackingEnabled")} />
-            <span className="text-sm font-medium text-slate-700">Stok takibi açık</span>
+            <span className="text-sm font-medium text-slate-700">Stok takibi aÃ§Ä±k</span>
           </div>
           <div className="flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
             <input type="checkbox" className="h-4 w-4" {...register("isVatIncluded")} />
@@ -1544,12 +1525,12 @@ export function ProductForm({
         <details className="group">
           <summary className="flex cursor-pointer list-none flex-col gap-2 px-6 py-5 transition hover:bg-emerald-50/55 sm:flex-row sm:items-center sm:justify-between">
             <span>
-              <span className="block text-xs font-bold uppercase tracking-normal text-emerald-700">Gelişmiş ayar</span>
+              <span className="block text-xs font-bold uppercase tracking-normal text-emerald-700">GeliÅŸmiÅŸ ayar</span>
               <span className="mt-1 block text-lg font-semibold text-slate-950">Varyantlar</span>
-              <span className="mt-1 block max-w-3xl text-sm leading-6 text-slate-600">Birden fazla kablo, güç, stok veya fiyat seçeneğiniz yoksa bu bölümü kapalı bırakabilirsiniz.</span>
+              <span className="mt-1 block max-w-3xl text-sm leading-6 text-slate-600">Birden fazla kablo, gÃ¼Ã§, stok veya fiyat seÃ§eneÄŸiniz yoksa bu bÃ¶lÃ¼mÃ¼ kapalÄ± bÄ±rakabilirsiniz.</span>
             </span>
             <span className="inline-flex w-fit items-center rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 group-open:bg-[#063326] group-open:text-white">
-              Aç / kapat
+              AÃ§ / kapat
             </span>
           </summary>
           <div className="border-t border-slate-100 p-6">
@@ -1557,9 +1538,9 @@ export function ProductForm({
           <div>
             <h2 className="text-xl font-semibold text-slate-950">Varyantlar</h2>
             <p className="mt-1 text-sm text-slate-600">
-              Fiyat, stok, kablo ve konnektör bilgisini varyant bazında yönetin.
+              Fiyat, stok, kablo ve konnektÃ¶r bilgisini varyant bazÄ±nda yÃ¶netin.
             </p>
-            <ExampleHint>Örnek varyantlar: 5 Metre - 12.490 TL, 7.5 Metre - 13.290 TL.</ExampleHint>
+            <ExampleHint>Ã–rnek varyantlar: 5 Metre - 12.490 TL, 7.5 Metre - 13.290 TL.</ExampleHint>
           </div>
           <button
             type="button"
@@ -1591,7 +1572,7 @@ export function ProductForm({
               />
               <input
                 className="rounded-lg border border-slate-300 px-4 py-3 text-sm xl:col-span-2"
-                placeholder="Başlık"
+                placeholder="BaÅŸlÄ±k"
                 {...register(`variants.${index}.title`)}
               />
               <input
@@ -1611,7 +1592,7 @@ export function ProductForm({
               <div className="flex items-center gap-3">
                 <label className="flex items-center gap-2 text-sm text-slate-700">
                   <input type="checkbox" {...register(`variants.${index}.isDefault`)} />
-                  Varsayılan
+                  VarsayÄ±lan
                 </label>
                 <button
                   type="button"
@@ -1633,7 +1614,7 @@ export function ProductForm({
               />
               <input
                 className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
-                placeholder="Konnektör"
+                placeholder="KonnektÃ¶r"
                 {...register(`variants.${index}.connectorType`)}
               />
               <input
@@ -1641,14 +1622,14 @@ export function ProductForm({
                 min={0}
                 step={1}
                 className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
-                placeholder="Karşılaştırma (TL)"
+                placeholder="KarÅŸÄ±laÅŸtÄ±rma (TL)"
                 {...register(`variants.${index}.compareAtKurus`, { valueAsNumber: true })}
               />
             </div>
           ))}
           {variantFields.fields.length === 0 ? (
             <p className="rounded-lg bg-slate-50 px-4 py-3 text-sm text-slate-600">
-              Varyant eklenmezse üstteki varsayılan SKU, fiyat ve stok alanları kaydedilir.
+              Varyant eklenmezse Ã¼stteki varsayÄ±lan SKU, fiyat ve stok alanlarÄ± kaydedilir.
             </p>
           ) : null}
         </div>
@@ -1660,19 +1641,19 @@ export function ProductForm({
         <details className="group">
           <summary className="flex cursor-pointer list-none flex-col gap-2 px-6 py-5 transition hover:bg-emerald-50/55 sm:flex-row sm:items-center sm:justify-between">
             <span>
-              <span className="block text-xs font-bold uppercase tracking-normal text-emerald-700">Gelişmiş ayar</span>
-              <span className="mt-1 block text-lg font-semibold text-slate-950">Katalog, etiket ve araç uyumluluğu</span>
-              <span className="mt-1 block max-w-3xl text-sm leading-6 text-slate-600">Kategori, vitrin etiketi ve uyumlu araç listesi gibi yayın sonrası zenginleştirme alanları.</span>
+              <span className="block text-xs font-bold uppercase tracking-normal text-emerald-700">GeliÅŸmiÅŸ ayar</span>
+              <span className="mt-1 block text-lg font-semibold text-slate-950">Katalog, etiket ve araÃ§ uyumluluÄŸu</span>
+              <span className="mt-1 block max-w-3xl text-sm leading-6 text-slate-600">Kategori, vitrin etiketi ve uyumlu araÃ§ listesi gibi yayÄ±n sonrasÄ± zenginleÅŸtirme alanlarÄ±.</span>
             </span>
             <span className="inline-flex w-fit items-center rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 group-open:bg-[#063326] group-open:text-white">
-              Aç / kapat
+              AÃ§ / kapat
             </span>
           </summary>
           <div className="border-t border-slate-100 p-6">
         <div className="grid gap-6 lg:grid-cols-3">
           <div>
             <p className="mb-3 text-sm font-semibold text-slate-800">Kategoriler</p>
-            <ExampleHint>Örnek: Ev tipi cihazlar için Ev Tipi kategorisini işaretleyin.</ExampleHint>
+            <ExampleHint>Ã–rnek: Ev tipi cihazlar iÃ§in Ev Tipi kategorisini iÅŸaretleyin.</ExampleHint>
             <div className="space-y-2">
               {categoryOptions.map((option) => (
                 <label key={option.slug} className="flex items-center gap-3 rounded-lg bg-slate-50 px-4 py-3 text-sm text-slate-700">
@@ -1689,7 +1670,7 @@ export function ProductForm({
 
           <div>
             <p className="mb-3 text-sm font-semibold text-slate-800">Vitrin etiketleri</p>
-            <ExampleHint>Örnek: Çok Satan, Yeni, Kurumsal veya İndirimli etiketlerini ürün kartı ve detay görünümünde kullanın.</ExampleHint>
+            <ExampleHint>Ã–rnek: Ã‡ok Satan, Yeni, Kurumsal veya Ä°ndirimli etiketlerini Ã¼rÃ¼n kartÄ± ve detay gÃ¶rÃ¼nÃ¼mÃ¼nde kullanÄ±n.</ExampleHint>
             <div className="space-y-2">
               {productTagOptions.map((option) => (
                 <label key={option.value} className="flex items-center gap-3 rounded-lg bg-slate-50 px-4 py-3 text-sm text-slate-700">
@@ -1710,9 +1691,9 @@ export function ProductForm({
                 <Car className="h-5 w-5" aria-hidden />
               </span>
               <div>
-                <p className="text-sm font-bold text-slate-900">Araç uyumluluğu</p>
+                <p className="text-sm font-bold text-slate-900">AraÃ§ uyumluluÄŸu</p>
                 <ExampleHint>
-                  Hazır markalardan seçin veya yeni araç/marka adı ekleyin. Seçili araçlar ürün detayında uyumluluk sinyali olarak kullanılır.
+                  HazÄ±r markalardan seÃ§in veya yeni araÃ§/marka adÄ± ekleyin. SeÃ§ili araÃ§lar Ã¼rÃ¼n detayÄ±nda uyumluluk sinyali olarak kullanÄ±lÄ±r.
                 </ExampleHint>
               </div>
             </div>
@@ -1730,7 +1711,7 @@ export function ProductForm({
                   }
                 }}
                 className="min-w-0 flex-1 rounded-lg border border-slate-300 px-4 py-3 text-sm"
-                placeholder="Örn. Mercedes-Benz, Volvo, Kia"
+                placeholder="Ã–rn. Mercedes-Benz, Volvo, Kia"
               />
               <button
                 type="button"
@@ -1755,7 +1736,7 @@ export function ProductForm({
                       type="button"
                       onClick={() => removeVehicleBrand(brand)}
                       className="rounded-full p-0.5 text-[#063326] transition hover:bg-white"
-                      aria-label={`${brand} uyumluluğunu kaldır`}
+                      aria-label={`${brand} uyumluluÄŸunu kaldÄ±r`}
                     >
                       <X className="h-3.5 w-3.5" aria-hidden />
                     </button>
@@ -1764,7 +1745,7 @@ export function ProductForm({
               </div>
             ) : (
               <p className="mt-4 rounded-lg border border-dashed border-slate-200 bg-slate-50 px-4 py-3 text-xs font-semibold text-slate-500">
-                Henüz uyumlu araç eklenmedi.
+                HenÃ¼z uyumlu araÃ§ eklenmedi.
               </p>
             )}
 
@@ -1804,9 +1785,9 @@ export function ProductForm({
           <div>
             <h2 className="text-xl font-semibold text-slate-950">Teknik alanlar</h2>
             <p className="mt-1 text-sm leading-6 text-slate-600">
-              Ürün kartı, ürün detay sayfası, karşılaştırma ve schema verisi bu temel teknik alanlardan beslenir.
+              ÃœrÃ¼n kartÄ±, Ã¼rÃ¼n detay sayfasÄ±, karÅŸÄ±laÅŸtÄ±rma ve schema verisi bu temel teknik alanlardan beslenir.
             </p>
-            <ExampleHint>Örnek: Güç 11, konnektör Type 2, IP sınıfı IP54, kablo uzunluğu 5 Metre.</ExampleHint>
+            <ExampleHint>Ã–rnek: GÃ¼Ã§ 11, konnektÃ¶r Type 2, IP sÄ±nÄ±fÄ± IP54, kablo uzunluÄŸu 5 Metre.</ExampleHint>
           </div>
         </div>
 
@@ -1814,89 +1795,63 @@ export function ProductForm({
 
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           <div>
-            <label className="mb-2 block text-sm font-semibold text-slate-800">Güç değeri</label>
+            <label className="mb-2 block text-sm font-semibold text-slate-800">GÃ¼Ã§ deÄŸeri</label>
             <input className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="11, 22 veya 60" {...register("powerKw")} />
-            <ExampleHint>Sadece sayı veya kısa değer yazın; kW etiketi sistemde tamamlanır.</ExampleHint>
+            <ExampleHint>Sadece sayÄ± veya kÄ±sa deÄŸer yazÄ±n; kW etiketi sistemde tamamlanÄ±r.</ExampleHint>
           </div>
           <div>
-            <label className="mb-2 block text-sm font-semibold text-slate-800">Şarj tipi</label>
+            <label className="mb-2 block text-sm font-semibold text-slate-800">Åarj tipi</label>
             <select className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" {...register("chargeType")}>
               <option value="ac">AC</option>
               <option value="dc">DC</option>
             </select>
-            <ExampleHint>Wallbox ve kablolar için AC, hızlı şarj cihazları için DC seçin.</ExampleHint>
+            <ExampleHint>Wallbox ve kablolar iÃ§in AC, hÄ±zlÄ± ÅŸarj cihazlarÄ± iÃ§in DC seÃ§in.</ExampleHint>
           </div>
           <div>
-            <label className="mb-2 block text-sm font-semibold text-slate-800">Konnektör tipi</label>
+            <label className="mb-2 block text-sm font-semibold text-slate-800">KonnektÃ¶r tipi</label>
             <input className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Type 2, CCS2" {...register("connectorType")} />
-            <ExampleHint>Ürün detayındaki araç uyumu ve filtreleme için kullanılır.</ExampleHint>
+            <ExampleHint>ÃœrÃ¼n detayÄ±ndaki araÃ§ uyumu ve filtreleme iÃ§in kullanÄ±lÄ±r.</ExampleHint>
           </div>
           <div>
-            <label className="mb-2 block text-sm font-semibold text-slate-800">Faz yapısı</label>
+            <label className="mb-2 block text-sm font-semibold text-slate-800">Faz yapÄ±sÄ±</label>
             <select className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" {...register("phaseType")}>
               <option value="single_phase">Monofaz</option>
               <option value="three_phase">Trifaz</option>
               <option value="single_and_three_phase">Monofaz + Trifaz</option>
             </select>
-            <ExampleHint>Ev altyapısı ve kurulum uygunluğu metinlerine yansır.</ExampleHint>
+            <ExampleHint>Ev altyapÄ±sÄ± ve kurulum uygunluÄŸu metinlerine yansÄ±r.</ExampleHint>
           </div>
           <div>
-            <label className="mb-2 block text-sm font-semibold text-slate-800">Koruma sınıfı</label>
+            <label className="mb-2 block text-sm font-semibold text-slate-800">Koruma sÄ±nÄ±fÄ±</label>
             <input className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="IP54, IP65" {...register("ipClass")} />
-            <ExampleHint>Dış ortam veya otopark kullanımı için kritik bilgidir.</ExampleHint>
+            <ExampleHint>DÄ±ÅŸ ortam veya otopark kullanÄ±mÄ± iÃ§in kritik bilgidir.</ExampleHint>
           </div>
           <div>
-            <label className="mb-2 block text-sm font-semibold text-slate-800">Kart güç etiketi</label>
+            <label className="mb-2 block text-sm font-semibold text-slate-800">Kart gÃ¼Ã§ etiketi</label>
             <input className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="11 kW AC" {...register("powerLabel")} />
-            <ExampleHint>Mağaza kartında kısa teknik etiket olarak görünür.</ExampleHint>
+            <ExampleHint>MaÄŸaza kartÄ±nda kÄ±sa teknik etiket olarak gÃ¶rÃ¼nÃ¼r.</ExampleHint>
           </div>
           <div>
-            <label className="mb-2 block text-sm font-semibold text-slate-800">Kablo uzunluğu</label>
+            <label className="mb-2 block text-sm font-semibold text-slate-800">Kablo uzunluÄŸu</label>
             <input className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="5 Metre, Soketli" {...register("cableLength")} />
-            <ExampleHint>Varyant başlığı ve ürün açıklaması için kullanılır.</ExampleHint>
-          </div>
-          <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
-            <p className="mb-3 text-sm font-semibold text-slate-800">Akıllı özellikler</p>
-            <div className="grid gap-2">
-              <label className="flex items-center gap-2 text-sm text-slate-700">
-                <input type="checkbox" {...register("hasWifi")} />
-                WiFi
-              </label>
-              <label className="flex items-center gap-2 text-sm text-slate-700">
-                <input type="checkbox" {...register("hasBluetooth")} />
-                Bluetooth
-              </label>
-              <label className="flex items-center gap-2 text-sm text-slate-700">
-                <input type="checkbox" {...register("hasRfid")} />
-                RFID
-              </label>
-              <label className="flex items-center gap-2 text-sm text-slate-700">
-                <input type="checkbox" {...register("has4g")} />
-                4G
-              </label>
-              <label className="flex items-center gap-2 text-sm text-slate-700">
-                <input type="checkbox" {...register("installRequired")} />
-                Kurulum gerekir
-              </label>
-            </div>
-            <ExampleHint>Bu seçimler ürün kartı, teknik tablo ve ürün detayındaki otomatik özellik vurgularını besler.</ExampleHint>
+            <ExampleHint>Varyant baÅŸlÄ±ÄŸÄ± ve Ã¼rÃ¼n aÃ§Ä±klamasÄ± iÃ§in kullanÄ±lÄ±r.</ExampleHint>
           </div>
         </div>
       </section>
 
-      <section id="görseller" className="surface-card scroll-mt-28 border border-slate-200 bg-white/95 p-6">
+      <section id="gÃ¶rseller" className="surface-card scroll-mt-28 border border-slate-200 bg-white/95 p-6">
         <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-slate-950">Görseller</h2>
+            <h2 className="text-xl font-semibold text-slate-950">GÃ¶rseller</h2>
             <p className="mt-1 text-sm text-slate-600">
-              Ürün detay galerisindeki görsel URL ve başlıkları buradan yönetilir.
+              ÃœrÃ¼n detay galerisindeki gÃ¶rsel URL ve baÅŸlÄ±klarÄ± buradan yÃ¶netilir.
             </p>
-            <ExampleHint>Örnek URL: https://site.com/homecharge-pro.jpg; alt text: HomeCharge Pro 11kW ön görünüm.</ExampleHint>
+            <ExampleHint>Ã–rnek URL: https://site.com/homecharge-pro.jpg; alt text: HomeCharge Pro 11kW Ã¶n gÃ¶rÃ¼nÃ¼m.</ExampleHint>
           </div>
           <div className="flex flex-wrap gap-3">
             <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-bold text-emerald-800 transition hover:bg-emerald-100">
               <UploadCloud className="h-4 w-4" aria-hidden />
-              {isUploading ? "Yükleniyor..." : "Dosya yükle"}
+              {isUploading ? "YÃ¼kleniyor..." : "Dosya yÃ¼kle"}
               <input
                 type="file"
                 multiple
@@ -1934,7 +1889,7 @@ export function ProductForm({
               disabled={mediaValues.length < 2}
               className="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Sıraya göre diz
+              SÄ±raya gÃ¶re diz
             </button>
           </div>
         </div>
@@ -1979,7 +1934,7 @@ export function ProductForm({
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={mediaUrl}
-                      alt={mediaItem?.altText || "Ürün medyası"}
+                      alt={mediaItem?.altText || "ÃœrÃ¼n medyasÄ±"}
                       loading="lazy"
                       decoding="async"
                       className="h-full w-full object-contain p-2"
@@ -1999,12 +1954,12 @@ export function ProductForm({
                   });
                 }}
               >
-                <option value="image">Görsel</option>
+                <option value="image">GÃ¶rsel</option>
                 <option value="video">Video</option>
               </select>
               <div>
                 <label className="mb-1 block text-xs font-bold uppercase tracking-normal text-slate-500">
-                  Sıra
+                  SÄ±ra
                 </label>
                 <input
                   type="number"
@@ -2035,10 +1990,10 @@ export function ProductForm({
               <div className="flex items-center gap-3">
                 <label className="flex items-center gap-2 text-sm text-slate-700">
                   <input type="checkbox" {...register(`media.${index}.isPrimary`)} />
-                  Ana görsel
+                  Ana gÃ¶rsel
                 </label>
                 <label className="cursor-pointer rounded-full border border-emerald-200 px-3 py-2 text-sm text-emerald-800">
-                  Değiştir
+                  DeÄŸiÅŸtir
                   <input
                     type="file"
                     accept="image/*,video/mp4,video/webm,video/ogg"
@@ -2059,7 +2014,7 @@ export function ProductForm({
                   onClick={() => reorderMediaItem(index, -1)}
                   className="rounded-full border border-slate-200 px-3 py-2 text-sm text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  Yukarı
+                  YukarÄ±
                 </button>
                 <button
                   type="button"
@@ -2067,7 +2022,7 @@ export function ProductForm({
                   onClick={() => reorderMediaItem(index, 1)}
                   className="rounded-full border border-slate-200 px-3 py-2 text-sm text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  Aşağı
+                  AÅŸaÄŸÄ±
                 </button>
                 <button type="button" onClick={() => mediaFields.remove(index)} className="rounded-full border border-red-200 px-3 py-2 text-sm text-red-700">
                   Sil
@@ -2079,14 +2034,14 @@ export function ProductForm({
         </div>
       </section>
 
-      <section id="özellikler" className="surface-card scroll-mt-28 border border-slate-200 bg-white/95 p-6">
+      <section id="Ã¶zellikler" className="surface-card scroll-mt-28 border border-slate-200 bg-white/95 p-6">
         <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-slate-950">Teknik özellikler</h2>
+            <h2 className="text-xl font-semibold text-slate-950">Teknik Ã¶zellikler</h2>
             <p className="mt-1 text-sm leading-6 text-slate-600">
-              Ürün detayında görünen teknik özellikleri buradan yönetin.
+              ÃœrÃ¼n detayÄ±nda gÃ¶rÃ¼nen teknik Ã¶zellikleri buradan yÃ¶netin.
             </p>
-            <ExampleHint>Boş grup veya boş satırlar kaydedilmez. Aktif olmayan alanlar kullanıcı tarafında gösterilmez.</ExampleHint>
+            <ExampleHint>BoÅŸ grup veya boÅŸ satÄ±rlar kaydedilmez. Aktif olmayan alanlar kullanÄ±cÄ± tarafÄ±nda gÃ¶sterilmez.</ExampleHint>
           </div>
 
           <div className="flex flex-wrap gap-3">
@@ -2106,7 +2061,7 @@ export function ProductForm({
               className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
             >
               <Plus className="h-4 w-4" aria-hidden />
-              Teknik Özellik Ekle
+              Teknik Ã–zellik Ekle
             </button>
 
             <button
@@ -2114,7 +2069,7 @@ export function ProductForm({
               onClick={() => {
                 if (
                   technicalGroupValues.length > 0 &&
-                  !window.confirm("Mevcut teknik gruplar hazır şablonla değiştirilsin mi?")
+                  !window.confirm("Mevcut teknik gruplar hazÄ±r ÅŸablonla deÄŸiÅŸtirilsin mi?")
                 ) {
                   return;
                 }
@@ -2123,7 +2078,7 @@ export function ProductForm({
               }}
               className="inline-flex items-center justify-center gap-2 rounded-lg border border-primary/25 bg-primary/5 px-4 py-3 text-sm font-bold text-primary transition hover:bg-primary/10"
             >
-              Hazır Teknik Şablon Yükle
+              HazÄ±r Teknik Åablon YÃ¼kle
             </button>
           </div>
         </div>
@@ -2131,13 +2086,13 @@ export function ProductForm({
         <div className="mt-6 rounded-lg border border-slate-200 bg-slate-50 p-5">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
-              <h3 className="text-base font-bold text-slate-950">Teknik özellikler</h3>
+              <h3 className="text-base font-bold text-slate-950">Teknik Ã¶zellikler</h3>
               <p className="mt-1 text-sm leading-6 text-slate-600">
-                Tüm teknik değerler ürün detayında tek tabloda, ayrı grup parçalarına bölünmeden görünür.
+                TÃ¼m teknik deÄŸerler Ã¼rÃ¼n detayÄ±nda tek tabloda, ayrÄ± grup parÃ§alarÄ±na bÃ¶lÃ¼nmeden gÃ¶rÃ¼nÃ¼r.
               </p>
             </div>
             <p className="rounded-full bg-white px-3 py-1 text-xs font-bold text-slate-700">
-              Tek tablo / {flattenedTechnicalSpecValues.length} özellik
+              Tek tablo / {flattenedTechnicalSpecValues.length} Ã¶zellik
             </p>
           </div>
 
@@ -2155,7 +2110,7 @@ export function ProductForm({
                   <input type="hidden" {...register(`detailContent.technicalGroups.${groupIndex}.sortOrder` as const, { valueAsNumber: true })} />
 
                   <div className="rounded-lg bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700">
-                    Teknik özellikleri tek listede yönetin. Satırları yukarı/aşağı alarak ürün detayındaki sıralamayı değiştirebilirsiniz.
+                    Teknik Ã¶zellikleri tek listede yÃ¶netin. SatÄ±rlarÄ± yukarÄ±/aÅŸaÄŸÄ± alarak Ã¼rÃ¼n detayÄ±ndaki sÄ±ralamayÄ± deÄŸiÅŸtirebilirsiniz.
                   </div>
 
                   <div className="mt-4 space-y-3">
@@ -2166,18 +2121,18 @@ export function ProductForm({
                       >
                         <div>
                           <label className="mb-2 block text-xs font-bold uppercase tracking-normal text-slate-500">
-                            Özellik adı
+                            Ã–zellik adÄ±
                           </label>
                           <input
                             className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm"
-                            placeholder="Maksimum güç"
+                            placeholder="Maksimum gÃ¼Ã§"
                             {...register(`detailContent.technicalGroups.${groupIndex}.items.${itemIndex}.name` as const)}
                           />
                         </div>
 
                         <div>
                           <label className="mb-2 block text-xs font-bold uppercase tracking-normal text-slate-500">
-                            Değer
+                            DeÄŸer
                           </label>
                           <input
                             className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm"
@@ -2199,7 +2154,7 @@ export function ProductForm({
 
                         <div>
                           <label className="mb-2 block text-xs font-bold uppercase tracking-normal text-slate-500">
-                            Açıklama
+                            AÃ§Ä±klama
                           </label>
                           <input
                             className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm"
@@ -2210,7 +2165,7 @@ export function ProductForm({
 
                         <div>
                           <label className="mb-2 block text-xs font-bold uppercase tracking-normal text-slate-500">
-                            Sıra
+                            SÄ±ra
                           </label>
                           <input
                             type="number"
@@ -2234,7 +2189,7 @@ export function ProductForm({
                             onClick={() => moveTechnicalSpecItem(groupIndex, itemIndex, -1)}
                             className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold text-slate-600 disabled:cursor-not-allowed disabled:opacity-40"
                           >
-                            Yukarı
+                            YukarÄ±
                           </button>
 
                           <button
@@ -2243,13 +2198,13 @@ export function ProductForm({
                             onClick={() => moveTechnicalSpecItem(groupIndex, itemIndex, 1)}
                             className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold text-slate-600 disabled:cursor-not-allowed disabled:opacity-40"
                           >
-                            Aşağı
+                            AÅŸaÄŸÄ±
                           </button>
 
                           <button
                             type="button"
                             onClick={() => {
-                              if (!window.confirm("Bu teknik özellik silinsin mi?")) {
+                              if (!window.confirm("Bu teknik Ã¶zellik silinsin mi?")) {
                                 return;
                               }
 
@@ -2289,7 +2244,7 @@ export function ProductForm({
                       className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
                     >
                       <Plus className="h-4 w-4" aria-hidden />
-                      Bu gruba özellik ekle
+                      Bu gruba Ã¶zellik ekle
                     </button>
                   </div>
                 </div>
@@ -2298,7 +2253,7 @@ export function ProductForm({
 
             {technicalGroupFields.fields.length === 0 ? (
               <div className="rounded-lg border border-dashed border-slate-300 bg-white px-4 py-6 text-center text-sm text-slate-600">
-                Henüz teknik özellik yok. “Teknik Özellik Ekle” veya “Hazır Teknik Şablon Yükle” aksiyonunu kullanabilirsiniz.
+                HenÃ¼z teknik Ã¶zellik yok. â€œTeknik Ã–zellik Ekleâ€ veya â€œHazÄ±r Teknik Åablon YÃ¼kleâ€ aksiyonunu kullanabilirsiniz.
               </div>
             ) : null}
           </div>
@@ -2310,7 +2265,6 @@ export function ProductForm({
         register={register}
         setValue={setValue}
         badgeFields={badgeFields}
-        trustBlockFields={trustBlockFields}
         faqFields={faqFields}
       />
 
@@ -2318,40 +2272,40 @@ export function ProductForm({
         <details className="group">
           <summary className="flex cursor-pointer list-none flex-col gap-2 px-6 py-5 transition hover:bg-emerald-50/55 sm:flex-row sm:items-center sm:justify-between">
             <span>
-              <span className="block text-xs font-bold uppercase tracking-normal text-emerald-700">Gelişmiş ayar</span>
-              <span className="mt-1 block text-lg font-semibold text-slate-950">SEO ve arama görünümü</span>
-              <span className="mt-1 block max-w-3xl text-sm leading-6 text-slate-600">Ürün yayına hazır olduktan sonra meta başlık, açıklama, canonical ve arama kelimelerini düzenleyin.</span>
+              <span className="block text-xs font-bold uppercase tracking-normal text-emerald-700">GeliÅŸmiÅŸ ayar</span>
+              <span className="mt-1 block text-lg font-semibold text-slate-950">SEO ve arama gÃ¶rÃ¼nÃ¼mÃ¼</span>
+              <span className="mt-1 block max-w-3xl text-sm leading-6 text-slate-600">ÃœrÃ¼n yayÄ±na hazÄ±r olduktan sonra meta baÅŸlÄ±k, aÃ§Ä±klama, canonical ve arama kelimelerini dÃ¼zenleyin.</span>
             </span>
             <span className="inline-flex w-fit items-center rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 group-open:bg-[#063326] group-open:text-white">
-              Aç / kapat
+              AÃ§ / kapat
             </span>
           </summary>
           <div className="border-t border-slate-100 p-6">
         <div className="mb-6">
           <h2 className="text-xl font-semibold text-slate-950">SEO</h2>
-          <ExampleHint>Örnek meta başlık: HomeCharge Pro 11kW EV Şarj Cihazı. Meta açıklama kullanıcıya net satın alma sebebi vermeli.</ExampleHint>
+          <ExampleHint>Ã–rnek meta baÅŸlÄ±k: HomeCharge Pro 11kW EV Åarj CihazÄ±. Meta aÃ§Ä±klama kullanÄ±cÄ±ya net satÄ±n alma sebebi vermeli.</ExampleHint>
         </div>
         <div className="grid gap-5 md:grid-cols-2">
           <div>
-            <input className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Meta başlık" {...register("seoTitle")} />
+            <input className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Meta baÅŸlÄ±k" {...register("seoTitle")} />
             <p className={`mt-2 text-xs font-semibold ${seoTitleLength >= 35 && seoTitleLength <= 70 ? "text-emerald-700" : "text-amber-700"}`}>
               {seoTitleLength}/60 karakter hedefi
             </p>
           </div>
           <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Kanonik URL" {...register("canonicalUrl")} />
           <div className="md:col-span-2">
-            <textarea rows={3} className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Meta açıklama" {...register("seoDescription")} />
+            <textarea rows={3} className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Meta aÃ§Ä±klama" {...register("seoDescription")} />
             <p className={`mt-2 text-xs font-semibold ${seoDescriptionLength >= 110 && seoDescriptionLength <= 170 ? "text-emerald-700" : "text-amber-700"}`}>
               {seoDescriptionLength}/160 karakter hedefi
             </p>
           </div>
-          <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm md:col-span-2" placeholder="Open Graph görsel URL" {...register("ogImageUrl")} />
+          <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm md:col-span-2" placeholder="Open Graph gÃ¶rsel URL" {...register("ogImageUrl")} />
           <input type="hidden" {...register("aiSummary")} />
           <div className="md:col-span-2">
             <label className="mb-2 block text-sm font-medium text-slate-700">Arama kelimeleri</label>
             <input
               className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
-              placeholder="virgülle ayırın"
+              placeholder="virgÃ¼lle ayÄ±rÄ±n"
               value={selectedKeywords.join(", ")}
               onChange={(event) =>
                 setValue(
@@ -2367,16 +2321,16 @@ export function ProductForm({
           </div>
           <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 md:col-span-2">
             <p className="text-xs font-bold uppercase tracking-normal text-slate-500">
-              Arama sonucu önizlemesi
+              Arama sonucu Ã¶nizlemesi
             </p>
             <p className="mt-3 text-lg font-semibold text-[#1a0dab]">
-              {cleanText(seoTitleValue) || cleanText(currentName) || "Meta başlık"}
+              {cleanText(seoTitleValue) || cleanText(currentName) || "Meta baÅŸlÄ±k"}
             </p>
             <p className="mt-1 text-sm text-[#006621]">
               parkchargeev.com/urun/{cleanText(currentSlug) || slugify(currentName || "urun")}
             </p>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-700">
-              {cleanText(seoDescriptionValue) || "Meta açıklama arama sonucunda burada görünür."}
+              {cleanText(seoDescriptionValue) || "Meta aÃ§Ä±klama arama sonucunda burada gÃ¶rÃ¼nÃ¼r."}
             </p>
           </div>
         </div>
@@ -2388,18 +2342,18 @@ export function ProductForm({
         <details className="group">
           <summary className="flex cursor-pointer list-none flex-col gap-2 px-6 py-5 transition hover:bg-emerald-50/55 sm:flex-row sm:items-center sm:justify-between">
             <span>
-              <span className="block text-xs font-bold uppercase tracking-normal text-emerald-700">Gelişmiş ayar</span>
-              <span className="mt-1 block text-lg font-semibold text-slate-950">İlişkiler ve admin notları</span>
-              <span className="mt-1 block max-w-3xl text-sm leading-6 text-slate-600">Benzer ürün, aksesuar önerisi ve yalnızca ekip içinde görünen operasyon notları.</span>
+              <span className="block text-xs font-bold uppercase tracking-normal text-emerald-700">GeliÅŸmiÅŸ ayar</span>
+              <span className="mt-1 block text-lg font-semibold text-slate-950">Ä°liÅŸkiler ve admin notlarÄ±</span>
+              <span className="mt-1 block max-w-3xl text-sm leading-6 text-slate-600">Benzer Ã¼rÃ¼n, aksesuar Ã¶nerisi ve yalnÄ±zca ekip iÃ§inde gÃ¶rÃ¼nen operasyon notlarÄ±.</span>
             </span>
             <span className="inline-flex w-fit items-center rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 group-open:bg-[#063326] group-open:text-white">
-              Aç / kapat
+              AÃ§ / kapat
             </span>
           </summary>
           <div className="border-t border-slate-100 p-6">
         <div className="mb-6 grid gap-5 lg:grid-cols-2">
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">İlgili ürünler</label>
+            <label className="mb-2 block text-sm font-medium text-slate-700">Ä°lgili Ã¼rÃ¼nler</label>
             <Controller
               control={control}
               name="relatedProductIds"
@@ -2422,7 +2376,7 @@ export function ProductForm({
             />
           </div>
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">Aksesuar önerileri</label>
+            <label className="mb-2 block text-sm font-medium text-slate-700">Aksesuar Ã¶nerileri</label>
             <Controller
               control={control}
               name="accessoryProductIds"
@@ -2449,7 +2403,7 @@ export function ProductForm({
         <textarea
           rows={4}
           className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm"
-          placeholder="Admin notları"
+          placeholder="Admin notlarÄ±"
           {...register("adminNotes")}
         />
           </div>
@@ -2464,8 +2418,8 @@ export function ProductForm({
 
       {hasValidationErrors ? (
         <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          Formda eksik veya hatalı alanlar var. Ürün adı, açıklama, SKU, fiyat,
-          stok, kategori ve SEO alanlarını kontrol edin.
+          Formda eksik veya hatalÄ± alanlar var. ÃœrÃ¼n adÄ±, aÃ§Ä±klama, SKU, fiyat,
+          stok, kategori ve SEO alanlarÄ±nÄ± kontrol edin.
         </div>
       ) : null}
 
@@ -2481,7 +2435,7 @@ export function ProductForm({
           onClick={() => router.push("/admin/urunler")}
           className="rounded-full border border-slate-300 px-5 py-3 text-sm font-medium text-slate-700"
         >
-          Listeye dön
+          Listeye dÃ¶n
         </button>
         <button
           type="submit"
@@ -2489,15 +2443,17 @@ export function ProductForm({
           className="rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white disabled:opacity-70"
         >
           {!isHydrated
-            ? "Hazırlanıyor..."
+            ? "HazÄ±rlanÄ±yor..."
             : isSubmitting
               ? "Kaydediliyor..."
               : mode === "create"
-                ? "Ürün oluştur"
-                : "Değişiklikleri kaydet"}
+                ? "ÃœrÃ¼n oluÅŸtur"
+                : "DeÄŸiÅŸiklikleri kaydet"}
           </button>
         </div>
       </fieldset>
     </form>
   );
 }
+
+

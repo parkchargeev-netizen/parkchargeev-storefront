@@ -1,4 +1,4 @@
-import {
+﻿import {
   type AnyPgColumn,
   boolean,
   customType,
@@ -342,6 +342,7 @@ export const products = pgTable(
     inventoryTrackingEnabled: boolean("inventory_tracking_enabled")
       .default(true)
       .notNull(),
+    sortOrder: integer("sort_order").default(0).notNull(),
     powerKw: varchar("power_kw", { length: 40 }),
     chargeType: productChargeTypeEnum("charge_type"),
     connectorType: varchar("connector_type", { length: 80 }),
@@ -364,7 +365,8 @@ export const products = pgTable(
   (table) => ({
     slugIndex: uniqueIndex("products_slug_idx").on(table.slug),
     categoryIndex: index("products_category_idx").on(table.categoryId),
-    brandIndex: index("products_brand_idx").on(table.brandId)
+    brandIndex: index("products_brand_idx").on(table.brandId),
+    sortOrderIndex: index("products_sort_order_idx").on(table.sortOrder)
   })
 );
 
@@ -1106,3 +1108,4 @@ export const blogPosts = pgTable(
     slugIndex: uniqueIndex("blog_posts_slug_idx").on(table.slug)
   })
 );
+

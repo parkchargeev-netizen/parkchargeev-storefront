@@ -1,6 +1,4 @@
-import Link from "next/link";
-import { Headphones, RotateCcw, ShieldCheck, Truck } from "lucide-react";
-
+﻿import Link from "next/link";
 import { ProductPlacementBadges } from "@/components/shop/product-badges";
 import { ProductCard } from "@/components/shop/product-card";
 import type { ProductModel } from "@/lib/mock-data";
@@ -16,23 +14,6 @@ type ProductDetailSectionsProps = {
   relatedProducts: ProductModel[];
   descriptionHtml: string;
 };
-
-function TrustBlockIcon({ iconName }: { iconName?: string }) {
-  const normalizedIconName = iconName?.toLocaleLowerCase("tr-TR") ?? "";
-  const Icon =
-    normalizedIconName.includes("truck") || normalizedIconName.includes("kargo")
-      ? Truck
-      : normalizedIconName.includes("return") ||
-          normalizedIconName.includes("iade") ||
-          normalizedIconName.includes("garanti")
-        ? RotateCcw
-        : normalizedIconName.includes("support") ||
-            normalizedIconName.includes("destek")
-          ? Headphones
-          : ShieldCheck;
-
-  return <Icon className="h-5 w-5" aria-hidden />;
-}
 
 function getTechnicalRows(groups: ProductTechnicalSpecGroup[]) {
   const seen = new Set<string>();
@@ -58,52 +39,6 @@ function getTechnicalRows(groups: ProductTechnicalSpecGroup[]) {
   );
 }
 
-function compactText(text: string, maxLength = 110) {
-  const normalizedText = text.replace(/\s+/g, " ").trim();
-
-  if (normalizedText.length <= maxLength) {
-    return normalizedText;
-  }
-
-  const compactedText = normalizedText.slice(0, maxLength).replace(/\s+\S*$/, "").trim();
-  return `${compactedText}...`;
-}
-
-export function ProductTrustGrid({
-  detailContent
-}: Pick<ProductDetailSectionsProps, "detailContent">) {
-  const trustItems = detailContent.trustBlocks
-    .filter((item) => item.isActive !== false && item.title && item.body)
-    .slice(0, 3);
-
-  if (detailContent.trustEnabled === false || trustItems.length === 0) {
-    return null;
-  }
-
-  return (
-    <section className="product-detail-section product-detail-trust-panel">
-      <ProductPlacementBadges
-        badges={detailContent.badges}
-        placement="detail_trust_section_top"
-        className="mb-4"
-      />
-      <div className="product-detail-section-heading">
-        <p>{detailContent.trustEyebrow}</p>
-        <h2>{detailContent.trustHeading}</h2>
-      </div>
-      <div className="product-detail-trust-grid">
-        {trustItems.map((item) => (
-          <article key={item.title} className="product-detail-trust-card">
-            <TrustBlockIcon iconName={item.iconName} />
-            <h3>{item.title}</h3>
-            <p>{compactText(item.body, 96)}</p>
-          </article>
-        ))}
-      </div>
-    </section>
-  );
-}
-
 export function ProductTechnicalSpecs({
   detailContent,
   groups
@@ -125,8 +60,8 @@ export function ProductTechnicalSpecs({
         className="mb-4"
       />
       <div className="product-detail-section-heading">
-        <p>Ürün teknik bilgileri</p>
-        <h2>{detailContent.specsHeading || "Teknik Özellikler"}</h2>
+        <p>ÃœrÃ¼n teknik bilgileri</p>
+        <h2>{detailContent.specsHeading || "Teknik Ã–zellikler"}</h2>
       </div>
       <div className="product-detail-spec-list">
         {rows.map((spec) => (
@@ -205,7 +140,7 @@ export function ProductFaqs({
   return (
     <section className="product-detail-section">
       <div className="product-detail-section-heading">
-        <p>Sık sorulan sorular</p>
+        <p>SÄ±k sorulan sorular</p>
         <h2>{detailContent.faqHeading}</h2>
       </div>
       <div className="grid gap-4 md:grid-cols-2">
@@ -242,3 +177,5 @@ export function ProductRelatedProducts({
     </section>
   );
 }
+
+
