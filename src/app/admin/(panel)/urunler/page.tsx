@@ -59,23 +59,7 @@ export default async function AdminProductsPage({ searchParams }: ProductListPag
         eyebrow="Ürün Yönetimi"
         title="Katalog, fiyat ve SEO kontrol merkezi"
         description="Yeniden kullanılabilir tablo yapısıyla katalog takibi, fiyat / stok görünürlüğü ve ürün SEO alanları tek listede toplandı."
-        action={
-          <>
-            <a
-              href="#product-import"
-              className="inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-5 py-3 text-sm font-semibold text-emerald-800 transition hover:border-emerald-300 hover:bg-emerald-100"
-            >
-              CSV / XLSX içe aktar
-            </a>
-            <a
-              href={buildHref("/api/admin/products", query, { format: "csv", limit: "50" })}
-              className="inline-flex rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-white"
-            >
-              CSV indir
-            </a>
-            <AdminPrefetchLink href="/admin/urunler/yeni" className="inline-flex rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">Yeni Ürün</AdminPrefetchLink>
-          </>
-        }
+        action={<AdminPrefetchLink href="/admin/urunler/yeni" className="inline-flex rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">Yeni Ürün</AdminPrefetchLink>}
         meta={
           <>
             <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
@@ -87,7 +71,7 @@ export default async function AdminProductsPage({ searchParams }: ProductListPag
           </>
         }
       />
-      <ProductImportPanel />
+      <ProductImportPanel exportHref={buildHref("/api/admin/products", query, { format: "csv", limit: "50" })} />
 
       <AdminFilterBar>
         <form className="grid gap-4 lg:grid-cols-4 xl:grid-cols-[minmax(0,1.4fr)_160px_160px_160px_160px_160px_auto]">

@@ -12,6 +12,7 @@ import type {
 } from "@/lib/admin-product-import-contract";
 
 type ProductImportPanelProps = {
+  exportHref?: string;
   initialHistory?: ProductImportHistoryItem[];
 };
 
@@ -51,6 +52,21 @@ const sourceFormatLabels: Record<ProductImportPreviewResponse["sourceFormat"], s
   standard: "Standart CSV/XLSX",
   hims_price_list: "Hims fiyat listesi"
 };
+
+const workflowSteps = [
+  {
+    title: "Dışa aktar",
+    description: "Listedeki filtrelere göre güncel ürün listesini CSV olarak alın."
+  },
+  {
+    title: "Dosyayı hazırlayın",
+    description: "Şablonu veya Hims fiyat listesini ürün kodu, slug ya da ürün adıyla eşleştirin."
+  },
+  {
+    title: "Önizle ve uygula",
+    description: "Sistem sadece ana fiyatı değiştirir; onay vermeden veritabanına yazmaz."
+  }
+] as const;
 
 function formatKurus(value: number | null) {
   if (value === null || value === undefined) {
@@ -120,7 +136,14 @@ function getRowChangeSummary(row: ProductImportPreviewRow) {
   return `Fiyat: ${formatKurus(row.oldPriceKurus)} -> ${formatKurus(row.newPriceKurus)}`;
 }
 
-export function ProductImportPanel({ initialHistory = [] }: ProductImportPanelProps) {
+function downloadFromHref(href: string) {
+  window.location.assign(href);
+}
+
+export function ProductImportPanel({
+  exportHref = "/api/admin/products?format=csv&limit=50",
+  initialHistory = []
+}: ProductImportPanelProps) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [file, setFile] = useState<File | null>(null);
@@ -136,6 +159,7 @@ export function ProductImportPanel({ initialHistory = [] }: ProductImportPanelPr
     [preview]
   );
   const previewRows = preview?.rows.slice(0, 80) ?? [];
+
   const loadHistory = useCallback(async () => {
     setIsHistoryLoading(true);
 
@@ -239,6 +263,7 @@ export function ProductImportPanel({ initialHistory = [] }: ProductImportPanelPr
       }
 
       setResult(payload);
+      void loadHistory();
       router.refresh();
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Fiyat güncellemesi uygulanamadı.");
@@ -248,33 +273,59 @@ export function ProductImportPanel({ initialHistory = [] }: ProductImportPanelPr
   };
 
   return (
-    <section id="product-import" className="scroll-mt-28 rounded-lg border border-emerald-100 bg-white/90 p-5 shadow-[0_24px_70px_rgba(15,23,42,0.08)] lg:p-6">
-      <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
-        <div className="max-w-3xl space-y-2">
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-700">Excel fiyat güncelle</p>
-          <h2 className="text-xl font-bold tracking-normal text-slate-950 lg:text-2xl">
-            Toplu fiyat güncelleme
-          </h2>
-          <p className="text-sm leading-6 text-slate-600">
-            CSV veya XLSX dosyanızı yükleyin; sistem product_id, ürün kodu/SKU, slug veya tam ürün adı ile eşleştirir. Hims fiyat listesinde e-ticaret sitesi fiyatı ana fiyat olarak okunur. Onay vermeden veritabanına yazılmaz.
-          </p>
+    <section
+      id="product-import"
+      className="scroll-mt-28 overflow-hidden rounded-xl border border-emerald-100 bg-white/95 shadow-[0_24px_70px_rgba(15,23,42,0.08)]"
+    >
+      <div className="border-b border-slate-100 bg-gradient-to-br from-white via-emerald-50/50 to-white p-5 lg:p-6">
+        <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
+          <div className="max-w-3xl space-y-2">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-700">
+              Excel içe / dışa aktarım
+            </p>
+            <h2 className="text-xl font-bold tracking-normal text-slate-950 lg:text-2xl">
+              Ürün fiyatlarını tek merkezden yönetin
+            </h2>
+            <p className="text-sm leading-6 text-slate-600">
+              E-ticaret akışına uygun olarak önce ürünleri dışa aktarın, şablonu hazırlayın, sonra dosyayı önizleyip yalnızca onaylanan ana fiyat değişikliklerini uygulayın.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => downloadFromHref(exportHref)}
+              className="inline-flex rounded-full border border-slate-300 bg-white px-4 py-2.5 text-sm font-bold text-slate-800 transition hover:border-slate-400 hover:bg-slate-50"
+            >
+              Ürünleri CSV indir
+            </button>
+            <button
+              type="button"
+              onClick={() => downloadFromHref("/api/admin/products/import")}
+              className="inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm font-bold text-emerald-800 transition hover:bg-emerald-100"
+            >
+              Fiyat şablonu indir
+            </button>
+          </div>
         </div>
-        <button
-          type="button"
-          onClick={() => {
-            window.location.href = "/api/admin/products/import";
-          }}
-          className="inline-flex w-fit rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm font-bold text-emerald-800 transition hover:bg-emerald-100"
-        >
-          Örnek fiyat şablonu indir
-        </button>
+
+        <div className="mt-5 grid gap-3 md:grid-cols-3">
+          {workflowSteps.map((step, index) => (
+            <div key={step.title} className="rounded-lg border border-white/80 bg-white/85 p-4 shadow-sm">
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-950 text-xs font-bold text-white">
+                {index + 1}
+              </span>
+              <h3 className="mt-3 text-sm font-bold text-slate-950">{step.title}</h3>
+              <p className="mt-1 text-sm leading-6 text-slate-600">{step.description}</p>
+            </div>
+          ))}
+        </div>
       </div>
 
-      <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(260px,0.5fr)]">
+      <div className="grid gap-4 p-5 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.45fr)] lg:p-6">
         <div className="rounded-lg border border-slate-200 bg-slate-50/70 p-4">
           <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
             <label className="block">
-              <span className="text-xs font-bold uppercase tracking-normal text-slate-500">Dosya</span>
+              <span className="text-xs font-bold uppercase tracking-normal text-slate-500">Dosya yükle</span>
               <input
                 ref={inputRef}
                 type="file"
@@ -299,7 +350,7 @@ export function ProductImportPanel({ initialHistory = [] }: ProductImportPanelPr
           <div className="mt-4 rounded-lg border border-emerald-200 bg-white px-4 py-3">
             <p className="text-xs font-bold uppercase tracking-normal text-emerald-700">Güncellenecek alan</p>
             <p className="mt-1 text-sm font-semibold text-slate-800">
-              Sadece ana fiyat güncellenir. İndirimli fiyat ve stok bu import akışıyla değiştirilmez.
+              Bu akış sadece ana fiyatı günceller. İndirimli fiyat, stok ve ürün metinleri değişmez.
             </p>
           </div>
 
@@ -339,13 +390,13 @@ export function ProductImportPanel({ initialHistory = [] }: ProductImportPanelPr
       </div>
 
       {message ? (
-        <div className="mt-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700">
+        <div className="mx-5 mb-5 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700 lg:mx-6">
           {message}
         </div>
       ) : null}
 
       {preview ? (
-        <div className="mt-5 space-y-4">
+        <div className="space-y-4 border-t border-slate-100 p-5 lg:p-6">
           <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-900">
             Algılanan dosya tipi: {sourceFormatLabels[preview.sourceFormat]}. Önizleme onaylanmadan veritabanına hiçbir fiyat yazılmaz.
           </div>
@@ -430,7 +481,7 @@ export function ProductImportPanel({ initialHistory = [] }: ProductImportPanelPr
       ) : null}
 
       {result ? (
-        <div className="mt-5 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-900">
+        <div className="mx-5 mb-5 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-900 lg:mx-6">
           Fiyat güncellemesi tamamlandı: {result.summary.updatedRows} satır güncellendi, {result.summary.skippedRows} satır atlandı.
         </div>
       ) : null}
