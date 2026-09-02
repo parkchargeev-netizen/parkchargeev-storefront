@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import type {
@@ -12,7 +12,7 @@ import type {
 } from "@/lib/admin-product-import-contract";
 
 type ProductImportPanelProps = {
-  history: ProductImportHistoryItem[];
+  initialHistory?: ProductImportHistoryItem[];
 };
 
 type ApiErrorPayload = {
@@ -120,13 +120,15 @@ function getRowChangeSummary(row: ProductImportPreviewRow) {
   return `Fiyat: ${formatKurus(row.oldPriceKurus)} -> ${formatKurus(row.newPriceKurus)}`;
 }
 
-export function ProductImportPanel({ history }: ProductImportPanelProps) {
+export function ProductImportPanel({ initialHistory = [] }: ProductImportPanelProps) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<ProductImportPreviewResponse | null>(null);
   const [result, setResult] = useState<ProductImportConfirmResponse | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [history, setHistory] = useState<ProductImportHistoryItem[]>(initialHistory);
+  const [isHistoryLoading, setIsHistoryLoading] = useState(initialHistory.length === 0);
   const [isPreviewing, setIsPreviewing] = useState(false);
   const [isConfirming, setIsConfirming] = useState(false);
   const problematicRows = useMemo(
@@ -134,6 +136,31 @@ export function ProductImportPanel({ history }: ProductImportPanelProps) {
     [preview]
   );
   const previewRows = preview?.rows.slice(0, 80) ?? [];
+  const loadHistory = useCallback(async () => {
+    setIsHistoryLoading(true);
+
+    try {
+      const response = await fetch("/api/admin/products/import?history=1", {
+        cache: "no-store"
+      });
+      const payload = (await response.json().catch(() => null)) as {
+        ok?: boolean;
+        history?: ProductImportHistoryItem[];
+      } | null;
+
+      if (response.ok && payload?.ok && Array.isArray(payload.history)) {
+        setHistory(payload.history);
+      }
+    } finally {
+      setIsHistoryLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (initialHistory.length === 0) {
+      void loadHistory();
+    }
+  }, [initialHistory.length, loadHistory]);
 
   const resetPreview = () => {
     setPreview(null);
@@ -289,7 +316,11 @@ export function ProductImportPanel({ history }: ProductImportPanelProps) {
         <div className="rounded-lg border border-slate-200 bg-white p-4">
           <h3 className="text-sm font-bold text-slate-950">Son fiyat güncellemeleri</h3>
           <div className="mt-3 space-y-3">
-            {history.length > 0 ? (
+            {isHistoryLoading ? (
+              <p className="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-3 py-4 text-sm text-slate-500">
+                Geçmiş yükleniyor...
+              </p>
+            ) : history.length > 0 ? (
               history.map((item) => (
                 <div key={item.id} className="rounded-lg border border-slate-100 bg-slate-50 px-3 py-2">
                   <p className="truncate text-xs font-bold text-slate-900">{item.fileName ?? "Dosya"}</p>

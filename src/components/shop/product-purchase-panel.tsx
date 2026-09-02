@@ -178,12 +178,14 @@ export function ProductPurchasePanel({
               </div>
             </div>
 
-            <div className="product-purchase-panel__subtotal rounded-lg border border-outline-variant/35 bg-white p-4">
-              <span className="text-sm text-on-surface-variant">{labels.subtotalLabel}</span>
-              <strong className="mt-3 block text-xl font-bold text-on-surface">
-                {formatPriceTRY(estimatedLineTotal)}
-              </strong>
-            </div>
+            {quantity > 1 ? (
+              <div className="product-purchase-panel__subtotal rounded-lg border border-outline-variant/35 bg-white p-4">
+                <span className="text-sm text-on-surface-variant">{labels.subtotalLabel}</span>
+                <strong className="mt-2 block text-lg font-bold text-on-surface">
+                  {formatPriceTRY(estimatedLineTotal)}
+                </strong>
+              </div>
+            ) : null}
           </div>
 
           <ProductPlacementBadges
@@ -229,3 +231,4 @@ export function ProductPurchasePanel({
     </div>
   );
 }
+

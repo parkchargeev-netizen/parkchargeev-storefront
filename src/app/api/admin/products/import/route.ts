@@ -8,6 +8,7 @@ import {
 import {
   confirmProductImport,
   getProductImportTemplateCsv,
+  listProductImportHistory,
   normalizeImportFields,
   previewProductImport,
   ProductImportError
@@ -31,11 +32,17 @@ function productImportErrorResponse(error: ProductImportError) {
   );
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   const authenticatedAdmin = await requireAdminRole(["superadmin", "admin", "product_manager"]);
 
   if (!authenticatedAdmin) {
     return unauthorizedResponse();
+  }
+
+  const { searchParams } = new URL(request.url);
+
+  if (searchParams.get("history") === "1") {
+    return NextResponse.json({ ok: true, history: await listProductImportHistory() });
   }
 
   return new Response(getProductImportTemplateCsv(), {

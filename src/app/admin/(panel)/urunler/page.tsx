@@ -3,7 +3,6 @@ import { ProductImportPanel } from "@/components/admin/product-import-panel";
 import { AdminFilterBar } from "@/components/admin/table/admin-filter-bar";
 import { AdminPageHeader } from "@/components/admin/table/admin-page-header";
 import { ProductsTable } from "@/components/admin/table/products-table";
-import { listProductImportHistory } from "@/server/admin/product-import";
 import { listAdminCatalog, listAdminProducts } from "@/server/admin/repository";
 
 type ProductListPageProps = {
@@ -38,7 +37,7 @@ function buildHref(basePath: string, query: Record<string, string | undefined>, 
 
 export default async function AdminProductsPage({ searchParams }: ProductListPageProps) {
   const query = (await searchParams) ?? {};
-  const [result, catalog, importHistory] = await Promise.all([
+  const [result, catalog] = await Promise.all([
     listAdminProducts({
       q: query.q,
       status: query.status,
@@ -51,8 +50,7 @@ export default async function AdminProductsPage({ searchParams }: ProductListPag
       sort: query.sort ?? "manual_order",
       limit: 12
     }),
-    listAdminCatalog(),
-    listProductImportHistory()
+    listAdminCatalog()
   ]);
 
   return (
@@ -84,12 +82,12 @@ export default async function AdminProductsPage({ searchParams }: ProductListPag
               {result.items.length} ürün
             </span>
             <span className="inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800">
-              Cursor tabanli listeleme aktif
+              Cursor tabanlı listeleme aktif
             </span>
           </>
         }
       />
-      <ProductImportPanel history={importHistory} />
+      <ProductImportPanel />
 
       <AdminFilterBar>
         <form className="grid gap-4 lg:grid-cols-4 xl:grid-cols-[minmax(0,1.4fr)_160px_160px_160px_160px_160px_auto]">

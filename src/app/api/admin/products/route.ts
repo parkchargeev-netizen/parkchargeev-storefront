@@ -1,4 +1,4 @@
-﻿import { revalidatePath } from "next/cache";
+import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 
 import { normalizeAdminProductPayload } from "@/lib/admin-product-payload";
@@ -61,7 +61,6 @@ export async function GET(request: Request) {
   });
 
   const result = await listAdminProducts(query);
-  const lookupOptions = await getProductLookupOptions();
 
   if (query.format === "csv") {
     return csvResponse("products.csv", result.items, [
@@ -82,10 +81,12 @@ export async function GET(request: Request) {
     ]);
   }
 
+  const includeLookupOptions = searchParams.get("includeLookup") === "1";
+
   return NextResponse.json({
     ok: true,
     ...result,
-    lookupOptions
+    ...(includeLookupOptions ? { lookupOptions: await getProductLookupOptions() } : {})
   });
 }
 
