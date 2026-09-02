@@ -13150,7 +13150,7 @@ body {
   transform: translate(0.08rem, -50%);
 }
 
-.product-commerce-media .product-gallery-premium button[aria-label*="gÃ¶rseli seÃ§"] {
+.product-commerce-media .product-gallery-premium button[aria-label*="görseli seç"] {
   aspect-ratio: 1;
 }
 
@@ -17528,7 +17528,7 @@ html[data-device-os="android"] .store-product-slide .premium-product-card__media
 }
 
 .product-detail-commerce-page .product-gallery-stage button[aria-label*="görselini büyüt"],
-.product-detail-commerce-page .product-gallery-stage button[aria-label*="gÃ¶rselini bÃ¼yÃ¼t"] {
+.product-detail-commerce-page .product-gallery-stage button[aria-label*="görselini büyüt"] {
   z-index: 1;
 }
 

@@ -1,4 +1,5 @@
-﻿import { inferProductMediaType } from "@/lib/product-media";
+import { inferProductMediaType } from "@/lib/product-media";
+import { repairMojibakeText } from "@/lib/text-encoding";
 import {
   normalizeProductBadgePlacement,
   productBadgePlacementValues
@@ -9,7 +10,7 @@ function getText(value: unknown, field: string) {
     return "";
   }
 
-  return String((value as Record<string, unknown>)[field] ?? "").trim();
+  return repairMojibakeText(String((value as Record<string, unknown>)[field] ?? "")).trim();
 }
 
 function hasAnyText(value: unknown, fields: string[]) {
@@ -82,7 +83,7 @@ function normalizeTechnicalGroups(value: unknown) {
         });
 
       return {
-        title: getText(group, "title") || "Teknik Ã¶zellikler",
+        title: getText(group, "title") || "Teknik özellikler",
         description: getText(group, "description"),
         isActive: getBoolean(group.isActive),
         sortOrder: normalizeNumber(group.sortOrder, groupIndex + 1),
@@ -96,8 +97,8 @@ function normalizeTechnicalGroups(value: unknown) {
   return items.length
     ? [
         {
-          title: "Teknik Ã¶zellikler",
-          description: "ÃœrÃ¼n detayÄ±nda tek tabloda gÃ¶rÃ¼nen teknik Ã¶zellikler.",
+          title: "Teknik özellikler",
+          description: "Ürün detayında tek tabloda görünen teknik özellikler.",
           isActive: true,
           sortOrder: 1,
           items: items.map((item, index) => ({

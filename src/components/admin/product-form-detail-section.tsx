@@ -45,25 +45,25 @@ function ProductFormDetailSectionComponent({
         <details className="group">
           <summary className="flex cursor-pointer list-none flex-col gap-2 px-6 py-5 transition hover:bg-emerald-50/55 sm:flex-row sm:items-center sm:justify-between">
             <span>
-              <span className="block text-xs font-bold uppercase tracking-normal text-emerald-700">GeliÅŸmiÅŸ ayar</span>
-              <span className="mt-1 block text-lg font-semibold text-slate-950">ÃœrÃ¼n sayfasÄ± iÃ§eriÄŸi</span>
-              <span className="mt-1 block max-w-3xl text-sm leading-6 text-slate-600">Rozetler, yorum metinleri ve SSS alanlarÄ±nÄ± yalnÄ±zca ihtiyaÃ§ olduÄŸunda dÃ¼zenleyin.</span>
+              <span className="block text-xs font-bold uppercase tracking-normal text-emerald-700">Gelişmiş ayar</span>
+              <span className="mt-1 block text-lg font-semibold text-slate-950">Ürün sayfası içeriği</span>
+              <span className="mt-1 block max-w-3xl text-sm leading-6 text-slate-600">Rozetler, yorum metinleri ve SSS alanlarını yalnızca ihtiyaç olduğunda düzenleyin.</span>
             </span>
             <span className="inline-flex w-fit items-center rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 group-open:bg-[#063326] group-open:text-white">
-              AÃ§ / kapat
+              Aç / kapat
             </span>
           </summary>
           <div className="border-t border-slate-100 p-6">
         <div className="mb-6">
-          <h2 className="text-xl font-semibold text-slate-950">ÃœrÃ¼n detay sayfasÄ±</h2>
+          <h2 className="text-xl font-semibold text-slate-950">Ürün detay sayfası</h2>
           <p className="mt-1 text-sm text-slate-600">
-            ÃœrÃ¼n sayfasÄ±ndaki rozet, destek ve SSS iÃ§erikleri Ã¼rÃ¼n kaydÄ±yla birlikte yÃ¶netilir.
+            Ürün sayfasındaki rozet, destek ve SSS içerikleri ürün kaydıyla birlikte yönetilir.
           </p>
         </div>
 
         <div className="grid gap-5 md:grid-cols-2">
           <div className="md:col-span-2">
-            <ExampleHint>Ã‡ok satÄ±rlÄ± alanlarda her satÄ±r ayrÄ± madde olur. Ã–rnek: Ã–n gÃ¶rÃ¼nÃ¼m, Yan profil, Montaj gÃ¶rÃ¼nÃ¼mÃ¼.</ExampleHint>
+            <ExampleHint>Çok satırlı alanlarda her satır ayrı madde olur. Örnek: Ön görünüm, Yan profil, Montaj görünümü.</ExampleHint>
           </div>
           <div>
             <label className="mb-2 block text-sm font-medium text-slate-700">
@@ -82,53 +82,53 @@ function ProductFormDetailSectionComponent({
           </div>
           <input
             className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
-            placeholder="ÃœrÃ¼n adÄ± Ã¼stÃ¼ ana rozet / Ã¼st metin"
+            placeholder="Ürün adı üstü ana rozet / üst metin"
             {...register("detailContent.heroEyebrow")}
           />
           <input
             className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
-            placeholder="ÃœrÃ¼n aÃ§Ä±klamasÄ± Ã¼st baÅŸlÄ±ÄŸÄ±"
+            placeholder="Ürün açıklaması üst başlığı"
             {...register("detailContent.descriptionEyebrow")}
           />
           <input
             className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
-            placeholder="ÃœrÃ¼n aÃ§Ä±klamasÄ± ana baÅŸlÄ±ÄŸÄ±"
+            placeholder="Ürün açıklaması ana başlığı"
             {...register("detailContent.descriptionHeading")}
           />
           <input
             className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
-            placeholder="Teknik Ã¶zellikler baÅŸlÄ±ÄŸÄ±"
+            placeholder="Teknik özellikler başlığı"
             {...register("detailContent.specsHeading")}
           />
           <input
             className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
-            placeholder="SatÄ±n alma niyetleri baÅŸlÄ±ÄŸÄ±"
+            placeholder="Satın alma niyetleri başlığı"
             {...register("detailContent.intentHeading")}
           />
           <input
             className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
-            placeholder="KullanÄ±m senaryolarÄ± baÅŸlÄ±ÄŸÄ±"
+            placeholder="Kullanım senaryoları başlığı"
             {...register("detailContent.useCasesHeading")}
           />
           <input
             className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
-            placeholder="KullanÄ±m CTA metni"
+            placeholder="Kullanım CTA metni"
             {...register("detailContent.useCasesCtaLabel")}
           />
           <input
             className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
-            placeholder="KullanÄ±m CTA linki"
+            placeholder="Kullanım CTA linki"
             {...register("detailContent.useCasesCtaHref")}
           />
           <textarea
             rows={3}
             className="rounded-lg border border-slate-300 px-4 py-3 text-sm md:col-span-2"
-            placeholder="SatÄ±n alma niyetleri aÃ§Ä±klamasÄ±"
+            placeholder="Satın alma niyetleri açıklaması"
             {...register("detailContent.intentBody")}
           />
           <div>
             <label className="mb-2 block text-sm font-medium text-slate-700">
-              SatÄ±n alma niyeti etiketleri
+              Satın alma niyeti etiketleri
             </label>
             <textarea
               rows={4}
@@ -143,7 +143,7 @@ function ProductFormDetailSectionComponent({
           </div>
           <div>
             <label className="mb-2 block text-sm font-medium text-slate-700">
-              KullanÄ±m senaryolarÄ±
+              Kullanım senaryoları
             </label>
             <textarea
               rows={4}
@@ -159,26 +159,26 @@ function ProductFormDetailSectionComponent({
 
           <input
             className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
-            placeholder="SSS baÅŸlÄ±ÄŸÄ±"
+            placeholder="SSS başlığı"
             {...register("detailContent.faqHeading")}
           />
           <input
             className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
-            placeholder="Ä°lgili Ã¼rÃ¼nler Ã¼st baÅŸlÄ±ÄŸÄ±"
+            placeholder="İlgili ürünler üst başlığı"
             {...register("detailContent.relatedEyebrow")}
           />
           <input
             className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
-            placeholder="Ä°lgili Ã¼rÃ¼nler baÅŸlÄ±ÄŸÄ±"
+            placeholder="İlgili ürünler başlığı"
             {...register("detailContent.relatedHeading")}
           />
           <label className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700">
             <input type="checkbox" {...register("detailContent.relatedEnabled")} />
-            Ä°lgili Ã¼rÃ¼nler bÃ¶lÃ¼mÃ¼nÃ¼ gÃ¶ster
+            İlgili ürünler bölümünü göster
           </label>
           <input
             className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
-            placeholder="Ä°lgili Ã¼rÃ¼n gÃ¶sterim adedi"
+            placeholder="İlgili ürün gösterim adedi"
             type="number"
             min={0}
             max={12}
@@ -192,9 +192,9 @@ function ProductFormDetailSectionComponent({
         <div className="mt-8">
           <div className="mb-4 flex items-center justify-between">
             <div>
-              <h3 className="text-base font-semibold text-slate-900">ÃœrÃ¼n etiketleri</h3>
+              <h3 className="text-base font-semibold text-slate-900">Ürün etiketleri</h3>
               <p className="mt-1 text-sm text-slate-500">
-                ÃœrÃ¼n adÄ± Ã¼stÃ¼, gÃ¶rsel kÃ¶ÅŸeleri ve Ã¼rÃ¼n kartÄ± iÃ§indeki badge metinlerini buradan yÃ¶netin.
+                Ürün adı üstü, görsel köşeleri ve ürün kartı içindeki badge metinlerini buradan yönetin.
               </p>
             </div>
             <button
@@ -228,11 +228,11 @@ function ProductFormDetailSectionComponent({
                   className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
                   {...register(`detailContent.badges.${index}.tone`)}
                 >
-                  <option value="neutral">NÃ¶tr</option>
+                  <option value="neutral">Nötr</option>
                   <option value="primary">Birincil</option>
-                  <option value="success">YeÅŸil</option>
-                  <option value="warning">SarÄ±/Turuncu</option>
-                  <option value="danger">KÄ±rmÄ±zÄ±</option>
+                  <option value="success">Yeşil</option>
+                  <option value="warning">Sarı/Turuncu</option>
+                  <option value="danger">Kırmızı</option>
                 </select>
                 <select
                   className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
@@ -250,7 +250,7 @@ function ProductFormDetailSectionComponent({
                 </select>
                 <input
                   className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
-                  placeholder="SÄ±ra"
+                  placeholder="Sıra"
                   type="number"
                   {...register(`detailContent.badges.${index}.sortOrder`, { valueAsNumber: true })}
                 />
@@ -275,7 +275,7 @@ function ProductFormDetailSectionComponent({
         <div className="mt-8 grid gap-5 md:grid-cols-2">
           <input
             className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
-            placeholder="Destek kutusu baÅŸlÄ±ÄŸÄ±"
+            placeholder="Destek kutusu başlığı"
             {...register("detailContent.support.title")}
           />
           <input
@@ -291,47 +291,47 @@ function ProductFormDetailSectionComponent({
           <textarea
             rows={3}
             className="rounded-lg border border-slate-300 px-4 py-3 text-sm md:col-span-2"
-            placeholder="Destek kutusu aÃ§Ä±klamasÄ±"
+            placeholder="Destek kutusu açıklaması"
             {...register("detailContent.support.body")}
           />
         </div>
 
         <div className="mt-8 grid gap-4 rounded-lg border border-slate-200 bg-slate-50 p-4 md:grid-cols-3">
           <h3 className="text-base font-semibold text-slate-900 md:col-span-3">
-            SatÄ±n alma buton ve durum metinleri
+            Satın alma buton ve durum metinleri
           </h3>
-          <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Fiyat Ã¼st metni" {...register("detailContent.actionLabels.priceEyebrow")} />
+          <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Fiyat üst metni" {...register("detailContent.actionLabels.priceEyebrow")} />
           <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Sepete ekle metni" {...register("detailContent.actionLabels.addToCartLabel")} />
           <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Stok yok metni" {...register("detailContent.actionLabels.outOfStockLabel")} />
-          <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Teknik Ã¶zellik butonu" {...register("detailContent.actionLabels.specsButtonLabel")} />
+          <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Teknik özellik butonu" {...register("detailContent.actionLabels.specsButtonLabel")} />
           <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Sepet link metni" {...register("detailContent.actionLabels.cartLinkLabel")} />
           <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Mobil toplam etiketi" {...register("detailContent.actionLabels.mobileTotalLabel")} />
           <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Adet etiketi" {...register("detailContent.actionLabels.quantityLabel")} />
           <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Ara toplam etiketi" {...register("detailContent.actionLabels.subtotalLabel")} />
-          <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Sepet feedback ÅŸablonu" {...register("detailContent.actionLabels.feedbackTemplate")} />
+          <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Sepet feedback şablonu" {...register("detailContent.actionLabels.feedbackTemplate")} />
         </div>
 
         <div className="mt-8 grid gap-4 rounded-lg border border-slate-200 bg-slate-50 p-4 md:grid-cols-2">
           <h3 className="text-base font-semibold text-slate-900 md:col-span-2">
-            ÃœrÃ¼n yorumlarÄ± metinleri
+            Ürün yorumları metinleri
           </h3>
           <label className="flex items-center gap-2 text-sm font-medium text-slate-700 md:col-span-2">
             <input type="checkbox" {...register("detailContent.reviews.isEnabled")} />
-            Yorum bÃ¶lÃ¼mÃ¼nÃ¼ gÃ¶ster
+            Yorum bölümünü göster
           </label>
-          <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Yorum Ã¼st baÅŸlÄ±ÄŸÄ±" {...register("detailContent.reviews.eyebrow")} />
-          <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Yorum ana baÅŸlÄ±ÄŸÄ±" {...register("detailContent.reviews.heading")} />
-          <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Yorum sayÄ±sÄ± etiketi" {...register("detailContent.reviews.countLabel")} />
-          <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Ä°lk yorum etiketi" {...register("detailContent.reviews.firstReviewLabel")} />
-          <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="GÃ¶nder butonu" {...register("detailContent.reviews.submitLabel")} />
-          <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="GÃ¶nderiliyor metni" {...register("detailContent.reviews.submittingLabel")} />
-          <textarea rows={2} className="rounded-lg border border-slate-300 px-4 py-3 text-sm md:col-span-2" placeholder="BoÅŸ yorum durumu" {...register("detailContent.reviews.emptyText")} />
-          <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm md:col-span-2" placeholder="BaÅŸarÄ±lÄ± yorum mesajÄ±" {...register("detailContent.reviews.successMessage")} />
+          <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Yorum üst başlığı" {...register("detailContent.reviews.eyebrow")} />
+          <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Yorum ana başlığı" {...register("detailContent.reviews.heading")} />
+          <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Yorum sayısı etiketi" {...register("detailContent.reviews.countLabel")} />
+          <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="İlk yorum etiketi" {...register("detailContent.reviews.firstReviewLabel")} />
+          <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Gönder butonu" {...register("detailContent.reviews.submitLabel")} />
+          <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm" placeholder="Gönderiliyor metni" {...register("detailContent.reviews.submittingLabel")} />
+          <textarea rows={2} className="rounded-lg border border-slate-300 px-4 py-3 text-sm md:col-span-2" placeholder="Boş yorum durumu" {...register("detailContent.reviews.emptyText")} />
+          <input className="rounded-lg border border-slate-300 px-4 py-3 text-sm md:col-span-2" placeholder="Başarılı yorum mesajı" {...register("detailContent.reviews.successMessage")} />
         </div>
 
         <div className="mt-8">
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-base font-semibold text-slate-900">SÄ±k sorulan sorular</h3>
+            <h3 className="text-base font-semibold text-slate-900">Sık sorulan sorular</h3>
             <button
               type="button"
               onClick={() => faqFields.append({ question: "", answer: "" })}
@@ -354,7 +354,7 @@ function ProductFormDetailSectionComponent({
                 <textarea
                   rows={2}
                   className="rounded-lg border border-slate-300 px-4 py-3 text-sm"
-                  placeholder="YanÄ±t"
+                  placeholder="Yanıt"
                   {...register(`detailContent.faqs.${index}.answer`)}
                 />
                 <button

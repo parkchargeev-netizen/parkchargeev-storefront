@@ -323,7 +323,7 @@ function getProductOffer({
     url: productUrl,
     areaServed: {
       "@type": "Country",
-      name: "TÃ¼rkiye"
+      name: "Türkiye"
     },
     acceptedPaymentMethod: "https://schema.org/CreditCard",
     availableAtOrFrom: {

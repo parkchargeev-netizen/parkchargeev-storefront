@@ -574,7 +574,7 @@ export function ProductGallery({
           <div
             role="dialog"
             aria-modal="true"
-            aria-label={`${productName} bÃ¼yÃ¼tÃ¼lmÃ¼ÅŸ Ã¼rÃ¼n gÃ¶rseli`}
+            aria-label={`${productName} büyütülmüş ürün görseli`}
             className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-md"
             onClick={closeLightbox}
           >
@@ -596,7 +596,7 @@ export function ProductGallery({
                     prevImage();
                   }}
                   className="product-gallery-lightbox-nav absolute left-3 top-1/2 z-20 inline-flex h-9 w-9 min-h-0 min-w-0 -translate-y-1/2 items-center justify-center p-0 rounded-full border border-white/25 bg-white/16 text-xl font-bold text-white shadow-[0_14px_34px_rgba(0,0,0,0.28)] backdrop-blur transition hover:bg-white/26 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white sm:left-5 sm:h-10 sm:w-10"
-                  aria-label="Ã–nceki gÃ¶rsel"
+                  aria-label="Önceki görsel"
                 >
                   <ChevronLeft className="h-5 w-5" aria-hidden />
                 </button>
@@ -607,7 +607,7 @@ export function ProductGallery({
                     nextImage();
                   }}
                   className="product-gallery-lightbox-nav absolute right-3 top-1/2 z-20 inline-flex h-9 w-9 min-h-0 min-w-0 -translate-y-1/2 items-center justify-center p-0 rounded-full border border-white/25 bg-white/16 text-xl font-bold text-white shadow-[0_14px_34px_rgba(0,0,0,0.28)] backdrop-blur transition hover:bg-white/26 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white sm:right-5 sm:h-10 sm:w-10"
-                  aria-label="Sonraki gÃ¶rsel"
+                  aria-label="Sonraki görsel"
                 >
                   <ChevronRight className="h-5 w-5" aria-hidden />
                 </button>
@@ -674,7 +674,7 @@ export function ProductGallery({
                   type="button"
                   onClick={() => openLightbox(activeIndex)}
                   className="absolute inset-0 block h-full w-full cursor-zoom-in rounded-lg transition hover:scale-[1.01] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-                  aria-label={`${activeMedia.altText || productName} gÃ¶rselini bÃ¼yÃ¼t`}
+                  aria-label={`${activeMedia.altText || productName} görselini büyüt`}
                 >
                   <ProductGalleryStageMedia media={activeMedia} productName={productName} />
                 </button>
@@ -746,7 +746,7 @@ export function ProductGallery({
                     moveGallery(-1);
                   }}
                   className="product-gallery-stage-nav product-gallery-stage-nav--prev"
-                  aria-label="Ã–nceki Ã¼rÃ¼n gÃ¶rseli"
+                  aria-label="Önceki ürün görseli"
                 >
                   <ChevronLeft className="h-5 w-5" aria-hidden />
                 </button>
@@ -757,7 +757,7 @@ export function ProductGallery({
                     moveGallery(1);
                   }}
                   className="product-gallery-stage-nav product-gallery-stage-nav--next"
-                  aria-label="Sonraki Ã¼rÃ¼n gÃ¶rseli"
+                  aria-label="Sonraki ürün görseli"
                 >
                   <ChevronRight className="h-5 w-5" aria-hidden />
                 </button>
@@ -786,7 +786,7 @@ export function ProductGallery({
                 onPointerEnter={() => {
                   preloadGalleryMedia(galleryMedia[index], galleryStageImageSizes, "low");
                 }}
-                aria-label={`${productName} ${index + 1}. gÃ¶rseli seÃ§`}
+                aria-label={`${productName} ${index + 1}. görseli seç`}
                 className={`product-gallery-thumbnail group w-16 shrink-0 overflow-hidden rounded-lg p-1 transition lg:w-full ${
                   index === activeIndex
                     ? "is-active border-2 border-primary bg-white shadow-[0_16px_36px_rgba(6,51,38,0.12)]"

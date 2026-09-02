@@ -778,7 +778,7 @@ Yöntem: kaynak CSS PostCSS ile parse edildi; Playwright ile ana sayfa, mağaza,
 | `.product-gallery-commerce-badge` | `src/app/globals.css:13055` | - |
 | `.product-gallery-commerce-badge--free` | `src/app/globals.css:13074` | - |
 | `.product-gallery-commerce-badge--fast` | `src/app/globals.css:13081` | - |
-| `.product-commerce-media .product-gallery-premium button[aria-label*="gÃ¶rseli seÃ§"]` | `src/app/globals.css:13140` | - |
+| `.product-commerce-media .product-gallery-premium button[aria-label*="görseli seç"]` | `src/app/globals.css:13140` | - |
 | `.product-gallery-lightbox` | `src/app/globals.css:13160` | - |
 | `.product-gallery-lightbox__image` | `src/app/globals.css:13164` | - |
 | `.product-gallery-lightbox__close,

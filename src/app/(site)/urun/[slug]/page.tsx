@@ -59,7 +59,7 @@ export async function generateMetadata({
 
   if (!product) {
     return {
-      title: "ÃœrÃ¼n bulunamadÄ±",
+      title: "Ürün bulunamadı",
       robots: {
         index: false,
         follow: false
@@ -134,15 +134,15 @@ export default async function ProductDetailPage({
   );
   const breadcrumbJsonLd = getBreadcrumbJsonLd([
     { name: "Ana Sayfa", path: "/" },
-    { name: "MaÄŸaza", path: "/magaza" },
+    { name: "Mağaza", path: "/magaza" },
     { name: product.name, path: `/urun/${product.slug}` }
   ]);
   const faqJsonLd = getFaqJsonLd(detailContent.faqs);
   const sectionNavItems = [
-    { href: "#product-description", label: "AÃ§Ä±klama" },
-    { href: "#technical-specs", label: "Teknik Ã–zellikler" },
+    { href: "#product-description", label: "Açıklama" },
+    { href: "#technical-specs", label: "Teknik Özellikler" },
     ...(detailContent.relatedEnabled !== false && relatedProducts.length > 0
-      ? [{ href: "#related-products", label: "Benzer ÃœrÃ¼nler" }]
+      ? [{ href: "#related-products", label: "Benzer Ürünler" }]
       : []),
     ...(detailContent.reviews.isEnabled
       ? [{ href: "#product-reviews", label: "Yorumlar" }]
@@ -154,17 +154,17 @@ export default async function ProductDetailPage({
       <JsonLd data={[productJsonLd, breadcrumbJsonLd, faqJsonLd]} />
 
       <div className="product-commerce-shell">
-        <nav aria-label="ÃœrÃ¼n yolu" className="product-commerce-breadcrumb">
+        <nav aria-label="Ürün yolu" className="product-commerce-breadcrumb">
           <Link href="/">Ana Sayfa</Link>
           <span>/</span>
-          <Link href="/magaza">MaÄŸaza</Link>
+          <Link href="/magaza">Mağaza</Link>
           <span>/</span>
           <span>{product.category}</span>
           <span>/</span>
           <strong>{product.name}</strong>
         </nav>
 
-        <section className="product-commerce-hero" aria-label="ÃœrÃ¼n satÄ±n alma alanÄ±">
+        <section className="product-commerce-hero" aria-label="Ürün satın alma alanı">
           <div className="product-commerce-media">
             <ProductGallery
               productName={product.name}
@@ -175,7 +175,7 @@ export default async function ProductDetailPage({
             />
           </div>
 
-          <aside className="product-commerce-buybox" aria-label="ÃœrÃ¼n bilgisi ve sepet">
+          <aside className="product-commerce-buybox" aria-label="Ürün bilgisi ve sepet">
             <div className="product-commerce-meta">
               {[detailContent.heroEyebrow]
                 .filter(Boolean)
@@ -229,7 +229,7 @@ export default async function ProductDetailPage({
           </aside>
         </section>
         <nav
-          aria-label="ÃœrÃ¼n detay bÃ¶lÃ¼mleri"
+          aria-label="Ürün detay bölümleri"
           className="product-commerce-section-nav"
         >
           {sectionNavItems.map((item) => (

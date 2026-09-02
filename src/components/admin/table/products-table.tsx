@@ -137,13 +137,13 @@ export function ProductsTable({ items, footer }: ProductsTableProps) {
       } | null;
 
       if (!response.ok || !payload?.ok) {
-        throw new Error(payload?.message ?? payload?.error ?? "SÄ±ralama kaydedilemedi.");
+        throw new Error(payload?.message ?? payload?.error ?? "Sıralama kaydedilemedi.");
       }
 
       setSortOrderDrafts({});
       router.refresh();
     } catch (error) {
-      window.alert(error instanceof Error ? error.message : "SÄ±ralama kaydedilemedi.");
+      window.alert(error instanceof Error ? error.message : "Sıralama kaydedilemedi.");
     } finally {
       setIsMutating(false);
     }
@@ -174,13 +174,13 @@ export function ProductsTable({ items, footer }: ProductsTableProps) {
       } | null;
 
       if (!response.ok) {
-        throw new Error(payload?.message ?? payload?.error ?? "ÃœrÃ¼n iÅŸlemi tamamlanamadÄ±.");
+        throw new Error(payload?.message ?? payload?.error ?? "Ürün işlemi tamamlanamadı.");
       }
 
       setSelectedIds([]);
       router.refresh();
     } catch (error) {
-      window.alert(error instanceof Error ? error.message : "ÃœrÃ¼n iÅŸlemi tamamlanamadÄ±.");
+      window.alert(error instanceof Error ? error.message : "Ürün işlemi tamamlanamadı.");
     } finally {
       setIsMutating(false);
     }
@@ -214,7 +214,7 @@ export function ProductsTable({ items, footer }: ProductsTableProps) {
       } | null;
 
       if (!response.ok || !payload?.ok) {
-        throw new Error(payload?.message ?? "ÃœrÃ¼n silinemedi.");
+        throw new Error(payload?.message ?? "Ürün silinemedi.");
       }
 
       setSelectedIds([]);
@@ -223,7 +223,7 @@ export function ProductsTable({ items, footer }: ProductsTableProps) {
         window.alert(
           [
             payload.message,
-            ...(payload.blocked ?? []).map((item) => `${item.name ?? "ÃœrÃ¼n"}: ${item.reason ?? "Silinemedi."}`)
+            ...(payload.blocked ?? []).map((item) => `${item.name ?? "Ürün"}: ${item.reason ?? "Silinemedi."}`)
           ]
             .filter(Boolean)
             .join("\n")
@@ -232,7 +232,7 @@ export function ProductsTable({ items, footer }: ProductsTableProps) {
 
       router.refresh();
     } catch (error) {
-      window.alert(error instanceof Error ? error.message : "ÃœrÃ¼n silinemedi.");
+      window.alert(error instanceof Error ? error.message : "Ürün silinemedi.");
     } finally {
       setIsMutating(false);
     }
@@ -245,7 +245,7 @@ export function ProductsTable({ items, footer }: ProductsTableProps) {
         header: () => (
           <input
             type="checkbox"
-            aria-label="Bu sayfadaki tÃ¼m Ã¼rÃ¼nleri seÃ§"
+            aria-label="Bu sayfadaki tüm ürünleri seç"
             checked={allCurrentSelected}
             onChange={(event) => toggleAll(event.currentTarget.checked)}
             className="h-4 w-4 rounded border-slate-300 text-emerald-700"
@@ -264,7 +264,7 @@ export function ProductsTable({ items, footer }: ProductsTableProps) {
       },
       {
         accessorKey: "name",
-        header: "ÃœrÃ¼n",
+        header: "Ürün",
         cell: ({ row }) => (
           <div className="min-w-[260px]">
             <AdminPrefetchLink
@@ -294,7 +294,7 @@ export function ProductsTable({ items, footer }: ProductsTableProps) {
       },
       {
         accessorKey: "sortOrder",
-        header: "SÄ±ra",
+        header: "Sıra",
         cell: ({ row }) => (
           <input
             type="number"
@@ -311,14 +311,14 @@ export function ProductsTable({ items, footer }: ProductsTableProps) {
                 event.currentTarget.blur();
               }
             }}
-            aria-label={`${row.original.name} sÄ±ralama deÄŸeri`}
+            aria-label={`${row.original.name} sıralama değeri`}
             className="h-9 w-20 rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-800 shadow-inner outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
           />
         )
       },
       {
         id: "price",
-        header: "VarsayÄ±lan fiyat",
+        header: "Varsayılan fiyat",
         accessorFn: (row) => row.defaultVariant?.priceKurus ?? 0,
         cell: ({ row }) =>
           row.original.defaultVariant
@@ -350,7 +350,7 @@ export function ProductsTable({ items, footer }: ProductsTableProps) {
               href={`/admin/urunler/${row.original.id}`}
               className="inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-800 transition hover:border-emerald-300 hover:bg-emerald-100"
             >
-              DÃ¼zenle
+              Düzenle
             </AdminPrefetchLink>
             {row.original.status === "active" ? (
               <Link
@@ -360,7 +360,7 @@ export function ProductsTable({ items, footer }: ProductsTableProps) {
                 rel="noreferrer"
                 className="inline-flex rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-white"
               >
-                Sitede gÃ¶r
+                Sitede gör
               </Link>
             ) : null}
             {row.original.status !== "archived" ? (
@@ -368,18 +368,18 @@ export function ProductsTable({ items, footer }: ProductsTableProps) {
                 type="button"
                 disabled={isMutating}
                 onClick={() =>
-                  runStatusAction([row.original.id], "archive", "Bu Ã¼rÃ¼n arÅŸivlensin mi?")
+                  runStatusAction([row.original.id], "archive", "Bu ürün arşivlensin mi?")
                 }
                 className="inline-flex rounded-full border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-700 transition hover:border-rose-300 hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                ArÅŸivle
+                Arşivle
               </button>
             ) : (
               <button
                 type="button"
                 disabled={isMutating}
                 onClick={() =>
-                  runStatusAction([row.original.id], "activate", "Bu Ã¼rÃ¼n tekrar aktif olsun mu?")
+                  runStatusAction([row.original.id], "activate", "Bu ürün tekrar aktif olsun mu?")
                 }
                 className="inline-flex rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-slate-300 disabled:cursor-not-allowed disabled:opacity-60"
               >
@@ -392,7 +392,7 @@ export function ProductsTable({ items, footer }: ProductsTableProps) {
               onClick={() =>
                 runDeleteAction(
                   [row.original.id],
-                  "Bu Ã¼rÃ¼n kalÄ±cÄ± olarak silinsin mi? SipariÅŸ geÃ§miÅŸindeki metin ve tutar bilgileri korunur; canlÄ± Ã¼rÃ¼n baÄŸlantÄ±sÄ± kaldÄ±rÄ±lÄ±r."
+                  "Bu ürün kalıcı olarak silinsin mi? Sipariş geçmişindeki metin ve tutar bilgileri korunur; canlı ürün bağlantısı kaldırılır."
                 )
               }
               className="inline-flex rounded-full border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 transition hover:border-red-300 hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
@@ -422,10 +422,10 @@ export function ProductsTable({ items, footer }: ProductsTableProps) {
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white/90 px-4 py-3">
         <p className="text-sm font-medium text-slate-600">
           {selectedIds.length > 0
-            ? `${selectedIds.length} Ã¼rÃ¼n seÃ§ildi`
+            ? `${selectedIds.length} ürün seçildi`
             : hasSortOrderChanges
-              ? `${sortOrderUpdates.length} sÄ±ralama deÄŸiÅŸikliÄŸi kaydedilmeyi bekliyor`
-              : "Toplu iÅŸlem iÃ§in Ã¼rÃ¼n seÃ§in"}
+              ? `${sortOrderUpdates.length} sıralama değişikliği kaydedilmeyi bekliyor`
+              : "Toplu işlem için ürün seçin"}
         </p>
         <div className="flex flex-wrap gap-2">
           <button
@@ -434,7 +434,7 @@ export function ProductsTable({ items, footer }: ProductsTableProps) {
             onClick={saveSortOrder}
             className="rounded-full bg-[#063326] px-3 py-1.5 text-xs font-semibold text-white shadow-[0_10px_24px_rgba(6,51,38,0.18)] transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            SÄ±ralama kaydet
+            Sıralama kaydet
           </button>
           <button
             type="button"
@@ -442,13 +442,13 @@ export function ProductsTable({ items, footer }: ProductsTableProps) {
             onClick={resetSortOrderDrafts}
             className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            VazgeÃ§
+            Vazgeç
           </button>
           <button
             type="button"
             disabled={selectedIds.length === 0 || isMutating}
             onClick={() =>
-              runStatusAction(selectedIds, "activate", "SeÃ§ili Ã¼rÃ¼nler aktif edilsin mi?")
+              runStatusAction(selectedIds, "activate", "Seçili ürünler aktif edilsin mi?")
             }
             className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-800 disabled:cursor-not-allowed disabled:opacity-50"
           >
@@ -458,7 +458,7 @@ export function ProductsTable({ items, footer }: ProductsTableProps) {
             type="button"
             disabled={selectedIds.length === 0 || isMutating}
             onClick={() =>
-              runStatusAction(selectedIds, "draft", "SeÃ§ili Ã¼rÃ¼nler taslaÄŸa alÄ±nsÄ±n mÄ±?")
+              runStatusAction(selectedIds, "draft", "Seçili ürünler taslağa alınsın mı?")
             }
             className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-800 disabled:cursor-not-allowed disabled:opacity-50"
           >
@@ -468,11 +468,11 @@ export function ProductsTable({ items, footer }: ProductsTableProps) {
             type="button"
             disabled={selectedIds.length === 0 || isMutating}
             onClick={() =>
-              runStatusAction(selectedIds, "archive", "SeÃ§ili Ã¼rÃ¼nler arÅŸivlensin mi?")
+              runStatusAction(selectedIds, "archive", "Seçili ürünler arşivlensin mi?")
             }
             className="rounded-full border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            ArÅŸivle
+            Arşivle
           </button>
           <button
             type="button"
@@ -480,7 +480,7 @@ export function ProductsTable({ items, footer }: ProductsTableProps) {
             onClick={() =>
               runDeleteAction(
                 selectedIds,
-                "SeÃ§ili Ã¼rÃ¼nler kalÄ±cÄ± olarak silinsin mi? SipariÅŸ geÃ§miÅŸindeki metin ve tutar bilgileri korunur; canlÄ± Ã¼rÃ¼n baÄŸlantÄ±larÄ± kaldÄ±rÄ±lÄ±r."
+                "Seçili ürünler kalıcı olarak silinsin mi? Sipariş geçmişindeki metin ve tutar bilgileri korunur; canlı ürün bağlantıları kaldırılır."
               )
             }
             className="rounded-full border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 disabled:cursor-not-allowed disabled:opacity-50"
@@ -493,9 +493,9 @@ export function ProductsTable({ items, footer }: ProductsTableProps) {
       <AdminDataTable
         columns={columns}
         data={items}
-        caption="ÃœrÃ¼nler admin listesi"
-        emptyTitle="ÃœrÃ¼n bulunamadÄ±"
-        emptyDescription="Filtreleri deÄŸiÅŸtirerek veya yeni Ã¼rÃ¼n oluÅŸturarak devam edebilirsiniz."
+        caption="Ürünler admin listesi"
+        emptyTitle="Ürün bulunamadı"
+        emptyDescription="Filtreleri değiştirerek veya yeni ürün oluşturarak devam edebilirsiniz."
         footer={footer}
       />
     </div>

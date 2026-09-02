@@ -42,7 +42,7 @@ export async function GET(request: Request) {
   const authenticatedAdmin = await requireAdminRole(["superadmin", "admin", "product_manager", "readonly"]);
 
   if (!authenticatedAdmin) {
-    return NextResponse.json({ ok: false, message: "Yetkisiz eriÅŸim." }, { status: 401 });
+    return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });
   }
 
   const { searchParams } = new URL(request.url);
@@ -93,7 +93,7 @@ export async function POST(request: Request) {
   const authenticatedAdmin = await requireAdminRole(["superadmin", "admin", "product_manager"]);
 
   if (!authenticatedAdmin) {
-    return NextResponse.json({ ok: false, message: "Yetkisiz eriÅŸim." }, { status: 401 });
+    return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });
   }
 
   try {
@@ -105,7 +105,7 @@ export async function POST(request: Request) {
 
     if (!product) {
       return NextResponse.json(
-        { ok: false, message: "ÃœrÃ¼n oluÅŸturulamadÄ±." },
+        { ok: false, message: "Ürün oluşturulamadı." },
         { status: 500 }
       );
     }
@@ -136,7 +136,7 @@ export async function PATCH(request: Request) {
   const authenticatedAdmin = await requireAdminRole(["superadmin", "admin", "product_manager"]);
 
   if (!authenticatedAdmin) {
-    return NextResponse.json({ ok: false, message: "Yetkisiz eriÅŸim." }, { status: 401 });
+    return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });
   }
 
   const body = await request.json();
@@ -177,7 +177,7 @@ export async function DELETE(request: Request) {
   const authenticatedAdmin = await requireAdminRole(["superadmin", "admin", "product_manager"]);
 
   if (!authenticatedAdmin) {
-    return NextResponse.json({ ok: false, message: "Yetkisiz eriÅŸim." }, { status: 401 });
+    return NextResponse.json({ ok: false, message: "Yetkisiz erişim." }, { status: 401 });
   }
 
   const { searchParams } = new URL(request.url);
@@ -196,8 +196,8 @@ export async function DELETE(request: Request) {
       ...result,
       message:
         blockedCount > 0
-          ? `${result.deletedCount} Ã¼rÃ¼n silindi, ${blockedCount} Ã¼rÃ¼n sipariÅŸ/sepet geÃ§miÅŸi nedeniyle silinemedi.`
-          : `${result.deletedCount} Ã¼rÃ¼n kalÄ±cÄ± olarak silindi.`
+          ? `${result.deletedCount} ürün silindi, ${blockedCount} ürün sipariş/sepet geçmişi nedeniyle silinemedi.`
+          : `${result.deletedCount} ürün kalıcı olarak silindi.`
     });
   }
 

@@ -99,7 +99,7 @@ export async function DELETE(request: Request, { params }: ProductRouteProps) {
     const result = await deleteAdminProducts([id], authenticatedAdmin.session, requestMeta);
 
     if (result.deletedCount === 0 && result.blocked.length === 0) {
-      return NextResponse.json({ ok: false, message: "ÃœrÃ¼n bulunamadÄ±." }, { status: 404 });
+      return NextResponse.json({ ok: false, message: "Ürün bulunamadı." }, { status: 404 });
     }
 
     return NextResponse.json({
@@ -107,8 +107,8 @@ export async function DELETE(request: Request, { params }: ProductRouteProps) {
       ...result,
       message:
         result.blocked.length > 0
-          ? result.blocked[0]?.reason ?? "ÃœrÃ¼n silinemedi."
-          : "ÃœrÃ¼n kalÄ±cÄ± olarak silindi."
+          ? result.blocked[0]?.reason ?? "Ürün silinemedi."
+          : "Ürün kalıcı olarak silindi."
     });
   }
 

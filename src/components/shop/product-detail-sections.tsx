@@ -60,8 +60,8 @@ export function ProductTechnicalSpecs({
         className="mb-4"
       />
       <div className="product-detail-section-heading">
-        <p>ÃœrÃ¼n teknik bilgileri</p>
-        <h2>{detailContent.specsHeading || "Teknik Ã–zellikler"}</h2>
+        <p>Ürün teknik bilgileri</p>
+        <h2>{detailContent.specsHeading || "Teknik Özellikler"}</h2>
       </div>
       <div className="product-detail-spec-list">
         {rows.map((spec) => (
@@ -140,7 +140,7 @@ export function ProductFaqs({
   return (
     <section className="product-detail-section">
       <div className="product-detail-section-heading">
-        <p>SÄ±k sorulan sorular</p>
+        <p>Sık sorulan sorular</p>
         <h2>{detailContent.faqHeading}</h2>
       </div>
       <div className="grid gap-4 md:grid-cols-2">

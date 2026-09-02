@@ -1,4 +1,5 @@
-﻿import type { ProductModel } from "@/lib/mock-data";
+import type { ProductModel } from "@/lib/mock-data";
+import { repairMojibakeDeep } from "@/lib/text-encoding";
 
 export type ProductDetailTextPair = {
   label: string;
@@ -11,167 +12,167 @@ export type ProductDetailTextPair = {
 
 export const productBadgePlacementGroups = [
   {
-    label: "ÃœrÃ¼n Detay SayfasÄ±",
+    label: "Ürün Detay Sayfası",
     options: [
       {
         value: "detail_title_top",
-        label: "ÃœrÃ¼n adÄ± Ã¼stÃ¼",
-        description: "ÃœrÃ¼n detay sayfasÄ±nda Ã¼rÃ¼n adÄ±nÄ±n Ã¼zerinde gÃ¶rÃ¼nÃ¼r."
+        label: "Ürün adı üstü",
+        description: "Ürün detay sayfasında ürün adının üzerinde görünür."
       },
       {
         value: "detail_title_bottom",
-        label: "ÃœrÃ¼n adÄ± altÄ±",
-        description: "ÃœrÃ¼n detay sayfasÄ±nda Ã¼rÃ¼n adÄ±nÄ±n hemen altÄ±nda gÃ¶rÃ¼nÃ¼r."
+        label: "Ürün adı altı",
+        description: "Ürün detay sayfasında ürün adının hemen altında görünür."
       },
       {
         value: "detail_short_description_top",
-        label: "KÄ±sa aÃ§Ä±klama Ã¼stÃ¼",
-        description: "KÄ±sa aÃ§Ä±klamanÄ±n Ã¼zerinde gÃ¶rÃ¼nÃ¼r."
+        label: "Kısa açıklama üstü",
+        description: "Kısa açıklamanın üzerinde görünür."
       },
       {
         value: "detail_short_description_bottom",
-        label: "KÄ±sa aÃ§Ä±klama altÄ±",
-        description: "KÄ±sa aÃ§Ä±klamanÄ±n altÄ±nda gÃ¶rÃ¼nÃ¼r."
+        label: "Kısa açıklama altı",
+        description: "Kısa açıklamanın altında görünür."
       }
     ]
   },
   {
-    label: "ÃœrÃ¼n GÃ¶rseli Ãœzeri",
+    label: "Ürün Görseli Üzeri",
     options: [
       {
         value: "detail_image_top_left",
-        label: "ÃœrÃ¼n gÃ¶rseli sol Ã¼st",
-        description: "ÃœrÃ¼n detay sayfasÄ±ndaki ana gÃ¶rselin sol Ã¼st kÃ¶ÅŸesinde gÃ¶rÃ¼nÃ¼r."
+        label: "Ürün görseli sol üst",
+        description: "Ürün detay sayfasındaki ana görselin sol üst köşesinde görünür."
       },
       {
         value: "detail_image_top_right",
-        label: "ÃœrÃ¼n gÃ¶rseli saÄŸ Ã¼st",
-        description: "ÃœrÃ¼n detay sayfasÄ±ndaki ana gÃ¶rselin saÄŸ Ã¼st kÃ¶ÅŸesinde gÃ¶rÃ¼nÃ¼r."
+        label: "Ürün görseli sağ üst",
+        description: "Ürün detay sayfasındaki ana görselin sağ üst köşesinde görünür."
       },
       {
         value: "detail_image_bottom_left",
-        label: "ÃœrÃ¼n gÃ¶rseli sol alt",
-        description: "ÃœrÃ¼n detay sayfasÄ±ndaki ana gÃ¶rselin sol alt kÃ¶ÅŸesinde gÃ¶rÃ¼nÃ¼r."
+        label: "Ürün görseli sol alt",
+        description: "Ürün detay sayfasındaki ana görselin sol alt köşesinde görünür."
       },
       {
         value: "detail_image_bottom_right",
-        label: "ÃœrÃ¼n gÃ¶rseli saÄŸ alt",
-        description: "ÃœrÃ¼n detay sayfasÄ±ndaki ana gÃ¶rselin saÄŸ alt kÃ¶ÅŸesinde gÃ¶rÃ¼nÃ¼r."
+        label: "Ürün görseli sağ alt",
+        description: "Ürün detay sayfasındaki ana görselin sağ alt köşesinde görünür."
       },
       {
         value: "detail_image_top_center",
-        label: "ÃœrÃ¼n gÃ¶rseli merkez Ã¼st",
-        description: "ÃœrÃ¼n detay sayfasÄ±ndaki ana gÃ¶rselin Ã¼st orta alanÄ±nda gÃ¶rÃ¼nÃ¼r."
+        label: "Ürün görseli merkez üst",
+        description: "Ürün detay sayfasındaki ana görselin üst orta alanında görünür."
       },
       {
         value: "detail_image_bottom_center",
-        label: "ÃœrÃ¼n gÃ¶rseli merkez alt",
-        description: "ÃœrÃ¼n detay sayfasÄ±ndaki ana gÃ¶rselin alt orta alanÄ±nda gÃ¶rÃ¼nÃ¼r."
+        label: "Ürün görseli merkez alt",
+        description: "Ürün detay sayfasındaki ana görselin alt orta alanında görünür."
       }
     ]
   },
   {
-    label: "SatÄ±n Alma AlanÄ±",
+    label: "Satın Alma Alanı",
     options: [
       {
         value: "detail_price_top",
-        label: "Fiyat Ã¼stÃ¼",
-        description: "SatÄ±n alma kartÄ±ndaki fiyat alanÄ±nÄ±n Ã¼zerinde gÃ¶rÃ¼nÃ¼r."
+        label: "Fiyat üstü",
+        description: "Satın alma kartındaki fiyat alanının üzerinde görünür."
       },
       {
         value: "detail_price_bottom",
-        label: "Fiyat altÄ±",
-        description: "SatÄ±n alma kartÄ±ndaki fiyat alanÄ±nÄ±n altÄ±nda gÃ¶rÃ¼nÃ¼r."
+        label: "Fiyat altı",
+        description: "Satın alma kartındaki fiyat alanının altında görünür."
       },
       {
         value: "detail_add_to_cart_top",
-        label: "Sepete ekle butonu Ã¼stÃ¼",
-        description: "Sepete ekle butonunun hemen Ã¼zerinde gÃ¶rÃ¼nÃ¼r."
+        label: "Sepete ekle butonu üstü",
+        description: "Sepete ekle butonunun hemen üzerinde görünür."
       },
       {
         value: "detail_add_to_cart_bottom",
-        label: "Sepete ekle butonu altÄ±",
-        description: "Sepete ekle ve teknik Ã¶zellikler butonlarÄ±nÄ±n altÄ±nda gÃ¶rÃ¼nÃ¼r."
+        label: "Sepete ekle butonu altı",
+        description: "Sepete ekle ve teknik özellikler butonlarının altında görünür."
       }
     ]
   },
   {
-    label: "ÃœrÃ¼n AÃ§Ä±klamasÄ± / Teknik Alan",
+    label: "Ürün Açıklaması / Teknik Alan",
     options: [
       {
         value: "detail_specs_top",
-        label: "Teknik Ã¶zellikler Ã¼stÃ¼",
-        description: "Teknik Ã¶zellikler bÃ¶lÃ¼m baÅŸlÄ±ÄŸÄ±nÄ±n Ã¼zerinde gÃ¶rÃ¼nÃ¼r."
+        label: "Teknik özellikler üstü",
+        description: "Teknik özellikler bölüm başlığının üzerinde görünür."
       },
       {
         value: "detail_description_top",
-        label: "ÃœrÃ¼n aÃ§Ä±klamasÄ± Ã¼stÃ¼",
-        description: "ÃœrÃ¼n aÃ§Ä±klamasÄ± bÃ¶lÃ¼mÃ¼nÃ¼n Ã¼zerinde gÃ¶rÃ¼nÃ¼r."
+        label: "Ürün açıklaması üstü",
+        description: "Ürün açıklaması bölümünün üzerinde görünür."
       },
       {
         value: "detail_description_bottom",
-        label: "ÃœrÃ¼n aÃ§Ä±klamasÄ± altÄ±",
-        description: "ÃœrÃ¼n aÃ§Ä±klamasÄ± bÃ¶lÃ¼mÃ¼nÃ¼n altÄ±nda gÃ¶rÃ¼nÃ¼r."
+        label: "Ürün açıklaması altı",
+        description: "Ürün açıklaması bölümünün altında görünür."
       },
       {
         value: "detail_trust_section_top",
-        label: "GÃ¼ven / satÄ±n alma bÃ¶lÃ¼mÃ¼ Ã¼stÃ¼",
-        description: "GÃ¼ven ve satÄ±n alma bÃ¶lÃ¼mÃ¼nÃ¼n Ã¼zerinde gÃ¶rÃ¼nÃ¼r."
+        label: "Güven / satın alma bölümü üstü",
+        description: "Güven ve satın alma bölümünün üzerinde görünür."
       }
     ]
   },
   {
-    label: "ÃœrÃ¼n Listeleme KartÄ±",
+    label: "Ürün Listeleme Kartı",
     options: [
       {
         value: "card_image_top_left",
-        label: "ÃœrÃ¼n kartÄ± gÃ¶rsel sol Ã¼st",
-        description: "Listeleme sayfasÄ±ndaki Ã¼rÃ¼n kartÄ± gÃ¶rselinin sol Ã¼st kÃ¶ÅŸesinde gÃ¶rÃ¼nÃ¼r."
+        label: "Ürün kartı görsel sol üst",
+        description: "Listeleme sayfasındaki ürün kartı görselinin sol üst köşesinde görünür."
       },
       {
         value: "card_image_top_right",
-        label: "ÃœrÃ¼n kartÄ± gÃ¶rsel saÄŸ Ã¼st",
-        description: "Listeleme sayfasÄ±ndaki Ã¼rÃ¼n kartÄ± gÃ¶rselinin saÄŸ Ã¼st kÃ¶ÅŸesinde gÃ¶rÃ¼nÃ¼r."
+        label: "Ürün kartı görsel sağ üst",
+        description: "Listeleme sayfasındaki ürün kartı görselinin sağ üst köşesinde görünür."
       },
       {
         value: "card_image_bottom_left",
-        label: "ÃœrÃ¼n kartÄ± gÃ¶rsel sol alt",
-        description: "Listeleme sayfasÄ±ndaki Ã¼rÃ¼n kartÄ± gÃ¶rselinin sol alt kÃ¶ÅŸesinde gÃ¶rÃ¼nÃ¼r."
+        label: "Ürün kartı görsel sol alt",
+        description: "Listeleme sayfasındaki ürün kartı görselinin sol alt köşesinde görünür."
       },
       {
         value: "card_image_bottom_right",
-        label: "ÃœrÃ¼n kartÄ± gÃ¶rsel saÄŸ alt",
-        description: "Listeleme sayfasÄ±ndaki Ã¼rÃ¼n kartÄ± gÃ¶rselinin saÄŸ alt kÃ¶ÅŸesinde gÃ¶rÃ¼nÃ¼r."
+        label: "Ürün kartı görsel sağ alt",
+        description: "Listeleme sayfasındaki ürün kartı görselinin sağ alt köşesinde görünür."
       },
       {
         value: "card_title_top",
-        label: "ÃœrÃ¼n kartÄ± baÅŸlÄ±k Ã¼stÃ¼",
-        description: "Listeleme sayfasÄ±ndaki Ã¼rÃ¼n kartÄ±nda baÅŸlÄ±ÄŸÄ±n Ã¼zerinde gÃ¶rÃ¼nÃ¼r."
+        label: "Ürün kartı başlık üstü",
+        description: "Listeleme sayfasındaki ürün kartında başlığın üzerinde görünür."
       },
       {
         value: "card_title_bottom",
-        label: "ÃœrÃ¼n kartÄ± baÅŸlÄ±k altÄ±",
-        description: "Listeleme sayfasÄ±ndaki Ã¼rÃ¼n kartÄ±nda baÅŸlÄ±ÄŸÄ±n altÄ±nda gÃ¶rÃ¼nÃ¼r."
+        label: "Ürün kartı başlık altı",
+        description: "Listeleme sayfasındaki ürün kartında başlığın altında görünür."
       },
       {
         value: "card_price_top",
-        label: "ÃœrÃ¼n kartÄ± fiyat Ã¼stÃ¼",
-        description: "Listeleme sayfasÄ±ndaki Ã¼rÃ¼n kartÄ±nda fiyatÄ±n Ã¼zerinde gÃ¶rÃ¼nÃ¼r."
+        label: "Ürün kartı fiyat üstü",
+        description: "Listeleme sayfasındaki ürün kartında fiyatın üzerinde görünür."
       },
       {
         value: "card_price_bottom",
-        label: "ÃœrÃ¼n kartÄ± fiyat altÄ±",
-        description: "Listeleme sayfasÄ±ndaki Ã¼rÃ¼n kartÄ±nda fiyatÄ±n altÄ±nda gÃ¶rÃ¼nÃ¼r."
+        label: "Ürün kartı fiyat altı",
+        description: "Listeleme sayfasındaki ürün kartında fiyatın altında görünür."
       },
       {
         value: "card_features",
-        label: "ÃœrÃ¼n kartÄ± Ã¶zellikleri",
-        description: "Listeleme sayfasÄ±ndaki Ã¼rÃ¼n kartÄ± teknik Ã¶zellik alanÄ±nda gÃ¶rÃ¼nÃ¼r."
+        label: "Ürün kartı özellikleri",
+        description: "Listeleme sayfasındaki ürün kartı teknik özellik alanında görünür."
       },
       {
         value: "card_button_top",
-        label: "ÃœrÃ¼n kartÄ± buton Ã¼stÃ¼",
-        description: "Listeleme sayfasÄ±ndaki Ã¼rÃ¼n kartÄ±nda inceleme butonunun Ã¼zerinde gÃ¶rÃ¼nÃ¼r."
+        label: "Ürün kartı buton üstü",
+        description: "Listeleme sayfasındaki ürün kartında inceleme butonunun üzerinde görünür."
       }
     ]
   }
@@ -382,7 +383,7 @@ function getConnectorLabel(product?: ProductModel) {
     product?.variants?.find((variant) => variant.isDefault)?.connectorType ??
     product?.variants?.find((variant) => variant.connectorType)?.connectorType;
   const specConnector = product?.specs.find((spec) =>
-    /konnektÃ¶r|konnektor|soket|connector/i.test(spec.label)
+    /konnektör|konnektor|soket|connector/i.test(spec.label)
   )?.value;
 
   return variantConnector || specConnector || "Type 2 uyumlu";
@@ -424,7 +425,7 @@ function getBadgeDefaults(product?: ProductModel): ProductDetailBadge[] {
 
   if (tags.has("ships_tomorrow")) {
     badges.push({
-      label: "YarÄ±n Kargoda",
+      label: "Yarın Kargoda",
       tone: "warning",
       position: "detail_image_top_right",
       isActive: true,
@@ -437,20 +438,20 @@ function getBadgeDefaults(product?: ProductModel): ProductDetailBadge[] {
 
 function getIntentDefaults(product?: ProductModel) {
   const category = product?.category ?? "";
-  const powerLabel = product?.powerLabel || "EV ÅŸarj cihazÄ±";
+  const powerLabel = product?.powerLabel || "EV şarj cihazı";
   const connector = getConnectorLabel(product);
   const isAccessory = category === "Aksesuar";
 
   return isAccessory
     ? [
-        "elektrikli araÃ§ ÅŸarj aksesuarÄ± arayanlar",
-        "Type 2 kablo veya baÄŸlantÄ± ekipmanÄ± ihtiyacÄ± olanlar",
-        "mevcut ÅŸarj kurulumunu tamamlamak isteyen kullanÄ±cÄ±lar"
+        "elektrikli araç şarj aksesuarı arayanlar",
+        "Type 2 kablo veya bağlantı ekipmanı ihtiyacı olanlar",
+        "mevcut şarj kurulumunu tamamlamak isteyen kullanıcılar"
       ]
     : [
-        `${powerLabel} elektrikli araÃ§ ÅŸarj cihazÄ± arayanlar`,
-        `${connector} araÃ§lar iÃ§in gÃ¼venli ÅŸarj Ã§Ã¶zÃ¼mÃ¼ isteyenler`,
-        "ev, site, iÅŸ yeri veya otopark iÃ§in planlÄ± ÅŸarj kurulumu dÃ¼ÅŸÃ¼nenler"
+        `${powerLabel} elektrikli araç şarj cihazı arayanlar`,
+        `${connector} araçlar için güvenli şarj çözümü isteyenler`,
+        "ev, site, iş yeri veya otopark için planlı şarj kurulumu düşünenler"
       ];
 }
 
@@ -459,98 +460,98 @@ function getUseCaseDefaults(product?: ProductModel) {
 
   if (category === "Aksesuar") {
     return [
-      "Ev tipi ÅŸarj kullanÄ±mÄ±nÄ± tamamlayan aksesuar ihtiyacÄ±",
-      "Site ve otoparklarda yedek kablo/baÄŸlantÄ± Ã§Ã¶zÃ¼mÃ¼",
-      "Type 2 destekli araÃ§larda gÃ¼nlÃ¼k kullanÄ±m"
+      "Ev tipi şarj kullanımını tamamlayan aksesuar ihtiyacı",
+      "Site ve otoparklarda yedek kablo/bağlantı çözümü",
+      "Type 2 destekli araçlarda günlük kullanım"
     ];
   }
 
   if (category.toLocaleLowerCase("tr-TR").includes("dc")) {
     return [
-      "Ticari hÄ±zlÄ± ÅŸarj lokasyonlarÄ±",
-      "Filo ve otopark iÅŸletmeleri",
-      "YÃ¼ksek devirli mÃ¼ÅŸteri kullanÄ±m senaryolarÄ±"
+      "Ticari hızlı şarj lokasyonları",
+      "Filo ve otopark işletmeleri",
+      "Yüksek devirli müşteri kullanım senaryoları"
     ];
   }
 
   return [
-    "Ev, villa ve bireysel otopark kullanÄ±mÄ±",
-    "Site ve apartman otoparklarÄ±nda kontrollÃ¼ ÅŸarj",
-    "Ä°ÅŸ yeri, ofis ve kÃ¼Ã§Ã¼k filo ÅŸarj ihtiyaÃ§larÄ±"
+    "Ev, villa ve bireysel otopark kullanımı",
+    "Site ve apartman otoparklarında kontrollü şarj",
+    "İş yeri, ofis ve küçük filo şarj ihtiyaçları"
   ];
 }
 
 function getHighlightDefaults(product?: ProductModel) {
-  const powerLabel = product?.powerLabel || "Net gÃ¼Ã§ sÄ±nÄ±fÄ±";
+  const powerLabel = product?.powerLabel || "Net güç sınıfı";
   const connector = getConnectorLabel(product);
 
   return [
-    `${powerLabel} bilgisiyle hÄ±zlÄ± teknik karar`,
-    `${connector} ve altyapÄ± uyumu iÃ§in sade Ã¼rÃ¼n bilgisi`,
-    "Sepete ekleme, teslimat ve kurulum kapsamÄ± tek akÄ±ÅŸta ilerler",
-    "Garanti, iade ve teknik destek bilgileri Ã¼rÃ¼n sayfasÄ±nda aÃ§Ä±kÃ§a gÃ¶rÃ¼nÃ¼r"
+    `${powerLabel} bilgisiyle hızlı teknik karar`,
+    `${connector} ve altyapı uyumu için sade ürün bilgisi`,
+    "Sepete ekleme, teslimat ve kurulum kapsamı tek akışta ilerler",
+    "Garanti, iade ve teknik destek bilgileri ürün sayfasında açıkça görünür"
   ];
 }
 
 const defaultActionLabels: ProductActionLabels = {
-  priceEyebrow: "ParkChargeEV fiyatÄ±",
+  priceEyebrow: "ParkChargeEV fiyatı",
   addToCartLabel: "Sepete Ekle",
   outOfStockLabel: "Stokta Yok",
-  specsButtonLabel: "Teknik Ã–zellikleri Ä°ncele",
+  specsButtonLabel: "Teknik Özellikleri İncele",
   cartLinkLabel: "Sepete git",
-  mobileTotalLabel: "Sepet toplamÄ±",
+  mobileTotalLabel: "Sepet toplamı",
   quantityLabel: "Adet",
   subtotalLabel: "Tahmini ara toplam",
-  feedbackTemplate: "{quantity} adet Ã¼rÃ¼n sepete eklendi."
+  feedbackTemplate: "{quantity} adet ürün sepete eklendi."
 };
 
 const defaultReviewContent: ProductReviewContent = {
   isEnabled: true,
-  eyebrow: "ÃœrÃ¼n yorumlarÄ±",
-  heading: "{productName} iÃ§in kullanÄ±cÄ± deneyimleri",
+  eyebrow: "Ürün yorumları",
+  heading: "{productName} için kullanıcı deneyimleri",
   emptyText:
-    "Bu Ã¼rÃ¼n iÃ§in henÃ¼z onaylÄ± yorum yok. Deneyiminizi paylaÅŸtÄ±ÄŸÄ±nÄ±zda admin onayÄ±ndan sonra yayÄ±nlanÄ±r.",
-  countLabel: "onaylÄ± yorum",
-  firstReviewLabel: "Ä°lk yorumu siz yazÄ±n",
+    "Bu ürün için henüz onaylı yorum yok. Deneyiminizi paylaştığınızda admin onayından sonra yayınlanır.",
+  countLabel: "onaylı yorum",
+  firstReviewLabel: "İlk yorumu siz yazın",
   submitLabel: "Yorum ekle",
-  submittingLabel: "GÃ¶nderiliyor...",
-  successMessage: "Yorumunuz onaydan sonra yayÄ±nlanacak."
+  submittingLabel: "Gönderiliyor...",
+  successMessage: "Yorumunuz onaydan sonra yayınlanacak."
 };
 
 export function getDefaultProductDetailContent(product?: ProductModel): ProductDetailContent {
   return {
     adminSortOrder: 0,
-    heroEyebrow: "ParkChargeEV seÃ§kisi",
+    heroEyebrow: "ParkChargeEV seçkisi",
     badges: getBadgeDefaults(product),
     galleryItems: product?.galleryItems?.length
       ? product.galleryItems
-      : ["Ã–n gÃ¶rÃ¼nÃ¼m", "Yan profil", "Montaj gÃ¶rÃ¼nÃ¼mÃ¼", "Video"],
-    descriptionEyebrow: "ÃœrÃ¼n aÃ§Ä±klamasÄ±",
-    descriptionHeading: product?.name ? `${product.name} kimler iÃ§in uygun?` : "ÃœrÃ¼n kimler iÃ§in uygun?",
-    useCasesCtaLabel: "AkÄ±llÄ± seÃ§iciye git",
+      : ["Ön görünüm", "Yan profil", "Montaj görünümü", "Video"],
+    descriptionEyebrow: "Ürün açıklaması",
+    descriptionHeading: product?.name ? `${product.name} kimler için uygun?` : "Ürün kimler için uygun?",
+    useCasesCtaLabel: "Akıllı seçiciye git",
     useCasesCtaHref: "/urun-secici",
-    specsHeading: "Teknik Ã–zellikler",
-    intentHeading: "Bu Ã¼rÃ¼n kimin iÃ§in?",
+    specsHeading: "Teknik Özellikler",
+    intentHeading: "Bu ürün kimin için?",
     intentBody:
-      "ÃœrÃ¼n, aÅŸaÄŸÄ±daki satÄ±n alma senaryolarÄ±nda hÄ±zlÄ± ve gÃ¼venli karar vermenize yardÄ±mcÄ± olur.",
+      "Ürün, aşağıdaki satın alma senaryolarında hızlı ve güvenli karar vermenize yardımcı olur.",
     seoIntents: product?.seoIntent?.length ? product.seoIntent : getIntentDefaults(product),
-    useCasesHeading: "Uygun kullanÄ±m alanÄ±",
+    useCasesHeading: "Uygun kullanım alanı",
     useCases: product?.useCases?.length ? product.useCases : getUseCaseDefaults(product),
-    highlightsHeading: "SatÄ±ÅŸ ve kurulum avantajlarÄ±",
+    highlightsHeading: "Satış ve kurulum avantajları",
     highlights: product?.highlights?.length ? product.highlights : getHighlightDefaults(product),
     technicalGroups: [],
     support: {
-      title: "UygunluÄŸu birlikte kontrol edelim",
+      title: "Uygunluğu birlikte kontrol edelim",
       body:
-        "AracÄ±nÄ±z, otoparkÄ±nÄ±z ve elektrik altyapÄ±nÄ±z iÃ§in bu Ã¼rÃ¼nÃ¼n doÄŸru seÃ§im olup olmadÄ±ÄŸÄ±nÄ± teknik ekiple netleÅŸtirebilirsiniz.",
-      ctaLabel: "UygunluÄŸu Kontrol Et",
+        "Aracınız, otoparkınız ve elektrik altyapınız için bu ürünün doğru seçim olup olmadığını teknik ekiple netleştirebilirsiniz.",
+      ctaLabel: "Uygunluğu Kontrol Et",
       href: "/iletisim"
     },
-    faqHeading: "Karar Ã¶ncesi sÄ±k sorulanlar",
+    faqHeading: "Karar öncesi sık sorulanlar",
     faqs: product?.faqs?.length ? product.faqs : [],
     relatedEnabled: true,
-    relatedEyebrow: "Ä°lgili Ã¼rÃ¼nler",
-    relatedHeading: "AynÄ± ihtiyaca uygun alternatifler",
+    relatedEyebrow: "İlgili ürünler",
+    relatedHeading: "Aynı ihtiyaca uygun alternatifler",
     relatedLimit: 4,
     actionLabels: defaultActionLabels,
     reviews: defaultReviewContent
@@ -567,43 +568,45 @@ export function mergeProductDetailContent(
     return base;
   }
 
+  const normalizedInput = repairMojibakeDeep(input);
+
   return {
     ...base,
     ...input,
-    adminSortOrder: Number.isFinite(Number(input.adminSortOrder))
-      ? Number(input.adminSortOrder)
+    adminSortOrder: Number.isFinite(Number(normalizedInput.adminSortOrder))
+      ? Number(normalizedInput.adminSortOrder)
       : base.adminSortOrder,
-    galleryItems: hasItems(input.galleryItems) ? compactList(input.galleryItems) : base.galleryItems,
-    badges: hasItems(input.badges)
-      ? normalizeBadges(input.badges)
+    galleryItems: hasItems(normalizedInput.galleryItems) ? compactList(normalizedInput.galleryItems) : base.galleryItems,
+    badges: hasItems(normalizedInput.badges)
+      ? normalizeBadges(normalizedInput.badges)
       : base.badges,
-    seoIntents: hasItems(input.seoIntents)
-      ? compactList(input.seoIntents)
+    seoIntents: hasItems(normalizedInput.seoIntents)
+      ? compactList(normalizedInput.seoIntents)
       : base.seoIntents,
-    useCases: hasItems(input.useCases)
-      ? compactList(input.useCases)
+    useCases: hasItems(normalizedInput.useCases)
+      ? compactList(normalizedInput.useCases)
       : base.useCases,
-    highlights: hasItems(input.highlights)
-      ? compactList(input.highlights)
+    highlights: hasItems(normalizedInput.highlights)
+      ? compactList(normalizedInput.highlights)
       : base.highlights,
-    technicalGroups: hasItems(input.technicalGroups)
-      ? normalizeTechnicalGroups(input.technicalGroups)
+    technicalGroups: hasItems(normalizedInput.technicalGroups)
+      ? normalizeTechnicalGroups(normalizedInput.technicalGroups)
       : base.technicalGroups,
     support: {
       ...base.support,
-      ...input.support
+      ...normalizedInput.support
     },
-    faqs: hasItems(input.faqs) ? input.faqs : base.faqs,
-    relatedLimit: Number.isFinite(Number(input.relatedLimit))
-      ? Number(input.relatedLimit)
+    faqs: hasItems(normalizedInput.faqs) ? normalizedInput.faqs : base.faqs,
+    relatedLimit: Number.isFinite(Number(normalizedInput.relatedLimit))
+      ? Number(normalizedInput.relatedLimit)
       : base.relatedLimit,
     actionLabels: {
       ...base.actionLabels,
-      ...input.actionLabels
+      ...normalizedInput.actionLabels
     },
     reviews: {
       ...base.reviews,
-      ...input.reviews
+      ...normalizedInput.reviews
     }
   };
 }
@@ -670,7 +673,7 @@ export function getProductDetailContentFromSchemaJsonLd(
     return undefined;
   }
 
-  return value as ProductDetailContentInput;
+  return repairMojibakeDeep(value) as ProductDetailContentInput;
 }
 
 export function withProductDetailContentSchemaJsonLd<T extends Record<string, unknown>>(

@@ -14,9 +14,9 @@ import { getPublishedSitePageBySlug } from "@/server/site/repository";
 import { getPublicSiteSettings } from "@/server/site/settings";
 
 const fallbackMetadata: Metadata = {
-  title: "İleti�xim",
+  title: "İletişim",
   description:
-    "Ke�xif, teklif, kurulum, servis ve i�x ortaklı�xı talepleri için ParkChargeEV ile ileti�xime geçin.",
+    "Keşif, teklif, kurulum, servis ve iş ortaklığı talepleri için ParkChargeEV ile iletişime geçin.",
   alternates: {
     canonical: "/iletisim"
   }

@@ -22,7 +22,7 @@ const publicOrRemoteUrlSchema = z
   .max(500)
   .refine(
     (value) => value.startsWith("/") || value.startsWith("http://") || value.startsWith("https://"),
-    "URL /, http:// veya https:// ile baÅŸlamalÄ±dÄ±r."
+    "URL /, http:// veya https:// ile başlamalıdır."
   );
 
 export const adminLoginSchema = z.object({
@@ -70,7 +70,7 @@ const productDetailBadgeSchema = z.object({
       (value) =>
         ([...productBadgePlacementValues, "hero", "image-left", "image-right", "card"] as string[])
           .includes(value),
-      "Etiket konumu geÃ§ersiz."
+      "Etiket konumu geçersiz."
     )
     .default("detail_title_top"),
   isActive: z.boolean().default(true),
@@ -140,7 +140,7 @@ export const productDetailContentSchema = z
       .max(500)
       .refine(
         (value) => value === "" || value.startsWith("/") || value.startsWith("https://"),
-        "Link / ile veya https:// ile baÅŸlamalÄ±dÄ±r."
+        "Link / ile veya https:// ile başlamalıdır."
       )
       .optional()
       .or(z.literal("")),
@@ -164,7 +164,7 @@ export const productDetailContentSchema = z
           .max(500)
           .refine(
             (value) => value === "" || value.startsWith("/") || value.startsWith("https://"),
-            "Link / ile veya https:// ile baÅŸlamalÄ±dÄ±r."
+            "Link / ile veya https:// ile başlamalıdır."
           )
           .optional()
           .or(z.literal(""))
@@ -349,7 +349,7 @@ export const adminNavigationItemSchema = z.object({
     .max(500)
     .refine(
       (value) => value.startsWith("/") || value.startsWith("https://"),
-      "Link / ile veya https:// ile baÅŸlamalÄ±dÄ±r."
+      "Link / ile veya https:// ile başlamalıdır."
     ),
   sortOrder: z.coerce.number().int().min(0).max(9999).default(0),
   isActive: z.boolean().default(true),
@@ -396,7 +396,7 @@ export const adminSiteSettingsSchema = z.object({
             .max(500)
             .refine(
               (value) => value === "" || value.startsWith("/") || value.startsWith("https://"),
-              "Duyuru linki / veya https:// ile baÅŸlamalÄ±dÄ±r."
+              "Duyuru linki / veya https:// ile başlamalıdır."
             )
             .optional()
             .or(z.literal("")),
@@ -459,7 +459,7 @@ export const adminSitePageSchema = z.object({
     .min(1)
     .max(220)
     .transform((value) => value.replace(/^\/+|\/+$/g, ""))
-    .refine((value) => value.length > 0, "Slug boÅŸ olamaz."),
+    .refine((value) => value.length > 0, "Slug boş olamaz."),
   title: z.string().trim().min(3).max(180),
   eyebrow: z.string().trim().max(120).optional().or(z.literal("")),
   excerpt: z.string().trim().min(10).max(2000),
