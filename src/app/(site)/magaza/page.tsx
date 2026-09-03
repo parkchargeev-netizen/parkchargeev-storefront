@@ -54,7 +54,9 @@ export const metadata: Metadata = {
   }
 };
 
-const STORE_PAGE_SIZE = 24;
+export const revalidate = 300;
+
+const STORE_PAGE_SIZE = 18;
 
 const sortOptions = [
   { value: "recommended", label: "Karar için önerilenler" },
@@ -340,7 +342,6 @@ export default async function StorePage({ searchParams }: StorePageProps) {
             name: product.name,
             category: product.category,
             summary: product.summary,
-            description: product.description,
             stockLabel: product.stockLabel,
             powerLabel: product.powerLabel,
             imageUrl: product.imageUrl,

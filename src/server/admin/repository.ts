@@ -30,6 +30,7 @@ import {
 } from "@/lib/mock-data";
 import { inferProductMediaType } from "@/lib/product-media";
 import {
+  type ProductDetailContent,
   getDefaultProductDetailContent,
   getProductDetailContent,
   getProductDetailContentFromSchemaJsonLd,
@@ -451,6 +452,22 @@ export async function ensureMarketingProductsVisibleInAdmin() {
 }
 
 type ProductRow = typeof products.$inferSelect;
+type PublicProductRow = Pick<
+  ProductRow,
+  | "id"
+  | "slug"
+  | "updatedAt"
+  | "name"
+  | "shortDescription"
+  | "description"
+  | "useCase"
+  | "schemaJsonLd"
+  | "defaultPriceKurus"
+  | "discountedPriceKurus"
+  | "powerKw"
+  | "chargeType"
+  | "searchKeywords"
+>;
 type ProductCollections = Awaited<ReturnType<typeof hydrateProductCollections>>;
 
 type ProductCollectionOptions = {
@@ -463,6 +480,22 @@ type ProductCollectionOptions = {
 };
 
 const productCollectionReadTimeoutMs = 3500;
+
+const publicProductListColumns = {
+  id: products.id,
+  slug: products.slug,
+  updatedAt: products.updatedAt,
+  name: products.name,
+  shortDescription: products.shortDescription,
+  description: products.description,
+  useCase: products.useCase,
+  schemaJsonLd: products.schemaJsonLd,
+  defaultPriceKurus: products.defaultPriceKurus,
+  discountedPriceKurus: products.discountedPriceKurus,
+  powerKw: products.powerKw,
+  chargeType: products.chargeType,
+  searchKeywords: products.searchKeywords
+} as const;
 
 function createEmptyProductCollections() {
   return {
@@ -563,7 +596,7 @@ function getPublicStockLabel(stockQuantity: number): ProductModel["stockLabel"] 
 }
 
 function getPublicPowerLabel(
-  row: ProductRow,
+  row: PublicProductRow,
   defaultVariant: (typeof productVariants.$inferSelect) | undefined,
   base?: ProductModel
 ) {
@@ -578,9 +611,24 @@ function getPublicPowerLabel(
   return base?.powerLabel ?? "AC";
 }
 
+type PublicProductMappingOptions = {
+  compact?: boolean;
+};
+
+function getCompactProductDetailContent(detailContent: ProductDetailContent) {
+  return {
+    adminSortOrder: detailContent.adminSortOrder,
+    badges: detailContent.badges,
+    seoIntents: detailContent.seoIntents.slice(0, 6),
+    useCases: detailContent.useCases.slice(0, 3),
+    highlights: detailContent.highlights.slice(0, 3)
+  };
+}
+
 function mapAdminProductToPublicProduct(
-  row: ProductRow,
-  collections: ProductCollections
+  row: PublicProductRow,
+  collections: ProductCollections,
+  options: PublicProductMappingOptions = {}
 ): ProductModel {
   const base = marketingProducts.find((item) => item.slug === row.slug);
   const variants = collections.variants.get(row.id) ?? [];
@@ -627,7 +675,7 @@ function mapAdminProductToPublicProduct(
     tags: tags.length ? tags : base?.tags ?? [],
     summary: row.shortDescription || base?.summary || row.name,
     description: stripHtml(row.description) || base?.description || row.shortDescription,
-    descriptionHtml: row.description,
+    descriptionHtml: options.compact ? undefined : row.description,
     priceKurus,
     compareAtKurus: compareAtKurus && compareAtKurus > priceKurus ? compareAtKurus : undefined,
     stockLabel: getPublicStockLabel(defaultVariant?.stockQuantity ?? 0),
@@ -663,6 +711,20 @@ function mapAdminProductToPublicProduct(
     getProductDetailContentFromSchemaJsonLd(row.schemaJsonLd)
   );
 
+  if (options.compact) {
+    const compactDetailContent = getCompactProductDetailContent(detailContent);
+
+    return {
+      ...publicBase,
+      galleryItems: [],
+      detailContent: compactDetailContent,
+      highlights: compactDetailContent.highlights,
+      useCases: compactDetailContent.useCases,
+      seoIntent: compactDetailContent.seoIntents,
+      faqs: []
+    };
+  }
+
   return {
     ...publicBase,
     galleryItems: detailContent.galleryItems,
@@ -682,7 +744,7 @@ async function loadPublicProducts() {
   try {
     const db = getDb();
     const rows = await db
-      .select()
+      .select(publicProductListColumns)
       .from(products)
       .where(eq(products.status, "active"))
       .orderBy(asc(productAdminSortOrderSql()), desc(products.updatedAt), desc(products.id));
@@ -692,9 +754,11 @@ async function loadPublicProducts() {
     }
 
     const collections = await hydrateProductCollections(rows.map((row) => row.id), {
-      includeSpecs: false
+      includeSpecs: false,
+      includeVehicles: false,
+      includeRelations: false
     });
-    return rows.map((row) => mapAdminProductToPublicProduct(row, collections));
+    return rows.map((row) => mapAdminProductToPublicProduct(row, collections, { compact: true }));
   } catch {
     console.warn("Public products could not be loaded. Falling back to marketing products.");
     return marketingProducts;
@@ -796,7 +860,7 @@ export async function searchPublicProducts(query: string, limit = 12) {
     const rows = await withCollectionReadFallback(
       "public search",
       db
-            .select()
+            .select(publicProductListColumns)
             .from(products)
             .where(
               and(
@@ -822,7 +886,7 @@ export async function searchPublicProducts(query: string, limit = 12) {
       includeRelations: false
     });
 
-    return rows.map((row) => mapAdminProductToPublicProduct(row, collections));
+    return rows.map((row) => mapAdminProductToPublicProduct(row, collections, { compact: true }));
   } catch {
     console.warn("Public product search could not be loaded. Falling back to marketing data.");
     return fallbackProducts;
@@ -960,7 +1024,7 @@ export async function getPublicRelatedProducts(product: ProductModel, limit = 3)
       .where(and(eq(products.slug, product.slug), eq(products.status, "active")))
       .limit(1);
     const candidateRows = await db
-      .select()
+      .select(publicProductListColumns)
       .from(products)
       .where(
         and(
@@ -978,7 +1042,7 @@ export async function getPublicRelatedProducts(product: ProductModel, limit = 3)
     });
 
     return rankCandidates(
-      candidateRows.map((row) => mapAdminProductToPublicProduct(row, collections))
+      candidateRows.map((row) => mapAdminProductToPublicProduct(row, collections, { compact: true }))
     );
   } catch {
     console.warn("Related products could not be loaded. Falling back to marketing data.");

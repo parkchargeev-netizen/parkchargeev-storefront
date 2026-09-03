@@ -10,7 +10,6 @@ const warmedProductRoutes = new Set<string>();
 
 type ProductCardRouter = {
   prefetch?: (href: string) => void;
-  push: (href: string) => void;
 };
 
 function getProductCardLink(event: Event) {
@@ -64,44 +63,6 @@ function warmProductRouteFromEvent(event: Event, router: ProductCardRouter) {
   }
 }
 
-function navigateProductRoute(event: MouseEvent, router: ProductCardRouter) {
-  if (
-    event.defaultPrevented ||
-    event.button !== 0 ||
-    event.altKey ||
-    event.ctrlKey ||
-    event.metaKey ||
-    event.shiftKey
-  ) {
-    return;
-  }
-
-  const link = getProductCardLink(event);
-  if (!link) {
-    return;
-  }
-
-  const routeHref = getSameOriginRouteHref(link);
-  if (!routeHref || window.location.href === link.href) {
-    return;
-  }
-
-  const currentHref = window.location.href;
-  const targetHref = link.href;
-
-  event.preventDefault();
-  warmProductRoute(link, router);
-  router.push(routeHref);
-
-  window.setTimeout(() => {
-    if (window.location.href !== currentHref || !document.documentElement.contains(link)) {
-      return;
-    }
-
-    window.location.assign(targetHref);
-  }, 3500);
-}
-
 function loadSecondaryImage(event: Event) {
   const productCard = getProductCardLink(event);
   const image = productCard?.querySelector<HTMLImageElement>(secondaryImageSelector);
@@ -148,11 +109,9 @@ export function ProductCardMediaRuntime() {
     const mediaQuery = window.matchMedia(finePointerQuery);
     const intentOptions = { capture: true, passive: true } as const;
     const warmRoute = (event: Event) => warmProductRouteFromEvent(event, router);
-    const navigateRoute = (event: MouseEvent) => navigateProductRoute(event, router);
 
     contentRoot.addEventListener("pointerdown", warmRoute, intentOptions);
     contentRoot.addEventListener("focusin", warmRoute, true);
-    contentRoot.addEventListener("click", navigateRoute, true);
 
     if (mediaQuery.matches) {
       contentRoot.addEventListener("pointerover", loadSecondaryImage, { passive: true });
@@ -162,7 +121,6 @@ export function ProductCardMediaRuntime() {
     return () => {
       contentRoot.removeEventListener("pointerdown", warmRoute, intentOptions);
       contentRoot.removeEventListener("focusin", warmRoute, true);
-      contentRoot.removeEventListener("click", navigateRoute, true);
       contentRoot.removeEventListener("pointerover", loadSecondaryImage);
       contentRoot.removeEventListener("focusin", loadSecondaryImage);
     };

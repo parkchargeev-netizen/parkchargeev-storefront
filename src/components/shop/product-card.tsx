@@ -1,4 +1,4 @@
-import Image, { getImageProps } from "next/image";
+import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { ArrowUpRight, Check } from "lucide-react";
@@ -69,40 +69,36 @@ const productCardImageSizes = {
 const transparentImageSource =
   "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
 
+function getDeferredSecondaryImageSrc(imageUrl: string, width: number) {
+  if (shouldBypassImageOptimization(imageUrl)) {
+    return imageUrl;
+  }
+
+  return "/_next/image?url=" + encodeURIComponent(imageUrl) + "&w=" + width + "&q=70";
+}
+
 function ProductSecondaryMedia({
   imageUrl,
-  sizes,
   store
 }: {
   imageUrl: string;
   sizes: string;
   store?: boolean;
 }) {
-  const { alt: _alt, sizes: responsiveSizes, src, srcSet, ...imageProps } = getImageProps({
-    src: imageUrl,
-    alt: "",
-    width: store ? 360 : 420,
-    height: store ? 360 : 420,
-    loading: "lazy",
-    sizes,
-    unoptimized: shouldBypassImageOptimization(imageUrl)
-  }).props;
-
   return (
-    <>
-      {/* eslint-disable-next-line @next/next/no-img-element -- Next getImageProps output is attached only after fine-pointer hover. */}
-      <img
-        {...imageProps}
-        src={transparentImageSource}
-        alt=""
-        aria-hidden
-        fetchPriority="low"
-        data-product-secondary-src={src}
-        data-product-secondary-src-set={srcSet}
-        data-product-secondary-sizes={responsiveSizes}
-        className="product-card-media-image product-card-media-image--secondary"
-      />
-    </>
+    // eslint-disable-next-line @next/next/no-img-element -- Secondary card media is attached only after fine-pointer hover/focus intent.
+    <img
+      loading="lazy"
+      width={store ? 360 : 420}
+      height={store ? 360 : 420}
+      decoding="async"
+      src={transparentImageSource}
+      alt=""
+      aria-hidden
+      fetchPriority="low"
+      data-product-secondary-src={getDeferredSecondaryImageSrc(imageUrl, store ? 384 : 420)}
+      className="product-card-media-image product-card-media-image--secondary"
+    />
   );
 }
 

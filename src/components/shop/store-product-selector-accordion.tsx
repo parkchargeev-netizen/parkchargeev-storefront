@@ -23,7 +23,6 @@ export type StoreSelectorProduct = Pick<
   | "name"
   | "category"
   | "summary"
-  | "description"
   | "stockLabel"
   | "powerLabel"
   | "imageUrl"
@@ -108,7 +107,7 @@ function matchesUseCase(product: StoreSelectorProduct, state: SelectorState) {
 
   const profile = product.profile;
   const haystack =
-    `${product.name} ${product.category} ${product.summary} ${product.description} ${profile.primaryFit} ${profile.powerTier}`.toLocaleLowerCase(
+    `${product.name} ${product.category} ${product.summary} ${profile.primaryFit} ${profile.powerTier}`.toLocaleLowerCase(
       "tr-TR"
     );
 

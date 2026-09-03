@@ -18714,3 +18714,16 @@ html[data-device-os="android"] .store-product-slide .premium-product-card__media
     grid-template-columns: 1fr !important;
   }
 }
+
+/* Store performance containment: keep below-the-fold commerce blocks cheap to paint. */
+.store-featured,
+.store-catalog-layout,
+.store-search-guide {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 720px;
+}
+
+.store-product-rail,
+.store-product-grid--commerce {
+  contain: layout paint;
+}

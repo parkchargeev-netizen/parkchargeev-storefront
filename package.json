@@ -35,7 +35,8 @@
     "db:media-assets": "node scripts/ensure-media-assets.mjs",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
-    "db:admin-performance-indexes": "node scripts/apply-admin-performance-indexes.mjs"
+    "db:admin-performance-indexes": "node scripts/apply-admin-performance-indexes.mjs",
+    "db:store-performance-indexes": "node scripts/apply-store-performance-indexes.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
