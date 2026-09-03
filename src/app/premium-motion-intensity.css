@@ -707,3 +707,24 @@ html[data-device-os="android"] .site-experience-shell :where(.premium-product-ca
   box-shadow: 0 8px 18px rgba(6, 51, 38, 0.07) !important;
   filter: none !important;
 }
+/* Product hover media safety: never reveal a secondary image until it has loaded successfully. */
+.product-card-media-frame--secondary-error .product-card-media-image--secondary,
+.product-card-media-frame--has-secondary:not(.product-card-media-frame--secondary-ready) .product-card-media-image--secondary {
+  display: none !important;
+  opacity: 0 !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .premium-product-card-link:hover .product-card-media-frame--has-secondary:not(.product-card-media-frame--secondary-ready) .product-card-media-image:not(.product-card-media-image--secondary),
+  .premium-product-card-link:focus-visible .product-card-media-frame--has-secondary:not(.product-card-media-frame--secondary-ready) .product-card-media-image:not(.product-card-media-image--secondary),
+  .premium-product-card-link:hover .product-card-media-frame--secondary-error .product-card-media-image:not(.product-card-media-image--secondary),
+  .premium-product-card-link:focus-visible .product-card-media-frame--secondary-error .product-card-media-image:not(.product-card-media-image--secondary) {
+    opacity: 1 !important;
+  }
+
+  .premium-product-card-link:hover .product-card-media-frame--secondary-ready .product-card-media-image--secondary,
+  .premium-product-card-link:focus-visible .product-card-media-frame--secondary-ready .product-card-media-image--secondary {
+    display: block !important;
+    opacity: 1 !important;
+  }
+}

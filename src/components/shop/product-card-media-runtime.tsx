@@ -72,7 +72,21 @@ function loadSecondaryImage(event: Event) {
   }
 
   const frame = image.closest(".product-card-media-frame");
-  const markReady = () => frame?.classList.add("product-card-media-frame--secondary-ready");
+  const markReady = () => {
+    if (image.naturalWidth <= 1) {
+      return;
+    }
+
+    frame?.classList.remove("product-card-media-frame--secondary-error");
+    frame?.classList.add("product-card-media-frame--secondary-ready");
+  };
+  const markError = () => {
+    image.dataset.secondaryLoaded = "error";
+    image.removeAttribute("src");
+    image.removeAttribute("srcset");
+    frame?.classList.remove("product-card-media-frame--secondary-ready");
+    frame?.classList.add("product-card-media-frame--secondary-error");
+  };
   const src = image.dataset.productSecondarySrc;
   const srcSet = image.dataset.productSecondarySrcSet;
   const sizes = image.dataset.productSecondarySizes;
@@ -83,6 +97,7 @@ function loadSecondaryImage(event: Event) {
 
   image.dataset.secondaryLoaded = "true";
   image.addEventListener("load", markReady, { once: true });
+  image.addEventListener("error", markError, { once: true });
 
   if (sizes) {
     image.sizes = sizes;
